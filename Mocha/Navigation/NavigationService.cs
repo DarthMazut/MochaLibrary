@@ -156,12 +156,13 @@ namespace Mocha.Navigation
 
         private static void ThrowIfCallerIsNull(NavigationData navigationData)
         {
-            if (navigationData.CallingModule != null)
+            if (navigationData.CallingModule?.DataContext != null)
             {
-                if (navigationData.CallingModule.DataContext == null)
-                {
-                    throw new InvalidOperationException("Cannot navigate because caller is null.");
-                }
+                return;
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot navigate because caller is null.");
             }
         }
 

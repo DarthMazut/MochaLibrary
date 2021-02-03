@@ -66,8 +66,6 @@ namespace Mocha.Navigation
         /// </param>
         public Navigator(INavigatable host, NavigationService navigationService)
         {
-            // !!!
-            //_hostView = new INavigationModule(null, host, (d, n) => { }, (o) => { });
             _hostView = new PassiveModule(host);
             _navigationService = navigationService;
         }
@@ -166,11 +164,7 @@ namespace Mocha.Navigation
         /// <param name="e">Allow to reject navigation request.</param>
         internal void OnNavigatingToBase(NavigationData navigationData, NavigationCancelEventArgs e)
         {
-            if (navigationData.RequestedModule != null)
-            {
-                _hostView = navigationData.RequestedModule;
-            }
-
+            _hostView = navigationData.RequestedModule;
             OnNavigatingTo?.Invoke(navigationData, e);
         }
 
