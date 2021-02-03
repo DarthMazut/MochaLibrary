@@ -1,0 +1,220 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+
+namespace Mocha.Navigation
+{
+    /// <summary>
+    /// Exposes API for navigation.
+    /// </summary>
+    public class Navigator
+    {
+        #region PRIVATE FIELDS
+
+        private INavigationModule _hostView;
+        private NavigationService _navigationService;
+
+        #endregion
+
+        #region PROPERTIES
+
+        /// <summary>
+        /// Called when any <see cref="INavigatable"/> requested a navigation to the owner of this delegate.
+        /// Do not put any set up code here including event subscribtion as navigation can be rejected at this point.
+        /// Use this delegate for deciding whether to reject navigation process.
+        /// </summary>
+        public Action<NavigationData, NavigationCancelEventArgs> OnNavigatingTo { get; set; }
+
+        /// <summary>
+        /// Called when owner of this delegate is currently active and the request has been made to
+        /// navigate to another <see cref="INavigatable"/> instance. Currently active <see cref="INavigatable"/>
+        /// can reject the navigation at this point. Any cleaning code should be put here including unsubscribing from events.
+        /// </summary>
+        public Action<NavigationData, NavigationCancelEventArgs> OnNavigatingFrom { get; set; }
+
+        /// <summary>
+        /// Called when navigation process is about to finish and new view is displayed. 
+        /// This delegate should contain a set up code for parent <see cref="INavigatable"/>
+        /// including event subscribtion. At this point navigation process cannot be rejected. 
+        /// </summary>
+        public Action<NavigationData> OnNavigatedTo { get; set; }
+
+        /// <summary>
+        /// Determines whether <see cref="INavigationModule"/> associated with this
+        /// <see cref="Navigator"/> object should be cached.
+        /// </summary>
+        public bool SaveCurrent { get; set; }
+
+        #endregion
+
+        #region CONSTRUCTOR
+
+        /// <summary>
+        /// Returns new instance of <see cref="Navigator"/> class.
+        /// </summary>
+        /// <param name="host">
+        /// An object that hosts this instance by implementing <see cref="INavigatable"/> interface.
+        /// Pass <see langword="this"/> here.
+        /// </param>
+        /// <param name="navigationService">
+        /// A <see cref="NavigationService"/> object which will process 
+        /// the requestes send by this instance.
+        /// </param>
+        public Navigator(INavigatable host, NavigationService navigationService)
+        {
+            // !!!
+            //_hostView = new INavigationModule(null, host, (d, n) => { }, (o) => { });
+            _hostView = new PassiveModule(host);
+            _navigationService = navigationService;
+        }
+
+        #endregion
+
+        #region PUBLIC METHODS
+
+        /// <summary>
+        /// Sends navigation request to navigate to specified view.
+        /// </summary>
+        /// <param name="element">Navigation target view.</param>
+        public NavigationResultData Navigate(INavigationModule view)
+        {
+            NavigationData navigationData = new NavigationData
+            {
+                CallingModule = _hostView,
+                Data = null,
+                IgnoreCached = false,
+                RequestedModule = view,
+                SaveCurrent = _navigationService.CurrentView?.DataContext.Navigator.SaveCurrent ?? false
+            };
+
+            return _navigationService.RequestNavigation(navigationData);
+        }
+
+        /// <summary>
+        /// Sends navigation request to navigate to specified view.
+        /// </summary>
+        /// <param name="view">Navigation target view.</param>
+        /// <param name="navigatable">A * DataContext * object for target view.</param>
+        public NavigationResultData Navigate(INavigationModule view, INavigatable navigatable)
+        {
+            return Navigate(view, null, navigatable, false);
+        }
+
+        /// <summary>
+        /// Sends navigation request to navigate to specified view.
+        /// </summary>
+        /// <param name="view">Navigation target view.</param>
+        /// <param name="data">
+        /// An extra data object used to pass information between <see cref="INavigatable"/>
+        /// objects that take part in navigation transition.
+        /// </param>
+        /// <param name="navigatable">A * DataContext * object for target view.</param>
+        public NavigationResultData Navigate(INavigationModule view, object data, INavigatable navigatable)
+        {
+            return Navigate(view, data, navigatable, false);
+        }
+
+        /// <summary>
+        /// Sends navigation request to navigate to specified view.
+        /// </summary>
+        /// <param name="view">Navigation target view.</param>
+        /// <param name="data">
+        /// An extra data object used to pass information between <see cref="INavigatable"/>
+        /// objects that take part in navigation transition.
+        /// </param>
+        /// <param name="navigatable">A * DataContext * object for target view.</param>
+        /// <param name="ignoreCached">Determines whether cached <see cref="INavigationModule"/> 
+        /// objects should be unconditionaly ingored for rising navigation process.</param>
+        public NavigationResultData Navigate(INavigationModule view, object data, INavigatable navigatable, bool ignoreCached)
+        {
+            NavigationData navigationData = new NavigationData
+            {
+                CallingModule = _hostView,
+                Data = data,
+                IgnoreCached = ignoreCached,
+                RequestedModule = view,
+                SaveCurrent = _navigationService.CurrentView?.DataContext.Navigator.SaveCurrent ?? false
+            };
+
+            navigationData.RequestedModule.SetDataContext(navigatable);
+
+            return _navigationService.RequestNavigation(navigationData);
+        }
+
+        /// <summary>
+        /// Sends navigation request to navigate with specified <see cref="NavigationData"/> object.
+        /// </summary>
+        /// <param name="navigationData">Contains details for requested navigation process.</param>
+        public NavigationResultData Navigate(NavigationData navigationData)
+        {
+            return _navigationService.RequestNavigation(navigationData);
+        }
+
+        #endregion
+
+        #region INTERNAL METHODS
+
+        /// <summary>
+        /// Used internally by <see cref="NavigationService"/>.
+        /// Prepares an <see cref="INavigatable"/> object for which navigation has been requested.
+        /// </summary>
+        /// <param name="navigationData">Details on navigation request.</param>
+        /// <param name="e">Allow to reject navigation request.</param>
+        internal void OnNavigatingToBase(NavigationData navigationData, NavigationCancelEventArgs e)
+        {
+            if (navigationData.RequestedModule != null)
+            {
+                _hostView = navigationData.RequestedModule;
+            }
+
+            OnNavigatingTo?.Invoke(navigationData, e);
+        }
+
+        /// <summary>
+        /// Used internally by <see cref="NavigationService"/>.
+        /// Prepares an <see cref="INavigatable"/> object for which navigation has been requested.
+        /// </summary>
+        /// <param name="navigationData">Details on navigation request.</param>
+        internal void OnNavigatedToBase(NavigationData navigationData)
+        {
+            OnNavigatedTo?.Invoke(navigationData);
+        }
+
+        /// <summary>
+        /// Used internally by <see cref="NavigationService"/>.
+        /// Cleans up <see cref="INavigatable"/> object which was currently active.
+        /// </summary>
+        /// <param name="navigationData">Details on navigation request.</param>
+        /// <param name="e">Allow to reject navigation request.</param>
+        internal void OnNavigatingFromBase(NavigationData navigationData, NavigationCancelEventArgs e)
+        {
+            OnNavigatingFrom?.Invoke(navigationData, e);
+        }
+
+        #endregion
+
+        #region PASSIVE MODULE
+
+        private class PassiveModule : INavigationModule
+        {
+            public object View => null;
+
+            public INavigatable DataContext { get; }
+
+            public PassiveModule(INavigatable host)
+            {
+                DataContext = host;
+            }
+
+            public void CleanUp() { }
+
+            public void SetDataContext(INavigatable dataContext) { }
+        } 
+
+        #endregion
+    }
+}
