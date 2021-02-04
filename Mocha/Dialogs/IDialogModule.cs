@@ -9,7 +9,7 @@ namespace Mocha.Dialogs
     /// <summary>
     /// Exposes methods and properties for interaction with technology-independent dialog representation.
     /// </summary>
-    public interface IDialogModule
+    public interface IDialogModule : IDisposable
     {
         /// <summary>
         /// Reference to technology-specific view object.
@@ -64,5 +64,11 @@ namespace Mocha.Dialogs
         /// Fires when dialog closes.
         /// </summary>
         event EventHandler Closed;
+
+        /// <summary>
+        /// Fires when dialog is done.
+        /// <para>"Comrade soldier, you're done!"</para>
+        /// </summary>
+        event EventHandler Disposed;
     }
 }

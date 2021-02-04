@@ -22,6 +22,7 @@ namespace MochaWPF
         public bool IsOpen => throw new NotSupportedException();
 
         public event EventHandler Closed;
+        public event EventHandler Disposed;
 
         public FileDialogModule(FileDialog dialog, IDialog backend, Func<CommonDialog, Window> getParentWindow)
         {
@@ -95,6 +96,11 @@ namespace MochaWPF
                     throw new NotSupportedException("Cannot show dialog async if *getParentWindow* delegate is null.");
                 }
             });
+        }
+
+        public void Dispose()
+        {
+            // There is no need of disposing WPF FileDialog.
         }
     }
 }

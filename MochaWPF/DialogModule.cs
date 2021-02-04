@@ -40,6 +40,11 @@ namespace MochaWPF
         public event EventHandler Closed;
 
         /// <summary>
+        /// Fires when dialog is disposed and *DataContext* on <see cref="View"/> object is cleared.
+        /// </summary>
+        public event EventHandler Disposed;
+
+        /// <summary>
         /// Returns a new instance of a <see cref="DialogModule"/> class.
         /// </summary>
         /// <param name="window">Dialog window.</param>
@@ -63,7 +68,6 @@ namespace MochaWPF
             {
                 _isOpen = false;
                 OnClose();
-                ClearUp();
             };
 
             window.Loaded += (s, e) => _isOpen = true;
@@ -145,14 +149,28 @@ namespace MochaWPF
             });
         }
 
-        protected virtual void ClearUp()
+        /// <summary>
+        /// Perform cleaning operations allowing this object to be garbage collected.
+        public virtual void Dispose()
         {
-            _view.DataContext = null; 
+            if(_view != null)
+            {
+                _view.DataContext = null;
+            }
+
+            OnDisposed();
         }
 
         protected virtual void OnClose()
         {
             Closed?.Invoke(this, EventArgs.Empty);
         }
+
+        protected virtual void OnDisposed()
+        {
+            Disposed?.Invoke(this, EventArgs.Empty);
+        }
+
+
     }
 }

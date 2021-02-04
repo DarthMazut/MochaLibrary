@@ -48,6 +48,7 @@
     <Compile Include="NavigationModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FileDialogModule.cs" />
+    <Compile Include="StandardDialogFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mocha\Mocha.csproj">

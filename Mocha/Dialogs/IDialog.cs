@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Mocha.Dialogs
 {
     /// <summary>
-    /// Allows implementing object to be treated as a *DataContext* for <see cref="IDialogModule"/>. 
+    /// Allows implementing object to be treated as a *DataContext* or backend data for <see cref="IDialogModule"/>. 
     /// </summary>
     public interface IDialog
     {
