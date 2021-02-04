@@ -18,11 +18,6 @@ namespace MochaWPFTestApp.ViewModels
         private DelegateCommand _navigateCommand;
         public DelegateCommand NavigateCommand => _navigateCommand ?? (_navigateCommand = new DelegateCommand(Navigate));
 
-        private void Navigate()
-        {
-            Navigator.Navigate(NavigationModules.Page2);
-        }
-
         public string Input
         {
             get => _input;
@@ -35,6 +30,11 @@ namespace MochaWPFTestApp.ViewModels
         {
             Navigator = new Navigator(this, NavigationServices.MainNavigationService);
             Navigator.SaveCurrent = true;
+        }
+
+        private void Navigate()
+        {
+            Navigator.Navigate(NavigationModules.Page2);
         }
     }
 }

@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace MochaWPF
 {
-    public class WindowsDialogModule : IDialogModule
+    public class FileDialogModule : IDialogModule
     {
         private FileDialog _dialog;
         private IDialog _backend;
@@ -23,7 +23,7 @@ namespace MochaWPF
 
         public event EventHandler Closed;
 
-        public WindowsDialogModule(FileDialog dialog, IDialog backend, Func<CommonDialog, Window> getParentWindow)
+        public FileDialogModule(FileDialog dialog, IDialog backend, Func<CommonDialog, Window> getParentWindow)
         {
             _dialog = dialog;
             _backend = backend;

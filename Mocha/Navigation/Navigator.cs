@@ -22,6 +22,8 @@ namespace Mocha.Navigation
 
         #region PROPERTIES
 
+        // Change these to events !!!
+
         /// <summary>
         /// Called when any <see cref="INavigatable"/> requested a navigation to the owner of this delegate.
         /// Do not put any set up code here including event subscribtion as navigation can be rejected at this point.

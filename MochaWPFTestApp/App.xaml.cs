@@ -37,7 +37,7 @@ namespace MochaWPFTestApp
 
             DialogManager.DefineDialog(DialogsIDs.OpenDialog, () =>
             {
-                return new WindowsDialogModule(
+                return new FileDialogModule(
                     new Microsoft.Win32.SaveFileDialog(),
                     null,
                     (w) => 
