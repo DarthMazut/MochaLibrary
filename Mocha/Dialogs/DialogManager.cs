@@ -7,15 +7,12 @@ using System.Threading.Tasks;
 namespace Mocha.Dialogs
 {
     /// <summary>
-    /// Allows for defining, retrieving and managing custom dialogs. 
-    /// Provides methods for obtaining standarized dialog instances.
+    /// Allows for defining, retrieving and managing dialogs.
     /// </summary>
     public static class DialogManager
     {
         private static readonly Dictionary<string, Func<IDialogModule>> _dictionary = new Dictionary<string, Func<IDialogModule>>();
         private static readonly Dictionary<string, List<IDialogModule>> _activeDialogs = new Dictionary<string, List<IDialogModule>>();
-        private static Dictionary<string, IDialogFactory> _factoriesDictionary = new Dictionary<string, IDialogFactory>();
-        private static IDialogFactory _defaultFactory;
 
         /// <summary>
         /// Allows to register a <see cref="IDialogModule"/>. Dialogs registered by this method can
@@ -52,59 +49,6 @@ namespace Mocha.Dialogs
         }
 
         /// <summary>
-        /// Sets the default <see cref="IDialogFactory"/>.
-        /// </summary>
-        /// <param name="factory">Default factory.</param>
-        public static void SetDefaultFactory(IDialogFactory factory)
-        {
-            _defaultFactory = factory ?? throw new ArgumentNullException();
-        }
-
-        /// <summary>
-        /// Register a <see cref="IDialogFactory"/> which provides instances 
-        /// of <see cref="IDialogModule"/> for technology-independant layer.
-        /// </summary>
-        /// <param name="factoryID">Identifier for given factory.</param>
-        /// <param name="factory">Factory to be registered.</param>
-        public static void AddFactory(string factoryID, IDialogFactory factory)
-        {
-            if (_factoriesDictionary.ContainsKey(factoryID))
-            {
-                throw new InvalidOperationException($"Cannot add factory with ID={factoryID} because it was already added.");
-            }
-
-            _factoriesDictionary.Add(factoryID, factory);
-        }
-
-        /// <summary>
-        /// Returns <see cref="IDialogModule"/> created by default factory.
-        /// </summary>
-        /// <param name="parameters">Configuration parameters used by default factory.</param>
-        public static IDialogModule GetDialogFromFactory(params string[] parameters)
-        {
-            if (_defaultFactory == null) throw new InvalidOperationException("Cannot use _defaultFacotry because it wasn't set.");
-
-            return _defaultFactory.Create(parameters);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="IDialogModule"/> created by factory corresponding to provided identifier.
-        /// </summary>
-        /// <param name="factoryID">Identifier of chosen factory.</param>
-        /// <param name="parameters">Configuration parameters used by selected factory.</param>
-        public static IDialogModule GetDialogFromFactory(string factoryID, params string[] parameters)
-        {
-            if (factoryID == null) throw new ArgumentNullException();
-
-            if (_factoriesDictionary.ContainsKey(factoryID))
-            {
-                return _factoriesDictionary[factoryID].Create(parameters);
-            }
-
-            throw new ArgumentException($"Cannot find factory with ID={factoryID}. Make sure it was added first.");
-        }
-
-        /// <summary>
         /// Returns a collection of references to created dialogs, which hasn't been disposed yet.
         /// </summary>
         /// <param name="id">Identifier of specific dialog.</param>
@@ -113,7 +57,7 @@ namespace Mocha.Dialogs
             if (_dictionary.ContainsKey(id))
             {
                 IDialogModule dialog = _dictionary[id]?.Invoke();
-                string key = dialog.View.GetType().ToString();
+                string key = dialog.GetHashCode().ToString();
 
                 if(_activeDialogs.ContainsKey(key))
                 {
@@ -126,7 +70,7 @@ namespace Mocha.Dialogs
 
         private static void HandleCreatedDialog(IDialogModule dialog)
         {
-            string key = dialog.View.GetType().ToString();
+            string key = dialog.GetHashCode().ToString();
 
             if (_activeDialogs.ContainsKey(key))
             {
@@ -142,7 +86,7 @@ namespace Mocha.Dialogs
 
         private static void OnDialogClosed(object sender, EventArgs e)
         {
-            string key = (sender as IDialogModule).View.GetType().ToString();
+            string key = (sender as IDialogModule).GetHashCode().ToString();
 
             if (_activeDialogs.ContainsKey(key))
             {

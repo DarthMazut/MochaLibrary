@@ -1,4 +1,5 @@
-﻿using Mocha.Navigation;
+﻿using Mocha.Dialogs;
+using Mocha.Navigation;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -9,8 +10,12 @@ using System.Threading.Tasks;
 
 namespace MochaWPFTestApp
 {
-    class MainWindowViewModel : BindableBase, INavigatable
+    class MainWindowViewModel : BindableBase, INavigatable, IDialog
     {
+        public bool? DialogResult { get; set; }
+        public object DialogValue { get; set; }
+        public string[] Parameters { get; set; }
+
         private object _content;
 
         public object Content

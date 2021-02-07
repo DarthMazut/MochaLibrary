@@ -11,6 +11,7 @@ using Mocha.Dialogs;
 using MochaWPFTestApp.Views;
 using MochaWPFTestApp.ViewModels;
 using MochaWPF;
+using MochaWPFTestApp.ViewModels.Dialogs;
 
 namespace MochaWPFTestApp
 {
@@ -35,6 +36,17 @@ namespace MochaWPFTestApp
                     new Page2ViewModel());
             });
 
+            DialogManager.DefineDialog(DialogsIDs.MsgBoxDialog, () => 
+            {
+                return new StandardDialogModule(null, (d) =>
+                {
+                    return Current.Dispatcher.Invoke(() =>
+                    {
+                        return Current.Windows[0];
+                    });
+                });
+            });
+
             DialogManager.DefineDialog(DialogsIDs.OpenDialog, () =>
             {
                 return new FileDialogModule(
@@ -42,13 +54,10 @@ namespace MochaWPFTestApp
                     null,
                     (w) => 
                     {
-                        Window window = null;
-                        Current.Dispatcher.Invoke(() =>
+                        return Current.Dispatcher.Invoke(() =>
                         {
-                            window = Current.Windows[0];
+                            return Current.Windows[0];
                         });
-
-                        return window;
                     });
             });
         }

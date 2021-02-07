@@ -20,5 +20,10 @@ namespace Mocha.Dialogs
         /// Value retrieved as a result of dialog interaction. 
         /// </summary>
         object DialogValue { get; set; }
+
+        /// <summary>
+        /// Allows for customization of associated dialog.
+        /// </summary>
+        string[] Parameters { get; set; }
     }
 }

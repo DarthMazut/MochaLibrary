@@ -35,8 +35,6 @@ namespace MochaWPF
         public NavigationModule(FrameworkElement view, INavigatable dataContext)
         {
             _view = view;
-            _dataContext = dataContext;
-
             SetDataContext(dataContext);
         }
 

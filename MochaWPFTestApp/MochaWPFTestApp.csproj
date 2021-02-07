@@ -75,6 +75,7 @@
     <Compile Include="Dialogs.cs" />
     <Compile Include="NavigationServices.cs" />
     <Compile Include="NavigationModules.cs" />
+    <Compile Include="ViewModels\Dialogs\StandardDialogModuleViewModel.cs" />
     <Compile Include="ViewModels\Page1ViewModel.cs" />
     <Compile Include="ViewModels\Page2ViewModel.cs" />
     <Compile Include="Views\Page1.xaml.cs">
@@ -140,7 +141,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ViewModels\Dialogs\" />
     <Folder Include="Views\Dialogs\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

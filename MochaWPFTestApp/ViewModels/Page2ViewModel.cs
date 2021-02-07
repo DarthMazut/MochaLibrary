@@ -4,6 +4,7 @@ using Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MochaWPFTestApp;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,7 +27,30 @@ namespace MochaWPFTestApp.ViewModels
 
         private async void OpenDialog()
         {
-            await Dialogs.OpenDialog.ShowModalAsync();
+            string[] parameters = { "Hello there!", "Title :)", "YesNoCancel", "Stop" };
+
+
+            using (IDialogModule myDialog = MochaWPFTestApp.Dialogs.MsgBoxDialog)
+            {
+                myDialog.DataContext.Parameters = parameters;
+
+                myDialog.Closed += (s, e) =>
+                {
+
+                };
+
+                myDialog.Disposed += (s, e) =>
+                {
+
+                };
+
+                Task openWindow = myDialog.ShowModalAsync();
+                await Task.Delay(3000);
+                var activeDialogs = DialogManager.GetActiveDialogs(DialogsIDs.MsgBoxDialog);
+                await openWindow;
+
+                bool? result = myDialog.DataContext.DialogResult;
+            }
         }
 
         public Navigator Navigator { get; }

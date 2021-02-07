@@ -11,7 +11,7 @@ namespace MochaWPF
     /// <summary>
     /// Provides a typical implementation of <see cref="IDialogModule"/> for WPF apps.
     /// </summary>
-    public class DialogModule : IDialogModule
+    public class CustomDialogModule : IDialogModule
     {
         protected Func<Window, Window> _getParentWindow;
         protected Window _view;
@@ -32,7 +32,7 @@ namespace MochaWPF
         /// <summary>
         /// Specifies whether this dialog is currently open.
         /// </summary>
-        public virtual bool IsOpen => throw new NotImplementedException();
+        public virtual bool IsOpen => _isOpen;
 
         /// <summary>
         /// Fires when dialog closes.
@@ -45,24 +45,27 @@ namespace MochaWPF
         public event EventHandler Disposed;
 
         /// <summary>
-        /// Returns a new instance of a <see cref="DialogModule"/> class.
+        /// Returns a new instance of a <see cref="CustomDialogModule"/> class.
         /// </summary>
         /// <param name="window">Dialog window.</param>
         /// <param name="dialog">Dialog backend; will be binded to dialog window by *DataBinding* mechanism.</param>
-        public DialogModule(Window window, IDialog dialog) : this(window, dialog, null) { }
+        public CustomDialogModule(Window window, IDialog dialog) : this(window, dialog, null) { }
 
         /// <summary>
-        /// Returns a new instance of a <see cref="DialogModule"/> class.
+        /// Returns a new instance of a <see cref="CustomDialogModule"/> class.
         /// </summary>
         /// <param name="window">Dialog window.</param>
         /// <param name="dialog">Dialog backend; will be binded to dialog window by *DataBinding* mechanism.</param>
-        /// <param name="getParentWindow">A delegate which returns parent window of this dialg.</param>
-        public DialogModule(Window window, IDialog dialog, Func<Window, Window> getParentWindow)
+        /// <param name="getParentWindow">
+        /// A delegate which returns parent window of this dialog.
+        /// This might be called on non-UI-thread; make sure you access application
+        /// resources on appropriate thread.
+        /// </param>
+        public CustomDialogModule(Window window, IDialog dialog, Func<Window, Window> getParentWindow)
         {
             _view = window;
-            _dataContext = dialog;
-
             _getParentWindow = getParentWindow;
+            SetDataContext(dialog);
 
             window.Closed += (s, e) =>
             {
@@ -90,15 +93,22 @@ namespace MochaWPF
         /// <param name="dialog">Dialog logic to be set by * DataContext * mechanism.</param>
         public virtual void SetDataContext(IDialog dialog)
         {
+            _dataContext = dialog;
             _view.DataContext = dialog;
         }
 
+        /// <summary>
+        /// Displays the dialog in non-modal manner.
+        /// </summary>
         public virtual void Show()
         {
             _view.Owner = _getParentWindow?.Invoke(_view);
             _view.Show();
         }
 
+        /// <summary>
+        /// Displays the dialog asynchronously in non-modal manner.
+        /// </summary>
         public virtual Task ShowAsync()
         {
             return Task.Run(() => 
@@ -118,6 +128,9 @@ namespace MochaWPF
             });
         }
 
+        /// <summary>
+        /// Displays the dialog in modal manner.
+        /// </summary>
         public virtual bool? ShowModal()
         {
             _view.Owner = _getParentWindow?.Invoke(_view);
@@ -126,6 +139,10 @@ namespace MochaWPF
             return result;
         }
 
+        /// <summary>
+        /// Displays the dialog asynchronously in modal manner.
+        /// </summary>
+        /// <returns></returns>
         public virtual Task<bool?> ShowModalAsync()
         {
             return Task.Run(() =>
@@ -151,6 +168,7 @@ namespace MochaWPF
 
         /// <summary>
         /// Perform cleaning operations allowing this object to be garbage collected.
+        /// </summary>
         public virtual void Dispose()
         {
             if(_view != null)
@@ -163,6 +181,7 @@ namespace MochaWPF
 
         protected virtual void OnClose()
         {
+            _isOpen = false;
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
