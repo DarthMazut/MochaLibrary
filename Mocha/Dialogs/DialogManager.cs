@@ -39,7 +39,7 @@ namespace Mocha.Dialogs
             if(_dictionary.ContainsKey(id))
             {
                 IDialogModule dialog = _dictionary[id]?.Invoke();
-                HandleCreatedDialog(dialog);
+                HandleCreatedDialog(id, dialog);
                 return dialog;
             }
             else
@@ -54,39 +54,31 @@ namespace Mocha.Dialogs
         /// <param name="id">Identifier of specific dialog.</param>
         public static List<IDialogModule> GetActiveDialogs(string id)
         {
-            if (_dictionary.ContainsKey(id))
+            if (_activeDialogs.ContainsKey(id))
             {
-                IDialogModule dialog = _dictionary[id]?.Invoke();
-                string key = dialog.GetHashCode().ToString();
-
-                if(_activeDialogs.ContainsKey(key))
-                {
-                    return _activeDialogs[key];
-                }
+                return _activeDialogs[id];
             }
 
             return new List<IDialogModule>();
         }
 
-        private static void HandleCreatedDialog(IDialogModule dialog)
+        private static void HandleCreatedDialog(string id, IDialogModule dialog)
         {
-            string key = dialog.GetHashCode().ToString();
-
-            if (_activeDialogs.ContainsKey(key))
+            if (_activeDialogs.ContainsKey(id))
             {
-                _activeDialogs[key].Add(dialog);
+                _activeDialogs[id].Add(dialog);
             }
             else
             {
-                _activeDialogs.Add(key, new List<IDialogModule>() { dialog });
+                _activeDialogs.Add(id, new List<IDialogModule>() { dialog });
             }
 
-            dialog.Disposed += OnDialogClosed;
+            dialog.Disposed += OnDialogDisposed;
         }
 
-        private static void OnDialogClosed(object sender, EventArgs e)
+        private static void OnDialogDisposed(object sender, EventArgs e)
         {
-            string key = (sender as IDialogModule).GetHashCode().ToString();
+            string key = (sender as IDialogModule).GetType().ToString();
 
             if (_activeDialogs.ContainsKey(key))
             {
