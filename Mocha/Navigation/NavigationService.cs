@@ -119,6 +119,7 @@ namespace Mocha.Navigation
                 {
                     if (_cachedTypes[requestedType].Equals(navigationData.RequestedModule))
                     {
+                        navigationData.RequestedModule.CleanUp();
                         navigationData.RequestedModule = _cachedTypes[requestedType];
                     }
                 }
