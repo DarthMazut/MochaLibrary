@@ -20,30 +20,36 @@ namespace Mocha.Navigation
 
         #endregion
 
-        #region PROPERTIES
+        #region EVENTS
 
-        // Change these to events !!!
+        public delegate void NavigationRequestedEventHandler(NavigationData navigationData, NavigationCancelEventArgs e);
+        public delegate void NavigationEventHandler(NavigationData navigationData);
 
         /// <summary>
-        /// Called when any <see cref="INavigatable"/> requested a navigation to the owner of this delegate.
-        /// Do not put any set up code here including event subscribtion as navigation can be rejected at this point.
-        /// Use this delegate for deciding whether to reject navigation process.
+        /// Fires whenever any <see cref="INavigatable"/> requested a navigation to <see cref="INavigationModule"/> that
+        /// holds this <see cref="Navigator"/> instance. Do not put any set up code here including event subscribtion as 
+        /// navigation can be rejected at this point. Use this event for deciding whether to reject navigation process.
         /// </summary>
-        public Action<NavigationData, NavigationCancelEventArgs> OnNavigatingTo { get; set; }
+        public event NavigationRequestedEventHandler NavigatingTo;
 
         /// <summary>
-        /// Called when owner of this delegate is currently active and the request has been made to
-        /// navigate to another <see cref="INavigatable"/> instance. Currently active <see cref="INavigatable"/>
-        /// can reject the navigation at this point. Any cleaning code should be put here including unsubscribing from events.
+        /// Fires whenever <see cref="INavigationModule"/> that holds this <see cref="Navigator"/> instance is currently 
+        /// active and the request has been made to navigate to antoher <see cref="INavigationModule"/> instance.
+        /// Currently active <see cref="Navigator"/> can reject the navigation at this point. Any cleaning code 
+        /// should be put here including unsubscribing from events.
         /// </summary>
-        public Action<NavigationData, NavigationCancelEventArgs> OnNavigatingFrom { get; set; }
+        public event NavigationRequestedEventHandler NavigatingFrom;
 
         /// <summary>
-        /// Called when navigation process is about to finish and new view is displayed. 
-        /// This delegate should contain a set up code for parent <see cref="INavigatable"/>
+        /// Fires when navigation process is about to finish and new view is displayed.
+        /// This event should contain a set up code for parent <see cref="INavigatable"/>
         /// including event subscribtion. At this point navigation process cannot be rejected. 
         /// </summary>
-        public Action<NavigationData> OnNavigatedTo { get; set; }
+        public event NavigationEventHandler NavigatedTo;
+
+        #endregion
+
+        #region PROPERTIES
 
         /// <summary>
         /// Determines whether <see cref="INavigationModule"/> associated with this
@@ -167,7 +173,7 @@ namespace Mocha.Navigation
         internal void OnNavigatingToBase(NavigationData navigationData, NavigationCancelEventArgs e)
         {
             _hostView = navigationData.RequestedModule;
-            OnNavigatingTo?.Invoke(navigationData, e);
+            NavigatingTo?.Invoke(navigationData, e);
         }
 
         /// <summary>
@@ -177,7 +183,7 @@ namespace Mocha.Navigation
         /// <param name="navigationData">Details on navigation request.</param>
         internal void OnNavigatedToBase(NavigationData navigationData)
         {
-            OnNavigatedTo?.Invoke(navigationData);
+            NavigatedTo?.Invoke(navigationData);
         }
 
         /// <summary>
@@ -188,7 +194,7 @@ namespace Mocha.Navigation
         /// <param name="e">Allow to reject navigation request.</param>
         internal void OnNavigatingFromBase(NavigationData navigationData, NavigationCancelEventArgs e)
         {
-            OnNavigatingFrom?.Invoke(navigationData, e);
+            NavigatingFrom?.Invoke(navigationData, e);
         }
 
         #endregion

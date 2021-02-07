@@ -1,4 +1,5 @@
-﻿using Mocha.Navigation;
+﻿using Mocha.Dialogs;
+using Mocha.Navigation;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -30,6 +31,40 @@ namespace MochaWPFTestApp.ViewModels
         {
             Navigator = new Navigator(this, NavigationServices.MainNavigationService);
             Navigator.SaveCurrent = true;
+
+            Navigator.NavigatingTo += Navigator_NavigatingTo;
+            Navigator.NavigatingFrom += Navigator_NavigatingFrom;
+            Navigator.NavigatedTo += Navigator_NavigatedTo;
+        }
+
+        private void Navigator_NavigatedTo(NavigationData navigationData)
+        {
+            if(navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
+            {
+                IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
+                dialog.DataContext.Parameters = new string[] { "OnNavigatedTo :)", "Title", "OK", "Question" };
+                dialog.ShowModal();
+            }
+        }
+
+        private void Navigator_NavigatingFrom(NavigationData navigationData, NavigationCancelEventArgs e)
+        {
+            if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
+            {
+                IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
+                dialog.DataContext.Parameters = new string[] { "OnNavigatingFrom :)", "Title", "OK", "Warning" };
+                dialog.ShowModal();
+            }
+        }
+
+        private void Navigator_NavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)
+        {
+            if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
+            {
+                IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
+                dialog.DataContext.Parameters = new string[] { "OnNavigatingTo :)", "Title", "OK", "Error" };
+                dialog.ShowModal();
+            }
         }
 
         private void Navigate()
