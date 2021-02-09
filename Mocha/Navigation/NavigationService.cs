@@ -13,9 +13,9 @@ namespace Mocha.Navigation
     /// </summary>
     public class NavigationService
     {
-        private Dictionary<Type, INavigationModule> _cachedTypes = new Dictionary<Type, INavigationModule>();
-
+        private List<INavigationModule> _cachedModules = new List<INavigationModule>();
         private INavigationModule _currentView;
+        private NavigationModuleInternalComparer _moduleComparer = new NavigationModuleInternalComparer();
 
         /// <summary>
         /// Returns a currently active <see cref="INavigationModule"/> object.
@@ -72,7 +72,7 @@ namespace Mocha.Navigation
         /// </summary>
         public void ClearCached()
         {
-            _cachedTypes.Clear();
+            _cachedModules.Clear();
         }
 
         /// <summary>
@@ -80,20 +80,20 @@ namespace Mocha.Navigation
         /// Returns <see langword="true"/> if specified type was found and removed, otherwise <see langword="false"/>.
         /// </summary>
         /// <param name="type">Type to be found and removed from cache.</param>
-        public bool ClearCached(Type type)
+        public bool ClearCached(INavigationModule module)
         {
-            if (type == null) return false;
+            if (module == null) return false;
 
-            return _cachedTypes.Remove(type);
+            return _cachedModules.RemoveAll(m => _moduleComparer.Equals(m, module)) > 0;
         }
 
         /// <summary>
         /// Checks whether given type it cached.
         /// </summary>
         /// <param name="type">Type to be checked.</param>
-        public bool CheckCached(Type type)
+        public bool CheckCached(INavigationModule module)
         {
-            return _cachedTypes.ContainsKey(type);
+            return _cachedModules.Contains(module);
         }
 
         private bool HandleCache(NavigationData navigationData)
@@ -102,30 +102,26 @@ namespace Mocha.Navigation
             bool cleanUp = CacheCurrent(navigationData);
 
             // LoadCached
-            Type requestedType = LoadCache(navigationData);
+            LoadCache(navigationData);
 
             // ClearCache
-            ClearCached(requestedType);
+            ClearCached(navigationData.RequestedModule);
 
             return cleanUp;
         }
 
-        private Type LoadCache(NavigationData navigationData)
+        private void LoadCache(NavigationData navigationData)
         {
-            Type requestedType = navigationData.RequestedModule.DataContext.GetType();
             if (!navigationData.IgnoreCached)
             {
-                if (_cachedTypes.ContainsKey(requestedType))
+                INavigationModule requestedModule = navigationData.RequestedModule;
+
+                if (_cachedModules.Contains(requestedModule, _moduleComparer))
                 {
-                    if (_cachedTypes[requestedType].Equals(navigationData.RequestedModule))
-                    {
-                        navigationData.RequestedModule.CleanUp();
-                        navigationData.RequestedModule = _cachedTypes[requestedType];
-                    }
+                    navigationData.RequestedModule.CleanUp();
+                    navigationData.RequestedModule = _cachedModules.First(m => _moduleComparer.Equals(m, requestedModule));
                 }
             }
-
-            return requestedType;
         }
 
         private bool CacheCurrent(NavigationData navigationData)
@@ -134,15 +130,14 @@ namespace Mocha.Navigation
 
             if (navigationData.SaveCurrent)
             {
-                Type searchedType = navigationData.PreviousModule.DataContext.GetType();
-                if (_cachedTypes.ContainsKey(searchedType))
+                INavigationModule searchedModule = navigationData.PreviousModule;
+
+                if (_cachedModules.Contains(searchedModule, _moduleComparer))
                 {
-                    _cachedTypes[searchedType] = navigationData.PreviousModule;
+                    _cachedModules.RemoveAll(m => _moduleComparer.Equals(m, searchedModule));
                 }
-                else
-                {
-                    _cachedTypes.Add(searchedType, navigationData.PreviousModule);
-                }
+
+                _cachedModules.Add(searchedModule);
 
                 cleanUp = false;
             }
@@ -212,6 +207,25 @@ namespace Mocha.Navigation
         private void CleanUp(NavigationData navigationData)
         {
             navigationData.PreviousModule?.CleanUp();
+        }
+
+        // We know that developers are lazy and so they don't implement properly Equals() on 
+        // thier own implementation of INavigationModule, so we're providing a spereate one
+        // just for NavigationService.
+        private class NavigationModuleInternalComparer : IEqualityComparer<INavigationModule>
+        {
+            public bool Equals(INavigationModule x, INavigationModule y)
+            {
+                return x.DataContext.GetType() == y.DataContext.GetType();
+            }
+
+            public int GetHashCode(INavigationModule obj)
+            {
+                var hashCode = 536724180;
+                hashCode = hashCode * -1521134295 + EqualityComparer<object>.Default.GetHashCode(obj.View);
+                hashCode = hashCode * -1521134295 + EqualityComparer<INavigatable>.Default.GetHashCode(obj.DataContext);
+                return hashCode;
+            }
         }
     }
 }
