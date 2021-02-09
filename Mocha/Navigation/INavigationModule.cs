@@ -29,7 +29,7 @@ namespace Mocha.Navigation
         void SetDataContext(INavigatable dataContext);
 
         /// <summary>
-        /// Performs and action allowing this object to be removed
+        /// Performs an action allowing this object to be removed
         /// by GC at later time. It is important to set <see cref="DataContext"/>
         /// to null. This method will be called internally by <see cref="NavigationService"/>.
         /// </summary>

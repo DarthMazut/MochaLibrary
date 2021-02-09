@@ -73,17 +73,13 @@ namespace Mocha.Dialogs
                 _activeDialogs.Add(id, new List<IDialogModule>() { dialog });
             }
 
-            dialog.Disposed += OnDialogDisposed;
-        }
-
-        private static void OnDialogDisposed(object sender, EventArgs e)
-        {
-            string key = (sender as IDialogModule).GetType().ToString();
-
-            if (_activeDialogs.ContainsKey(key))
+            dialog.Disposed += (s, e) =>
             {
-                _activeDialogs[key].Remove(sender as IDialogModule);
-            }
+                if (_activeDialogs.ContainsKey(id))
+                {
+                    _activeDialogs[id].Remove(s as IDialogModule);
+                }
+            };
         }
     }
 }

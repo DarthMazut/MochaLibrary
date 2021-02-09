@@ -44,6 +44,7 @@ namespace MochaWPFTestApp.ViewModels
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
                 dialog.DataContext.Parameters = new string[] { "OnNavigatedTo :)", "Title", "OK", "Question" };
                 dialog.ShowModal();
+                dialog.Dispose();
             }
         }
 
@@ -54,6 +55,7 @@ namespace MochaWPFTestApp.ViewModels
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
                 dialog.DataContext.Parameters = new string[] { "OnNavigatingFrom :)", "Title", "OK", "Warning" };
                 dialog.ShowModal();
+                dialog.Dispose();
             }
         }
 
@@ -64,6 +66,7 @@ namespace MochaWPFTestApp.ViewModels
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
                 dialog.DataContext.Parameters = new string[] { "OnNavigatingTo :)", "Title", "OK", "Error" };
                 dialog.ShowModal();
+                dialog.Dispose();
             }
         }
 

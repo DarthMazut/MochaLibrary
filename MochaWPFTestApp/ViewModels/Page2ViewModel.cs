@@ -45,7 +45,6 @@ namespace MochaWPFTestApp.ViewModels
                 };
 
                 Task openWindow = myDialog.ShowModalAsync();
-                var d2 = MochaWPFTestApp.Dialogs.MsgBoxDialog;
                 await Task.Delay(3000);
                 var activeDialogs = DialogManager.GetActiveDialogs(DialogsIDs.MsgBoxDialog);
                 await openWindow;
