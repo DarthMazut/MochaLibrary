@@ -74,6 +74,8 @@ namespace Mocha.Navigation
         /// </param>
         public Navigator(INavigatable host, NavigationService navigationService)
         {
+            if (host == null || navigationService == null) throw new ArgumentNullException();
+
             _hostView = new PassiveModule(host);
             _navigationService = navigationService;
         }
@@ -88,6 +90,8 @@ namespace Mocha.Navigation
         /// <param name="element">Navigation target view.</param>
         public NavigationResultData Navigate(INavigationModule view)
         {
+            if (view == null) throw new ArgumentNullException("Navigation target cannot be null");
+
             NavigationData navigationData = new NavigationData
             {
                 CallingModule = _hostView,
@@ -137,6 +141,8 @@ namespace Mocha.Navigation
         /// objects should be unconditionaly ingored for rising navigation process.</param>
         public NavigationResultData Navigate(INavigationModule view, object data, INavigatable navigatable, bool ignoreCached)
         {
+            if (view == null) throw new ArgumentNullException("Navigation target cannot be null");
+
             NavigationData navigationData = new NavigationData
             {
                 CallingModule = _hostView,
@@ -157,6 +163,7 @@ namespace Mocha.Navigation
         /// <param name="navigationData">Contains details for requested navigation process.</param>
         public NavigationResultData Navigate(NavigationData navigationData)
         {
+            if (navigationData == null) throw new ArgumentNullException();
             return _navigationService.RequestNavigation(navigationData);
         }
 

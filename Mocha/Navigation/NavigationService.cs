@@ -38,7 +38,7 @@ namespace Mocha.Navigation
                 return new NavigationResultData(NavigationResult.SameModuleRequested);
             }
 
-            ThrowIfCallerIsNull(navigationData);
+            ThrowIfCallerOrRequestedViewIsNull(navigationData);
             SetPreviousView(navigationData);
 
             bool cleanUp = HandleCache(navigationData);
@@ -149,15 +149,16 @@ namespace Mocha.Navigation
             navigationData.PreviousModule = _currentView;
         }
 
-        private static void ThrowIfCallerIsNull(NavigationData navigationData)
+        private static void ThrowIfCallerOrRequestedViewIsNull(NavigationData navigationData)
         {
-            if (navigationData.CallingModule?.DataContext != null)
-            {
-                return;
-            }
-            else
+            if (navigationData.CallingModule?.DataContext == null)
             {
                 throw new InvalidOperationException("Cannot navigate because caller is null.");
+            }
+
+            if(navigationData.RequestedModule.View == null)
+            {
+                throw new InvalidOperationException("Cannot navigate because requested module's view is null.");
             }
         }
 
