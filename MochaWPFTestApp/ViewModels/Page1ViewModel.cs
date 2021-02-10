@@ -57,6 +57,8 @@ namespace MochaWPFTestApp.ViewModels
                 dialog.ShowModal();
                 dialog.Dispose();
             }
+
+            NavigationServices.MainNavigationService.ClearCached(NavigationModules.Page1);
         }
 
         private void Navigator_NavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)

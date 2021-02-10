@@ -84,7 +84,16 @@ namespace Mocha.Navigation
         {
             if (module == null) return false;
 
-            return _cachedModules.RemoveAll(m => _moduleComparer.Equals(m, module)) > 0;
+            return _cachedModules.RemoveAll(m =>
+            {
+                if(_moduleComparer.Equals(m, module))
+                {
+                    m.CleanUp();
+                    return true;
+                }
+
+                return false;
+            }) > 0;
         }
 
         /// <summary>
@@ -98,13 +107,10 @@ namespace Mocha.Navigation
 
         private bool HandleCache(NavigationData navigationData)
         {
-            // CacheCurrent
             bool cleanUp = CacheCurrent(navigationData);
 
-            // LoadCached
             LoadCache(navigationData);
 
-            // ClearCache
             ClearCached(navigationData.RequestedModule);
 
             return cleanUp;
@@ -118,7 +124,6 @@ namespace Mocha.Navigation
 
                 if (_cachedModules.Contains(requestedModule, _moduleComparer))
                 {
-                    navigationData.RequestedModule.CleanUp();
                     navigationData.RequestedModule = _cachedModules.First(m => _moduleComparer.Equals(m, requestedModule));
                 }
             }
@@ -130,14 +135,8 @@ namespace Mocha.Navigation
 
             if (navigationData.SaveCurrent)
             {
-                INavigationModule searchedModule = navigationData.PreviousModule;
-
-                if (_cachedModules.Contains(searchedModule, _moduleComparer))
-                {
-                    _cachedModules.RemoveAll(m => _moduleComparer.Equals(m, searchedModule));
-                }
-
-                _cachedModules.Add(searchedModule);
+                ClearCached(navigationData.PreviousModule);
+                _cachedModules.Add(navigationData.PreviousModule);
 
                 cleanUp = false;
             }
@@ -164,7 +163,7 @@ namespace Mocha.Navigation
 
         private bool SameViewRequested(NavigationData navigationData)
         {
-            return _currentView != null && _currentView.Equals(navigationData.RequestedModule);
+            return _currentView != null && _moduleComparer.Equals(_currentView, navigationData.RequestedModule);
         }
 
         private NavigationResultData HandleNavigatingTo(NavigationData navigationData)
@@ -200,6 +199,7 @@ namespace Mocha.Navigation
 
         private void InvokeNavigatedRequested(NavigationData navigationData)
         {
+            navigationData.RequestedModule.SetDataContext(navigationData.RequestedModule.DataContext);
             NavigationRequested?.Invoke(this, navigationData);
             _currentView = navigationData.RequestedModule;
         }
@@ -209,7 +209,7 @@ namespace Mocha.Navigation
             navigationData.PreviousModule?.CleanUp();
         }
 
-        // We know that developers are lazy and so they don't implement properly Equals() on 
+        // We know that developers are lazy and so they won't implement properly Equals() on 
         // thier own implementation of INavigationModule, so we're providing a spereate one
         // just for NavigationService.
         private class NavigationModuleInternalComparer : IEqualityComparer<INavigationModule>
