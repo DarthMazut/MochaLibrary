@@ -1,0 +1,438 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Mocha</name>
+    </assembly>
+    <members>
+        <member name="T:Mocha.Dialogs.DialogManager">
+            <summary>
+            Allows for defining, retrieving and managing dialogs.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.DialogManager.DefineDialog(System.String,System.Func{Mocha.Dialogs.IDialogModule})">
+            <summary>
+            Allows to register a <see cref="T:Mocha.Dialogs.IDialogModule"/>. Dialogs registered by this method can
+            be tracked and obtained via <see cref="M:Mocha.Dialogs.DialogManager.GetActiveDialogs(System.String)"/> method.
+            </summary>
+            <param name="id">Identifier which allows the technology-independent layer retrieve this dialog.</param>
+            <param name="dialogDelegate">This delegate should return new instance of <see cref="T:Mocha.Dialogs.IDialogModule"/> object.</param>
+        </member>
+        <member name="M:Mocha.Dialogs.DialogManager.GetDialog(System.String)">
+            <summary>
+            Retrieves a registered dialog by its identifier.
+            </summary>
+            <param name="id">Identifier of registered dialog to be retrieved.</param>
+        </member>
+        <member name="M:Mocha.Dialogs.DialogManager.GetActiveDialogs(System.String)">
+            <summary>
+            Returns a collection of references to created dialogs, which hasn't been disposed yet.
+            </summary>
+            <param name="id">Identifier of specific dialog.</param>
+        </member>
+        <member name="T:Mocha.Dialogs.IDialog">
+            <summary>
+            Allows implementing object to be treated as a *DataContext* or backend data for <see cref="T:Mocha.Dialogs.IDialogModule"/>. 
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.IDialog.DialogResult">
+            <summary>
+            Describes the result of dialog interaction.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.IDialog.DialogValue">
+            <summary>
+            Value retrieved as a result of dialog interaction. 
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.IDialog.Parameters">
+            <summary>
+            Allows for customization of associated dialog.
+            </summary>
+        </member>
+        <member name="T:Mocha.Dialogs.IDialogModule">
+            <summary>
+            Exposes methods and properties for interaction with technology-independent dialog representation.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.IDialogModule.View">
+            <summary>
+            Reference to technology-specific view object.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.IDialogModule.DataContext">
+            <summary>
+            An <see cref="T:Mocha.Dialogs.IDialog"/> object bounded to <see cref="P:Mocha.Dialogs.IDialogModule.View"/>
+            instance by *DataBinding* mechanism.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.IDialogModule.IsOpen">
+            <summary>
+            Specifies whether this dialog is currently open.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.IDialogModule.Show">
+            <summary>
+            Opens a dialog represented by this instance.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.IDialogModule.ShowModal">
+            <summary>
+            Opens a dialog represented by this instance in modal mode. 
+            Returns result of dialog interaction.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.IDialogModule.ShowAsync">
+            <summary>
+            Opens a dialog represented by this instance in asynchronous manner.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.IDialogModule.ShowModalAsync">
+            <summary>
+            Asynchronously opens a dialog represented by this instance in modal mode. 
+            Returns result of dialog interaction.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.IDialogModule.Close">
+            <summary>
+            Closes the dialog if open.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.IDialogModule.SetDataContext(Mocha.Dialogs.IDialog)">
+            <summary>
+            Sets a * DataContext * for <see cref="P:Mocha.Dialogs.IDialogModule.View"/> object.
+            </summary>
+            <param name="dialog">Dialog logic to be set by * DataContext * mechanism.</param>
+        </member>
+        <member name="E:Mocha.Dialogs.IDialogModule.Closed">
+            <summary>
+            Fires when dialog closes.
+            </summary>
+        </member>
+        <member name="E:Mocha.Dialogs.IDialogModule.Disposed">
+            <summary>
+            Fires when dialog is done.
+            <para>"Comrade soldier, you're done!"</para>
+            </summary>
+        </member>
+        <member name="T:Mocha.Navigation.INavigatable">
+            <summary>
+            Allows implementing class to participate in the navigation process. 
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.INavigatable.Navigator">
+            <summary>
+            Exposes API for navigation.
+            </summary>
+        </member>
+        <member name="T:Mocha.Navigation.INavigationModule">
+            <summary>
+            Represents an abstract, technology independent view object.
+            Provides methods and properties for working with represented object.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.INavigationModule.View">
+            <summary>
+            A technology-specific view object.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.INavigationModule.DataContext">
+            <summary>
+            An <see cref="T:Mocha.Navigation.INavigatable"/> object bounded to <see cref="P:Mocha.Navigation.INavigationModule.View"/>
+            instance by *DataBinding* mechanism.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.INavigationModule.SetDataContext(Mocha.Navigation.INavigatable)">
+            <summary>
+            Allows to set a *DataContext* for technology-specific <see cref="P:Mocha.Navigation.INavigationModule.View"/> object.
+            </summary>
+            <param name="dataContext">A *DataContext* object which will be bind to 
+            <see cref="P:Mocha.Navigation.INavigationModule.View"/> by *DataBinding* mechanism</param>
+        </member>
+        <member name="M:Mocha.Navigation.INavigationModule.CleanUp">
+            <summary>
+            Performs an action allowing this object to be removed
+            by GC at later time. It is important to set <see cref="P:Mocha.Navigation.INavigationModule.DataContext"/>
+            to null. This method will be called internally by <see cref="T:Mocha.Navigation.NavigationService"/>.
+            </summary>
+        </member>
+        <member name="T:Mocha.Navigation.NavigationCancelEventArgs">
+            <summary>
+            Provides data for navigation canceling.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationCancelEventArgs.Cancel">
+            <summary>
+            Specifies whether navigation should be aborted.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationCancelEventArgs.Reason">
+            <summary>
+            Reason for navigation being aborted.
+            </summary>
+        </member>
+        <member name="T:Mocha.Navigation.NavigationData">
+            <summary>
+            Contains essential data for navigation process.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationData.PreviousModule">
+            <summary>
+            Active <see cref="!:NavigationModule"/> at the time navigation was requested.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationData.CallingModule">
+            <summary>
+            <see cref="!:NavigationModule"/> which requested a navigation transition.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationData.RequestedModule">
+            <summary>
+            Target of navigation process.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationData.IgnoreCached">
+            <summary>
+            If set to <see langword="true"/> unconditionally prevents from loading cached 
+            <see cref="!:NavigationModule"/> instances.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationData.Data">
+            <summary>
+            An extra data object used to pass information between <see cref="T:Mocha.Navigation.INavigatable"/>
+            objects that take part in navigation transition.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationData.SaveCurrent">
+            <summary>
+            Determines whether <see cref="P:Mocha.Navigation.NavigationData.CallingModule"/> will be cached.
+            </summary>
+        </member>
+        <member name="T:Mocha.Navigation.NavigationManager">
+            <summary>
+            Mediates between the technology-specific and technology-independent layers.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.NavigationManager.AddModule(System.String,System.Func{Mocha.Navigation.INavigationModule})">
+            <summary>
+            Stores the function that creates the <see cref="T:Mocha.Navigation.INavigationModule"/> which can be used later
+            by the technology-independent layer.
+            </summary>
+            <param name="id">
+            The identifier by which you can find the delegate creating a specific 
+            <see cref="T:Mocha.Navigation.INavigationModule"/> from the technology-independent layer.
+            </param>
+            <param name="navigationViewDelegate">A delegate which creates a <see cref="T:Mocha.Navigation.INavigationModule"/> object.</param>
+        </member>
+        <member name="M:Mocha.Navigation.NavigationManager.FetchModule(System.String)">
+            <summary>
+            Returns a new instance of <see cref="T:Mocha.Navigation.INavigationModule"/> object associated
+            with given identifier.
+            </summary>
+            <param name="id">Identifier for <see cref="T:Mocha.Navigation.INavigationModule"/> object to be retrieved.</param>
+        </member>
+        <member name="T:Mocha.Navigation.NavigationResult">
+            <summary>
+            Describes the possible outcomes of the navigation process.
+            </summary>
+        </member>
+        <member name="F:Mocha.Navigation.NavigationResult.Succeed">
+            <summary>
+            Navigation completed successfully.
+            </summary>
+        </member>
+        <member name="F:Mocha.Navigation.NavigationResult.RejectedByCurrent">
+            <summary>
+            Navigation process was rejected by currently active <see cref="!:NavigationModule"/>.
+            </summary>
+        </member>
+        <member name="F:Mocha.Navigation.NavigationResult.RejectedByTarget">
+            <summary>
+            Navigation process was rejected by requested <see cref="!:NavigationModule"/>.
+            </summary>
+        </member>
+        <member name="F:Mocha.Navigation.NavigationResult.SameModuleRequested">
+            <summary>
+            Navigation process was aborted because currently active <see cref="!:NavigationModule"/> was requested.
+            </summary>
+        </member>
+        <member name="T:Mocha.Navigation.NavigationResultData">
+            <summary>
+            Contains information about navigation result.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationResultData.Result">
+            <summary>
+            Specifies the outcome of navigation process.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationResultData.Reason">
+            <summary>
+            Describes the cause of navigation ending.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.NavigationResultData.#ctor(Mocha.Navigation.NavigationResult)">
+            <summary>
+            Returns new instance of <see cref="T:Mocha.Navigation.NavigationResultData"/> class.
+            </summary>
+            <param name="result">Specifies the outcome of navigation process.</param>
+        </member>
+        <member name="M:Mocha.Navigation.NavigationResultData.#ctor(Mocha.Navigation.NavigationResult,System.String)">
+            <summary>
+            Returns new instance of <see cref="T:Mocha.Navigation.NavigationResultData"/> class.
+            </summary>
+            <param name="result">Specifies the outcome of navigation process.</param>
+            <param name="reason">Describes the cause of navigation ending.</param>
+        </member>
+        <member name="T:Mocha.Navigation.NavigationService">
+            <summary>
+            Contains a core logic for navigation handling.
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.NavigationService.CurrentView">
+            <summary>
+            Returns a currently active <see cref="T:Mocha.Navigation.INavigationModule"/> object.
+            </summary>
+        </member>
+        <member name="E:Mocha.Navigation.NavigationService.NavigationRequested">
+            <summary>
+            Fires every time a navigation action has been requested by one of the <see cref="!:IINavigatable"/> object.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.NavigationService.RequestNavigation(Mocha.Navigation.NavigationData)">
+            <summary>
+            Handles a navigation requests.
+            </summary>
+            <param name="navigationData">Essential data for navigation process.</param>
+        </member>
+        <member name="M:Mocha.Navigation.NavigationService.ClearCached">
+            <summary>
+            Clears every cached <see cref="T:Mocha.Navigation.INavigatable"/> objects.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.NavigationService.ClearCached(Mocha.Navigation.INavigationModule)">
+            <summary>
+            Removes cached <see cref="T:Mocha.Navigation.INavigatable"/> object of given type. 
+            Returns <see langword="true"/> if specified type was found and removed, otherwise <see langword="false"/>.
+            </summary>
+            <param name="type">Type to be found and removed from cache.</param>
+        </member>
+        <member name="M:Mocha.Navigation.NavigationService.CheckCached(Mocha.Navigation.INavigationModule)">
+            <summary>
+            Checks whether given type it cached.
+            </summary>
+            <param name="type">Type to be checked.</param>
+        </member>
+        <member name="T:Mocha.Navigation.Navigator">
+            <summary>
+            Exposes API for navigation.
+            </summary>
+        </member>
+        <member name="E:Mocha.Navigation.Navigator.NavigatingTo">
+            <summary>
+            Fires whenever any <see cref="T:Mocha.Navigation.INavigatable"/> requested a navigation to <see cref="T:Mocha.Navigation.INavigationModule"/> that
+            holds this <see cref="T:Mocha.Navigation.Navigator"/> instance. Do not put any set up code here including event subscribtion as 
+            navigation can be rejected at this point. Use this event for deciding whether to reject navigation process.
+            </summary>
+        </member>
+        <member name="E:Mocha.Navigation.Navigator.NavigatingFrom">
+            <summary>
+            Fires whenever <see cref="T:Mocha.Navigation.INavigationModule"/> that holds this <see cref="T:Mocha.Navigation.Navigator"/> instance is currently 
+            active and the request has been made to navigate to antoher <see cref="T:Mocha.Navigation.INavigationModule"/> instance.
+            Currently active <see cref="T:Mocha.Navigation.Navigator"/> can reject the navigation at this point. Any cleaning code 
+            should be put here including unsubscribing from events.
+            </summary>
+        </member>
+        <member name="E:Mocha.Navigation.Navigator.NavigatedTo">
+            <summary>
+            Fires when navigation process is about to finish and new view is displayed.
+            This event should contain a set up code for parent <see cref="T:Mocha.Navigation.INavigatable"/>
+            including event subscribtion. At this point navigation process cannot be rejected. 
+            </summary>
+        </member>
+        <member name="P:Mocha.Navigation.Navigator.SaveCurrent">
+            <summary>
+            Determines whether <see cref="T:Mocha.Navigation.INavigationModule"/> associated with this
+            <see cref="T:Mocha.Navigation.Navigator"/> object should be cached.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.Navigator.#ctor(Mocha.Navigation.INavigatable,Mocha.Navigation.NavigationService)">
+            <summary>
+            Returns new instance of <see cref="T:Mocha.Navigation.Navigator"/> class.
+            </summary>
+            <param name="host">
+            An object that hosts this instance by implementing <see cref="T:Mocha.Navigation.INavigatable"/> interface.
+            Pass <see langword="this"/> here.
+            </param>
+            <param name="navigationService">
+            A <see cref="T:Mocha.Navigation.NavigationService"/> object which will process 
+            the requestes send by this instance.
+            </param>
+        </member>
+        <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.INavigationModule)">
+            <summary>
+            Sends navigation request to navigate to specified view.
+            </summary>
+            <param name="element">Navigation target view.</param>
+        </member>
+        <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.INavigationModule,Mocha.Navigation.INavigatable)">
+            <summary>
+            Sends navigation request to navigate to specified view.
+            </summary>
+            <param name="view">Navigation target view.</param>
+            <param name="navigatable">A * DataContext * object for target view.</param>
+        </member>
+        <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.INavigationModule,System.Object,Mocha.Navigation.INavigatable)">
+            <summary>
+            Sends navigation request to navigate to specified view.
+            </summary>
+            <param name="view">Navigation target view.</param>
+            <param name="data">
+            An extra data object used to pass information between <see cref="T:Mocha.Navigation.INavigatable"/>
+            objects that take part in navigation transition.
+            </param>
+            <param name="navigatable">A * DataContext * object for target view.</param>
+        </member>
+        <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.INavigationModule,System.Object,Mocha.Navigation.INavigatable,System.Boolean)">
+            <summary>
+            Sends navigation request to navigate to specified view.
+            </summary>
+            <param name="view">Navigation target view.</param>
+            <param name="data">
+            An extra data object used to pass information between <see cref="T:Mocha.Navigation.INavigatable"/>
+            objects that take part in navigation transition.
+            </param>
+            <param name="navigatable">A * DataContext * object for target view.</param>
+            <param name="ignoreCached">Determines whether cached <see cref="T:Mocha.Navigation.INavigationModule"/> 
+            objects should be unconditionaly ingored for rising navigation process.</param>
+        </member>
+        <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.NavigationData)">
+            <summary>
+            Sends navigation request to navigate with specified <see cref="T:Mocha.Navigation.NavigationData"/> object.
+            </summary>
+            <param name="navigationData">Contains details for requested navigation process.</param>
+        </member>
+        <member name="M:Mocha.Navigation.Navigator.OnNavigatingToBase(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
+            <summary>
+            Used internally by <see cref="T:Mocha.Navigation.NavigationService"/>.
+            Prepares an <see cref="T:Mocha.Navigation.INavigatable"/> object for which navigation has been requested.
+            </summary>
+            <param name="navigationData">Details on navigation request.</param>
+            <param name="e">Allow to reject navigation request.</param>
+        </member>
+        <member name="M:Mocha.Navigation.Navigator.OnNavigatedToBase(Mocha.Navigation.NavigationData)">
+            <summary>
+            Used internally by <see cref="T:Mocha.Navigation.NavigationService"/>.
+            Prepares an <see cref="T:Mocha.Navigation.INavigatable"/> object for which navigation has been requested.
+            </summary>
+            <param name="navigationData">Details on navigation request.</param>
+        </member>
+        <member name="M:Mocha.Navigation.Navigator.OnNavigatingFromBase(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
+            <summary>
+            Used internally by <see cref="T:Mocha.Navigation.NavigationService"/>.
+            Cleans up <see cref="T:Mocha.Navigation.INavigatable"/> object which was currently active.
+            </summary>
+            <param name="navigationData">Details on navigation request.</param>
+            <param name="e">Allow to reject navigation request.</param>
+        </member>
+    </members>
+</doc>
