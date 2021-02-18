@@ -264,11 +264,11 @@ namespace MochaWPF
                 case MessageBoxResult.OK:
                     return true;
                 case MessageBoxResult.Cancel:
-                    return true;
+                    return null;
                 case MessageBoxResult.Yes:
                     return true;
                 case MessageBoxResult.No:
-                    return true;
+                    return false;
                 default:
                     return null;
             }
