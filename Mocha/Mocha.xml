@@ -29,9 +29,40 @@
             </summary>
             <param name="id">Identifier of specific dialog.</param>
         </member>
-        <member name="T:Mocha.Dialogs.IDialog">
+        <member name="T:Mocha.Dialogs.DialogParameters">
             <summary>
-            Allows implementing object to be treated as a *DataContext* or backend data for <see cref="T:Mocha.Dialogs.IDialogModule"/>. 
+            Contains predefined keys for dialog parameters dictionary.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.Owner">
+            <summary>
+            A key for a standard <see langword="Owner"/> value.
+            Associate with this key a module which invokes corresponding dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.Title">
+            <summary>
+            A key for a standard <see langword="Title"/> value.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.Caption">
+            <summary>
+            A key for a standard <see langword="Caption"/> value.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.SimpleButtons">
+            <summary>
+            A key for a standard <see langword="Buttons"/> value.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.Icon">
+            <summary>
+            A key for a standard <see langword="Icon"/> value.
+            </summary>
+        </member>
+        <member name="T:Mocha.Dialogs.IDialog">
+            <summary> 
+            Marks implementing class as a data for <see cref="T:Mocha.Dialogs.IDialogModule"/>.
             </summary>
         </member>
         <member name="P:Mocha.Dialogs.IDialog.DialogResult">
@@ -47,6 +78,7 @@
         <member name="P:Mocha.Dialogs.IDialog.Parameters">
             <summary>
             Allows for customization of associated dialog.
+            Use <see cref="T:Mocha.Dialogs.DialogParameters"/> to obtain standard keys.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.IDialogModule">

@@ -13,7 +13,7 @@ namespace MochaWPF
     /// </summary>
     public class CustomDialogModule : IDialogModule
     {
-        protected Func<Window, Window> _getParentWindow;
+        protected Func<IDialogModule, Window> _getParentWindow;
         protected Window _view;
         protected IDialog _dataContext;
         protected bool _isOpen = false;
@@ -61,7 +61,7 @@ namespace MochaWPF
         /// This might be called on non-UI-thread; make sure you access application
         /// resources on appropriate thread.
         /// </param>
-        public CustomDialogModule(Window window, IDialog dialog, Func<Window, Window> getParentWindow)
+        public CustomDialogModule(Window window, IDialog dialog, Func<IDialogModule, Window> getParentWindow)
         {
             _view = window;
             _getParentWindow = getParentWindow;
@@ -102,7 +102,7 @@ namespace MochaWPF
         /// </summary>
         public virtual void Show()
         {
-            _view.Owner = _getParentWindow?.Invoke(_view);
+            _view.Owner = _getParentWindow?.Invoke(this);
             _view.Show();
         }
 
@@ -115,7 +115,7 @@ namespace MochaWPF
             {
                 if(_getParentWindow != null)
                 {
-                    Window parent = _getParentWindow.Invoke(_view);
+                    Window parent = _getParentWindow.Invoke(this);
                     parent.Dispatcher.Invoke(() => 
                     {
                         Show();
@@ -133,7 +133,7 @@ namespace MochaWPF
         /// </summary>
         public virtual bool? ShowModal()
         {
-            _view.Owner = _getParentWindow?.Invoke(_view);
+            _view.Owner = _getParentWindow?.Invoke(this);
             bool? result = _view.ShowDialog();
             _dataContext.DialogResult = result;
             return result;
@@ -142,7 +142,6 @@ namespace MochaWPF
         /// <summary>
         /// Displays the dialog asynchronously in modal manner.
         /// </summary>
-        /// <returns></returns>
         public virtual Task<bool?> ShowModalAsync()
         {
             return Task.Run(() =>
@@ -151,7 +150,7 @@ namespace MochaWPF
                 {
                     bool? result = null;
 
-                    Window parent = _getParentWindow.Invoke(_view);
+                    Window parent = _getParentWindow.Invoke(this);
                     parent.Dispatcher.Invoke(() =>
                     {
                         result = ShowModal();

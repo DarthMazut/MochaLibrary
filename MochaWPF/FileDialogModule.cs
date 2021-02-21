@@ -18,7 +18,7 @@ namespace MochaWPF
     {
         private FileDialog _dialog;
         private IDialog _backend;
-        private Func<CommonDialog, Window> _getParentWindow;
+        private Func<IDialogModule, Window> _getParentWindow;
         private bool _isOpen = false;
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace MochaWPF
         /// resources on appropriate thread.
         /// <para>This cannot be null!</para>
         /// </param>
-        public FileDialogModule(FileDialog dialog, IDialog backend, Func<CommonDialog, Window> getParentWindow)
+        public FileDialogModule(FileDialog dialog, IDialog backend, Func<IDialogModule, Window> getParentWindow)
         {
             _dialog = dialog;
             _backend = backend;
@@ -102,7 +102,7 @@ namespace MochaWPF
         /// </summary>
         public bool? ShowModal()
         {
-            Window owner = _getParentWindow?.Invoke(_dialog);
+            Window owner = _getParentWindow?.Invoke(this);
 
             if (owner != null)
             {
@@ -139,7 +139,7 @@ namespace MochaWPF
                 {
                     bool? result = null;
 
-                    Window parent = _getParentWindow.Invoke(_dialog);
+                    Window parent = _getParentWindow.Invoke(this);
                     parent.Dispatcher.Invoke(() =>
                     {
                         result = ShowModal();

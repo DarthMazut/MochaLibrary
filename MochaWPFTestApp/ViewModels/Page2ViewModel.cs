@@ -27,12 +27,15 @@ namespace MochaWPFTestApp.ViewModels
 
         private async void OpenDialog()
         {
-            string[] parameters = { "Hello there!", "Title :)", "YesNoCancel", "Stop" };
-
-
             using (IDialogModule myDialog = MochaWPFTestApp.Dialogs.MsgBoxDialog)
             {
-                myDialog.DataContext.Parameters = parameters;
+                myDialog.DataContext.Parameters = new Dictionary<string, object>
+                {
+                    { DialogParameters.Title, "Title :)" },
+                    { DialogParameters.Caption, "Hello there!" },
+                    { DialogParameters.SimpleButtons, "YesNoCancel" },
+                    { DialogParameters.Icon, "Stop" }
+                };
 
                 myDialog.Closed += (s, e) =>
                 {

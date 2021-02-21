@@ -14,7 +14,7 @@ namespace MochaWPFTestApp
     {
         public bool? DialogResult { get; set; }
         public object DialogValue { get; set; }
-        public string[] Parameters { get; set; }
+        public Dictionary<string, object> Parameters { get; set; }
 
         private object _content;
 

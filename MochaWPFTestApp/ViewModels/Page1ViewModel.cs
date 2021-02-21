@@ -42,7 +42,13 @@ namespace MochaWPFTestApp.ViewModels
             if(navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.Parameters = new string[] { "OnNavigatedTo :)", "Title", "OK", "Question" };
+                dialog.DataContext.Parameters = new Dictionary<string, object>
+                {
+                    {DialogParameters.Title, "Title"},
+                    {DialogParameters.Caption, "OnNavigatedTo :)"},
+                    {DialogParameters.SimpleButtons, "OK"},
+                    {DialogParameters.Icon, "Error"}
+                };
                 dialog.ShowModal();
                 dialog.Dispose();
             }
@@ -53,7 +59,13 @@ namespace MochaWPFTestApp.ViewModels
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.Parameters = new string[] { "OnNavigatingFrom :)", "Title", "OK", "Warning" };
+                dialog.DataContext.Parameters = new Dictionary<string, object>
+                {
+                    {DialogParameters.Title, "Title"},
+                    {DialogParameters.Caption, "OnNavigatingFrom :)"},
+                    {DialogParameters.SimpleButtons, "OK"},
+                    {DialogParameters.Icon, "Warning"}
+                };
                 dialog.ShowModal();
                 dialog.Dispose();
             }
@@ -66,7 +78,13 @@ namespace MochaWPFTestApp.ViewModels
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.Parameters = new string[] { "OnNavigatingTo :)", "Title", "OK", "Error" };
+                dialog.DataContext.Parameters = new Dictionary<string, object>
+                {
+                    {DialogParameters.Title, "Title"},
+                    {DialogParameters.Caption, "OnNavigatingTo :)"},
+                    {DialogParameters.SimpleButtons, "OK"},
+                    {DialogParameters.Icon, "Information"}
+                };
                 dialog.ShowModal();
                 dialog.Dispose();
             }

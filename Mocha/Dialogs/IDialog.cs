@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Mocha.Dialogs
 {
-    /// <summary>
-    /// Allows implementing object to be treated as a *DataContext* or backend data for <see cref="IDialogModule"/>. 
+    /// <summary> 
+    /// Marks implementing class as a data for <see cref="IDialogModule"/>.
     /// </summary>
     public interface IDialog
     {
@@ -21,9 +21,12 @@ namespace Mocha.Dialogs
         /// </summary>
         object DialogValue { get; set; }
 
+        // Standard parameters for dialog customization.
+
         /// <summary>
         /// Allows for customization of associated dialog.
+        /// Use <see cref="DialogParameters"/> to obtain standard keys.
         /// </summary>
-        string[] Parameters { get; set; }
+        Dictionary<string, object> Parameters { get; set; }
     }
 }

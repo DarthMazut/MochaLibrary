@@ -15,7 +15,7 @@ namespace MochaWPF
     {
         private IDialog _dataContext;
         private bool _isOpen = false;
-        private Func<IDialog, Window> _getParentWindow;
+        private Func<IDialogModule, Window> _getParentWindow;
 
         /// <summary>
         /// There is no view object which represents WPF <see cref="MessageBox"/> dialog
@@ -60,7 +60,7 @@ namespace MochaWPF
         /// </summary>
         /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
         /// <param name="getParentWindow">A delegate which returns parent window for this dialog.</param>
-        public StandardDialogModule(IDialog dialogData, Func<IDialog, Window> getParentWindow)
+        public StandardDialogModule(IDialog dialogData, Func<IDialogModule, Window> getParentWindow)
         {
             _dataContext = dialogData ?? new SimpleDialog();
             _getParentWindow = getParentWindow;
@@ -118,7 +118,7 @@ namespace MochaWPF
 
             if (_getParentWindow != null)
             {
-                Window parentWindow = _getParentWindow(_dataContext);
+                Window parentWindow = _getParentWindow(this);
                 result = HandleDialogDisplay(parentWindow, _dataContext.Parameters);
             }
             else
@@ -144,7 +144,7 @@ namespace MochaWPF
 
                 if (_getParentWindow != null)
                 {
-                    Window parent = _getParentWindow.Invoke(_dataContext);
+                    Window parent = _getParentWindow.Invoke(this);
                     parent.Dispatcher.Invoke(() =>
                     {
                         result = this.ShowModal();
@@ -165,94 +165,61 @@ namespace MochaWPF
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual bool? HandleDialogDisplay(Window parent, string[] parameters)
+        protected virtual bool? HandleDialogDisplay(Window parent, Dictionary<string, object> parameters)
         {
             if (parameters == null) throw new ArgumentNullException("parameters was null.");
-            if (parameters.Length < 1) throw new ArgumentException("At least one parameter must be passed to display a dialog box.");
 
-            string title = string.Empty;
-            string content = string.Empty;
-            MessageBoxButton buttons = MessageBoxButton.OK;
-            MessageBoxImage icon = MessageBoxImage.None;
+            string dialogTitle = string.Empty;
+            string dialogContent = string.Empty;
+            MessageBoxButton dialogButtons = MessageBoxButton.OK;
+            MessageBoxImage dialogIcon = MessageBoxImage.None;
 
-            if(parameters.Length == 1)
+            if(parameters.TryGetValue(DialogParameters.Title, out object title))
             {
-                content = parameters[0];
-
-                if(parent != null)
+                if(title is string titleValue)
                 {
-                    return MessageBoxResultToBoolean(MessageBox.Show(parent, content));
-                }
-                else
-                {
-                    return MessageBoxResultToBoolean(MessageBox.Show(content));
+                    dialogTitle = titleValue;
                 }
             }
 
-            if(parameters.Length == 2)
+            if (parameters.TryGetValue(DialogParameters.Caption, out object caption))
             {
-                content = parameters[0];
-                title = parameters[1];
-
-                if (parent != null)
+                if (caption is string captionValue)
                 {
-                    return MessageBoxResultToBoolean(MessageBox.Show(parent, content, title));
-                }
-                else
-                {
-                    return MessageBoxResultToBoolean(MessageBox.Show(content, title));
+                    dialogContent = captionValue;
                 }
             }
 
-            if (parameters.Length == 3)
+            if (parameters.TryGetValue(DialogParameters.SimpleButtons, out object buttons))
             {
-                content = parameters[0];
-                title = parameters[1];
-                buttons = MessageBoxButton.OK;
-
-                if (Enum.TryParse(parameters[2], out MessageBoxButton msgBoxButton))
+                if (buttons is string buttonsValue)
                 {
-                    buttons = msgBoxButton;
-                }
-
-                if (parent != null)
-                {
-                    return MessageBoxResultToBoolean(MessageBox.Show(parent, content, title, buttons));
-                }
-                else
-                {
-                    return MessageBoxResultToBoolean(MessageBox.Show(content, title, buttons));
+                    if (Enum.TryParse(buttonsValue, out MessageBoxButton msgBoxButton))
+                    {
+                        dialogButtons = msgBoxButton;
+                    }
                 }
             }
 
-            if (parameters.Length > 3)
+            if (parameters.TryGetValue(DialogParameters.Icon, out object icon))
             {
-                content = parameters[0];
-                title = parameters[1];
-                buttons = MessageBoxButton.OK;
-                icon = MessageBoxImage.None;
-
-                if (Enum.TryParse(parameters[2], out MessageBoxButton msgBoxButton))
+                if (icon is string iconValue)
                 {
-                    buttons = msgBoxButton;
-                }
-
-                if (Enum.TryParse(parameters[3], out MessageBoxImage msgBoxIcon))
-                {
-                    icon = msgBoxIcon;
-                }
-
-                if (parent != null)
-                {
-                    return MessageBoxResultToBoolean(MessageBox.Show(parent, content, title, buttons, icon));
-                }
-                else
-                {
-                    return MessageBoxResultToBoolean(MessageBox.Show(content, title, buttons, icon));
+                    if (Enum.TryParse(iconValue, out MessageBoxImage msgBoxImage))
+                    {
+                        dialogIcon = msgBoxImage;
+                    }
                 }
             }
 
-            throw new Exception("It appears that StandardDialogModule:HandleDialogDisplay() is not exhaustive...");
+            if (parent != null)
+            {
+                return MessageBoxResultToBoolean(MessageBox.Show(parent, dialogContent, dialogTitle, dialogButtons, dialogIcon));
+            }
+            else
+            {
+                return MessageBoxResultToBoolean(MessageBox.Show(dialogContent, dialogTitle, dialogButtons, dialogIcon));
+            }
         }
 
         protected bool? MessageBoxResultToBoolean(MessageBoxResult messageBoxResult)
@@ -280,7 +247,7 @@ namespace MochaWPF
 
             public object DialogValue { get; set; }
 
-            public string[] Parameters { get; set; }
+            public Dictionary<string, object> Parameters { get; set; }
         }
     }
 }
