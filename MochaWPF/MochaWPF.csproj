@@ -49,6 +49,7 @@
     <Compile Include="NavigationModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FileDialogModule.cs" />
+    <Compile Include="SimpleDialogData.cs" />
     <Compile Include="StandardDialogModule.cs" />
   </ItemGroup>
   <ItemGroup>

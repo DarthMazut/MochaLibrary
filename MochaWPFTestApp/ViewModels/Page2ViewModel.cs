@@ -27,14 +27,13 @@ namespace MochaWPFTestApp.ViewModels
 
         private async void OpenDialog()
         {
-            using (IDialogModule myDialog = MochaWPFTestApp.Dialogs.MsgBoxDialog)
+            using (IDialogModule myDialog = MochaWPFTestApp.Dialogs.CustomDialog1)
             {
-                myDialog.DataContext.Parameters = new Dictionary<string, object>
+                myDialog.DataContext.Parameters = new DialogParameters
                 {
-                    { DialogParameters.Title, "Title :)" },
-                    { DialogParameters.Caption, "Hello there!" },
-                    { DialogParameters.SimpleButtons, "YesNoCancel" },
-                    { DialogParameters.Icon, "Stop" }
+                    Title = "Title",
+                    Message = "Hello there!",
+                    ParentName = "xe_MainWindow"
                 };
 
                 myDialog.Closed += (s, e) =>
@@ -47,7 +46,7 @@ namespace MochaWPFTestApp.ViewModels
 
                 };
 
-                Task openWindow = myDialog.ShowModalAsync();
+                Task openWindow = myDialog.ShowAsync();
                 await Task.Delay(3000);
                 var activeDialogs = DialogManager.GetActiveDialogs(DialogsIDs.MsgBoxDialog);
                 await openWindow;

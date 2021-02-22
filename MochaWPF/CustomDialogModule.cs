@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace MochaWPF
 {
@@ -13,7 +14,7 @@ namespace MochaWPF
     /// </summary>
     public class CustomDialogModule : IDialogModule
     {
-        protected Func<IDialogModule, Window> _getParentWindow;
+        protected Application _application;
         protected Window _view;
         protected IDialog _dataContext;
         protected bool _isOpen = false;
@@ -45,27 +46,16 @@ namespace MochaWPF
         public event EventHandler Disposed;
 
         /// <summary>
-        /// Returns a new instance of a <see cref="CustomDialogModule"/> class.
+        /// Returns a new instance of <see cref="CustomDialogModule"/> class.
         /// </summary>
-        /// <param name="window">Dialog window.</param>
-        /// <param name="dialog">Dialog backend; will be binded to dialog window by *DataBinding* mechanism.</param>
-        public CustomDialogModule(Window window, IDialog dialog) : this(window, dialog, null) { }
-
-        /// <summary>
-        /// Returns a new instance of a <see cref="CustomDialogModule"/> class.
-        /// </summary>
-        /// <param name="window">Dialog window.</param>
-        /// <param name="dialog">Dialog backend; will be binded to dialog window by *DataBinding* mechanism.</param>
-        /// <param name="getParentWindow">
-        /// A delegate which returns parent window of this dialog.
-        /// This might be called on non-UI-thread; make sure you access application
-        /// resources on appropriate thread.
-        /// </param>
-        public CustomDialogModule(Window window, IDialog dialog, Func<IDialogModule, Window> getParentWindow)
+        /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
+        /// <param name="window">A <see cref="Window"/> which will be associated with the <see cref="CustomDialogModule"/> being created.</param>
+        /// <param name="dataContext">A default dialog logic bounded to <see cref="CustomDialogModule"/> by *DataContext* mechanism.</param>
+        public CustomDialogModule(Application application, Window window, IDialog dataContext)
         {
+            _application = application;
             _view = window;
-            _getParentWindow = getParentWindow;
-            SetDataContext(dialog);
+            SetDataContext(dataContext);
 
             window.Closed += (s, e) =>
             {
@@ -102,29 +92,28 @@ namespace MochaWPF
         /// </summary>
         public virtual void Show()
         {
-            _view.Owner = _getParentWindow?.Invoke(this);
+            if(_isOpen)
+            {
+                throw new InvalidOperationException($"{_view.GetType()} was already opened");
+            }
+
+            _view.Owner = GetParentWindow();
             _view.Show();
         }
+
+        private TaskCompletionSource<bool> tcs;
 
         /// <summary>
         /// Displays the dialog asynchronously in non-modal manner.
         /// </summary>
         public virtual Task ShowAsync()
         {
-            return Task.Run(() => 
+            return Task.Run(() =>
             {
-                if(_getParentWindow != null)
-                {
-                    Window parent = _getParentWindow.Invoke(this);
-                    parent.Dispatcher.Invoke(() => 
-                    {
-                        Show();
-                    });
-                }
-                else
+                _application.Dispatcher.Invoke(() =>
                 {
                     Show();
-                }
+                });
             });
         }
 
@@ -133,7 +122,12 @@ namespace MochaWPF
         /// </summary>
         public virtual bool? ShowModal()
         {
-            _view.Owner = _getParentWindow?.Invoke(this);
+            if (_isOpen)
+            {
+                throw new InvalidOperationException($"{_view.GetType()} was already opened");
+            }
+
+            _view.Owner = GetParentWindow();
             bool? result = _view.ShowDialog();
             _dataContext.DialogResult = result;
             return result;
@@ -146,22 +140,14 @@ namespace MochaWPF
         {
             return Task.Run(() =>
             {
-                if (_getParentWindow != null)
-                {
-                    bool? result = null;
+                bool? result = null;
 
-                    Window parent = _getParentWindow.Invoke(this);
-                    parent.Dispatcher.Invoke(() =>
-                    {
-                        result = ShowModal();
-                    });
-
-                    return result;
-                }
-                else
+                _application.Dispatcher.Invoke(() =>
                 {
-                    return ShowModal();
-                }
+                    result = ShowModal();
+                });
+
+                return result;
             });
         }
 
@@ -178,17 +164,39 @@ namespace MochaWPF
             OnDisposed();
         }
 
+        /// <summary>
+        /// Rises <see cref="Closed"/> event.
+        /// </summary>
         protected virtual void OnClose()
         {
             _isOpen = false;
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Rises <see cref="Disposed"/> event.
+        /// </summary>
         protected virtual void OnDisposed()
         {
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
+        private Window GetParentWindow()
+        {
+            Window parent = null;
 
+            _application.Dispatcher.Invoke(() =>
+            {
+                foreach (Window window in _application.Windows)
+                {
+                    if (window.Name == _dataContext.Parameters.ParentName)
+                    {
+                        parent = window;
+                    }
+                }
+            });
+
+            return parent;
+        }
     }
 }

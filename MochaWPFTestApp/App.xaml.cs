@@ -11,6 +11,7 @@ using Mocha.Dialogs;
 using MochaWPFTestApp.Views;
 using MochaWPFTestApp.ViewModels;
 using MochaWPF;
+using MochaWPFTestApp.Views.Dialogs;
 using MochaWPFTestApp.ViewModels.Dialogs;
 
 namespace MochaWPFTestApp
@@ -38,27 +39,17 @@ namespace MochaWPFTestApp
 
             DialogManager.DefineDialog(DialogsIDs.MsgBoxDialog, () => 
             {
-                return new StandardDialogModule(null, (d) =>
-                {
-                    return Current.Dispatcher.Invoke(() =>
-                    {
-                        return Current.Windows[0];
-                    });
-                });
+                return new StandardDialogModule();
             });
 
             DialogManager.DefineDialog(DialogsIDs.OpenDialog, () =>
             {
-                return new FileDialogModule(
-                    new Microsoft.Win32.SaveFileDialog(),
-                    null,
-                    (w) => 
-                    {
-                        return Current.Dispatcher.Invoke(() =>
-                        {
-                            return Current.Windows[0];
-                        });
-                    });
+                return new FileDialogModule(this, new Microsoft.Win32.SaveFileDialog());
+            });
+
+            DialogManager.DefineDialog(DialogsIDs.CustomDialog1, () =>
+            {
+                return new CustomDialogModule(this, new MyCustomDialog(), new MyCustomDialogViewModel());
             });
         }
     }

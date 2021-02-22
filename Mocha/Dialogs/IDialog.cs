@@ -21,12 +21,10 @@ namespace Mocha.Dialogs
         /// </summary>
         object DialogValue { get; set; }
 
-        // Standard parameters for dialog customization.
-
         /// <summary>
-        /// Allows for customization of associated dialog.
-        /// Use <see cref="DialogParameters"/> to obtain standard keys.
+        /// Standard parameters for dialog customization.
         /// </summary>
-        Dictionary<string, object> Parameters { get; set; }
+        DialogParameters Parameters { get; set; }
+
     }
 }

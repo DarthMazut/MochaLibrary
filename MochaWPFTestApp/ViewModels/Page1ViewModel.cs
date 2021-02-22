@@ -37,55 +37,55 @@ namespace MochaWPFTestApp.ViewModels
             Navigator.NavigatedTo += Navigator_NavigatedTo;
         }
 
-        private void Navigator_NavigatedTo(NavigationData navigationData)
+        private async void Navigator_NavigatedTo(NavigationData navigationData)
         {
             if(navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.Parameters = new Dictionary<string, object>
+                dialog.DataContext.Parameters = new DialogParameters
                 {
-                    {DialogParameters.Title, "Title"},
-                    {DialogParameters.Caption, "OnNavigatedTo :)"},
-                    {DialogParameters.SimpleButtons, "OK"},
-                    {DialogParameters.Icon, "Error"}
+                    Title = "Title",
+                    Message = "OnNavigatedTo :)",
+                    PredefinedButtons = "OK",
+                    Icon = "Error"
                 };
-                dialog.ShowModal();
+                await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
         }
 
-        private void Navigator_NavigatingFrom(NavigationData navigationData, NavigationCancelEventArgs e)
+        private async void Navigator_NavigatingFrom(NavigationData navigationData, NavigationCancelEventArgs e)
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.Parameters = new Dictionary<string, object>
+                dialog.DataContext.Parameters = new DialogParameters
                 {
-                    {DialogParameters.Title, "Title"},
-                    {DialogParameters.Caption, "OnNavigatingFrom :)"},
-                    {DialogParameters.SimpleButtons, "OK"},
-                    {DialogParameters.Icon, "Warning"}
+                    Title = "Title",
+                    Message = "OnNavigatingFrom :)",
+                    PredefinedButtons = "OK",
+                    Icon = "Warning"
                 };
-                dialog.ShowModal();
+                await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
 
             NavigationServices.MainNavigationService.ClearCached(NavigationModules.Page1);
         }
 
-        private void Navigator_NavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)
+        private async void Navigator_NavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.Parameters = new Dictionary<string, object>
+                dialog.DataContext.Parameters = new DialogParameters
                 {
-                    {DialogParameters.Title, "Title"},
-                    {DialogParameters.Caption, "OnNavigatingTo :)"},
-                    {DialogParameters.SimpleButtons, "OK"},
-                    {DialogParameters.Icon, "Information"}
+                    Title = "Title",
+                    Message = "OnNavigatingTo :)",
+                    PredefinedButtons = "OK",
+                    Icon = "Information"
                 };
-                dialog.ShowModal();
+                await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
         }

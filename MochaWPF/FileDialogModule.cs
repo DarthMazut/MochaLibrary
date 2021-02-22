@@ -18,7 +18,7 @@ namespace MochaWPF
     {
         private FileDialog _dialog;
         private IDialog _backend;
-        private Func<IDialogModule, Window> _getParentWindow;
+        private Application _application;
         private bool _isOpen = false;
 
         /// <summary>
@@ -49,19 +49,21 @@ namespace MochaWPF
         /// <summary>
         /// Returns new instance of <see cref="FileDialogModule"/>.
         /// </summary>
+        /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
+        /// <param name="dialog">A concrete implementation of <see cref="FileDialog"/> abstract class.</param>
+        public FileDialogModule(Application application, FileDialog dialog) : this(application, dialog, null) { }
+
+        /// <summary>
+        /// Returns new instance of <see cref="FileDialogModule"/>.
+        /// </summary>
+        /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
         /// <param name="dialog">A concrete implementation of <see cref="FileDialog"/> abstract class.</param>
         /// <param name="backend">Provides a backedn data for represented <see cref="FileDialog"/>.</param>
-        /// <param name="getParentWindow">
-        /// A delegate which returns parent window of this dialog.
-        /// This might be called on non-UI-thread; make sure you access application
-        /// resources on appropriate thread.
-        /// <para>This cannot be null!</para>
-        /// </param>
-        public FileDialogModule(FileDialog dialog, IDialog backend, Func<IDialogModule, Window> getParentWindow)
+        public FileDialogModule(Application application, FileDialog dialog, IDialog backend)
         {
+            _application = application;
             _dialog = dialog;
-            _backend = backend;
-            _getParentWindow = getParentWindow;
+            _backend = backend ?? new SimpleDialogData();
         }
 
         /// <summary>
@@ -69,13 +71,13 @@ namespace MochaWPF
         /// </summary>
         public void Close()
         {
-            throw new NotSupportedException("Closing Windows Dialog is currently not supported in MochaLib :(");
+            throw new NotSupportedException("Closing File Dialog is currently not supported in MochaLib :(");
         }
 
         /// <summary>
         /// Sets the backend for represented <see cref="FileDialog"/> instance.
         /// </summary>
-        /// <param name="dialog">Backend to be set.</param>
+        /// <param name="backend">Backend to be set.</param>
         public void SetDataContext(IDialog backend)
         {
             _backend = backend;
@@ -86,7 +88,7 @@ namespace MochaWPF
         /// </summary>
         public void Show()
         {
-            throw new NotSupportedException("Windows Dialog Module can only be displayed as modal.");
+            throw new NotSupportedException("File Dialog Module can only be displayed as modal.");
         }
 
         /// <summary>
@@ -94,7 +96,7 @@ namespace MochaWPF
         /// </summary>
         public Task ShowAsync()
         {
-            throw new NotSupportedException("Windows Dialog Module can only be displayed as modal.");
+            throw new NotSupportedException("File Dialog Module can only be displayed as modal.");
         }
 
         /// <summary>
@@ -102,30 +104,16 @@ namespace MochaWPF
         /// </summary>
         public bool? ShowModal()
         {
-            Window owner = _getParentWindow?.Invoke(this);
+            Window owner = GetParentWindow();
 
-            if (owner != null)
+            _isOpen = true;
+            bool? result = _dialog.ShowDialog(owner);
+            if (result == true)
             {
-                _isOpen = true;
-                bool? result = _dialog.ShowDialog(owner);
-                if (result == true)
-                {
-                    _backend.DialogValue = _dialog.FileName; // !!! Expand here, encapsulate into object !!!
-                }
-                OnClose();
-                return result;
+                _backend.DialogValue = _dialog.FileName; // !!! Expand here, encapsulate into object !!!
             }
-            else
-            {
-                _isOpen = true;
-                bool? result = _dialog.ShowDialog();
-                if (result == true)
-                {
-                    _backend.DialogValue = _dialog.FileName; // !!! Expand here, encapsulate into object !!!
-                }
-                OnClose();
-                return result;
-            }
+            OnClose();
+            return result;
         }
 
         /// <summary>
@@ -135,22 +123,14 @@ namespace MochaWPF
         {
             return Task.Run(() =>
             {
-                if (_getParentWindow != null)
-                {
-                    bool? result = null;
+                bool? result = null;
 
-                    Window parent = _getParentWindow.Invoke(this);
-                    parent.Dispatcher.Invoke(() =>
-                    {
-                        result = ShowModal();
-                    });
-
-                    return result;
-                }
-                else
+                _application.Dispatcher.Invoke(() =>
                 {
-                    throw new NotSupportedException("Cannot show dialog async if *getParentWindow* delegate is null.");
-                }
+                    result = ShowModal();
+                });
+
+                return result;
             });
         }
 
@@ -166,6 +146,24 @@ namespace MochaWPF
         {
             _isOpen = false;
             Closed?.Invoke(this, EventArgs.Empty);
+        }
+
+        private Window GetParentWindow()
+        {
+            Window parent = null;
+
+            _application.Dispatcher.Invoke(() => 
+            {
+                foreach (Window window in _application.Windows)
+                {
+                    if (window.Name == _backend.Parameters?.ParentName)
+                    {
+                        parent = window;
+                    }
+                }
+            });
+
+            return parent;
         }
     }
 }

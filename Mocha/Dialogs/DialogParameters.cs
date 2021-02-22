@@ -6,33 +6,33 @@ using System.Text;
 namespace Mocha.Dialogs
 {
     /// <summary>
-    /// Contains predefined keys for dialog parameters dictionary.
+    /// Contains predefined, standard parameters for <see cref="IDialogModule"/> customization.
     /// </summary>
     public class DialogParameters
     {
         /// <summary>
-        /// A key for a standard <see langword="Owner"/> value.
+        /// Title for displaying dialog.
         /// </summary>
-        public static string Owner => $"Mocha__{MethodBase.GetCurrentMethod().Name}";
+        public string Title { get; set; }
 
         /// <summary>
-        /// A key for a standard <see langword="Title"/> value.
+        /// Message for displaying dialog.
         /// </summary>
-        public static string Title => $"Mocha__{MethodBase.GetCurrentMethod().Name}";
+        public string Message { get; set; }
 
         /// <summary>
-        /// A key for a standard <see langword="Caption"/> value.
+        /// Icon for displaying dialog.
         /// </summary>
-        public static string Caption => $"Mocha__{MethodBase.GetCurrentMethod().Name}";
+        public string Icon { get; set; }
 
         /// <summary>
-        /// A key for a standard <see langword="Buttons"/> value.
+        /// Defines a predefined buttons set for displaying dialog.
         /// </summary>
-        public static string SimpleButtons => $"Mocha__{MethodBase.GetCurrentMethod().Name}";
+        public string PredefinedButtons { get; set; }
 
         /// <summary>
-        /// A key for a standard <see langword="Icon"/> value.
+        /// Name of a parent element which called a dialog parametrized by this instance.
         /// </summary>
-        public static string Icon => $"Mocha__{MethodBase.GetCurrentMethod().Name}";
+        public string ParentName { get; set; }
     }
 }

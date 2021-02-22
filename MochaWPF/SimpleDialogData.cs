@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaWPFTestApp.ViewModels.Dialogs
+namespace MochaWPF
 {
-    class StandardDialogModuleViewModel : IDialog
+    internal class SimpleDialogData : IDialog
     {
         public bool? DialogResult { get; set; }
 
         public object DialogValue { get; set; }
 
-        public Dictionary<string, object> Parameters { get; set; }
+        public DialogParameters Parameters { get; set; } = new DialogParameters();
     }
 }

@@ -31,33 +31,32 @@
         </member>
         <member name="T:Mocha.Dialogs.DialogParameters">
             <summary>
-            Contains predefined keys for dialog parameters dictionary.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.Owner">
-            <summary>
-            A key for a standard <see langword="Owner"/> value.
-            Associate with this key a module which invokes corresponding dialog.
+            Contains predefined, standard parameters for <see cref="T:Mocha.Dialogs.IDialogModule"/> customization.
             </summary>
         </member>
         <member name="P:Mocha.Dialogs.DialogParameters.Title">
             <summary>
-            A key for a standard <see langword="Title"/> value.
+            Title for displaying dialog.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.Caption">
+        <member name="P:Mocha.Dialogs.DialogParameters.Message">
             <summary>
-            A key for a standard <see langword="Caption"/> value.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.SimpleButtons">
-            <summary>
-            A key for a standard <see langword="Buttons"/> value.
+            Message for displaying dialog.
             </summary>
         </member>
         <member name="P:Mocha.Dialogs.DialogParameters.Icon">
             <summary>
-            A key for a standard <see langword="Icon"/> value.
+            Icon for displaying dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.PredefinedButtons">
+            <summary>
+            Defines a predefined buttons set for displaying dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.ParentName">
+            <summary>
+            Name of a parent element which called a dialog parametrized by this instance.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.IDialog">
@@ -77,8 +76,7 @@
         </member>
         <member name="P:Mocha.Dialogs.IDialog.Parameters">
             <summary>
-            Allows for customization of associated dialog.
-            Use <see cref="T:Mocha.Dialogs.DialogParameters"/> to obtain standard keys.
+            Standard parameters for dialog customization.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.IDialogModule">

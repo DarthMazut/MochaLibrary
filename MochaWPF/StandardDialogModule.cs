@@ -15,7 +15,6 @@ namespace MochaWPF
     {
         private IDialog _dataContext;
         private bool _isOpen = false;
-        private Func<IDialogModule, Window> _getParentWindow;
 
         /// <summary>
         /// There is no view object which represents WPF <see cref="MessageBox"/> dialog
@@ -47,23 +46,15 @@ namespace MochaWPF
         /// <summary>
         /// Default construtcor. Uses build-in simple implementaion of <see cref="IDialog"/>.
         /// </summary>
-        public StandardDialogModule() : this(null, null) { }
+        public StandardDialogModule() : this(null) { }
 
         /// <summary>
         /// Returns new instance of <see cref="StandardDialogModule"/> class.
         /// </summary>
         /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
-        public StandardDialogModule(IDialog dialogData) : this(dialogData, null) { }
-
-        /// <summary>
-        /// Returns new instance of <see cref="StandardDialogModule"/> class.
-        /// </summary>
-        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
-        /// <param name="getParentWindow">A delegate which returns parent window for this dialog.</param>
-        public StandardDialogModule(IDialog dialogData, Func<IDialogModule, Window> getParentWindow)
+        public StandardDialogModule(IDialog dialogData)
         {
-            _dataContext = dialogData ?? new SimpleDialog();
-            _getParentWindow = getParentWindow;
+            _dataContext = dialogData ?? new SimpleDialogData();
         }
 
         /// <summary>
@@ -114,21 +105,12 @@ namespace MochaWPF
         public bool? ShowModal()
         {
             _isOpen = true;
-            bool? result = null;
 
-            if (_getParentWindow != null)
-            {
-                Window parentWindow = _getParentWindow(this);
-                result = HandleDialogDisplay(parentWindow, _dataContext.Parameters);
-            }
-            else
-            {
-                result = HandleDialogDisplay(null, _dataContext.Parameters);
-            }
+            bool? result = HandleDialogDisplay(null, _dataContext.Parameters);
 
             OnClose();
-
             _dataContext.DialogResult = result;
+
             return result;
         }
 
@@ -140,21 +122,7 @@ namespace MochaWPF
         {
             return Task.Run(() => 
             {
-                bool? result = null;
-
-                if (_getParentWindow != null)
-                {
-                    Window parent = _getParentWindow.Invoke(this);
-                    parent.Dispatcher.Invoke(() =>
-                    {
-                        result = this.ShowModal();
-                    });
-                }
-                else
-                {
-                    result = this.ShowModal();
-                }
-
+                bool? result = this.ShowModal();
                 return result;
             });
         }
@@ -165,60 +133,32 @@ namespace MochaWPF
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual bool? HandleDialogDisplay(Window parent, Dictionary<string, object> parameters)
+        protected virtual bool? HandleDialogDisplay(Window parent, DialogParameters parameters)
         {
             if (parameters == null) throw new ArgumentNullException("parameters was null.");
 
-            string dialogTitle = string.Empty;
-            string dialogContent = string.Empty;
-            MessageBoxButton dialogButtons = MessageBoxButton.OK;
-            MessageBoxImage dialogIcon = MessageBoxImage.None;
+            string title = parameters.Title ?? string.Empty;
+            string content = parameters.Message ?? string.Empty;
+            MessageBoxButton buttons = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.None;
 
-            if(parameters.TryGetValue(DialogParameters.Title, out object title))
+            if (Enum.TryParse(parameters.PredefinedButtons, out MessageBoxButton msgBoxButton))
             {
-                if(title is string titleValue)
-                {
-                    dialogTitle = titleValue;
-                }
+                buttons = msgBoxButton;
             }
 
-            if (parameters.TryGetValue(DialogParameters.Caption, out object caption))
+            if (Enum.TryParse(parameters.Icon, out MessageBoxImage msgBoxImage))
             {
-                if (caption is string captionValue)
-                {
-                    dialogContent = captionValue;
-                }
-            }
-
-            if (parameters.TryGetValue(DialogParameters.SimpleButtons, out object buttons))
-            {
-                if (buttons is string buttonsValue)
-                {
-                    if (Enum.TryParse(buttonsValue, out MessageBoxButton msgBoxButton))
-                    {
-                        dialogButtons = msgBoxButton;
-                    }
-                }
-            }
-
-            if (parameters.TryGetValue(DialogParameters.Icon, out object icon))
-            {
-                if (icon is string iconValue)
-                {
-                    if (Enum.TryParse(iconValue, out MessageBoxImage msgBoxImage))
-                    {
-                        dialogIcon = msgBoxImage;
-                    }
-                }
+                icon = msgBoxImage;
             }
 
             if (parent != null)
             {
-                return MessageBoxResultToBoolean(MessageBox.Show(parent, dialogContent, dialogTitle, dialogButtons, dialogIcon));
+                return MessageBoxResultToBoolean(MessageBox.Show(parent, content, title, buttons, icon));
             }
             else
             {
-                return MessageBoxResultToBoolean(MessageBox.Show(dialogContent, dialogTitle, dialogButtons, dialogIcon));
+                return MessageBoxResultToBoolean(MessageBox.Show(content, title, buttons, icon));
             }
         }
 
@@ -239,15 +179,6 @@ namespace MochaWPF
                 default:
                     return null;
             }
-        }
-
-        private class SimpleDialog : IDialog
-        {
-            public bool? DialogResult { get; set; }
-
-            public object DialogValue { get; set; }
-
-            public Dictionary<string, object> Parameters { get; set; }
-        }
+        }   
     }
 }
