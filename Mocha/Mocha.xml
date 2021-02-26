@@ -29,9 +29,21 @@
             </summary>
             <param name="id">Identifier of specific dialog.</param>
         </member>
+        <member name="M:Mocha.Dialogs.DialogManager.GetActiveDialogs">
+            <summary>
+            Returns a collection of all <see cref="T:Mocha.Dialogs.IDialogModule"/>, which has been 
+            requested by <see cref="M:Mocha.Dialogs.DialogManager.GetDialog(System.String)"/> method but not yet disposed.
+            </summary>
+        </member>
         <member name="T:Mocha.Dialogs.DialogParameters">
             <summary>
             Contains predefined, standard parameters for <see cref="T:Mocha.Dialogs.IDialogModule"/> customization.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.Parent">
+            <summary>
+            Parent element which called a dialog parametrized by this instance.
+            Setting this to <see langword="null"/> means MainWindow is consider a parent.
             </summary>
         </member>
         <member name="P:Mocha.Dialogs.DialogParameters.Title">
@@ -52,11 +64,6 @@
         <member name="P:Mocha.Dialogs.DialogParameters.PredefinedButtons">
             <summary>
             Defines a predefined buttons set for displaying dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.ParentName">
-            <summary>
-            Name of a parent element which called a dialog parametrized by this instance.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.IDialog">

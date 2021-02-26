@@ -62,6 +62,27 @@ namespace Mocha.Dialogs
             return new List<IDialogModule>();
         }
 
+        /// <summary>
+        /// Returns a collection of all <see cref="IDialogModule"/>, which has been 
+        /// requested by <see cref="GetDialog(string)"/> method but not yet disposed.
+        /// </summary>
+        public static List<IDialogModule> GetActiveDialogs()
+        {
+            return _activeDialogs.Where(kvp => kvp.Value.Any()).SelectMany(kvp => kvp.Value).ToList();
+
+            //List<List<IDialogModule>> modules = new List<List<IDialogModule>>();
+
+            //foreach (var item in _activeDialogs)
+            //{
+            //    if(item.Value.Any())
+            //    {
+            //        modules.Add(item.Value);
+            //    }
+            //}
+
+            //return modules.SelectMany(m => m).ToList();
+        }
+
         private static void HandleCreatedDialog(string id, IDialogModule dialog)
         {
             if (_activeDialogs.ContainsKey(id))

@@ -20,8 +20,9 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
         private async void OpenDialog()
         {
             IDialogModule dialog = MochaWPFTestApp.Dialogs.OpenDialog;
-            dialog.DataContext.Parameters.ParentName = "xe_MyDialog";
+            dialog.DataContext.Parameters.Parent = this;
             await dialog.ShowModalAsync();
+            dialog.Dispose();
         }
     }
 }

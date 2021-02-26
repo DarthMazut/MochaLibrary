@@ -11,6 +11,12 @@ namespace Mocha.Dialogs
     public class DialogParameters
     {
         /// <summary>
+        /// Parent element which called a dialog parametrized by this instance.
+        /// Setting this to <see langword="null"/> means MainWindow is consider a parent.
+        /// </summary>
+        public IDialog Parent { get; set; }
+
+        /// <summary>
         /// Title for displaying dialog.
         /// </summary>
         public string Title { get; set; }
@@ -30,9 +36,6 @@ namespace Mocha.Dialogs
         /// </summary>
         public string PredefinedButtons { get; set; }
 
-        /// <summary>
-        /// Name of a parent element which called a dialog parametrized by this instance.
-        /// </summary>
-        public string ParentName { get; set; }
+        
     }
 }

@@ -25,6 +25,5 @@ namespace Mocha.Dialogs
         /// Standard parameters for dialog customization.
         /// </summary>
         DialogParameters Parameters { get; set; }
-
     }
 }

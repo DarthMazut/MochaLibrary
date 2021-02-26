@@ -32,8 +32,7 @@ namespace MochaWPFTestApp.ViewModels
                 myDialog.DataContext.Parameters = new DialogParameters
                 {
                     Title = "Title",
-                    Message = "Hello there!",
-                    ParentName = "xe_MainWindow"
+                    Message = "Hello there!"
                 };
 
                 myDialog.Closed += (s, e) =>
@@ -47,7 +46,7 @@ namespace MochaWPFTestApp.ViewModels
                 };
 
                 Task openWindow = myDialog.ShowAsync();
-                await Task.Delay(3000);
+                await Task.Delay(100000);
                 var activeDialogs = DialogManager.GetActiveDialogs(DialogsIDs.MsgBoxDialog);
                 await openWindow;
 

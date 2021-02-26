@@ -148,22 +148,34 @@ namespace MochaWPF
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Returns parent <see cref="Window"/> based on value from <see cref="IDialog.Parameters"/>.
+        /// </summary>
         private Window GetParentWindow()
         {
             Window parent = null;
 
-            _application.Dispatcher.Invoke(() => 
+            _application.Dispatcher.Invoke(() =>
             {
+                List<IDialogModule> modules = DialogManager.GetActiveDialogs();
+                IDialog parentDialog = _backend.Parameters.Parent;
+
+                IDialogModule parentModule = modules.Where(m => m.DataContext == parentDialog).FirstOrDefault();
+
                 foreach (Window window in _application.Windows)
                 {
-                    if (window.Name == _backend.Parameters?.ParentName)
+                    if (window == parentModule?.View)
                     {
                         parent = window;
+                        return;
                     }
                 }
+
+                parent = _application.Windows[0];
             });
 
             return parent;
         }
     }
 }
+

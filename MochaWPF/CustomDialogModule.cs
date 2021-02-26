@@ -101,8 +101,6 @@ namespace MochaWPF
             _view.Show();
         }
 
-        private TaskCompletionSource<bool> tcs;
-
         /// <summary>
         /// Displays the dialog asynchronously in non-modal manner.
         /// </summary>
@@ -181,19 +179,30 @@ namespace MochaWPF
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
-        private Window GetParentWindow()
+        /// <summary>
+        /// Returns parent <see cref="Window"/> based on value from <see cref="IDialog.Parameters"/>.
+        /// </summary>
+        protected virtual Window GetParentWindow()
         {
             Window parent = null;
 
-            _application.Dispatcher.Invoke(() =>
+            _application.Dispatcher.Invoke(() => 
             {
+                List<IDialogModule> modules = DialogManager.GetActiveDialogs();
+                IDialog parentDialog = _dataContext.Parameters.Parent;
+
+                IDialogModule parentModule = modules.Where(m => m.DataContext == parentDialog).FirstOrDefault();
+
                 foreach (Window window in _application.Windows)
                 {
-                    if (window.Name == _dataContext.Parameters.ParentName)
+                    if(window == parentModule?.View)
                     {
                         parent = window;
+                        return;
                     }
                 }
+
+                parent = _application.Windows[0];
             });
 
             return parent;
