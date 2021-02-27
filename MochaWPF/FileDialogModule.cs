@@ -105,6 +105,11 @@ namespace MochaWPF
         /// </summary>
         public bool? ShowModal()
         {
+            if (_isOpen)
+            {
+                throw new InvalidOperationException($"{_dialog.GetType()} was already opened");
+            }
+
             Window owner = GetParentWindow();
 
             _isOpen = true;

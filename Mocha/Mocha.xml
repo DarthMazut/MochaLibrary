@@ -112,11 +112,6 @@
             Specifies whether this dialog is currently open.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.IDialogModule.DisposeOnClose">
-            <summary>
-            Determines whether this instance should be automatically disposed after closing.
-            </summary>
-        </member>
         <member name="E:Mocha.Dialogs.IDialogModule.Closed">
             <summary>
             Fires when dialog closes.

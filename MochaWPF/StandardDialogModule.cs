@@ -113,6 +113,11 @@ namespace MochaWPF
         /// </summary>
         public bool? ShowModal()
         {
+            if (_isOpen)
+            {
+                throw new InvalidOperationException($"{GetType()} was already opened");
+            }
+
             _isOpen = true;
 
             bool? result = HandleDialogDisplay(null, _dataContext.Parameters);
