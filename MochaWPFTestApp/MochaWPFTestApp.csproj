@@ -78,6 +78,7 @@
     <Compile Include="ViewModels\Dialogs\MyCustomDialogViewModel.cs" />
     <Compile Include="ViewModels\Page1ViewModel.cs" />
     <Compile Include="ViewModels\Page2ViewModel.cs" />
+    <Compile Include="ViewModels\Page3ViewModel.cs" />
     <Compile Include="Views\Dialogs\MyCustomDialog.xaml.cs">
       <DependentUpon>MyCustomDialog.xaml</DependentUpon>
     </Compile>
@@ -86,6 +87,9 @@
     </Compile>
     <Compile Include="Views\Page2.xaml.cs">
       <DependentUpon>Page2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Page3.xaml.cs">
+      <DependentUpon>Page3.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +147,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Page2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Page3.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

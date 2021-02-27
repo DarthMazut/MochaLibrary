@@ -34,6 +34,10 @@ namespace MochaWPFTestApp
         public DelegateCommand NavigateToPage2Command =>
             _navigateToPage2Command ?? (_navigateToPage2Command = new DelegateCommand(NavigateToPage2));
 
+        private DelegateCommand _navigateToPage3Command;
+        public DelegateCommand NavigateToPage3Command =>
+            _navigateToPage3Command ?? (_navigateToPage3Command = new DelegateCommand(NavigateToPage3));
+
         void NavigateToPage1()
         {
             Navigator.Navigate(NavigationModules.Page1);
@@ -42,6 +46,11 @@ namespace MochaWPFTestApp
         void NavigateToPage2()
         {
             Navigator.Navigate(NavigationModules.Page2);
+        }
+
+        void NavigateToPage3()
+        {
+            Navigator.Navigate(NavigationModules.Page3);
         }
 
         public MainWindowViewModel()

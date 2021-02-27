@@ -18,6 +18,7 @@ namespace MochaWPF
         protected Window _view;
         protected IDialog _dataContext;
         protected bool _isOpen = false;
+        private bool _isDisposed = false;
 
         /// <summary>
         /// Returns a reference to underlying <see cref="Window"/> object.
@@ -152,14 +153,17 @@ namespace MochaWPF
         /// <summary>
         /// Perform cleaning operations allowing this object to be garbage collected.
         /// </summary>
-        public virtual void Dispose()
+        public void Dispose()
         {
-            if(_view != null)
+            if (_isDisposed)
             {
-                _view.DataContext = null;
+                return;
             }
-
-            OnDisposed();
+            else
+            {
+                Disposed?.Invoke(this, EventArgs.Empty);
+                _isDisposed = true;
+            }
         }
 
         /// <summary>

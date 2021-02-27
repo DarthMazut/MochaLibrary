@@ -36,6 +36,11 @@ namespace Mocha.Dialogs
         /// </summary>
         public string PredefinedButtons { get; set; }
 
-        
+        /// <summary>
+        /// Defines a filter for Open/Save dialog.
+        /// </summary>
+        public string Filter { get; set; }
+
+
     }
 }

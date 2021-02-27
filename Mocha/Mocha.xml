@@ -66,6 +66,11 @@
             Defines a predefined buttons set for displaying dialog.
             </summary>
         </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.Filter">
+            <summary>
+            Defines a filter for Open/Save dialog.
+            </summary>
+        </member>
         <member name="T:Mocha.Dialogs.IDialog">
             <summary> 
             Marks implementing class as a data for <see cref="T:Mocha.Dialogs.IDialogModule"/>.
@@ -107,6 +112,22 @@
             Specifies whether this dialog is currently open.
             </summary>
         </member>
+        <member name="P:Mocha.Dialogs.IDialogModule.DisposeOnClose">
+            <summary>
+            Determines whether this instance should be automatically disposed after closing.
+            </summary>
+        </member>
+        <member name="E:Mocha.Dialogs.IDialogModule.Closed">
+            <summary>
+            Fires when dialog closes.
+            </summary>
+        </member>
+        <member name="E:Mocha.Dialogs.IDialogModule.Disposed">
+            <summary>
+            Fires when dialog is done.
+            <para>"Comrade soldier, you're done!"</para>
+            </summary>
+        </member>
         <member name="M:Mocha.Dialogs.IDialogModule.Show">
             <summary>
             Opens a dialog represented by this instance.
@@ -129,26 +150,15 @@
             Returns result of dialog interaction.
             </summary>
         </member>
-        <member name="M:Mocha.Dialogs.IDialogModule.Close">
-            <summary>
-            Closes the dialog if open.
-            </summary>
-        </member>
         <member name="M:Mocha.Dialogs.IDialogModule.SetDataContext(Mocha.Dialogs.IDialog)">
             <summary>
             Sets a * DataContext * for <see cref="P:Mocha.Dialogs.IDialogModule.View"/> object.
             </summary>
             <param name="dialog">Dialog logic to be set by * DataContext * mechanism.</param>
         </member>
-        <member name="E:Mocha.Dialogs.IDialogModule.Closed">
+        <member name="M:Mocha.Dialogs.IDialogModule.Close">
             <summary>
-            Fires when dialog closes.
-            </summary>
-        </member>
-        <member name="E:Mocha.Dialogs.IDialogModule.Disposed">
-            <summary>
-            Fires when dialog is done.
-            <para>"Comrade soldier, you're done!"</para>
+            Closes the dialog if open.
             </summary>
         </member>
         <member name="T:Mocha.Navigation.INavigatable">

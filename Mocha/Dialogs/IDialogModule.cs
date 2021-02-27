@@ -27,6 +27,22 @@ namespace Mocha.Dialogs
         /// </summary>
         bool IsOpen { get; }
 
+        ///// <summary>
+        ///// Determines whether this instance should be automatically disposed after closing.
+        ///// </summary>
+        //bool DisposeOnClose { get; set; }
+
+        /// <summary>
+        /// Fires when dialog closes.
+        /// </summary>
+        event EventHandler Closed;
+
+        /// <summary>
+        /// Fires when dialog is done.
+        /// <para>"Comrade soldier, you're done!"</para>
+        /// </summary>
+        event EventHandler Disposed;
+
         /// <summary>
         /// Opens a dialog represented by this instance.
         /// </summary>
@@ -50,25 +66,14 @@ namespace Mocha.Dialogs
         Task<bool?> ShowModalAsync();
 
         /// <summary>
-        /// Closes the dialog if open.
-        /// </summary>
-        void Close();
-
-        /// <summary>
         /// Sets a * DataContext * for <see cref="View"/> object.
         /// </summary>
         /// <param name="dialog">Dialog logic to be set by * DataContext * mechanism.</param>
         void SetDataContext(IDialog dialog);
 
         /// <summary>
-        /// Fires when dialog closes.
+        /// Closes the dialog if open.
         /// </summary>
-        event EventHandler Closed;
-
-        /// <summary>
-        /// Fires when dialog is done.
-        /// <para>"Comrade soldier, you're done!"</para>
-        /// </summary>
-        event EventHandler Disposed;
+        void Close();
     }
 }

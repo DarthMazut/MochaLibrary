@@ -31,6 +31,7 @@
         <StackPanel x:Name="xe_StackPanel" Grid.RowSpan="2"  Margin="10" VerticalAlignment="Center">
             <Button Content="Page #1" Style="{StaticResource ButtonStyle}" Command="{Binding NavigateToPage1Command}"/>
             <Button Content="Page #2" Style="{StaticResource ButtonStyle}" Command="{Binding NavigateToPage2Command}"/>
+            <Button Content="Page #3" Style="{StaticResource ButtonStyle}" Command="{Binding NavigateToPage3Command}"/>
         </StackPanel>
 
         <ContentControl Grid.Column="1" Grid.Row="1" Content="{Binding Content}" />

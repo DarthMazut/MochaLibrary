@@ -15,6 +15,7 @@ namespace MochaWPF
     {
         private IDialog _dataContext;
         private bool _isOpen = false;
+        private bool _isDisposed = false;
 
         /// <summary>
         /// There is no view object which represents WPF <see cref="MessageBox"/> dialog
@@ -70,7 +71,15 @@ namespace MochaWPF
         /// </summary>
         public void Dispose()
         {
-            Disposed?.Invoke(this, EventArgs.Empty);
+            if(_isDisposed)
+            {
+                return;
+            }
+            else
+            {
+                Disposed?.Invoke(this, EventArgs.Empty);
+                _isDisposed = true;
+            }
         }
 
         /// <summary>

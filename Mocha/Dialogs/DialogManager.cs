@@ -69,18 +69,6 @@ namespace Mocha.Dialogs
         public static List<IDialogModule> GetActiveDialogs()
         {
             return _activeDialogs.Where(kvp => kvp.Value.Any()).SelectMany(kvp => kvp.Value).ToList();
-
-            //List<List<IDialogModule>> modules = new List<List<IDialogModule>>();
-
-            //foreach (var item in _activeDialogs)
-            //{
-            //    if(item.Value.Any())
-            //    {
-            //        modules.Add(item.Value);
-            //    }
-            //}
-
-            //return modules.SelectMany(m => m).ToList();
         }
 
         private static void HandleCreatedDialog(string id, IDialogModule dialog)

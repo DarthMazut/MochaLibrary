@@ -37,6 +37,11 @@ namespace MochaWPFTestApp
                     new Page2ViewModel());
             });
 
+            NavigationManager.AddModule(PagesIDs.Page3, () =>
+            {
+                return new NavigationModule(new Page3(), new Page3ViewModel());
+            });
+
             DialogManager.DefineDialog(DialogsIDs.MsgBoxDialog, () => 
             {
                 return new StandardDialogModule();
