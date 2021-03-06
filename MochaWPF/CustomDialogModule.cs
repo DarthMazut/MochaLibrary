@@ -14,10 +14,10 @@ namespace MochaWPF
     /// </summary>
     public class CustomDialogModule : IDialogModule
     {
-        protected Application _application;
-        protected Window _view;
-        protected IDialog _dataContext;
-        protected bool _isOpen = false;
+        private Application _application;
+        private Window _view;
+        private IDialog _dataContext;
+        private bool _isOpen = false;
         private bool _isDisposed = false;
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace MochaWPF
         /// Returns a new instance of <see cref="CustomDialogModule"/> class.
         /// </summary>
         /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
-        /// <param name="window">A <see cref="Window"/> which will be associated with the <see cref="CustomDialogModule"/> being created.</param>
+        /// <param name="window">A <see cref="Window"/> which will be associated with created <see cref="CustomDialogModule"/>.</param>
         /// <param name="dataContext">A default dialog logic bounded to <see cref="CustomDialogModule"/> by *DataContext* mechanism.</param>
         public CustomDialogModule(Application application, Window window, IDialog dataContext)
         {
@@ -58,12 +58,7 @@ namespace MochaWPF
             _view = window;
             SetDataContext(dataContext);
 
-            window.Closed += (s, e) =>
-            {
-                _isOpen = false;
-                OnClose();
-            };
-
+            window.Closed += (s, e) => OnClose();
             window.Loaded += (s, e) => _isOpen = true;
         }
 
@@ -184,7 +179,7 @@ namespace MochaWPF
         }
 
         /// <summary>
-        /// Returns parent <see cref="Window"/> based on value from <see cref="IDialog.Parameters"/>.
+        /// Returns parent <see cref="Window"/> based on value from <see cref="IDialog.DialogParameters"/>.
         /// </summary>
         protected virtual Window GetParentWindow()
         {
@@ -193,7 +188,7 @@ namespace MochaWPF
             _application.Dispatcher.Invoke(() => 
             {
                 List<IDialogModule> modules = DialogManager.GetActiveDialogs();
-                IDialog parentDialog = _dataContext.Parameters.Parent;
+                IDialog parentDialog = _dataContext.DialogParameters.Parent;
 
                 IDialogModule parentModule = modules.Where(m => m.DataContext == parentDialog).FirstOrDefault();
 

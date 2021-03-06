@@ -4,6 +4,16 @@
         <name>Mocha</name>
     </assembly>
     <members>
+        <member name="T:Mocha.Dialogs.DialogBehaviors">
+            <summary>
+            Contains available behaviors for associated dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.DialogBehaviors.Close">
+            <summary>
+            Allows to close a dialog by <see cref="T:Mocha.Dialogs.IDialog"/> implementation.
+            </summary>
+        </member>
         <member name="T:Mocha.Dialogs.DialogManager">
             <summary>
             Allows for defining, retrieving and managing dialogs.
@@ -86,9 +96,14 @@
             Value retrieved as a result of dialog interaction. 
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.IDialog.Parameters">
+        <member name="P:Mocha.Dialogs.IDialog.DialogParameters">
             <summary>
             Standard parameters for dialog customization.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.IDialog.DialogBehaviors">
+            <summary>
+            Contains available behaviors for associated dialog.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.IDialogModule">

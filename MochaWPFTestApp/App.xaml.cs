@@ -44,7 +44,7 @@ namespace MochaWPFTestApp
 
             DialogManager.DefineDialog(DialogsIDs.MsgBoxDialog, () => 
             {
-                return new StandardDialogModule();
+                return new StandardDialogModule2(this);
             });
 
             DialogManager.DefineDialog(DialogsIDs.OpenDialog, () =>
@@ -54,7 +54,7 @@ namespace MochaWPFTestApp
 
             DialogManager.DefineDialog(DialogsIDs.CustomDialog1, () =>
             {
-                return new CustomDialogModule(this, new MyCustomDialog(), new MyCustomDialogViewModel());
+                return new CustomDialogModule2(this, new MyCustomDialog(), new MyCustomDialogViewModel());
             });
         }
     }

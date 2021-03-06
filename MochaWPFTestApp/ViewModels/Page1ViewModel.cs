@@ -42,7 +42,7 @@ namespace MochaWPFTestApp.ViewModels
             if(navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.Parameters = new DialogParameters
+                dialog.DataContext.DialogParameters = new DialogParameters
                 {
                     Title = "Title",
                     Message = "OnNavigatedTo :)",
@@ -59,7 +59,7 @@ namespace MochaWPFTestApp.ViewModels
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.Parameters = new DialogParameters
+                dialog.DataContext.DialogParameters = new DialogParameters
                 {
                     Title = "Title",
                     Message = "OnNavigatingFrom :)",
@@ -78,7 +78,7 @@ namespace MochaWPFTestApp.ViewModels
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.Parameters = new DialogParameters
+                dialog.DataContext.DialogParameters = new DialogParameters
                 {
                     Title = "Title",
                     Message = "OnNavigatingTo :)",

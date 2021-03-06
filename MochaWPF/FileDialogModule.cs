@@ -110,14 +110,18 @@ namespace MochaWPF
                 throw new InvalidOperationException($"{_dialog.GetType()} was already opened");
             }
 
-            Window owner = GetParentWindow();
-
             _isOpen = true;
+
+            _dialog.Filter = _backend.DialogParameters.Filter;
+
+            Window owner = GetParentWindow();
             bool? result = _dialog.ShowDialog(owner);
+
             if (result == true)
             {
                 _backend.DialogValue = _dialog.FileName; // !!! Expand here, encapsulate into object !!!
             }
+
             OnClose();
             return result;
         }
@@ -163,7 +167,7 @@ namespace MochaWPF
         }
 
         /// <summary>
-        /// Returns parent <see cref="Window"/> based on value from <see cref="IDialog.Parameters"/>.
+        /// Returns parent <see cref="Window"/> based on value from <see cref="IDialog.DialogParameters"/>.
         /// </summary>
         private Window GetParentWindow()
         {
@@ -172,7 +176,7 @@ namespace MochaWPF
             _application.Dispatcher.Invoke(() =>
             {
                 List<IDialogModule> modules = DialogManager.GetActiveDialogs();
-                IDialog parentDialog = _backend.Parameters.Parent;
+                IDialog parentDialog = _backend.DialogParameters.Parent;
 
                 IDialogModule parentModule = modules.Where(m => m.DataContext == parentDialog).FirstOrDefault();
 

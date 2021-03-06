@@ -82,6 +82,11 @@ namespace Mocha.Dialogs
                 _activeDialogs.Add(id, new List<IDialogModule>() { dialog });
             }
 
+            dialog.DataContext.DialogBehaviors = new DialogBehaviors
+            {
+                Close = () => { dialog.Close(); }
+            };
+
             dialog.Disposed += (s, e) =>
             {
                 if (_activeDialogs.ContainsKey(id))

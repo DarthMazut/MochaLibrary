@@ -13,6 +13,8 @@ namespace MochaWPF
 
         public object DialogValue { get; set; }
 
-        public DialogParameters Parameters { get; set; } = new DialogParameters();
+        public DialogParameters DialogParameters { get; set; } = new DialogParameters();
+
+        public DialogBehaviors DialogBehaviors { get; set; } = new DialogBehaviors();
     }
 }

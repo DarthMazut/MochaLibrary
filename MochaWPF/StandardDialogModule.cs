@@ -120,7 +120,7 @@ namespace MochaWPF
 
             _isOpen = true;
 
-            bool? result = HandleDialogDisplay(null, _dataContext.Parameters);
+            bool? result = HandleDialogDisplay(null, _dataContext.DialogParameters);
 
             OnClose();
             _dataContext.DialogResult = result;
@@ -147,6 +147,12 @@ namespace MochaWPF
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Handles dialog display. Uses <see cref="DialogParameters"/> object to customize
+        /// associated dialog.
+        /// </summary>
+        /// <param name="parent">Parent window.</param>
+        /// <param name="parameters">Parameters for dialog customization.</param>
         protected virtual bool? HandleDialogDisplay(Window parent, DialogParameters parameters)
         {
             if (parameters == null) throw new ArgumentNullException("parameters was null.");
@@ -176,6 +182,10 @@ namespace MochaWPF
             }
         }
 
+        /// <summary>
+        /// Maps given <see cref="MessageBoxResult"/> value to nullable <see langword="bool"/> object.
+        /// </summary>
+        /// <param name="messageBoxResult">Value to be mapped.</param>
         protected bool? MessageBoxResultToBoolean(MessageBoxResult messageBoxResult)
         {
             switch (messageBoxResult)

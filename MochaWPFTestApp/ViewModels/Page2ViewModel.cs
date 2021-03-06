@@ -29,7 +29,7 @@ namespace MochaWPFTestApp.ViewModels
         {
             using (IDialogModule myDialog = MochaWPFTestApp.Dialogs.CustomDialog1)
             {
-                myDialog.DataContext.Parameters = new DialogParameters
+                myDialog.DataContext.DialogParameters = new DialogParameters
                 {
                     Title = "Title",
                     Message = "Hello there!"
@@ -46,8 +46,8 @@ namespace MochaWPFTestApp.ViewModels
                 };
 
                 Task openWindow = myDialog.ShowAsync();
-                await Task.Delay(5000);
-                await myDialog.ShowAsync();
+                await Task.Delay(15000);
+                //await myDialog.ShowAsync();
                 var activeDialogs = DialogManager.GetActiveDialogs(DialogsIDs.MsgBoxDialog);
                 await openWindow;
 

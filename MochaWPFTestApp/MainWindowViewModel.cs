@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MochaWPFTestApp
 {
-    class MainWindowViewModel : BindableBase, INavigatable, IDialog
+    class MainWindowViewModel : BindableBase, INavigatable
     {
         public bool? DialogResult { get; set; }
         public object DialogValue { get; set; }

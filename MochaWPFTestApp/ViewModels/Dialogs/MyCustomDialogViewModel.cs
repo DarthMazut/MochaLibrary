@@ -12,17 +12,26 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
     {
         public bool? DialogResult { get; set; }
         public object DialogValue { get; set; }
-        public DialogParameters Parameters { get; set; }
+        public DialogParameters DialogParameters { get; set; }
+        public DialogBehaviors DialogBehaviors { get; set; }
 
         private DelegateCommand _openDialogCommand;
         public DelegateCommand OpenDialogCommand => _openDialogCommand ?? (_openDialogCommand = new DelegateCommand(OpenDialog));
 
+        private DelegateCommand _closeDialogCommand;
+        public DelegateCommand CloseDialogCommand => _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand(CloseDialog));
+
         private async void OpenDialog()
         {
             IDialogModule dialog = MochaWPFTestApp.Dialogs.OpenDialog;
-            dialog.DataContext.Parameters.Parent = this;
+            dialog.DataContext.DialogParameters.Parent = this;
             await dialog.ShowModalAsync();
             dialog.Dispose();
+        }
+
+        private void CloseDialog()
+        {
+            DialogBehaviors.Close?.Invoke();
         }
     }
 }

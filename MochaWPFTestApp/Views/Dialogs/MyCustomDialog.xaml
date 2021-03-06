@@ -15,14 +15,14 @@
             <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding Parameters.Title}" FontSize="36" Margin="16"/>
+        <TextBlock Text="{Binding DialogParameters.Title}" FontSize="36" Margin="16"/>
 
-        <TextBlock Grid.Row="1" Text="{Binding Parameters.Message}" Margin="8" />
+        <TextBlock Grid.Row="1" Text="{Binding DialogParameters.Message}" Margin="8" />
 
         <Border Grid.Row="2" Height="1" Margin="10,0,10,0" BorderThickness="1" BorderBrush="Gray" VerticalAlignment="Top" />
         <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="16">
             <Button Content="Open" Width="120" Height="35" Margin="5" Command="{Binding OpenDialogCommand}"/>
-            <Button Content="Close" Width="120" Height="35" Margin="5"/>
+            <Button Content="Close" Width="120" Height="35" Margin="5" Command="{Binding CloseDialogCommand}"/>
         </StackPanel>
 
     </Grid>
