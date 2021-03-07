@@ -49,6 +49,7 @@ namespace MochaWPFTestApp.ViewModels
         public Page3ViewModel()
         {
             Navigator = new Navigator(this, NavigationServices.MainNavigationService);
+            Navigator.SaveCurrent = true;
         }
 
         private async void Start()

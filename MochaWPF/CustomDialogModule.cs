@@ -14,11 +14,23 @@ namespace MochaWPF
     /// </summary>
     public class CustomDialogModule : IDialogModule
     {
-        private Application _application;
         private Window _view;
-        private IDialog _dataContext;
-        private bool _isOpen = false;
-        private bool _isDisposed = false;
+
+        /// <summary>
+        /// A reference to WPF <see cref="System.Windows.Application"/> object.
+        /// </summary>
+        protected Application Application { get; set; }
+
+        /// <summary>
+        /// An <see cref="IDialog"/> object bounded to <see cref="View"/>
+        /// instance by *DataBinding* mechanism.
+        /// </summary>
+        public IDialog DataContext { get; protected set; }
+
+        /// <summary>
+        /// Determines whether dialog has been disposed.
+        /// </summary>
+        protected bool IsDisposed { get; set; }
 
         /// <summary>
         /// Returns a reference to underlying <see cref="Window"/> object.
@@ -26,15 +38,9 @@ namespace MochaWPF
         public virtual object View => _view;
 
         /// <summary>
-        /// An <see cref="IDialog"/> object bounded to <see cref="View"/>
-        /// instance by *DataBinding* mechanism.
-        /// </summary>
-        public virtual IDialog DataContext => _dataContext;
-
-        /// <summary>
         /// Specifies whether this dialog is currently open.
         /// </summary>
-        public virtual bool IsOpen => _isOpen;
+        public bool IsOpen { get; protected set; }
 
         /// <summary>
         /// Fires when dialog closes.
@@ -54,12 +60,33 @@ namespace MochaWPF
         /// <param name="dataContext">A default dialog logic bounded to <see cref="CustomDialogModule"/> by *DataContext* mechanism.</param>
         public CustomDialogModule(Application application, Window window, IDialog dataContext)
         {
-            _application = application;
             _view = window;
+            Application = application;
             SetDataContext(dataContext);
 
-            window.Closed += (s, e) => OnClose();
-            window.Loaded += (s, e) => _isOpen = true;
+            window.Closed += (s, e) =>
+            {
+                IsOpen = false;
+                OnClose();
+            };
+
+            window.Loaded += (s, e) => IsOpen = true;
+        }
+
+        /// <summary>
+        /// Called when dialog closes.
+        /// </summary>
+        protected virtual void OnClose()
+        {
+            Closed?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Called when dialog is disposed.
+        /// </summary>
+        protected virtual void OnDisposed()
+        {
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -67,7 +94,7 @@ namespace MochaWPF
         /// </summary>
         public virtual void Close()
         {
-            if(_isOpen)
+            if(IsOpen)
             {
                 _view.Close();
             }
@@ -79,8 +106,8 @@ namespace MochaWPF
         /// <param name="dialog">Dialog logic to be set by * DataContext * mechanism.</param>
         public virtual void SetDataContext(IDialog dialog)
         {
-            _dataContext = dialog;
             _view.DataContext = dialog;
+            DataContext = dialog;
         }
 
         /// <summary>
@@ -88,12 +115,17 @@ namespace MochaWPF
         /// </summary>
         public virtual void Show()
         {
-            if(_isOpen)
+            if(IsOpen)
             {
                 throw new InvalidOperationException($"{_view.GetType()} was already opened");
             }
 
-            _view.Owner = GetParentWindow();
+            if (IsDisposed)
+            {
+                throw new InvalidOperationException("Cannot show already disposed dialog");
+            }
+
+            _view.Owner = DialogModuleHelper.GetParentWindow(Application, DataContext);
             _view.Show();
         }
 
@@ -104,7 +136,7 @@ namespace MochaWPF
         {
             return Task.Run(() =>
             {
-                _application.Dispatcher.Invoke(() =>
+                Application.Dispatcher.Invoke(() =>
                 {
                     Show();
                 });
@@ -116,14 +148,19 @@ namespace MochaWPF
         /// </summary>
         public virtual bool? ShowModal()
         {
-            if (_isOpen)
+            if (IsOpen)
             {
                 throw new InvalidOperationException($"{_view.GetType()} was already opened");
             }
 
-            _view.Owner = GetParentWindow();
+            if (IsDisposed)
+            {
+                throw new InvalidOperationException("Cannot show already disposed dialog");
+            }
+
+            _view.Owner = DialogModuleHelper.GetParentWindow(Application, DataContext);
             bool? result = _view.ShowDialog();
-            _dataContext.DialogResult = result;
+            DataContext.DialogResult = result;
             return result;
         }
 
@@ -136,7 +173,7 @@ namespace MochaWPF
             {
                 bool? result = null;
 
-                _application.Dispatcher.Invoke(() =>
+                Application.Dispatcher.Invoke(() =>
                 {
                     result = ShowModal();
                 });
@@ -148,63 +185,24 @@ namespace MochaWPF
         /// <summary>
         /// Perform cleaning operations allowing this object to be garbage collected.
         /// </summary>
-        public void Dispose()
+        public virtual void Dispose()
         {
-            if (_isDisposed)
+            if (IsDisposed)
             {
                 return;
             }
             else
             {
+                CleanUp();
+                IsDisposed = true;
                 Disposed?.Invoke(this, EventArgs.Empty);
-                _isDisposed = true;
+                
             }
         }
 
-        /// <summary>
-        /// Rises <see cref="Closed"/> event.
-        /// </summary>
-        protected virtual void OnClose()
+        private void CleanUp()
         {
-            _isOpen = false;
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Rises <see cref="Disposed"/> event.
-        /// </summary>
-        protected virtual void OnDisposed()
-        {
-            Disposed?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Returns parent <see cref="Window"/> based on value from <see cref="IDialog.DialogParameters"/>.
-        /// </summary>
-        protected virtual Window GetParentWindow()
-        {
-            Window parent = null;
-
-            _application.Dispatcher.Invoke(() => 
-            {
-                List<IDialogModule> modules = DialogManager.GetActiveDialogs();
-                IDialog parentDialog = _dataContext.DialogParameters.Parent;
-
-                IDialogModule parentModule = modules.Where(m => m.DataContext == parentDialog).FirstOrDefault();
-
-                foreach (Window window in _application.Windows)
-                {
-                    if(window == parentModule?.View)
-                    {
-                        parent = window;
-                        return;
-                    }
-                }
-
-                parent = _application.Windows[0];
-            });
-
-            return parent;
+            _view.DataContext = null;
         }
     }
 }

@@ -105,7 +105,7 @@ namespace MochaWPF
         /// </summary>
         public bool? ShowModal()
         {
-            if (_isOpen)
+            if (IsOpen)
             {
                 throw new InvalidOperationException($"{_dialog.GetType()} was already opened");
             }
@@ -114,7 +114,7 @@ namespace MochaWPF
 
             _dialog.Filter = _backend.DialogParameters.Filter;
 
-            Window owner = GetParentWindow();
+            Window owner = DialogModuleHelper.GetParentWindow(_application, DataContext);
             bool? result = _dialog.ShowDialog(owner);
 
             if (result == true)
@@ -164,35 +164,6 @@ namespace MochaWPF
         {
             _isOpen = false;
             Closed?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Returns parent <see cref="Window"/> based on value from <see cref="IDialog.DialogParameters"/>.
-        /// </summary>
-        private Window GetParentWindow()
-        {
-            Window parent = null;
-
-            _application.Dispatcher.Invoke(() =>
-            {
-                List<IDialogModule> modules = DialogManager.GetActiveDialogs();
-                IDialog parentDialog = _backend.DialogParameters.Parent;
-
-                IDialogModule parentModule = modules.Where(m => m.DataContext == parentDialog).FirstOrDefault();
-
-                foreach (Window window in _application.Windows)
-                {
-                    if (window == parentModule?.View)
-                    {
-                        parent = window;
-                        return;
-                    }
-                }
-
-                parent = _application.Windows[0];
-            });
-
-            return parent;
         }
     }
 }

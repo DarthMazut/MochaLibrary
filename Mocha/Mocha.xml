@@ -81,6 +81,11 @@
             Defines a filter for Open/Save dialog.
             </summary>
         </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.InitialDirectory">
+            <summary>
+            Sets initial directory for Open/Save dialog.
+            </summary>
+        </member>
         <member name="T:Mocha.Dialogs.IDialog">
             <summary> 
             Marks implementing class as a data for <see cref="T:Mocha.Dialogs.IDialogModule"/>.

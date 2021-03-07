@@ -13,9 +13,20 @@ namespace MochaWPF
     /// </summary>
     public class StandardDialogModule : IDialogModule
     {
-        private IDialog _dataContext;
-        private bool _isOpen = false;
-        private bool _isDisposed = false;
+        /// <summary>
+        /// A reference to WPF <see cref="System.Windows.Application"/> object.
+        /// </summary>
+        protected Application Application { get; set; }
+
+        /// <summary>
+        /// Determines whether dialog has been disposed.
+        /// </summary>
+        protected bool IsDisposed { get; set; }
+
+        /// <summary>
+        /// Maps results from <see cref="MessageBoxResult"/> to nullable <see langword="bool"/> values.
+        /// </summary>
+        protected MessageBoxResultMapper Mapper { get; set; }
 
         /// <summary>
         /// There is no view object which represents WPF <see cref="MessageBox"/> dialog
@@ -27,12 +38,12 @@ namespace MochaWPF
         /// Returns an <see cref="IDialog"/> object which serve as a backend
         /// for represented <see cref="MessageBox"/>. 
         /// </summary>
-        public IDialog DataContext => _dataContext;
+        public IDialog DataContext { get; protected set; }
 
         /// <summary>
         /// Indicates whether the represented <see cref="MessageBox"/> is currently open.
         /// </summary>
-        public bool IsOpen => _isOpen;
+        public bool IsOpen { get; protected set; }
 
         /// <summary>
         /// Fires when represented <see cref="MessageBox"/> closes.
@@ -47,38 +58,78 @@ namespace MochaWPF
         /// <summary>
         /// Default construtcor. Uses build-in simple implementaion of <see cref="IDialog"/>.
         /// </summary>
-        public StandardDialogModule() : this(null) { }
+        public StandardDialogModule() : this(null, null, null) { }
 
         /// <summary>
         /// Returns new instance of <see cref="StandardDialogModule"/> class.
         /// </summary>
         /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
-        public StandardDialogModule(IDialog dialogData)
+        public StandardDialogModule(IDialog dialogData) : this(dialogData, null, null) { }
+
+        /// <summary>
+        /// Returns new instance of <see cref="StandardDialogModule"/> class.
+        /// </summary>
+        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
+        /// <param name="mapper">Used to map <see cref="MessageBoxResult"/> values to nullable <see langword="bool"/>.</param>
+        public StandardDialogModule(IDialog dialogData, MessageBoxResultMapper mapper) : this(dialogData, null, mapper) { }
+
+        /// <summary>
+        /// Returns new instance of <see cref="StandardDialogModule"/> class.
+        /// </summary>
+        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
+        /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
+        public StandardDialogModule(IDialog dialogData, Application application) { }
+
+        /// <summary>
+        /// Returns new instance of <see cref="StandardDialogModule"/> class.
+        /// </summary>
+        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
+        /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
+        /// <param name="mapper">Used to map <see cref="MessageBoxResult"/> values to nullable <see langword="bool"/>.</param>
+        public StandardDialogModule(IDialog dialogData, Application application, MessageBoxResultMapper mapper)
         {
-            _dataContext = dialogData ?? new SimpleDialogData();
+            DataContext = dialogData ?? new SimpleDialogData();
+            Application = application;
+            Mapper = mapper ?? new MessageBoxResultMapper();
+        }
+
+        /// <summary>
+        /// Called when dialog closes.
+        /// </summary>
+        protected virtual void OnClose()
+        {
+            Closed?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Called when dialog is disposed.
+        /// </summary>
+        protected virtual void OnDisposed()
+        {
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
         /// This method is not supported by <see cref="StandardDialogModule"/> implementation.
         /// </summary>
-        public void Close()
+        public virtual void Close()
         {
-            throw new NotSupportedException("Closing StandardDialogModule is currently not supported in MochaLib :(");
+            throw new NotSupportedException("Closing StandardDialogModule is currently not supported in MochaLib");
         }
 
         /// <summary>
         /// Marks this dialog as done.
         /// </summary>
-        public void Dispose()
+        public virtual void Dispose()
         {
-            if(_isDisposed)
+            if(IsDisposed)
             {
                 return;
             }
             else
             {
-                Disposed?.Invoke(this, EventArgs.Empty);
-                _isDisposed = true;
+                OnDisposed();
+                IsDisposed = true;
             }
         }
 
@@ -86,15 +137,15 @@ namespace MochaWPF
         /// Sets backend data for this dialog.
         /// </summary>
         /// <param name="dialogData">Backend data to be set.</param>
-        public void SetDataContext(IDialog dialogData)
+        public virtual void SetDataContext(IDialog dialogData)
         {
-            _dataContext = dialogData;
+            DataContext = dialogData;
         }
 
         /// <summary>
         /// Showing <see cref="MessageBox"/> in non-modal way is not supported by this implementation.
         /// </summary>
-        public void Show()
+        public virtual void Show()
         {
             throw new NotSupportedException("StandardDialogModule can only be displayed as modal.");
         }
@@ -102,7 +153,7 @@ namespace MochaWPF
         /// <summary>
         /// Showing <see cref="MessageBox"/> asynchronously in non-modal way is not supported by this implementation.
         /// </summary>
-        public Task ShowAsync()
+        public virtual Task ShowAsync()
         {
             throw new NotSupportedException("StandardDialogModule can only be displayed as modal.");
         }
@@ -111,20 +162,26 @@ namespace MochaWPF
         /// Displays represented <see cref="MessageBox"/> dialog in modal manner.
         /// Returns result of dialog interaction.
         /// </summary>
-        public bool? ShowModal()
+        public virtual bool? ShowModal()
         {
-            if (_isOpen)
+            if (IsOpen)
             {
                 throw new InvalidOperationException($"{GetType()} was already opened");
             }
 
-            _isOpen = true;
+            if(IsDisposed)
+            {
+                throw new InvalidOperationException("Cannot show already disposed dialog");
+            }
 
-            bool? result = HandleDialogDisplay(null, _dataContext.DialogParameters);
+            IsOpen = true;
 
+            bool? result = HandleDialogDisplay();
+
+            IsOpen = false;
             OnClose();
-            _dataContext.DialogResult = result;
 
+            DataContext.DialogResult = result;
             return result;
         }
 
@@ -132,7 +189,7 @@ namespace MochaWPF
         /// Displays asynchronously represented <see cref="MessageBox"/> dialog in modal manner.
         /// Returns result of dialog interaction.
         /// </summary>
-        public Task<bool?> ShowModalAsync()
+        public virtual Task<bool?> ShowModalAsync()
         {
             return Task.Run(() => 
             {
@@ -141,20 +198,14 @@ namespace MochaWPF
             });
         }
 
-        private void OnClose()
-        {
-            _isOpen = false;
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
-
         /// <summary>
         /// Handles dialog display. Uses <see cref="DialogParameters"/> object to customize
-        /// associated dialog.
+        /// associated dialog and <see cref="MessageBoxResultMapper"/> for result parsing.
         /// </summary>
-        /// <param name="parent">Parent window.</param>
-        /// <param name="parameters">Parameters for dialog customization.</param>
-        protected virtual bool? HandleDialogDisplay(Window parent, DialogParameters parameters)
+        protected virtual bool? HandleDialogDisplay()
         {
+            DialogParameters parameters = DataContext.DialogParameters;
+
             if (parameters == null) throw new ArgumentNullException("parameters was null.");
 
             string title = parameters.Title ?? string.Empty;
@@ -172,37 +223,16 @@ namespace MochaWPF
                 icon = msgBoxImage;
             }
 
+            Window parent = DialogModuleHelper.GetParentWindow(Application, DataContext);
+
             if (parent != null)
             {
-                return MessageBoxResultToBoolean(MessageBox.Show(parent, content, title, buttons, icon));
+                return Mapper.MessageBoxResultToBoolean(MessageBox.Show(parent, content, title, buttons, icon));
             }
             else
             {
-                return MessageBoxResultToBoolean(MessageBox.Show(content, title, buttons, icon));
+                return Mapper.MessageBoxResultToBoolean(MessageBox.Show(content, title, buttons, icon));
             }
-        }
-
-        /// <summary>
-        /// Maps given <see cref="MessageBoxResult"/> value to nullable <see langword="bool"/> object.
-        /// </summary>
-        /// <param name="messageBoxResult">Value to be mapped.</param>
-        protected bool? MessageBoxResultToBoolean(MessageBoxResult messageBoxResult)
-        {
-            switch (messageBoxResult)
-            {
-                case MessageBoxResult.None:
-                    return null;
-                case MessageBoxResult.OK:
-                    return true;
-                case MessageBoxResult.Cancel:
-                    return null;
-                case MessageBoxResult.Yes:
-                    return true;
-                case MessageBoxResult.No:
-                    return false;
-                default:
-                    return null;
-            }
-        }   
+        }  
     }
 }

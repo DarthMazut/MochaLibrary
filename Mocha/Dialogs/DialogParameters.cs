@@ -41,6 +41,9 @@ namespace Mocha.Dialogs
         /// </summary>
         public string Filter { get; set; }
 
-
+        /// <summary>
+        /// Sets initial directory for Open/Save dialog.
+        /// </summary>
+        public string InitialDirectory { get; set; }
     }
 }
