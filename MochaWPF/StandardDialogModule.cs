@@ -56,40 +56,35 @@ namespace MochaWPF
         public event EventHandler Disposed;
 
         /// <summary>
-        /// Default construtcor. Uses build-in simple implementaion of <see cref="IDialog"/>.
-        /// </summary>
-        public StandardDialogModule() : this(null, null, null) { }
-
-        /// <summary>
         /// Returns new instance of <see cref="StandardDialogModule"/> class.
         /// </summary>
-        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
-        public StandardDialogModule(IDialog dialogData) : this(dialogData, null, null) { }
-
-        /// <summary>
-        /// Returns new instance of <see cref="StandardDialogModule"/> class.
-        /// </summary>
-        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
-        /// <param name="mapper">Used to map <see cref="MessageBoxResult"/> values to nullable <see langword="bool"/>.</param>
-        public StandardDialogModule(IDialog dialogData, MessageBoxResultMapper mapper) : this(dialogData, null, mapper) { }
-
-        /// <summary>
-        /// Returns new instance of <see cref="StandardDialogModule"/> class.
-        /// </summary>
-        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
         /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
-        public StandardDialogModule(IDialog dialogData, Application application) { }
+        public StandardDialogModule(Application application) : this(application, null, null) { }
 
         /// <summary>
         /// Returns new instance of <see cref="StandardDialogModule"/> class.
         /// </summary>
-        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
         /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
         /// <param name="mapper">Used to map <see cref="MessageBoxResult"/> values to nullable <see langword="bool"/>.</param>
-        public StandardDialogModule(IDialog dialogData, Application application, MessageBoxResultMapper mapper)
+        public StandardDialogModule(Application application, MessageBoxResultMapper mapper) : this(application, null, mapper) { }
+
+        /// <summary>
+        /// Returns new instance of <see cref="StandardDialogModule"/> class.
+        /// </summary>
+        /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
+        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
+        public StandardDialogModule(Application application, IDialog dialogData) : this(application, dialogData, null) { }
+
+        /// <summary>
+        /// Returns new instance of <see cref="StandardDialogModule"/> class.
+        /// </summary>
+        /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
+        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
+        /// <param name="mapper">Used to map <see cref="MessageBoxResult"/> values to nullable <see langword="bool"/>.</param>
+        public StandardDialogModule(Application application, IDialog dialogData, MessageBoxResultMapper mapper)
         {
-            DataContext = dialogData ?? new SimpleDialogData();
             Application = application;
+            DataContext = dialogData ?? new SimpleDialogData();
             Mapper = mapper ?? new MessageBoxResultMapper();
         }
 
@@ -191,9 +186,15 @@ namespace MochaWPF
         /// </summary>
         public virtual Task<bool?> ShowModalAsync()
         {
-            return Task.Run(() => 
+            return Task.Run(() =>
             {
-                bool? result = this.ShowModal();
+                bool? result = null;
+
+                Application.Dispatcher.Invoke(() =>
+                {
+                    result = ShowModal();
+                });
+
                 return result;
             });
         }
@@ -224,15 +225,8 @@ namespace MochaWPF
             }
 
             Window parent = DialogModuleHelper.GetParentWindow(Application, DataContext);
+            return Mapper.MessageBoxResultToBoolean(MessageBox.Show(parent, content, title, buttons, icon));
 
-            if (parent != null)
-            {
-                return Mapper.MessageBoxResultToBoolean(MessageBox.Show(parent, content, title, buttons, icon));
-            }
-            else
-            {
-                return Mapper.MessageBoxResultToBoolean(MessageBox.Show(content, title, buttons, icon));
-            }
         }  
     }
 }

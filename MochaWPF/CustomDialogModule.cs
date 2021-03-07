@@ -108,6 +108,7 @@ namespace MochaWPF
         {
             _view.DataContext = dialog;
             DataContext = dialog;
+            SetBehaviors(this.Close, DataContext);
         }
 
         /// <summary>
@@ -203,6 +204,21 @@ namespace MochaWPF
         private void CleanUp()
         {
             _view.DataContext = null;
+        }
+
+        /// <summary>
+        /// Sets up <see cref="DialogBehaviors"/> for given <see cref="IDialog"/> backend.
+        /// </summary>
+        /// <param name="closeAction">Implemented *Close* function.</param>
+        /// <param name="dataContext">Dialog backend.</param>
+        private static void SetBehaviors(Action closeAction, IDialog dataContext)
+        {
+            if(dataContext.DialogBehaviors is null)
+            {
+                dataContext.DialogBehaviors = new DialogBehaviors();
+            }
+
+            dataContext.DialogBehaviors.Close = closeAction;
         }
     }
 }
