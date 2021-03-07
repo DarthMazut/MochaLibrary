@@ -24,7 +24,13 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
         private async void OpenDialog()
         {
             IDialogModule dialog = MochaWPFTestApp.Dialogs.OpenDialog;
-            dialog.DataContext.DialogParameters.Parent = this;
+            dialog.DataContext.DialogParameters = new DialogParameters()
+            {
+                Title = "My dialog title",
+                InitialDirectory = @"C:\Systemowe",
+                Parent = this
+            };
+
             await dialog.ShowModalAsync();
             dialog.Dispose();
         }

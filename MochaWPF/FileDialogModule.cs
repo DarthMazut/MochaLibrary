@@ -112,10 +112,11 @@ namespace MochaWPF
 
             _isOpen = true;
 
-            _dialog.Filter = _backend.DialogParameters.Filter;
+            CustomizeFromParameters();
 
             Window owner = DialogModuleHelper.GetParentWindow(_application, DataContext);
             bool? result = _dialog.ShowDialog(owner);
+            _backend.DialogResult = result;
 
             if (result == true)
             {
@@ -164,6 +165,14 @@ namespace MochaWPF
         {
             _isOpen = false;
             Closed?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void CustomizeFromParameters()
+        {
+            _dialog.Title = _backend.DialogParameters.Title;
+            _dialog.Filter = _backend.DialogParameters.Filter;
+            _dialog.DefaultExt = _backend.DialogParameters.DefaultExtension;
+            _dialog.InitialDirectory = _backend.DialogParameters.InitialDirectory;
         }
     }
 }

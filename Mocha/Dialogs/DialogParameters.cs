@@ -45,5 +45,10 @@ namespace Mocha.Dialogs
         /// Sets initial directory for Open/Save dialog.
         /// </summary>
         public string InitialDirectory { get; set; }
+
+        /// <summary>
+        /// Extension added automatically in case none was specified.
+        /// </summary>
+        public string DefaultExtension { get; set; }
     }
 }
