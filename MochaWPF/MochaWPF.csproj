@@ -46,17 +46,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MessageBoxResultMapper.cs" />
-    <Compile Include="Temp\BaseDialogModule.cs" />
     <Compile Include="CustomDialogModule.cs" />
-    <Compile Include="Temp\CustomDialogModule2.cs" />
-    <Compile Include="Temp\DialogModuleHelper.cs" />
+    <Compile Include="DialogModuleHelper.cs" />
     <Compile Include="NavigationModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FileDialogModule.cs" />
     <Compile Include="SimpleDialogData.cs" />
     <Compile Include="StandardDialogModule.cs" />
-    <Compile Include="Temp\StandardDialogModule2.cs" />
-    <Compile Include="Temp\StandardDialogModuleEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mocha\Mocha.csproj">
