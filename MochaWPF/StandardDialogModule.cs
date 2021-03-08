@@ -24,11 +24,6 @@ namespace MochaWPF
         protected bool IsDisposed { get; set; }
 
         /// <summary>
-        /// Maps results from <see cref="MessageBoxResult"/> to nullable <see langword="bool"/> values.
-        /// </summary>
-        protected MessageBoxResultMapper Mapper { get; set; }
-
-        /// <summary>
         /// There is no view object which represents WPF <see cref="MessageBox"/> dialog
         /// therefore this always returns <see langword="null"/>.
         /// </summary>
@@ -59,33 +54,17 @@ namespace MochaWPF
         /// Returns new instance of <see cref="StandardDialogModule"/> class.
         /// </summary>
         /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
-        public StandardDialogModule(Application application) : this(application, null, null) { }
-
-        /// <summary>
-        /// Returns new instance of <see cref="StandardDialogModule"/> class.
-        /// </summary>
-        /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
-        /// <param name="mapper">Used to map <see cref="MessageBoxResult"/> values to nullable <see langword="bool"/>.</param>
-        public StandardDialogModule(Application application, MessageBoxResultMapper mapper) : this(application, null, mapper) { }
+        public StandardDialogModule(Application application) : this(application, null) { }
 
         /// <summary>
         /// Returns new instance of <see cref="StandardDialogModule"/> class.
         /// </summary>
         /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
         /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
-        public StandardDialogModule(Application application, IDialog dialogData) : this(application, dialogData, null) { }
-
-        /// <summary>
-        /// Returns new instance of <see cref="StandardDialogModule"/> class.
-        /// </summary>
-        /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
-        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
-        /// <param name="mapper">Used to map <see cref="MessageBoxResult"/> values to nullable <see langword="bool"/>.</param>
-        public StandardDialogModule(Application application, IDialog dialogData, MessageBoxResultMapper mapper)
+        public StandardDialogModule(Application application, IDialog dialogData)
         {
             Application = application;
             DataContext = dialogData ?? new SimpleDialogData();
-            Mapper = mapper ?? new MessageBoxResultMapper();
         }
 
         /// <summary>
@@ -201,32 +180,72 @@ namespace MochaWPF
 
         /// <summary>
         /// Handles dialog display. Uses <see cref="DialogParameters"/> object to customize
-        /// associated dialog and <see cref="MessageBoxResultMapper"/> for result parsing.
+        /// associated dialog.
         /// </summary>
         protected virtual bool? HandleDialogDisplay()
         {
             DialogParameters parameters = DataContext.DialogParameters;
 
-            if (parameters == null) throw new ArgumentNullException("parameters was null.");
+            if (parameters == null) throw new ArgumentNullException("parameters are null.");
 
             string title = parameters.Title ?? string.Empty;
             string content = parameters.Message ?? string.Empty;
-            MessageBoxButton buttons = MessageBoxButton.OK;
-            MessageBoxImage icon = MessageBoxImage.None;
-
-            if (Enum.TryParse(parameters.PredefinedButtons, out MessageBoxButton msgBoxButton))
-            {
-                buttons = msgBoxButton;
-            }
-
-            if (Enum.TryParse(parameters.Icon, out MessageBoxImage msgBoxImage))
-            {
-                icon = msgBoxImage;
-            }
+            MessageBoxButton buttons = ResolveButtons(parameters.PredefinedButtons);
+            MessageBoxImage icon = ResolveIcon(parameters.Icon);
 
             Window parent = DialogModuleHelper.GetParentWindow(Application, DataContext);
-            return Mapper.MessageBoxResultToBoolean(MessageBox.Show(parent, content, title, buttons, icon));
+            return ResolveResult(MessageBox.Show(parent, content, title, buttons, icon));
+        }
 
-        }  
+        /// <summary>
+        /// Maps <see cref="DialogParameters.PredefinedButtons"/> string into <see cref="MessageBoxButton"/> value.
+        /// </summary>
+        /// <param name="predefinedButtons">Value to be mapped.</param>
+        protected virtual MessageBoxButton ResolveButtons(string predefinedButtons)
+        {
+            if (Enum.TryParse(predefinedButtons, out MessageBoxButton msgBoxButton))
+            {
+                return msgBoxButton;
+            }
+
+            return MessageBoxButton.OK;
+        }
+
+        /// <summary>
+        /// Maps <see cref="DialogParameters.Icon"/> string into <see cref="MessageBoxImage"/> value.
+        /// </summary>
+        /// <param name="icon">Value to be mapped.</param>
+        protected virtual MessageBoxImage ResolveIcon(string icon)
+        {
+            if (Enum.TryParse(icon, out MessageBoxImage msgBoxImage))
+            {
+                return msgBoxImage;
+            }
+
+            return MessageBoxImage.None;
+        }
+
+        /// <summary>
+        /// Maps results from <see cref="MessageBoxResult"/> to nullable <see langword="bool"/> values.
+        /// </summary>
+        /// <param name="result">Value to be mapped.</param>
+        protected virtual bool? ResolveResult(MessageBoxResult result)
+        {
+            switch (result)
+            {
+                case MessageBoxResult.None:
+                    return null;
+                case MessageBoxResult.OK:
+                    return true;
+                case MessageBoxResult.Cancel:
+                    return false;
+                case MessageBoxResult.Yes:
+                    return true;
+                case MessageBoxResult.No:
+                    return false;
+                default:
+                    return null;
+            }
+        }
     }
 }

@@ -35,23 +35,7 @@ namespace MochaWPFTestApp.ViewModels
                     Message = "Hello there!"
                 };
 
-                myDialog.Closed += (s, e) =>
-                {
-
-                };
-
-                myDialog.Disposed += (s, e) =>
-                {
-
-                };
-
-                Task openWindow = myDialog.ShowAsync();
-                await Task.Delay(15000);
-                //await myDialog.ShowAsync();
-                var activeDialogs = DialogManager.GetActiveDialogs(DialogsIDs.MsgBoxDialog);
-                await openWindow;
-
-                bool? result = myDialog.DataContext.DialogResult;
+                await myDialog.ShowModalAsync();
             }
         }
 
