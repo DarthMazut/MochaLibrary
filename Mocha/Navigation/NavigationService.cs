@@ -31,7 +31,7 @@ namespace Mocha.Navigation
         /// Handles a navigation requests.
         /// </summary>
         /// <param name="navigationData">Essential data for navigation process.</param>
-        public NavigationResultData RequestNavigation(NavigationData navigationData)
+        public async Task<NavigationResultData> RequestNavigation(NavigationData navigationData)
         {
             if (SameViewRequested(navigationData))
             {
@@ -43,13 +43,13 @@ namespace Mocha.Navigation
 
             bool cleanUp = HandleCache(navigationData);
 
-            NavigationResultData resultTo = HandleNavigatingTo(navigationData);
+            NavigationResultData resultTo = await HandleNavigatingTo(navigationData);
             if (resultTo.Result != NavigationResult.Succeed)
             {
                 return resultTo;
             }
 
-            NavigationResultData resultFrom = HandleNavigatingFrom(navigationData);
+            NavigationResultData resultFrom = await HandleNavigatingFrom(navigationData);
             if (resultFrom.Result != NavigationResult.Succeed)
             {
                 navigationData.RequestedModule.CleanUp();
@@ -57,7 +57,7 @@ namespace Mocha.Navigation
             }
 
             InvokeNavigatedRequested(navigationData);
-            HandleNavigatedTo(navigationData);
+            await HandleNavigatedTo(navigationData);
 
             if (cleanUp)
             {
@@ -167,10 +167,16 @@ namespace Mocha.Navigation
             return _currentView != null && _moduleComparer.Equals(_currentView, navigationData.RequestedModule);
         }
 
-        private NavigationResultData HandleNavigatingTo(NavigationData navigationData)
+        private async Task<NavigationResultData> HandleNavigatingTo(NavigationData navigationData)
         {
             NavigationCancelEventArgs e = new NavigationCancelEventArgs();
             navigationData.RequestedModule.DataContext.Navigator.OnNavigatingToBase(navigationData, e);
+
+            if(navigationData.RequestedModule.DataContext is IOnNavigatingTo onNavigatingTo)
+            {
+                await onNavigatingTo.OnNavigatingTo(navigationData, e);
+            }
+
             if (e.Cancel)
             {
                 navigationData.RequestedModule.CleanUp();
@@ -180,10 +186,16 @@ namespace Mocha.Navigation
             return new NavigationResultData(NavigationResult.Succeed);
         }
 
-        private NavigationResultData HandleNavigatingFrom(NavigationData navigationData)
+        private async Task<NavigationResultData> HandleNavigatingFrom(NavigationData navigationData)
         {
             NavigationCancelEventArgs e = new NavigationCancelEventArgs();
             navigationData.CallingModule?.DataContext.Navigator.OnNavigatingFromBase(navigationData, e);
+
+            if (navigationData.CallingModule.DataContext is IOnNavigatingFrom onNavigatingFrom)
+            {
+                await onNavigatingFrom.OnNavigatingFrom(navigationData, e);
+            }
+
             if (e.Cancel)
             {
                 navigationData.RequestedModule.CleanUp();
@@ -193,15 +205,20 @@ namespace Mocha.Navigation
             return new NavigationResultData(NavigationResult.Succeed);
         }
 
-        private static void HandleNavigatedTo(NavigationData navigationData)
+        private async Task HandleNavigatedTo(NavigationData navigationData)
         {
             navigationData.RequestedModule.DataContext.Navigator.OnNavigatedToBase(navigationData);
+            if (navigationData.RequestedModule.DataContext is IOnNavigatedTo onNavigatedTo)
+            {
+                await onNavigatedTo.OnNavigatedTo(navigationData);
+            }
         }
 
         private void InvokeNavigatedRequested(NavigationData navigationData)
         {
             navigationData.RequestedModule.SetDataContext(navigationData.RequestedModule.DataContext);
             NavigationRequested?.Invoke(this, navigationData);
+
             _currentView = navigationData.RequestedModule;
         }
 

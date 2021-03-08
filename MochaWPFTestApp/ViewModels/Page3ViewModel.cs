@@ -1,4 +1,5 @@
-﻿using Mocha.Navigation;
+﻿using Mocha.Dialogs;
+using Mocha.Navigation;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;

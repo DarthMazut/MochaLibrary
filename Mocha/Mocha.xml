@@ -222,6 +222,46 @@
             to null. This method will be called internally by <see cref="T:Mocha.Navigation.NavigationService"/>.
             </summary>
         </member>
+        <member name="T:Mocha.Navigation.IOnNavigatedTo">
+            <summary>
+            Allows implementing class to expose an asynchronous version of
+            *OnNavigatedTo* method which is called by <see cref="T:Mocha.Navigation.NavigationService"/>.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.IOnNavigatedTo.OnNavigatedTo(Mocha.Navigation.NavigationData)">
+            <summary>
+            Called when navigation process is about to finish. 
+            </summary>
+            <param name="navigationData">Details of navigation request.</param>
+        </member>
+        <member name="T:Mocha.Navigation.IOnNavigatingFrom">
+            <summary>
+            Allows implementing class to expose an asynchronous version of
+            *OnNavigatingFrom* method which is called by <see cref="T:Mocha.Navigation.NavigationService"/>.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.IOnNavigatingFrom.OnNavigatingFrom(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
+            <summary>
+            Called when navigation was requested when the owner of this method is currently active. 
+            At this point navigation can be rejected.
+            </summary>
+            <param name="navigationData">Details of navigation request.</param>
+            <param name="e">Allows for rejecting current navigation process.</param>
+        </member>
+        <member name="T:Mocha.Navigation.IOnNavigatingTo">
+            <summary>
+            Allows implementing class to expose an asynchronous version of
+            *OnNavigatingTo* method which is called by <see cref="T:Mocha.Navigation.NavigationService"/>.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.IOnNavigatingTo.OnNavigatingTo(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
+            <summary>
+            Called when navigation was requested to the owner of this method. At this point navigation
+            can be rejected.
+            </summary>
+            <param name="navigationData">Details of navigation request.</param>
+            <param name="e">Allows for rejecting current navigation process.</param>
+        </member>
         <member name="T:Mocha.Navigation.NavigationCancelEventArgs">
             <summary>
             Provides data for navigation canceling.
@@ -439,7 +479,7 @@
             <summary>
             Sends navigation request to navigate to specified view.
             </summary>
-            <param name="element">Navigation target view.</param>
+            <param name="view">Navigation target view.</param>
         </member>
         <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.INavigationModule,Mocha.Navigation.INavigatable)">
             <summary>

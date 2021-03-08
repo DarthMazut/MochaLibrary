@@ -87,8 +87,8 @@ namespace Mocha.Navigation
         /// <summary>
         /// Sends navigation request to navigate to specified view.
         /// </summary>
-        /// <param name="element">Navigation target view.</param>
-        public NavigationResultData Navigate(INavigationModule view)
+        /// <param name="view">Navigation target view.</param>
+        public Task<NavigationResultData> Navigate(INavigationModule view)
         {
             if (view == null) throw new ArgumentNullException("Navigation target cannot be null");
 
@@ -109,7 +109,7 @@ namespace Mocha.Navigation
         /// </summary>
         /// <param name="view">Navigation target view.</param>
         /// <param name="navigatable">A * DataContext * object for target view.</param>
-        public NavigationResultData Navigate(INavigationModule view, INavigatable navigatable)
+        public Task<NavigationResultData> Navigate(INavigationModule view, INavigatable navigatable)
         {
             return Navigate(view, null, navigatable, false);
         }
@@ -123,7 +123,7 @@ namespace Mocha.Navigation
         /// objects that take part in navigation transition.
         /// </param>
         /// <param name="navigatable">A * DataContext * object for target view.</param>
-        public NavigationResultData Navigate(INavigationModule view, object data, INavigatable navigatable)
+        public Task<NavigationResultData> Navigate(INavigationModule view, object data, INavigatable navigatable)
         {
             return Navigate(view, data, navigatable, false);
         }
@@ -139,7 +139,7 @@ namespace Mocha.Navigation
         /// <param name="navigatable">A * DataContext * object for target view.</param>
         /// <param name="ignoreCached">Determines whether cached <see cref="INavigationModule"/> 
         /// objects should be unconditionaly ingored for rising navigation process.</param>
-        public NavigationResultData Navigate(INavigationModule view, object data, INavigatable navigatable, bool ignoreCached)
+        public Task<NavigationResultData> Navigate(INavigationModule view, object data, INavigatable navigatable, bool ignoreCached)
         {
             if (view == null) throw new ArgumentNullException("Navigation target cannot be null");
 
@@ -161,7 +161,7 @@ namespace Mocha.Navigation
         /// Sends navigation request to navigate with specified <see cref="NavigationData"/> object.
         /// </summary>
         /// <param name="navigationData">Contains details for requested navigation process.</param>
-        public NavigationResultData Navigate(NavigationData navigationData)
+        public Task<NavigationResultData> Navigate(NavigationData navigationData)
         {
             if (navigationData == null) throw new ArgumentNullException();
             return _navigationService.RequestNavigation(navigationData);

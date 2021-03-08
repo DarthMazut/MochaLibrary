@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MochaWPFTestApp.ViewModels
 {
-    class Page1ViewModel : BindableBase, INavigatable
+    class Page1ViewModel : BindableBase, INavigatable, IOnNavigatingTo, IOnNavigatingFrom, IOnNavigatedTo
     {
         public string Text => "Page 1";
 
@@ -32,29 +32,34 @@ namespace MochaWPFTestApp.ViewModels
             Navigator = new Navigator(this, NavigationServices.MainNavigationService);
             Navigator.SaveCurrent = true;
 
-            Navigator.NavigatingTo += Navigator_NavigatingTo;
-            Navigator.NavigatingFrom += Navigator_NavigatingFrom;
-            Navigator.NavigatedTo += Navigator_NavigatedTo;
+            //Navigator.NavigatingTo += Navigator_NavigatingTo;
+            //Navigator.NavigatingFrom += Navigator_NavigatingFrom;
+            //Navigator.NavigatedTo += Navigator_NavigatedTo;
         }
 
-        private async void Navigator_NavigatedTo(NavigationData navigationData)
+        private async void Navigate()
         {
-            if(navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
+            await Navigator.Navigate(NavigationModules.Page2);
+        }
+
+        public async Task OnNavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)
+        {
+            if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
                 dialog.DataContext.DialogParameters = new DialogParameters
                 {
                     Title = "Title",
-                    Message = "OnNavigatedTo :)",
+                    Message = "OnNavigatingTo :)",
                     PredefinedButtons = "OK",
-                    Icon = "Error"
+                    Icon = "Information"
                 };
                 await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
         }
 
-        private async void Navigator_NavigatingFrom(NavigationData navigationData, NavigationCancelEventArgs e)
+        public async Task OnNavigatingFrom(NavigationData navigationData, NavigationCancelEventArgs e)
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
@@ -73,7 +78,7 @@ namespace MochaWPFTestApp.ViewModels
             NavigationServices.MainNavigationService.ClearCached(NavigationModules.Page1);
         }
 
-        private async void Navigator_NavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)
+        public async Task OnNavigatedTo(NavigationData navigationData)
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
@@ -81,18 +86,13 @@ namespace MochaWPFTestApp.ViewModels
                 dialog.DataContext.DialogParameters = new DialogParameters
                 {
                     Title = "Title",
-                    Message = "OnNavigatingTo :)",
+                    Message = "OnNavigatedTo :)",
                     PredefinedButtons = "OK",
-                    Icon = "Information"
+                    Icon = "Error"
                 };
                 await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
-        }
-
-        private void Navigate()
-        {
-            Navigator.Navigate(NavigationModules.Page2);
         }
     }
 }
