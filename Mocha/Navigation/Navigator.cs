@@ -88,30 +88,22 @@ namespace Mocha.Navigation
         /// Sends navigation request to navigate to specified view.
         /// </summary>
         /// <param name="view">Navigation target view.</param>
-        public Task<NavigationResultData> Navigate(INavigationModule view)
+        public Task<NavigationResultData> NavigateAsync(INavigationModule view)
         {
-            if (view == null) throw new ArgumentNullException("Navigation target cannot be null");
-
-            NavigationData navigationData = new NavigationData
-            {
-                CallingModule = _hostView,
-                Data = null,
-                IgnoreCached = false,
-                RequestedModule = view,
-                SaveCurrent = _navigationService.CurrentView?.DataContext.Navigator.SaveCurrent ?? false
-            };
-
-            return _navigationService.RequestNavigation(navigationData);
+            return NavigateAsync(view, null, null, false);
         }
 
         /// <summary>
         /// Sends navigation request to navigate to specified view.
         /// </summary>
         /// <param name="view">Navigation target view.</param>
-        /// <param name="navigatable">A * DataContext * object for target view.</param>
-        public Task<NavigationResultData> Navigate(INavigationModule view, INavigatable navigatable)
+        /// <param name="data">
+        /// An extra data object used to pass information between <see cref="INavigatable"/>
+        /// objects that take part in navigation transition.
+        /// </param>
+        public Task<NavigationResultData> NavigateAsync(INavigationModule view, object data)
         {
-            return Navigate(view, null, navigatable, false);
+            return NavigateAsync(view, data, null, false);
         }
 
         /// <summary>
@@ -123,9 +115,9 @@ namespace Mocha.Navigation
         /// objects that take part in navigation transition.
         /// </param>
         /// <param name="navigatable">A * DataContext * object for target view.</param>
-        public Task<NavigationResultData> Navigate(INavigationModule view, object data, INavigatable navigatable)
+        public Task<NavigationResultData> NavigateAsync(INavigationModule view, object data, INavigatable navigatable)
         {
-            return Navigate(view, data, navigatable, false);
+            return NavigateAsync(view, data, navigatable, false);
         }
 
         /// <summary>
@@ -139,7 +131,7 @@ namespace Mocha.Navigation
         /// <param name="navigatable">A * DataContext * object for target view.</param>
         /// <param name="ignoreCached">Determines whether cached <see cref="INavigationModule"/> 
         /// objects should be unconditionaly ingored for rising navigation process.</param>
-        public Task<NavigationResultData> Navigate(INavigationModule view, object data, INavigatable navigatable, bool ignoreCached)
+        public Task<NavigationResultData> NavigateAsync(INavigationModule view, object data, INavigatable navigatable, bool ignoreCached)
         {
             if (view == null) throw new ArgumentNullException("Navigation target cannot be null");
 
@@ -152,7 +144,10 @@ namespace Mocha.Navigation
                 SaveCurrent = _navigationService.CurrentView?.DataContext.Navigator.SaveCurrent ?? false
             };
 
-            navigationData.RequestedModule.SetDataContext(navigatable);
+            if(navigatable != null)
+            {
+                navigationData.RequestedModule.SetDataContext(navigatable);
+            }
 
             return _navigationService.RequestNavigation(navigationData);
         }
