@@ -475,20 +475,23 @@
             the requestes send by this instance.
             </param>
         </member>
-        <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.INavigationModule)">
+        <member name="M:Mocha.Navigation.Navigator.NavigateAsync(Mocha.Navigation.INavigationModule)">
             <summary>
             Sends navigation request to navigate to specified view.
             </summary>
             <param name="view">Navigation target view.</param>
         </member>
-        <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.INavigationModule,Mocha.Navigation.INavigatable)">
+        <member name="M:Mocha.Navigation.Navigator.NavigateAsync(Mocha.Navigation.INavigationModule,System.Object)">
             <summary>
             Sends navigation request to navigate to specified view.
             </summary>
             <param name="view">Navigation target view.</param>
-            <param name="navigatable">A * DataContext * object for target view.</param>
+            <param name="data">
+            An extra data object used to pass information between <see cref="T:Mocha.Navigation.INavigatable"/>
+            objects that take part in navigation transition.
+            </param>
         </member>
-        <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.INavigationModule,System.Object,Mocha.Navigation.INavigatable)">
+        <member name="M:Mocha.Navigation.Navigator.NavigateAsync(Mocha.Navigation.INavigationModule,System.Object,Mocha.Navigation.INavigatable)">
             <summary>
             Sends navigation request to navigate to specified view.
             </summary>
@@ -499,7 +502,7 @@
             </param>
             <param name="navigatable">A * DataContext * object for target view.</param>
         </member>
-        <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.INavigationModule,System.Object,Mocha.Navigation.INavigatable,System.Boolean)">
+        <member name="M:Mocha.Navigation.Navigator.NavigateAsync(Mocha.Navigation.INavigationModule,System.Object,Mocha.Navigation.INavigatable,System.Boolean)">
             <summary>
             Sends navigation request to navigate to specified view.
             </summary>
@@ -512,7 +515,7 @@
             <param name="ignoreCached">Determines whether cached <see cref="T:Mocha.Navigation.INavigationModule"/> 
             objects should be unconditionaly ingored for rising navigation process.</param>
         </member>
-        <member name="M:Mocha.Navigation.Navigator.Navigate(Mocha.Navigation.NavigationData)">
+        <member name="M:Mocha.Navigation.Navigator.NavigateAsync(Mocha.Navigation.NavigationData)">
             <summary>
             Sends navigation request to navigate with specified <see cref="T:Mocha.Navigation.NavigationData"/> object.
             </summary>

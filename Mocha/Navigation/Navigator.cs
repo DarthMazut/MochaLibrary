@@ -156,7 +156,7 @@ namespace Mocha.Navigation
         /// Sends navigation request to navigate with specified <see cref="NavigationData"/> object.
         /// </summary>
         /// <param name="navigationData">Contains details for requested navigation process.</param>
-        public Task<NavigationResultData> Navigate(NavigationData navigationData)
+        public Task<NavigationResultData> NavigateAsync(NavigationData navigationData)
         {
             if (navigationData == null) throw new ArgumentNullException();
             return _navigationService.RequestNavigation(navigationData);

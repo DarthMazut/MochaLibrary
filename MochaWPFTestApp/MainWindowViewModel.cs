@@ -38,19 +38,19 @@ namespace MochaWPFTestApp
         public DelegateCommand NavigateToPage3Command =>
             _navigateToPage3Command ?? (_navigateToPage3Command = new DelegateCommand(NavigateToPage3));
 
-        void NavigateToPage1()
+        async void NavigateToPage1()
         {
-            Navigator.Navigate(NavigationModules.Page1);
+            await Navigator.NavigateAsync(NavigationModules.Page1);
         }
 
-        void NavigateToPage2()
+        async void NavigateToPage2()
         {
-            Navigator.Navigate(NavigationModules.Page2);
+            await Navigator.NavigateAsync(NavigationModules.Page2);
         }
 
-        void NavigateToPage3()
+        async void NavigateToPage3()
         {
-            Navigator.Navigate(NavigationModules.Page3);
+            await Navigator.NavigateAsync(NavigationModules.Page3);
         }
 
         public MainWindowViewModel()
@@ -59,7 +59,7 @@ namespace MochaWPFTestApp
 
             NavigationServices.MainNavigationService.NavigationRequested += OnNavigationRequested;
 
-            Navigator.Navigate(NavigationModules.Page1);
+            Navigator.NavigateAsync(NavigationModules.Page1);
         }
 
         private void OnNavigationRequested(object sender, NavigationData e)

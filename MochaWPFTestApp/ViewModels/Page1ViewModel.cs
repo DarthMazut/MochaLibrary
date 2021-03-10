@@ -39,7 +39,7 @@ namespace MochaWPFTestApp.ViewModels
 
         private async void Navigate()
         {
-            await Navigator.Navigate(NavigationModules.Page2);
+            await Navigator.NavigateAsync(NavigationModules.Page2);
         }
 
         public async Task OnNavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)
