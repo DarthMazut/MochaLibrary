@@ -46,6 +46,7 @@ namespace Mocha.Navigation
             NavigationResultData resultTo = await HandleNavigatingTo(navigationData);
             if (resultTo.Result != NavigationResult.Succeed)
             {
+                navigationData.RequestedModule.CleanUp();
                 return resultTo;
             }
 
