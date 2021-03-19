@@ -11,6 +11,7 @@ using Mocha.Dialogs;
 using MochaWPFTestApp.Views;
 using MochaWPFTestApp.ViewModels;
 using MochaWPF;
+using MochaWPF.Prototypes;
 using MochaWPFTestApp.Views.Dialogs;
 using MochaWPFTestApp.ViewModels.Dialogs;
 
@@ -54,7 +55,7 @@ namespace MochaWPFTestApp
 
             DialogManager.DefineDialog(DialogsIDs.CustomDialog1, () =>
             {
-                return new CustomDialogModule(this, new MyCustomDialog(), new MyCustomDialogViewModel());
+                return new CustomDialogModulePrototype(this, new MyCustomDialog(), new MyCustomDialogViewModel());
             });
         }
     }

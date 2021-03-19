@@ -35,6 +35,16 @@ namespace MochaWPFTestApp.ViewModels
                     Message = "Hello there!"
                 };
 
+                myDialog.Closed += (s, e) =>
+                {
+                    
+                };
+
+                myDialog.Disposed += (s, e) =>
+                {
+
+                };
+
                 await myDialog.ShowModalAsync();
             }
         }
