@@ -157,8 +157,7 @@
         </member>
         <member name="P:Mocha.Dialogs.IDialog.DialogEvents">
             <summary>
-            Contains a delegates which can be set by <see cref="T:Mocha.Dialogs.IDialog"/> implementation.
-            Thos delegates are then invoked by <see cref="T:Mocha.Dialogs.IDialogModule"/> at proper time.
+            Contains a collection of events which can be subscribed be <see cref="T:Mocha.Dialogs.IDialog"/> implementation.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.IDialogModule">

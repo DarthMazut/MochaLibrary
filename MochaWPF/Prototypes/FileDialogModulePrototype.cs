@@ -36,9 +36,10 @@ namespace MochaWPF.Prototypes
         /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
         /// <param name="dialog">A concrete implementation of <see cref="FileDialog"/> abstract class.</param>
         /// <param name="dataContext">Provides a backedn data for represented <see cref="FileDialog"/>.</param>
-        public FileDialogModulePrototype(Application application, FileDialog dialog,IDialog dataContext) : base(application, dataContext)
+        public FileDialogModulePrototype(Application application, FileDialog dialog, IDialog dataContext) : base(application, dataContext)
         {
             _view = dialog;
+            _view.FileOk += (s, e) => OnClosing(e);
         }
 
         /// <summary>

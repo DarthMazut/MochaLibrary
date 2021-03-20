@@ -48,6 +48,11 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
                 Parent = this
             };
 
+            dialog.DataContext.DialogEvents.Closing += (s, e) =>
+            {
+
+            };
+
             await dialog.ShowModalAsync();
             dialog.Dispose();
         }

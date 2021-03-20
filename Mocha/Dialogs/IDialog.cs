@@ -32,8 +32,7 @@ namespace Mocha.Dialogs
         DialogActions DialogActions { get; set; }
 
         /// <summary>
-        /// Contains a delegates which can be set by <see cref="IDialog"/> implementation.
-        /// Thos delegates are then invoked by <see cref="IDialogModule"/> at proper time.
+        /// Contains a collection of events which can be subscribed be <see cref="IDialog"/> implementation.
         /// </summary>
         DialogEvents DialogEvents { get; set; }
     }
