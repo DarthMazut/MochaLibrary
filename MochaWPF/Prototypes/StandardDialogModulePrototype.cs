@@ -8,13 +8,29 @@ using Mocha.Dialogs;
 
 namespace MochaWPF.Prototypes
 {
+    /// <summary>
+    /// Provides an implementation of windows <see cref="MessageBox"/> for WPF app.
+    /// </summary>
     public class StandardDialogModulePrototype : BaseDialogModule
     {
+        /// <summary>
+        /// There is no view object which represents WPF <see cref="MessageBox"/> dialog
+        /// therefore this always returns <see langword="null"/>.
+        /// </summary>
         public sealed override object View => null;
 
-        public StandardDialogModulePrototype(Application application, IDialog dataContext) : base(application, dataContext)
-        {
-        }
+        /// <summary>
+        /// Returns new instance of <see cref="StandardDialogModule"/> class.
+        /// </summary>
+        /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
+        public StandardDialogModulePrototype(Application application) : this(application, null) { }
+
+        /// <summary>
+        /// Returns new instance of <see cref="StandardDialogModule"/> class.
+        /// </summary>
+        /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
+        /// <param name="dataContext">Backend for represented <see cref="MessageBox"/> dialog.</param>
+        public StandardDialogModulePrototype(Application application, IDialog dataContext) : base(application, dataContext) { }
 
         protected sealed override bool? ShowModalCore()
         {
@@ -31,7 +47,14 @@ namespace MochaWPF.Prototypes
         {
             return Task.Run(() =>
             {
-                return ShowModalCore();
+                bool? result = null;
+
+                Application.Dispatcher.Invoke(() =>
+                {
+                    result = ShowModalCore();
+                });
+
+                return result;
             });
         }
 

@@ -8,13 +8,10 @@ using Mocha.Dialogs;
 
 namespace MochaWPF.Prototypes
 {
-    class MyTestDialog : StandardDialogModulePrototype
+    class MyTestDialog : CustomDialogModulePrototype
     {
-        public MyTestDialog(Application application, IDialog dataContext) : base(application, dataContext)
+        public MyTestDialog(Application application, Window window, IDialog dataContext) : base(application, window, dataContext)
         {
-
         }
-
-        
     }
 }

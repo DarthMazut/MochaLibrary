@@ -52,9 +52,9 @@
     <Compile Include="FileDialogModule.cs" />
     <Compile Include="Prototypes\BaseDialogModule.cs" />
     <Compile Include="Prototypes\CustomDialogModulePrototype.cs" />
+    <Compile Include="Prototypes\FileDialogModulePrototype.cs" />
     <Compile Include="Prototypes\MyTestDialog.cs" />
     <Compile Include="Prototypes\StandardDialogModulePrototype.cs" />
-    <Compile Include="Prototypes\StandardDialogSettings.cs" />
     <Compile Include="SimpleDialogData.cs" />
     <Compile Include="StandardDialogModule.cs" />
   </ItemGroup>

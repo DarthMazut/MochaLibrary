@@ -45,12 +45,12 @@ namespace MochaWPFTestApp
 
             DialogManager.DefineDialog(DialogsIDs.MsgBoxDialog, () => 
             {
-                return new StandardDialogModule(this);
+                return new StandardDialogModulePrototype(this);
             });
 
             DialogManager.DefineDialog(DialogsIDs.OpenDialog, () =>
             {
-                return new FileDialogModule(this, new Microsoft.Win32.SaveFileDialog());
+                return new FileDialogModulePrototype(this, new Microsoft.Win32.OpenFileDialog());
             });
 
             DialogManager.DefineDialog(DialogsIDs.CustomDialog1, () =>

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,6 +22,11 @@ namespace MochaWPF.Prototypes
         protected Application Application { get; set; }
 
         /// <summary>
+        /// Returns a reference to underlying <see cref="Window"/> object.
+        /// </summary>
+        public abstract object View { get; }
+
+        /// <summary>
         /// An <see cref="IDialog"/> object bounded to <see cref="View"/>
         /// instance by *DataBinding* mechanism.
         /// </summary>
@@ -30,11 +36,6 @@ namespace MochaWPF.Prototypes
         /// Determines whether dialog has been disposed.
         /// </summary>
         protected bool IsDisposed { get; set; }
-
-        /// <summary>
-        /// Returns a reference to underlying <see cref="Window"/> object.
-        /// </summary>
-        public abstract object View { get; }
 
         /// <summary>
         /// Specifies whether this dialog is currently open.
@@ -77,7 +78,7 @@ namespace MochaWPF.Prototypes
         public BaseDialogModule(Application application, IDialog dataContext)
         {
             Application = application ?? throw new ArgumentNullException("Parameter 'application' cannot be null");
-            SetDataContext(dataContext);
+            SetDataContext(dataContext ?? new SimpleDialogData());
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace MochaWPF.Prototypes
         }
 
         /// <summary>
-        /// Displays the dialog in non-modal manner.
+        /// Handles the process of displaying the dialog in non-modal manner.
         /// </summary>
         public virtual void Show()
         {
@@ -125,7 +126,7 @@ namespace MochaWPF.Prototypes
         }
 
         /// <summary>
-        /// Displays the dialog asynchronously in non-modal manner.
+        /// Handles the process of displaying the dialog asynchronously in non-modal manner.
         /// </summary>
         public virtual Task ShowAsync()
         {
@@ -147,7 +148,7 @@ namespace MochaWPF.Prototypes
         }
 
         /// <summary>
-        /// Displays the dialog in modal manner.
+        /// Handles the process of displaying the dialog in modal manner.
         /// </summary>
         public virtual bool? ShowModal()
         {
@@ -173,7 +174,7 @@ namespace MochaWPF.Prototypes
         }
 
         /// <summary>
-        /// Displays the dialog asynchronously in modal manner.
+        /// Handles the process of displaying the dialog asynchronously in modal manner.
         /// </summary>
         public virtual async Task<bool?> ShowModalAsync()
         {
@@ -262,7 +263,7 @@ namespace MochaWPF.Prototypes
         /// </summary>
         protected virtual void ShowCore()
         {
-            throw new NotSupportedException();
+            throw new InvalidOperationException(GetNotSupportedMsg());
         }
 
         /// <summary>
@@ -270,7 +271,7 @@ namespace MochaWPF.Prototypes
         /// </summary>
         protected virtual bool? ShowModalCore()
         {
-            throw new NotSupportedException();
+            throw new InvalidOperationException(GetNotSupportedMsg());
         }
 
         /// <summary>
@@ -278,16 +279,15 @@ namespace MochaWPF.Prototypes
         /// </summary>
         protected virtual Task ShowCoreAsync()
         {
-            throw new NotSupportedException();
+            throw new InvalidOperationException(GetNotSupportedMsg());
         }
 
         /// <summary>
         /// Asynchronously opens dialog view object in modal mode.
         /// </summary>
-        /// <returns></returns>
         protected virtual Task<bool?> ShowModalCoreAsync()
         {
-            throw new NotSupportedException();
+            throw new InvalidOperationException(GetNotSupportedMsg());
         }
 
         /// <summary>
@@ -328,6 +328,12 @@ namespace MochaWPF.Prototypes
             });
 
             return parent;
+        }
+
+        private string GetNotSupportedMsg()
+        {
+            string currentMember = MethodBase.GetCurrentMethod().Name;
+            return $"{currentMember} method was not defined. To use this method please override {currentMember} when deriving from {GetType()} class.";
         }
     }
 }

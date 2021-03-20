@@ -50,6 +50,11 @@
             Contains predefined, standard parameters for <see cref="T:Mocha.Dialogs.IDialogModule"/> customization.
             </summary>
         </member>
+        <member name="P:Mocha.Dialogs.DialogParameters.Dictionary">
+            <summary>
+            Allows for storage of custom parameters.
+            </summary>
+        </member>
         <member name="P:Mocha.Dialogs.DialogParameters.Parent">
             <summary>
             Parent element which called a dialog parametrized by this instance.

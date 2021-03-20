@@ -10,6 +10,13 @@ namespace Mocha.Dialogs
     /// </summary>
     public class DialogParameters
     {
+        private readonly Dictionary<string, object> _customParameterDictionary = new Dictionary<string, object>();
+
+        /// <summary>
+        /// Allows for storage of custom parameters.
+        /// </summary>
+        public Dictionary<string, object> Dictionary => _customParameterDictionary;
+
         /// <summary>
         /// Parent element which called a dialog parametrized by this instance.
         /// Setting this to <see langword="null"/> means MainWindow is consider a parent.
