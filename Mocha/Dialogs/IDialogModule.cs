@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,12 @@ namespace Mocha.Dialogs
         /// Fires when dialog closes.
         /// </summary>
         event EventHandler Closed;
+
+        /// <summary>
+        /// Fires when dialog is about to close.
+        /// <para> Not every implementation of <see cref="IDialogModule"/> supports this event ! </para>
+        /// </summary>
+        event EventHandler<CancelEventArgs> Closing;
 
         /// <summary>
         /// Fires when dialog is done.

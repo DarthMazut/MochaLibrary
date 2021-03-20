@@ -1,6 +1,7 @@
 ﻿using Mocha.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -61,6 +62,12 @@ namespace MochaWPF.Prototypes
         }
 
         /// <summary>
+        /// Fires when dialog is about to close.
+        /// <para> Not every implementation of <see cref="IDialogModule"/> supports this event ! </para>
+        /// </summary>
+        public event EventHandler<CancelEventArgs> Closing;
+
+        /// <summary>
         /// Fires when dialog closes.
         /// </summary>
         public event EventHandler Closed;
@@ -79,6 +86,15 @@ namespace MochaWPF.Prototypes
         {
             Application = application ?? throw new ArgumentNullException("Parameter 'application' cannot be null");
             SetDataContext(dataContext ?? new SimpleDialogData());
+        }
+
+        /// <summary>
+        /// Invokes <see cref="IDialogModule.Closing"/> event for derived types.
+        /// </summary>
+        /// <param name="e">Arguments allowing for close cancellation.</param>
+        protected void OnClosing(CancelEventArgs e)
+        {
+            Closing?.Invoke(this, e);
         }
 
         /// <summary>
@@ -211,6 +227,7 @@ namespace MochaWPF.Prototypes
             else
             {
                 Close();
+                DataContext.DialogEvents.Dispose();
                 DisposeCore();
                 IsDisposed = true;
                 Disposed?.Invoke(this, EventArgs.Empty);

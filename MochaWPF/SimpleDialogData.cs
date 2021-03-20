@@ -17,6 +17,11 @@ namespace MochaWPF
 
         public DialogActions DialogActions { get; set; }
 
-        public DialogEvents DialogEvents { get; set; } = new DialogEvents();
+        public DialogEvents DialogEvents { get; set; }
+
+        public SimpleDialogData()
+        {
+            DialogEvents = new DialogEvents(this);
+        }
     }
 }

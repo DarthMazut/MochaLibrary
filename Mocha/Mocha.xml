@@ -26,10 +26,21 @@
             Thos delegates are then invoked by <see cref="T:Mocha.Dialogs.IDialogModule"/> at proper time.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogEvents.OnClosing">
+        <member name="E:Mocha.Dialogs.DialogEvents.Closing">
             <summary>
-            Invoked when dialog is about to close. Use <see cref="T:System.ComponentModel.CancelEventArgs"/> object 
-            to prevent dialog from closing.
+            Fires when dialog is about to close.
+            <para> Not every implementation of <see cref="T:Mocha.Dialogs.IDialogModule"/> supports this event ! </para>
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.DialogEvents.#ctor(Mocha.Dialogs.IDialog)">
+            <summary>
+            Returns new instance of <see cref="T:Mocha.Dialogs.DialogEvents"/> class.
+            </summary>
+            <param name="dialog"><see cref="T:Mocha.Dialogs.IDialog"/> implementation associated with this object.</param>
+        </member>
+        <member name="M:Mocha.Dialogs.DialogEvents.Dispose">
+            <summary>
+            Perform cleaning operations allowing this object to be garbage collected.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.DialogManager">
@@ -169,6 +180,12 @@
         <member name="E:Mocha.Dialogs.IDialogModule.Closed">
             <summary>
             Fires when dialog closes.
+            </summary>
+        </member>
+        <member name="E:Mocha.Dialogs.IDialogModule.Closing">
+            <summary>
+            Fires when dialog is about to close.
+            <para> Not every implementation of <see cref="T:Mocha.Dialogs.IDialogModule"/> supports this event ! </para>
             </summary>
         </member>
         <member name="E:Mocha.Dialogs.IDialogModule.Disposed">

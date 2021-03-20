@@ -32,7 +32,7 @@ namespace MochaWPF.Prototypes
 
             _view.Loaded += (s, e) => IsOpen = true;
             _view.Closed += (s, e) => IsOpen = false;
-            _view.Closing += (s, e) => dataContext.DialogEvents?.OnClosing?.Invoke(e);
+            _view.Closing += (s, e) => OnClosing(e);
         }
 
         /// <summary>

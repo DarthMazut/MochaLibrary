@@ -1,6 +1,7 @@
 ﻿using Mocha.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +43,8 @@ namespace MochaWPF
         /// </summary>
         public bool IsOpen { get; protected set; }
 
+        public event EventHandler<CancelEventArgs> Closing;
+
         /// <summary>
         /// Fires when dialog closes.
         /// </summary>
@@ -51,7 +54,7 @@ namespace MochaWPF
         /// Fires when dialog is disposed and *DataContext* on <see cref="View"/> object is cleared.
         /// </summary>
         public event EventHandler Disposed;
-
+        
         /// <summary>
         /// Returns a new instance of <see cref="CustomDialogModule"/> class.
         /// </summary>

@@ -15,7 +15,7 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
         public object DialogValue { get; set; }
         public DialogParameters DialogParameters { get; set; }
         public DialogActions DialogActions { get; set; }
-        public DialogEvents DialogEvents { get; set; }// = new DialogEvents();
+        public DialogEvents DialogEvents { get; set; }
 
         private DelegateCommand _openDialogCommand;
         public DelegateCommand OpenDialogCommand => _openDialogCommand ?? (_openDialogCommand = new DelegateCommand(OpenDialog));
@@ -25,7 +25,8 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
 
         public MyCustomDialogViewModel()
         {
-            //DialogEvents.OnClosing = OnClosing;
+            DialogEvents = new DialogEvents(this);
+            DialogEvents.Closing += OnClosing;
         }
 
         private async void OpenDialog()
@@ -42,9 +43,9 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
             dialog.Dispose();
         }
 
-        private void OnClosing(CancelEventArgs e)
+        private void OnClosing(object sender, CancelEventArgs e)
         {
-            e.Cancel = true;
+            
         }
 
         private void CloseDialog()

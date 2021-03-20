@@ -1,6 +1,7 @@
 ﻿using Mocha.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,6 +50,8 @@ namespace MochaWPF
         /// Fires when this instance is done.
         /// </summary>
         public event EventHandler Disposed;
+
+        public event EventHandler<CancelEventArgs> Closing;
 
         /// <summary>
         /// Returns new instance of <see cref="StandardDialogModule"/> class.
