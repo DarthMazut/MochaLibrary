@@ -26,7 +26,16 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
         public MyCustomDialogViewModel()
         {
             DialogEvents = new DialogEvents(this);
-            DialogEvents.Closing += OnClosing;
+            DialogEvents.Opening += OnOpening;
+        }
+
+        private void OnOpening(object sender, EventArgs e)
+        {
+            using (IDialogModule msgBoxDialog = MochaWPFTestApp.Dialogs.MsgBoxDialog)
+            {
+                msgBoxDialog.DataContext.DialogParameters.Message = "Dialog just displayed";
+                msgBoxDialog.ShowModal();
+            }
         }
 
         private async void OpenDialog()
@@ -41,11 +50,6 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
 
             await dialog.ShowModalAsync();
             dialog.Dispose();
-        }
-
-        private void OnClosing(object sender, CancelEventArgs e)
-        {
-            
         }
 
         private void CloseDialog()

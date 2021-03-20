@@ -34,6 +34,11 @@ namespace Mocha.Dialogs
         //bool DisposeOnClose { get; set; }
 
         /// <summary>
+        /// Fires when dialog is displayed.
+        /// </summary>
+        event EventHandler Opening;
+
+        /// <summary>
         /// Fires when dialog closes.
         /// </summary>
         event EventHandler Closed;

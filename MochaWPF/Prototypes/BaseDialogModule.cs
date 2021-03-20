@@ -48,7 +48,11 @@ namespace MochaWPF.Prototypes
             {
                 if(value == true)
                 {
-                    _isOpen = value;
+                    if(!_isOpen)
+                    {
+                        _isOpen = true;
+                        Opening?.Invoke(this, EventArgs.Empty);
+                    }
                 }
                 else
                 {
@@ -60,6 +64,11 @@ namespace MochaWPF.Prototypes
                 }
             }
         }
+
+        /// <summary>
+        /// Fires when dialog is displayed.
+        /// </summary>
+        public event EventHandler Opening;
 
         /// <summary>
         /// Fires when dialog is about to close.
@@ -76,7 +85,7 @@ namespace MochaWPF.Prototypes
         /// Fires when dialog is disposed and *DataContext* on <see cref="View"/> object is cleared.
         /// </summary>
         public event EventHandler Disposed;
-
+        
         /// <summary>
         /// Returns a new instance of <see cref="BaseDialogModule"/> class.
         /// </summary>

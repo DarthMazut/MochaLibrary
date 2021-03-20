@@ -54,7 +54,9 @@ namespace MochaWPF
         /// Fires when dialog is disposed and *DataContext* on <see cref="View"/> object is cleared.
         /// </summary>
         public event EventHandler Disposed;
-        
+
+        public event EventHandler Opening;
+
         /// <summary>
         /// Returns a new instance of <see cref="CustomDialogModule"/> class.
         /// </summary>

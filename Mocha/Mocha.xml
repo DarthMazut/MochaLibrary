@@ -26,6 +26,11 @@
             Thos delegates are then invoked by <see cref="T:Mocha.Dialogs.IDialogModule"/> at proper time.
             </summary>
         </member>
+        <member name="E:Mocha.Dialogs.DialogEvents.Opening">
+            <summary>
+            Fires when dialog is displayed.
+            </summary>
+        </member>
         <member name="E:Mocha.Dialogs.DialogEvents.Closing">
             <summary>
             Fires when dialog is about to close.
@@ -175,6 +180,11 @@
         <member name="P:Mocha.Dialogs.IDialogModule.IsOpen">
             <summary>
             Specifies whether this dialog is currently open.
+            </summary>
+        </member>
+        <member name="E:Mocha.Dialogs.IDialogModule.Opening">
+            <summary>
+            Fires when dialog is displayed.
             </summary>
         </member>
         <member name="E:Mocha.Dialogs.IDialogModule.Closed">

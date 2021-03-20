@@ -53,6 +53,8 @@ namespace MochaWPF
 
         public event EventHandler<CancelEventArgs> Closing;
 
+        public event EventHandler Opening;
+
         /// <summary>
         /// Returns new instance of <see cref="StandardDialogModule"/> class.
         /// </summary>
