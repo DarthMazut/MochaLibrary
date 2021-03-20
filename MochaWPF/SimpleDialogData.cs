@@ -15,6 +15,8 @@ namespace MochaWPF
 
         public DialogParameters DialogParameters { get; set; } = new DialogParameters();
 
-        public DialogBehaviors DialogBehaviors { get; set; } = new DialogBehaviors();
+        public DialogActions DialogActions { get; set; }
+
+        public DialogEvents DialogEvents { get; set; } = new DialogEvents();
     }
 }

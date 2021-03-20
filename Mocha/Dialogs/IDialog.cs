@@ -27,8 +27,14 @@ namespace Mocha.Dialogs
         DialogParameters DialogParameters { get; set; }
 
         /// <summary>
-        /// Contains available behaviors for associated dialog.
+        /// Contains available actions for associated dialog.
         /// </summary>
-        DialogBehaviors DialogBehaviors { get; set; }
+        DialogActions DialogActions { get; set; }
+
+        /// <summary>
+        /// Contains a delegates which can be set by <see cref="IDialog"/> implementation.
+        /// Thos delegates are then invoked by <see cref="IDialogModule"/> at proper time.
+        /// </summary>
+        DialogEvents DialogEvents { get; set; }
     }
 }

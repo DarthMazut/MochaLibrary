@@ -222,12 +222,7 @@ namespace MochaWPF.Prototypes
         /// </summary>
         protected virtual void SetBehaviors()
         {
-            if (DataContext.DialogBehaviors is null)
-            {
-                DataContext.DialogBehaviors = new DialogBehaviors();
-            }
-
-            DataContext.DialogBehaviors.Close = this.Close;
+            DataContext.DialogActions = new DialogActions(this);
         }
 
         /// <summary>

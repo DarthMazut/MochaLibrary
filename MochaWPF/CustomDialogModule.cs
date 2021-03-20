@@ -211,14 +211,9 @@ namespace MochaWPF
         /// </summary>
         /// <param name="closeAction">Implemented *Close* function.</param>
         /// <param name="dataContext">Dialog backend.</param>
-        private static void SetBehaviors(Action closeAction, IDialog dataContext)
+        private void SetBehaviors(Action closeAction, IDialog dataContext)
         {
-            if(dataContext.DialogBehaviors is null)
-            {
-                dataContext.DialogBehaviors = new DialogBehaviors();
-            }
-
-            dataContext.DialogBehaviors.Close = closeAction;
+            DataContext.DialogActions = new DialogActions(this);
         }
     }
 }

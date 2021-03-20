@@ -4,14 +4,32 @@
         <name>Mocha</name>
     </assembly>
     <members>
-        <member name="T:Mocha.Dialogs.DialogBehaviors">
+        <member name="T:Mocha.Dialogs.DialogActions">
             <summary>
-            Contains available behaviors for associated dialog.
+            Contains available actions for associated dialog.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogBehaviors.Close">
+        <member name="M:Mocha.Dialogs.DialogActions.#ctor(Mocha.Dialogs.IDialogModule)">
             <summary>
-            Allows to close a dialog by <see cref="T:Mocha.Dialogs.IDialog"/> implementation.
+            Creates new instance of <see cref="T:Mocha.Dialogs.DialogActions"/> class.
+            </summary>
+            <param name="module">Module which actions are exposed.</param>
+        </member>
+        <member name="M:Mocha.Dialogs.DialogActions.Close">
+            <summary>
+            Closes the dialog if open.
+            </summary>
+        </member>
+        <member name="T:Mocha.Dialogs.DialogEvents">
+            <summary>
+            Contains a delegates which can be set by <see cref="T:Mocha.Dialogs.IDialog"/> implementation.
+            Thos delegates are then invoked by <see cref="T:Mocha.Dialogs.IDialogModule"/> at proper time.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.DialogEvents.OnClosing">
+            <summary>
+            Invoked when dialog is about to close. Use <see cref="T:System.ComponentModel.CancelEventArgs"/> object 
+            to prevent dialog from closing.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.DialogManager">
@@ -116,9 +134,15 @@
             Standard parameters for dialog customization.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.IDialog.DialogBehaviors">
+        <member name="P:Mocha.Dialogs.IDialog.DialogActions">
             <summary>
-            Contains available behaviors for associated dialog.
+            Contains available actions for associated dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.IDialog.DialogEvents">
+            <summary>
+            Contains a delegates which can be set by <see cref="T:Mocha.Dialogs.IDialog"/> implementation.
+            Thos delegates are then invoked by <see cref="T:Mocha.Dialogs.IDialogModule"/> at proper time.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.IDialogModule">
