@@ -1,61 +1,24 @@
-﻿using Mocha.Dialogs;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
+using Mocha.Dialogs;
 
 namespace MochaWPF
 {
     /// <summary>
     /// Provides a typical implementation of <see cref="IDialogModule"/> for WPF apps.
     /// </summary>
-    public class CustomDialogModule : IDialogModule
+    public class CustomDialogModule : BaseDialogModule
     {
-        private Window _view;
-
-        /// <summary>
-        /// A reference to WPF <see cref="System.Windows.Application"/> object.
-        /// </summary>
-        protected Application Application { get; set; }
-
-        /// <summary>
-        /// An <see cref="IDialog"/> object bounded to <see cref="View"/>
-        /// instance by *DataBinding* mechanism.
-        /// </summary>
-        public IDialog DataContext { get; protected set; }
-
-        /// <summary>
-        /// Determines whether dialog has been disposed.
-        /// </summary>
-        protected bool IsDisposed { get; set; }
+        protected Window _view;
 
         /// <summary>
         /// Returns a reference to underlying <see cref="Window"/> object.
         /// </summary>
-        public virtual object View => _view;
-
-        /// <summary>
-        /// Specifies whether this dialog is currently open.
-        /// </summary>
-        public bool IsOpen { get; protected set; }
-
-        public event EventHandler<CancelEventArgs> Closing;
-
-        /// <summary>
-        /// Fires when dialog closes.
-        /// </summary>
-        public event EventHandler Closed;
-
-        /// <summary>
-        /// Fires when dialog is disposed and *DataContext* on <see cref="View"/> object is cleared.
-        /// </summary>
-        public event EventHandler Disposed;
-
-        public event EventHandler Opening;
+        public sealed override object View => _view;
 
         /// <summary>
         /// Returns a new instance of <see cref="CustomDialogModule"/> class.
@@ -63,117 +26,49 @@ namespace MochaWPF
         /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
         /// <param name="window">A <see cref="Window"/> which will be associated with created <see cref="CustomDialogModule"/>.</param>
         /// <param name="dataContext">A default dialog logic bounded to <see cref="CustomDialogModule"/> by *DataContext* mechanism.</param>
-        public CustomDialogModule(Application application, Window window, IDialog dataContext)
+        public CustomDialogModule(Application application, Window window, IDialog dataContext) : base(application, dataContext)
         {
             _view = window;
-            Application = application;
-            SetDataContext(dataContext);
 
-            window.Closed += (s, e) =>
-            {
-                IsOpen = false;
-                OnClose();
-            };
-
-            window.Loaded += (s, e) => IsOpen = true;
+            _view.Loaded += (s, e) => IsOpen = true;
+            _view.Closed += (s, e) => IsOpen = false;
+            _view.Closing += (s, e) => OnClosing(e);
         }
 
         /// <summary>
-        /// Called when dialog closes.
+        /// Performs "Show" operation on associated view object.
         /// </summary>
-        protected virtual void OnClose()
+        protected sealed override void ShowCore()
         {
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Called when dialog is disposed.
-        /// </summary>
-        protected virtual void OnDisposed()
-        {
-            Disposed?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Closes the dialog if open.
-        /// </summary>
-        public virtual void Close()
-        {
-            if(IsOpen)
-            {
-                _view.Close();
-            }
-        }
-
-        /// <summary>
-        /// Sets a * DataContext * for <see cref="View"/> object.
-        /// </summary>
-        /// <param name="dialog">Dialog logic to be set by * DataContext * mechanism.</param>
-        public virtual void SetDataContext(IDialog dialog)
-        {
-            _view.DataContext = dialog;
-            DataContext = dialog;
-            SetBehaviors(this.Close, DataContext);
-        }
-
-        /// <summary>
-        /// Displays the dialog in non-modal manner.
-        /// </summary>
-        public virtual void Show()
-        {
-            if(IsOpen)
-            {
-                throw new InvalidOperationException($"{_view.GetType()} was already opened");
-            }
-
-            if (IsDisposed)
-            {
-                throw new InvalidOperationException("Cannot show already disposed dialog");
-            }
-
-            _view.Owner = DialogModuleHelper.GetParentWindow(Application, DataContext);
             _view.Show();
         }
 
         /// <summary>
-        /// Displays the dialog asynchronously in non-modal manner.
+        /// Performs "ShowDialog" operation on associated view object.
         /// </summary>
-        public virtual Task ShowAsync()
+        protected sealed override bool? ShowModalCore()
         {
-            return Task.Run(() =>
+            return _view.ShowDialog();
+        }
+
+        /// <summary>
+        /// Performs "Show" operation on associated view object in asynchronous manner.
+        /// </summary>
+        protected sealed override Task ShowCoreAsync()
+        {
+            return Task.Run(() => 
             {
                 Application.Dispatcher.Invoke(() =>
                 {
-                    Show();
+                    ShowCore();
                 });
             });
         }
 
         /// <summary>
-        /// Displays the dialog in modal manner.
+        /// Performs "ShowDialog" operation on associated view object in asynchronous manner.
         /// </summary>
-        public virtual bool? ShowModal()
-        {
-            if (IsOpen)
-            {
-                throw new InvalidOperationException($"{_view.GetType()} was already opened");
-            }
-
-            if (IsDisposed)
-            {
-                throw new InvalidOperationException("Cannot show already disposed dialog");
-            }
-
-            _view.Owner = DialogModuleHelper.GetParentWindow(Application, DataContext);
-            bool? result = _view.ShowDialog();
-            DataContext.DialogResult = result;
-            return result;
-        }
-
-        /// <summary>
-        /// Displays the dialog asynchronously in modal manner.
-        /// </summary>
-        public virtual Task<bool?> ShowModalAsync()
+        protected sealed override Task<bool?> ShowModalCoreAsync()
         {
             return Task.Run(() =>
             {
@@ -181,7 +76,7 @@ namespace MochaWPF
 
                 Application.Dispatcher.Invoke(() =>
                 {
-                    result = ShowModal();
+                    result = ShowModalCore();
                 });
 
                 return result;
@@ -189,36 +84,58 @@ namespace MochaWPF
         }
 
         /// <summary>
-        /// Perform cleaning operations allowing this object to be garbage collected.
+        /// Performs "Close" operation on associated view object.
         /// </summary>
-        public virtual void Dispose()
+        protected sealed override void CloseCore()
         {
-            if (IsDisposed)
-            {
-                return;
-            }
-            else
-            {
-                CleanUp();
-                IsDisposed = true;
-                Disposed?.Invoke(this, EventArgs.Empty);
-                
-            }
+            _view.Close();
         }
 
-        private void CleanUp()
+        /// <summary>
+        /// Performs cleaning operations.
+        /// </summary>
+        protected override void DisposeCore()
         {
             _view.DataContext = null;
         }
 
         /// <summary>
-        /// Sets up <see cref="DialogBehaviors"/> for given <see cref="IDialog"/> backend.
+        /// Sets the *DataContext* for associated dialog view object.
         /// </summary>
-        /// <param name="closeAction">Implemented *Close* function.</param>
-        /// <param name="dataContext">Dialog backend.</param>
-        private void SetBehaviors(Action closeAction, IDialog dataContext)
+        /// <param name="dataContext">Object to be set as *DataContext*.</param>
+        protected sealed override void SetDataContextCore(IDialog dataContext)
         {
-            DataContext.DialogActions = new DialogActions(this);
+            _view.DataContext = dataContext;
         }
+
+        /// <summary>
+        /// Sets the parent <see cref="Window"/> for associated dialog view object.
+        /// </summary>
+        /// <param name="parentWindow">Window resolved as parent.</param>
+        protected sealed override void SetParent(Window parentWindow)
+        {
+            _view.Owner = parentWindow;
+        }
+
+        #region SEALED MEMBERS
+
+        /// <summary>
+        /// Returns parent <see cref="Window"/> based on value from <see cref="DialogParameters"/>.
+        /// </summary>
+        protected sealed override Window GetParentWindow()
+        {
+            return base.GetParentWindow();
+        }
+
+        /// <summary>
+        /// Sets a * DataContext * for <see cref="View"/> object.
+        /// </summary>
+        /// <param name="dialog">Dialog logic to be set by * DataContext * mechanism.</param>
+        public sealed override void SetDataContext(IDialog dialog)
+        {
+            base.SetDataContext(dialog);
+        }
+
+        #endregion
     }
 }

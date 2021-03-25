@@ -1,12 +1,11 @@
-﻿using Microsoft.Win32;
-using Mocha.Dialogs;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Win32;
+using Mocha.Dialogs;
 
 namespace MochaWPF
 {
@@ -15,42 +14,14 @@ namespace MochaWPF
     /// <see cref="FileDialog"/> classes. Use this class for handling Open and Save 
     /// dialogs from Win32 namespace.
     /// </summary>
-    public sealed class FileDialogModule : IDialogModule
+    public sealed class FileDialogModule : BaseDialogModule
     {
-        private FileDialog _dialog;
-        private IDialog _backend;
-        private Application _application;
-        private bool _isOpen = false;
-        private bool _isDisposed = false;
+        private FileDialog _view;
 
         /// <summary>
         /// Returns the underlying <see cref="FileDialog"/> concrete implementation. 
         /// </summary>
-        public object View => _dialog;
-
-        /// <summary>
-        /// Returns backend data for <see cref="View"/> dialog object.
-        /// </summary>
-        public IDialog DataContext => _backend;
-
-        /// <summary>
-        /// Indicates whether underlying <see cref="FileDialog"/> is currently open.
-        /// </summary>
-        public bool IsOpen => _isOpen;
-
-        /// <summary>
-        /// Fires when represented <see cref="FileDialog"/> is closed.
-        /// </summary>
-        public event EventHandler Closed;
-
-        /// <summary>
-        /// Fires when this instance is disposed.
-        /// </summary>
-        public event EventHandler Disposed;
-
-        public event EventHandler<CancelEventArgs> Closing;
-
-        public event EventHandler Opening;
+        public override object View => _view;
 
         /// <summary>
         /// Returns new instance of <see cref="FileDialogModule"/>.
@@ -64,35 +35,17 @@ namespace MochaWPF
         /// </summary>
         /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
         /// <param name="dialog">A concrete implementation of <see cref="FileDialog"/> abstract class.</param>
-        /// <param name="backend">Provides a backedn data for represented <see cref="FileDialog"/>.</param>
-        public FileDialogModule(Application application, FileDialog dialog, IDialog backend)
+        /// <param name="dataContext">Provides a backedn data for represented <see cref="FileDialog"/>.</param>
+        public FileDialogModule(Application application, FileDialog dialog, IDialog dataContext) : base(application, dataContext)
         {
-            _application = application;
-            _dialog = dialog;
-            _backend = backend ?? new SimpleDialogData();
+            _view = dialog;
+            _view.FileOk += (s, e) => OnClosing(e);
         }
 
         /// <summary>
         /// This method is not supported for <see cref="FileDialog"/> implementation.
         /// </summary>
-        public void Close()
-        {
-            throw new NotSupportedException("Closing File Dialog is currently not supported in MochaLib :(");
-        }
-
-        /// <summary>
-        /// Sets the backend for represented <see cref="FileDialog"/> instance.
-        /// </summary>
-        /// <param name="backend">Backend to be set.</param>
-        public void SetDataContext(IDialog backend)
-        {
-            _backend = backend;
-        }
-
-        /// <summary>
-        /// This method is not supported for <see cref="FileDialog"/> implementation.
-        /// </summary>
-        public void Show()
+        protected override void ShowCore()
         {
             throw new NotSupportedException("File Dialog Module can only be displayed as modal.");
         }
@@ -100,50 +53,31 @@ namespace MochaWPF
         /// <summary>
         /// This method is not supported for <see cref="FileDialog"/> implementation.
         /// </summary>
-        public Task ShowAsync()
+        protected override Task ShowCoreAsync()
         {
             throw new NotSupportedException("File Dialog Module can only be displayed as modal.");
         }
 
         /// <summary>
-        /// Displays the dialog. Returns a value representing the outcome of dialog interaction.
+        /// Opens dialog view object in modal mode.
         /// </summary>
-        public bool? ShowModal()
+        protected override bool? ShowModalCore()
         {
-            if (IsOpen)
-            {
-                throw new InvalidOperationException($"{_dialog.GetType()} was already opened");
-            }
-
-            _isOpen = true;
-
-            CustomizeFromParameters();
-
-            Window owner = DialogModuleHelper.GetParentWindow(_application, DataContext);
-            bool? result = _dialog.ShowDialog(owner);
-            _backend.DialogResult = result;
-
-            if (result == true)
-            {
-                _backend.DialogValue = _dialog.FileName; // !!! Expand here, encapsulate into object !!!
-            }
-
-            OnClose();
-            return result;
+            return _view.ShowDialog(GetParentWindow());
         }
 
         /// <summary>
-        /// Displays the dialog asynchronously. Returns a value representing the outcome of dialog interaction.
+        /// Asynchronously opens dialog view object in modal mode.
         /// </summary>
-        public Task<bool?> ShowModalAsync()
+        protected override Task<bool?> ShowModalCoreAsync()
         {
             return Task.Run(() =>
             {
                 bool? result = null;
 
-                _application.Dispatcher.Invoke(() =>
+                Application.Dispatcher.Invoke(() =>
                 {
-                    result = ShowModal();
+                    result = ShowModalCore();
                 });
 
                 return result;
@@ -151,34 +85,50 @@ namespace MochaWPF
         }
 
         /// <summary>
-        /// Marks this dialog as done.
+        /// Performs closing operation on view object or throws
+        /// <see cref="InvalidOperationException"/> if such not available.
         /// </summary>
-        public void Dispose()
+        protected override void CloseCore()
         {
-            if (_isDisposed)
+            throw new NotSupportedException("Closing File Dialog is currently not supported in MochaLib :(");
+        }
+
+        /// <summary>
+        /// Performs disposing operation. It's important to set *DataContext* to <see langword="null"/> here.
+        /// </summary>
+        protected override void DisposeCore() { }
+
+        /// <summary>
+        /// Sets *DataContext* on view object.
+        /// </summary>
+        /// <param name="dataContext">Object to be set as data context.</param>
+        protected override void SetDataContextCore(IDialog dataContext) { }
+
+        /// <summary>
+        /// Sets the results of dialog interaction within <see cref="IDialog.DialogResult"/> and 
+        /// <see cref="IDialog.DialogParameters"/> if necessary.
+        /// </summary>
+        /// <param name="result">Result of dialog interaction.</param>
+        protected override void SetResults(bool? result)
+        {
+            base.SetResults(result);
+
+            if (result == true)
             {
-                return;
-            }
-            else
-            {
-                Disposed?.Invoke(this, EventArgs.Empty);
-                _isDisposed = true;
+                DataContext.DialogValue = _view.FileName;
             }
         }
 
-        private void OnClose()
+        /// <summary>
+        /// Uses <see cref="IDialog.DialogParameters"/> to customize current dialog view instance.
+        /// </summary>
+        /// <param name="dialogParameters">Parameters which serves for current dialog customization.</param>
+        protected override void Customize(DialogParameters dialogParameters)
         {
-            _isOpen = false;
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void CustomizeFromParameters()
-        {
-            _dialog.Title = _backend.DialogParameters.Title;
-            _dialog.Filter = _backend.DialogParameters.Filter;
-            _dialog.DefaultExt = _backend.DialogParameters.DefaultExtension;
-            _dialog.InitialDirectory = _backend.DialogParameters.InitialDirectory;
+            _view.Title = DataContext.DialogParameters.Title;
+            _view.Filter = DataContext.DialogParameters.Filter;
+            _view.DefaultExt = DataContext.DialogParameters.DefaultExtension;
+            _view.InitialDirectory = DataContext.DialogParameters.InitialDirectory;
         }
     }
 }
-

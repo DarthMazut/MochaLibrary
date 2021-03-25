@@ -1,174 +1,49 @@
-﻿using Mocha.Dialogs;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Mocha.Dialogs;
 
 namespace MochaWPF
 {
     /// <summary>
     /// Provides an implementation of windows <see cref="MessageBox"/> for WPF app.
     /// </summary>
-    public class StandardDialogModule : IDialogModule
+    public class StandardDialogModule : BaseDialogModule
     {
-        /// <summary>
-        /// A reference to WPF <see cref="System.Windows.Application"/> object.
-        /// </summary>
-        protected Application Application { get; set; }
-
-        /// <summary>
-        /// Determines whether dialog has been disposed.
-        /// </summary>
-        protected bool IsDisposed { get; set; }
-
         /// <summary>
         /// There is no view object which represents WPF <see cref="MessageBox"/> dialog
         /// therefore this always returns <see langword="null"/>.
         /// </summary>
-        public object View => null;
-
-        /// <summary>
-        /// Returns an <see cref="IDialog"/> object which serve as a backend
-        /// for represented <see cref="MessageBox"/>. 
-        /// </summary>
-        public IDialog DataContext { get; protected set; }
-
-        /// <summary>
-        /// Indicates whether the represented <see cref="MessageBox"/> is currently open.
-        /// </summary>
-        public bool IsOpen { get; protected set; }
-
-        /// <summary>
-        /// Fires when represented <see cref="MessageBox"/> closes.
-        /// </summary>
-        public event EventHandler Closed;
-
-        /// <summary>
-        /// Fires when this instance is done.
-        /// </summary>
-        public event EventHandler Disposed;
-
-        public event EventHandler<CancelEventArgs> Closing;
-
-        public event EventHandler Opening;
+        public sealed override object View => null;
 
         /// <summary>
         /// Returns new instance of <see cref="StandardDialogModule"/> class.
         /// </summary>
-        /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
+        /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
         public StandardDialogModule(Application application) : this(application, null) { }
 
         /// <summary>
         /// Returns new instance of <see cref="StandardDialogModule"/> class.
         /// </summary>
-        /// <param name="application">A reference to WPF <see cref="System.Windows.Application"/> object.</param>
-        /// <param name="dialogData">Backend for represented <see cref="MessageBox"/> dialog.</param>
-        public StandardDialogModule(Application application, IDialog dialogData)
+        /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
+        /// <param name="dataContext">Backend for represented <see cref="MessageBox"/> dialog.</param>
+        public StandardDialogModule(Application application, IDialog dataContext) : base(application, dataContext) { }
+
+        protected sealed override bool? ShowModalCore()
         {
-            Application = application;
-            DataContext = dialogData ?? new SimpleDialogData();
+            Window parent = GetParentWindow();
+            string title = DataContext.DialogParameters.Title;
+            string message = DataContext.DialogParameters.Message;
+            string buttons = DataContext.DialogParameters.PredefinedButtons;
+            string icon = DataContext.DialogParameters.Icon;
+
+            return ResolveResult(MessageBox.Show(parent, message, title, ResolveButtons(buttons), ResolveIcon(icon)));
         }
 
-        /// <summary>
-        /// Called when dialog closes.
-        /// </summary>
-        protected virtual void OnClose()
-        {
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Called when dialog is disposed.
-        /// </summary>
-        protected virtual void OnDisposed()
-        {
-            Disposed?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// This method is not supported by <see cref="StandardDialogModule"/> implementation.
-        /// </summary>
-        public virtual void Close()
-        {
-            throw new NotSupportedException("Closing StandardDialogModule is currently not supported in MochaLib");
-        }
-
-        /// <summary>
-        /// Marks this dialog as done.
-        /// </summary>
-        public virtual void Dispose()
-        {
-            if(IsDisposed)
-            {
-                return;
-            }
-            else
-            {
-                OnDisposed();
-                IsDisposed = true;
-            }
-        }
-
-        /// <summary>
-        /// Sets backend data for this dialog.
-        /// </summary>
-        /// <param name="dialogData">Backend data to be set.</param>
-        public virtual void SetDataContext(IDialog dialogData)
-        {
-            DataContext = dialogData;
-        }
-
-        /// <summary>
-        /// Showing <see cref="MessageBox"/> in non-modal way is not supported by this implementation.
-        /// </summary>
-        public virtual void Show()
-        {
-            throw new NotSupportedException("StandardDialogModule can only be displayed as modal.");
-        }
-
-        /// <summary>
-        /// Showing <see cref="MessageBox"/> asynchronously in non-modal way is not supported by this implementation.
-        /// </summary>
-        public virtual Task ShowAsync()
-        {
-            throw new NotSupportedException("StandardDialogModule can only be displayed as modal.");
-        }
-
-        /// <summary>
-        /// Displays represented <see cref="MessageBox"/> dialog in modal manner.
-        /// Returns result of dialog interaction.
-        /// </summary>
-        public virtual bool? ShowModal()
-        {
-            if (IsOpen)
-            {
-                throw new InvalidOperationException($"{GetType()} was already opened");
-            }
-
-            if(IsDisposed)
-            {
-                throw new InvalidOperationException("Cannot show already disposed dialog");
-            }
-
-            IsOpen = true;
-
-            bool? result = HandleDialogDisplay();
-
-            IsOpen = false;
-            OnClose();
-
-            DataContext.DialogResult = result;
-            return result;
-        }
-
-        /// <summary>
-        /// Displays asynchronously represented <see cref="MessageBox"/> dialog in modal manner.
-        /// Returns result of dialog interaction.
-        /// </summary>
-        public virtual Task<bool?> ShowModalAsync()
+        protected sealed override Task<bool?> ShowModalCoreAsync()
         {
             return Task.Run(() =>
             {
@@ -176,31 +51,21 @@ namespace MochaWPF
 
                 Application.Dispatcher.Invoke(() =>
                 {
-                    result = ShowModal();
+                    result = ShowModalCore();
                 });
 
                 return result;
             });
         }
 
-        /// <summary>
-        /// Handles dialog display. Uses <see cref="DialogParameters"/> object to customize
-        /// associated dialog.
-        /// </summary>
-        protected virtual bool? HandleDialogDisplay()
+        protected sealed override void CloseCore()
         {
-            DialogParameters parameters = DataContext.DialogParameters;
-
-            if (parameters == null) throw new ArgumentNullException("parameters are null.");
-
-            string title = parameters.Title ?? string.Empty;
-            string content = parameters.Message ?? string.Empty;
-            MessageBoxButton buttons = ResolveButtons(parameters.PredefinedButtons);
-            MessageBoxImage icon = ResolveIcon(parameters.Icon);
-
-            Window parent = DialogModuleHelper.GetParentWindow(Application, DataContext);
-            return ResolveResult(MessageBox.Show(parent, content, title, buttons, icon));
+            throw new NotSupportedException("Closing StandardDialogModule is currently not supported in MochaLib");
         }
+
+        protected sealed override void DisposeCore() { }
+
+        protected sealed override void SetDataContextCore(IDialog dataContext) { }
 
         /// <summary>
         /// Maps <see cref="DialogParameters.PredefinedButtons"/> string into <see cref="MessageBoxButton"/> value.
@@ -252,5 +117,22 @@ namespace MochaWPF
                     return null;
             }
         }
+
+        #region SEALED MEMBERS
+
+        protected sealed override void Customize(DialogParameters dialogParameters) => base.Customize(dialogParameters);
+        protected sealed override Window GetParentWindow() => base.GetParentWindow();
+        protected sealed override void SetBehaviors() => base.SetBehaviors();
+        public sealed override void SetDataContext(IDialog dialog) => base.SetDataContext(dialog);
+        protected sealed override void SetParent(Window parentWindow) => base.SetParent(parentWindow);
+        public sealed override void Show() => base.Show();
+        public sealed override Task ShowAsync() => base.ShowAsync();
+        protected sealed override void SetResults(bool? result) => base.SetResults(result);
+        protected sealed override void ShowCore() => base.ShowCore();
+        protected sealed override Task ShowCoreAsync() => base.ShowCoreAsync();
+        public sealed override bool? ShowModal() => base.ShowModal();
+        public sealed override Task<bool?> ShowModalAsync() => base.ShowModalAsync();
+
+        #endregion
     }
 }
