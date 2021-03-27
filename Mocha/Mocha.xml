@@ -70,6 +70,12 @@
             Fires when dialog is displayed.
             </summary>
         </member>
+        <member name="E:Mocha.Dialogs.DialogControl.Opened">
+            <summary>
+            Fires right after the dialog opens.
+            <para> Not every implementation of <see cref="T:Mocha.Dialogs.IDialogModule"/> can supports this event ! </para>
+            </summary>
+        </member>
         <member name="E:Mocha.Dialogs.DialogControl.Closing">
             <summary>
             Fires when dialog is about to close.
@@ -159,18 +165,24 @@
         </member>
         <member name="E:Mocha.Dialogs.IDialogModule.Opening">
             <summary>
-            Fires when dialog is displayed.
+            Fires when dialog is about to be displayed.
             </summary>
         </member>
-        <member name="E:Mocha.Dialogs.IDialogModule.Closed">
+        <member name="E:Mocha.Dialogs.IDialogModule.Opened">
             <summary>
-            Fires when dialog closes.
+            Fires right after the dialog opens.
+            <para> Not every implementation of <see cref="T:Mocha.Dialogs.IDialogModule"/> can supports this event ! </para>
             </summary>
         </member>
         <member name="E:Mocha.Dialogs.IDialogModule.Closing">
             <summary>
             Fires when dialog is about to close.
-            <para> Not every implementation of <see cref="T:Mocha.Dialogs.IDialogModule"/> supports this event ! </para>
+            <para> Not every implementation of <see cref="T:Mocha.Dialogs.IDialogModule"/> can supports this event ! </para>
+            </summary>
+        </member>
+        <member name="E:Mocha.Dialogs.IDialogModule.Closed">
+            <summary>
+            Fires when dialog closes.
             </summary>
         </member>
         <member name="E:Mocha.Dialogs.IDialogModule.Disposed">

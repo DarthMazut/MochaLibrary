@@ -77,6 +77,12 @@ namespace Mocha.Dialogs
         public event EventHandler Opening;
 
         /// <summary>
+        /// Fires right after the dialog opens.
+        /// <para> Not every implementation of <see cref="IDialogModule"/> can supports this event ! </para>
+        /// </summary>
+        public event EventHandler Opened;
+
+        /// <summary>
         /// Fires when dialog is about to close.
         /// <para> Not every implementation of <see cref="IDialogModule"/> supports this event ! </para>
         /// </summary>
@@ -140,6 +146,7 @@ namespace Mocha.Dialogs
             {
                 _module.Closing += OnClosing;
                 _module.Opening += OnDisplayed;
+                _module.Opened += OnOpened;
             }
         }
 
@@ -149,6 +156,7 @@ namespace Mocha.Dialogs
             {
                 _module.Closing -= OnClosing;
                 _module.Opening -= OnDisplayed;
+                _module.Opened -= OnOpened;
             }
         }
 
@@ -160,6 +168,11 @@ namespace Mocha.Dialogs
         private void OnDisplayed(object sender, EventArgs e)
         {
             Opening?.Invoke(this, e);
+        }
+
+        private void OnOpened(object sender, EventArgs e)
+        {
+            Opened?.Invoke(this, e);
         }
     }
 }

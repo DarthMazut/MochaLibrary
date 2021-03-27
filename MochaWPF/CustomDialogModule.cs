@@ -33,6 +33,7 @@ namespace MochaWPF
             _view.Loaded += (s, e) => IsOpen = true;
             _view.Closed += (s, e) => IsOpen = false;
             _view.Closing += (s, e) => OnClosing(e);
+            _view.Loaded += (s, e) => OnOpened();
         }
 
         /// <summary>

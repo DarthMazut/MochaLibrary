@@ -68,6 +68,12 @@ namespace MochaWPF
         public event EventHandler Opening;
 
         /// <summary>
+        /// Fires right after the dialog opens.
+        /// <para> Not every implementation of <see cref="IDialogModule"/> can supports this event ! </para>
+        /// </summary>
+        public event EventHandler Opened;
+
+        /// <summary>
         /// Fires when dialog is about to close.
         /// <para> Not every implementation of <see cref="IDialogModule"/> supports this event !</para>
         /// </summary>
@@ -83,6 +89,7 @@ namespace MochaWPF
         /// </summary>
         public event EventHandler Disposed;
         
+
         /// <summary>
         /// Returns a new instance of <see cref="BaseDialogModule"/> class.
         /// </summary>
@@ -101,6 +108,14 @@ namespace MochaWPF
         protected void OnClosing(CancelEventArgs e)
         {
             Closing?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Invokes <see cref="IDialogModule.Opened"/> event for derived types.
+        /// </summary>
+        protected void OnOpened()
+        {
+            Opened?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

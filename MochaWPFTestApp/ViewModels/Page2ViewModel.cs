@@ -32,6 +32,11 @@ namespace MochaWPFTestApp.ViewModels
                 myDialog.DataContext.DialogControl.Title = "Title";
                 myDialog.DataContext.DialogControl.Message = "Hello World";
 
+                myDialog.DataContext.DialogControl.Opened += (s, e) =>
+                {
+                    
+                };
+
                 myDialog.Closed += (s, e) =>
                 {
                     

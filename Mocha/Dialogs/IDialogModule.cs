@@ -39,8 +39,14 @@ namespace Mocha.Dialogs
         event EventHandler Opening;
 
         /// <summary>
+        /// Fires right after the dialog opens.
+        /// <para> Not every implementation of <see cref="IDialogModule"/> can supports this event ! </para>
+        /// </summary>
+        event EventHandler Opened;
+
+        /// <summary>
         /// Fires when dialog is about to close.
-        /// <para> Not every implementation of <see cref="IDialogModule"/> supports this event ! </para>
+        /// <para> Not every implementation of <see cref="IDialogModule"/> can supports this event ! </para>
         /// </summary>
         event EventHandler<CancelEventArgs> Closing;
 
