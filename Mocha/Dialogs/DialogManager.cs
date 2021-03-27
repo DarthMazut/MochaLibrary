@@ -90,7 +90,8 @@ namespace Mocha.Dialogs
                 }
             };
 
-            dialog.DataContext.DialogEvents.ActivateSubscribtion();
+            dialog.DataContext.DialogControl.SetBehaviours(dialog);
+            dialog.DataContext.DialogControl.ActivateSubscribtion();
         }
     }
 }

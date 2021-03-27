@@ -29,11 +29,8 @@ namespace MochaWPFTestApp.ViewModels
         {
             using (IDialogModule myDialog = MochaWPFTestApp.Dialogs.CustomDialog1)
             {
-                myDialog.DataContext.DialogParameters = new DialogParameters
-                {
-                    Title = "Title",
-                    Message = "Hello there!"
-                };
+                myDialog.DataContext.DialogControl.Title = "Title";
+                myDialog.DataContext.DialogControl.Message = "Hello World";
 
                 myDialog.Closed += (s, e) =>
                 {

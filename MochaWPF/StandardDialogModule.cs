@@ -35,10 +35,10 @@ namespace MochaWPF
         protected sealed override bool? ShowModalCore()
         {
             Window parent = GetParentWindow();
-            string title = DataContext.DialogParameters.Title;
-            string message = DataContext.DialogParameters.Message;
-            string buttons = DataContext.DialogParameters.PredefinedButtons;
-            string icon = DataContext.DialogParameters.Icon;
+            string title = DataContext.DialogControl.Title;
+            string message = DataContext.DialogControl.Message;
+            string buttons = DataContext.DialogControl.PredefinedButtons;
+            string icon = DataContext.DialogControl.Icon;
 
             return ResolveResult(MessageBox.Show(parent, message, title, ResolveButtons(buttons), ResolveIcon(icon)));
         }
@@ -120,9 +120,9 @@ namespace MochaWPF
 
         #region SEALED MEMBERS
 
-        protected sealed override void Customize(DialogParameters dialogParameters) => base.Customize(dialogParameters);
+        protected sealed override void Customize(DialogControl dialogControl) => base.Customize(dialogControl);
         protected sealed override Window GetParentWindow() => base.GetParentWindow();
-        protected sealed override void SetBehaviors() => base.SetBehaviors();
+        //protected sealed override void SetBehaviors() => base.SetBehaviors();
         public sealed override void SetDataContext(IDialog dialog) => base.SetDataContext(dialog);
         protected sealed override void SetParent(Window parentWindow) => base.SetParent(parentWindow);
         public sealed override void Show() => base.Show();

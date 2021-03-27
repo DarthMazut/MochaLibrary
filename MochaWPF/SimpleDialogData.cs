@@ -9,19 +9,11 @@ namespace MochaWPF
 {
     internal class SimpleDialogData : IDialog
     {
-        public bool? DialogResult { get; set; }
-
-        public object DialogValue { get; set; }
-
-        public DialogParameters DialogParameters { get; set; } = new DialogParameters();
-
-        public DialogActions DialogActions { get; set; }
-
-        public DialogEvents DialogEvents { get; set; }
+        public DialogControl DialogControl { get; }
 
         public SimpleDialogData()
         {
-            DialogEvents = new DialogEvents(this);
+            DialogControl = new DialogControl(this);
         }
     }
 }

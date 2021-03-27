@@ -72,7 +72,7 @@ namespace MochaWPF
 
         /// <summary>
         /// Fires when dialog is about to close.
-        /// <para> Not every implementation of <see cref="IDialogModule"/> supports this event ! </para>
+        /// <para> Not every implementation of <see cref="IDialogModule"/> supports this event !</para>
         /// </summary>
         public event EventHandler<CancelEventArgs> Closing;
 
@@ -125,7 +125,7 @@ namespace MochaWPF
         public virtual void SetDataContext(IDialog dialog)
         {
             DataContext = dialog;
-            SetBehaviors();
+            // SetBehaviors();
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace MochaWPF
 
             SetDataContextCore(DataContext);
             SetParent(GetParentWindow());
-            Customize(DataContext.DialogParameters);
+            Customize(DataContext.DialogControl);
             IsOpen = true;
             ShowCore();
         }
@@ -167,7 +167,7 @@ namespace MochaWPF
 
             SetDataContextCore(DataContext);
             SetParent(GetParentWindow());
-            Customize(DataContext.DialogParameters);
+            Customize(DataContext.DialogControl);
             IsOpen = true;
             return ShowCoreAsync();
         }
@@ -189,7 +189,7 @@ namespace MochaWPF
 
             SetDataContextCore(DataContext);
             SetParent(GetParentWindow());
-            Customize(DataContext.DialogParameters);
+            Customize(DataContext.DialogControl);
             IsOpen = true;
             bool? result = ShowModalCore();
             SetResults(result);
@@ -215,7 +215,7 @@ namespace MochaWPF
 
             SetDataContextCore(DataContext);
             SetParent(GetParentWindow());
-            Customize(DataContext.DialogParameters);
+            Customize(DataContext.DialogControl);
             IsOpen = true;
             bool? result = await ShowModalCoreAsync();
             SetResults(result);
@@ -236,20 +236,20 @@ namespace MochaWPF
             else
             {
                 Close();
-                DataContext.DialogEvents.Dispose();
+                DataContext.DialogControl.Dispose();
                 DisposeCore();
                 IsDisposed = true;
                 Disposed?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        /// <summary>
-        /// Sets up <see cref="DialogBehaviors"/> for given <see cref="IDialog"/> backend.
-        /// </summary>
-        protected virtual void SetBehaviors()
-        {
-            DataContext.DialogActions = new DialogActions(this);
-        }
+        ///// <summary>
+        ///// Sets up <see cref="DialogBehaviors"/> for given <see cref="IDialog"/> backend.
+        ///// </summary>
+        //protected virtual void SetBehaviors()
+        //{
+        //    DataContext.DialogActions = new DialogActions(this);
+        //}
 
         /// <summary>
         /// Sets *DataContext* on view object.
@@ -258,10 +258,10 @@ namespace MochaWPF
         protected abstract void SetDataContextCore(IDialog dataContext);
 
         /// <summary>
-        /// Uses <see cref="IDialog.DialogParameters"/> to customize current dialog view instance.
+        /// Uses <see cref="IDialog.DialogControl"/> to customize current dialog view instance.
         /// </summary>
         /// <param name="dialogParameters">Parameters which serves for current dialog customization.</param>
-        protected virtual void Customize(DialogParameters dialogParameters) { }
+        protected virtual void Customize(DialogControl dialogParameters) { }
 
         /// <summary>
         /// Sets parent <see cref="Window"/> for current dialog view object. 
@@ -270,13 +270,12 @@ namespace MochaWPF
         protected virtual void SetParent(Window parentWindow) { }
 
         /// <summary>
-        /// Sets the results of dialog interaction within <see cref="IDialog.DialogResult"/> and 
-        /// <see cref="IDialog.DialogParameters"/> if necessary.
+        /// Sets the results of dialog interaction within <see cref="IDialog.DialogControl"/>.
         /// </summary>
         /// <param name="result">Result of dialog interaction.</param>
         protected virtual void SetResults(bool? result)
         {
-            DataContext.DialogResult = result;
+            DataContext.DialogControl.DialogResult = result;
         }
 
         /// <summary>
@@ -332,7 +331,7 @@ namespace MochaWPF
             Application?.Dispatcher.Invoke(() =>
             {
                 List<IDialogModule> modules = DialogManager.GetActiveDialogs();
-                IDialog parentDialog = DataContext.DialogParameters.Parent;
+                IDialog parentDialog = DataContext.DialogControl.Parent;
 
                 IDialogModule parentModule = modules.Where(m => m.DataContext == parentDialog).FirstOrDefault();
 

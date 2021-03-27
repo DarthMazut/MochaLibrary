@@ -11,11 +11,7 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
 {
     class MyCustomDialogViewModel : IDialog
     {
-        public bool? DialogResult { get; set; }
-        public object DialogValue { get; set; }
-        public DialogParameters DialogParameters { get; set; }
-        public DialogActions DialogActions { get; set; }
-        public DialogEvents DialogEvents { get; set; }
+        public DialogControl DialogControl { get; }
 
         private DelegateCommand _openDialogCommand;
         public DelegateCommand OpenDialogCommand => _openDialogCommand ?? (_openDialogCommand = new DelegateCommand(OpenDialog));
@@ -23,17 +19,18 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
         private DelegateCommand _closeDialogCommand;
         public DelegateCommand CloseDialogCommand => _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand(CloseDialog));
 
+        
         public MyCustomDialogViewModel()
         {
-            DialogEvents = new DialogEvents(this);
-            DialogEvents.Opening += OnOpening;
+            DialogControl = new DialogControl(this);
+            DialogControl.Opening += OnOpening;
         }
 
         private void OnOpening(object sender, EventArgs e)
         {
             using (IDialogModule msgBoxDialog = MochaWPFTestApp.Dialogs.MsgBoxDialog)
             {
-                msgBoxDialog.DataContext.DialogParameters.Message = "Dialog just displayed";
+                msgBoxDialog.DataContext.DialogControl.Message = "Dialog just displayed";
                 msgBoxDialog.ShowModal();
             }
         }
@@ -41,14 +38,11 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
         private async void OpenDialog()
         {
             IDialogModule dialog = MochaWPFTestApp.Dialogs.OpenDialog;
-            dialog.DataContext.DialogParameters = new DialogParameters()
-            {
-                Title = "My dialog title",
-                InitialDirectory = @"C:\Systemowe",
-                Parent = this
-            };
+            dialog.DataContext.DialogControl.Title = "My dialog title";
+            dialog.DataContext.DialogControl.InitialDirectory = @"C:\Systemowe";
+            dialog.DataContext.DialogControl.Parent = this;
 
-            dialog.DataContext.DialogEvents.Closing += (s, e) =>
+            dialog.DataContext.DialogControl.Closing += (s, e) =>
             {
 
             };
@@ -59,7 +53,7 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
 
         private void CloseDialog()
         {
-            DialogActions.Close();
+            DialogControl.Close();
         }
     }
 }

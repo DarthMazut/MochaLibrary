@@ -105,8 +105,8 @@ namespace MochaWPF
         protected override void SetDataContextCore(IDialog dataContext) { }
 
         /// <summary>
-        /// Sets the results of dialog interaction within <see cref="IDialog.DialogResult"/> and 
-        /// <see cref="IDialog.DialogParameters"/> if necessary.
+        /// Sets the results of dialog interaction within <see cref="IDialog.DialogControl"/> and 
+        /// <see cref="IDialog.DialogControl"/> if necessary.
         /// </summary>
         /// <param name="result">Result of dialog interaction.</param>
         protected override void SetResults(bool? result)
@@ -115,20 +115,20 @@ namespace MochaWPF
 
             if (result == true)
             {
-                DataContext.DialogValue = _view.FileName;
+                DataContext.DialogControl.DialogValue = _view.FileName;
             }
         }
 
         /// <summary>
-        /// Uses <see cref="IDialog.DialogParameters"/> to customize current dialog view instance.
+        /// Uses <see cref="IDialog.DialogControl"/> to customize current dialog view instance.
         /// </summary>
-        /// <param name="dialogParameters">Parameters which serves for current dialog customization.</param>
-        protected override void Customize(DialogParameters dialogParameters)
+        /// <param name="control">Parameters which serves for current dialog customization.</param>
+        protected override void Customize(DialogControl dialogControl)
         {
-            _view.Title = DataContext.DialogParameters.Title;
-            _view.Filter = DataContext.DialogParameters.Filter;
-            _view.DefaultExt = DataContext.DialogParameters.DefaultExtension;
-            _view.InitialDirectory = DataContext.DialogParameters.InitialDirectory;
+            _view.Title = DataContext.DialogControl.Title;
+            _view.Filter = DataContext.DialogControl.Filter;
+            _view.DefaultExt = DataContext.DialogControl.DefaultExtension;
+            _view.InitialDirectory = DataContext.DialogControl.InitialDirectory;
         }
     }
 }

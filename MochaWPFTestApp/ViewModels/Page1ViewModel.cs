@@ -47,13 +47,11 @@ namespace MochaWPFTestApp.ViewModels
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.DialogParameters = new DialogParameters
-                {
-                    Title = "Title",
-                    Message = "OnNavigatingTo :)",
-                    PredefinedButtons = "OK",
-                    Icon = "Information"
-                };
+                dialog.DataContext.DialogControl.Title = "Title";
+                dialog.DataContext.DialogControl.Message = "OnNavigatingTo :)";
+                dialog.DataContext.DialogControl.PredefinedButtons = "OK";
+                dialog.DataContext.DialogControl.Icon = "Information";
+
                 await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
@@ -64,13 +62,11 @@ namespace MochaWPFTestApp.ViewModels
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.DialogParameters = new DialogParameters
-                {
-                    Title = "Title",
-                    Message = "OnNavigatingFrom :)",
-                    PredefinedButtons = "OK",
-                    Icon = "Warning"
-                };
+                dialog.DataContext.DialogControl.Title = "Title";
+                dialog.DataContext.DialogControl.Message = "OnNavigatingFrom :)";
+                dialog.DataContext.DialogControl.PredefinedButtons = "OK";
+                dialog.DataContext.DialogControl.Icon = "Warning";
+
                 await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
@@ -83,13 +79,11 @@ namespace MochaWPFTestApp.ViewModels
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
-                dialog.DataContext.DialogParameters = new DialogParameters
-                {
-                    Title = "Title",
-                    Message = "OnNavigatedTo :)",
-                    PredefinedButtons = "OK",
-                    Icon = "Error"
-                };
+                dialog.DataContext.DialogControl.Title = "Title";
+                dialog.DataContext.DialogControl.Message = "OnNavigatedTo :)";
+                dialog.DataContext.DialogControl.PredefinedButtons = "OK";
+                dialog.DataContext.DialogControl.Icon = "Error";
+
                 await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
