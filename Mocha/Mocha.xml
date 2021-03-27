@@ -4,117 +4,76 @@
         <name>Mocha</name>
     </assembly>
     <members>
-        <member name="T:Mocha.Dialogs.DialogActions">
-            <summary>
-            Contains available actions for associated dialog.
-            </summary>
-        </member>
-        <member name="M:Mocha.Dialogs.DialogActions.#ctor(Mocha.Dialogs.IDialogModule)">
-            <summary>
-            Creates new instance of <see cref="T:Mocha.Dialogs.DialogActions"/> class.
-            </summary>
-            <param name="module">Module which actions are exposed.</param>
-        </member>
-        <member name="M:Mocha.Dialogs.DialogActions.Close">
-            <summary>
-            Closes the dialog if open.
-            </summary>
-        </member>
-        <member name="T:Mocha.Dialogs.DialogControl`1">
+        <member name="T:Mocha.Dialogs.DialogControl">
             <summary>
             Exposes API for dialog interaction.
             </summary>
-            <typeparam name="T">Type of value retrieved from dialog interaction.</typeparam>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.DialogResult">
+        <member name="P:Mocha.Dialogs.DialogControl.DialogResult">
             <summary>
             Describes the result of dialog interaction.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.DialogValue">
+        <member name="P:Mocha.Dialogs.DialogControl.DialogValue">
             <summary>
             Value retrieved as a result of dialog interaction. 
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.Parent">
+        <member name="P:Mocha.Dialogs.DialogControl.Parent">
             <summary>
             Parent element which called a dialog parametrized by this instance.
             Setting this to <see langword="null"/> means MainWindow is consider a parent.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.Title">
+        <member name="P:Mocha.Dialogs.DialogControl.Title">
             <summary>
             Title for displaying dialog.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.Message">
+        <member name="P:Mocha.Dialogs.DialogControl.Message">
             <summary>
             Message for displaying dialog.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.Icon">
+        <member name="P:Mocha.Dialogs.DialogControl.Icon">
             <summary>
             Icon for displaying dialog.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.PredefinedButtons">
+        <member name="P:Mocha.Dialogs.DialogControl.PredefinedButtons">
             <summary>
             Defines a predefined buttons set for displaying dialog.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.Filter">
+        <member name="P:Mocha.Dialogs.DialogControl.Filter">
             <summary>
             Defines a filter for Open/Save dialog.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.InitialDirectory">
+        <member name="P:Mocha.Dialogs.DialogControl.InitialDirectory">
             <summary>
             Sets initial directory for Open/Save dialog.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.DefaultExtension">
+        <member name="P:Mocha.Dialogs.DialogControl.DefaultExtension">
             <summary>
             Extension added automatically in case none was specified.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl`1.Dictionary">
+        <member name="P:Mocha.Dialogs.DialogControl.Dictionary">
             <summary>
             Allows for storage of custom parameters.
             </summary>
         </member>
-        <member name="E:Mocha.Dialogs.DialogControl`1.Opening">
+        <member name="E:Mocha.Dialogs.DialogControl.Opening">
             <summary>
             Fires when dialog is displayed.
             </summary>
         </member>
-        <member name="E:Mocha.Dialogs.DialogControl`1.Closing">
+        <member name="E:Mocha.Dialogs.DialogControl.Closing">
             <summary>
             Fires when dialog is about to close.
             <para> Not every implementation of <see cref="T:Mocha.Dialogs.IDialogModule"/> supports this event ! </para>
-            </summary>
-        </member>
-        <member name="M:Mocha.Dialogs.DialogControl`1.#ctor(Mocha.Dialogs.IDialog)">
-            <summary>
-            Returns new instance of <see cref="T:Mocha.Dialogs.DialogControl"/> class.
-            </summary>
-            <param name="dialog">
-            An <see cref="T:Mocha.Dialogs.IDialog"/> implementation which hosts this instance.
-            Pass <see langword="this"/> here.
-            </param>
-        </member>
-        <member name="M:Mocha.Dialogs.DialogControl`1.Close">
-            <summary>
-            Closes the dialog if open.
-            </summary>
-        </member>
-        <member name="M:Mocha.Dialogs.DialogControl`1.Dispose">
-            <summary>
-            Perform cleaning operations allowing this object to be garbage collected.
-            </summary>
-        </member>
-        <member name="T:Mocha.Dialogs.DialogControl">
-            <summary>
-            Exposes API for dialog interaction.
             </summary>
         </member>
         <member name="M:Mocha.Dialogs.DialogControl.#ctor(Mocha.Dialogs.IDialog)">
@@ -126,30 +85,12 @@
             Pass <see langword="this"/> here.
             </param>
         </member>
-        <member name="T:Mocha.Dialogs.DialogEvents">
+        <member name="M:Mocha.Dialogs.DialogControl.Close">
             <summary>
-            Contains a delegates which can be set by <see cref="T:Mocha.Dialogs.IDialog"/> implementation.
-            Thos delegates are then invoked by <see cref="T:Mocha.Dialogs.IDialogModule"/> at proper time.
+            Closes the dialog if open.
             </summary>
         </member>
-        <member name="E:Mocha.Dialogs.DialogEvents.Opening">
-            <summary>
-            Fires when dialog is displayed.
-            </summary>
-        </member>
-        <member name="E:Mocha.Dialogs.DialogEvents.Closing">
-            <summary>
-            Fires when dialog is about to close.
-            <para> Not every implementation of <see cref="T:Mocha.Dialogs.IDialogModule"/> supports this event ! </para>
-            </summary>
-        </member>
-        <member name="M:Mocha.Dialogs.DialogEvents.#ctor(Mocha.Dialogs.IDialog)">
-            <summary>
-            Returns new instance of <see cref="T:Mocha.Dialogs.DialogEvents"/> class.
-            </summary>
-            <param name="dialog"><see cref="T:Mocha.Dialogs.IDialog"/> implementation associated with this object.</param>
-        </member>
-        <member name="M:Mocha.Dialogs.DialogEvents.Dispose">
+        <member name="M:Mocha.Dialogs.DialogControl.Dispose">
             <summary>
             Perform cleaning operations allowing this object to be garbage collected.
             </summary>
@@ -183,67 +124,6 @@
             <summary>
             Returns a collection of all <see cref="T:Mocha.Dialogs.IDialogModule"/>, which has been 
             requested by <see cref="M:Mocha.Dialogs.DialogManager.GetDialog(System.String)"/> method but not yet disposed.
-            </summary>
-        </member>
-        <member name="T:Mocha.Dialogs.DialogParameters">
-            <summary>
-            Contains predefined, standard parameters for <see cref="T:Mocha.Dialogs.IDialogModule"/> customization.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.Dictionary">
-            <summary>
-            Allows for storage of custom parameters.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.Parent">
-            <summary>
-            Parent element which called a dialog parametrized by this instance.
-            Setting this to <see langword="null"/> means MainWindow is consider a parent.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.Title">
-            <summary>
-            Title for displaying dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.Message">
-            <summary>
-            Message for displaying dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.Icon">
-            <summary>
-            Icon for displaying dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.PredefinedButtons">
-            <summary>
-            Defines a predefined buttons set for displaying dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.Filter">
-            <summary>
-            Defines a filter for Open/Save dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.InitialDirectory">
-            <summary>
-            Sets initial directory for Open/Save dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogParameters.DefaultExtension">
-            <summary>
-            Extension added automatically in case none was specified.
-            </summary>
-        </member>
-        <member name="T:Mocha.Dialogs.IDialog`1">
-            <summary> 
-            Marks implementing class as a data for <see cref="T:Mocha.Dialogs.IDialogModule"/>.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.IDialog`1.DialogControl">
-            <summary>
-            Exposes API for dialog interaction.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.IDialog">

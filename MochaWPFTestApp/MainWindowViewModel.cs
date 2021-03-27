@@ -12,10 +12,6 @@ namespace MochaWPFTestApp
 {
     class MainWindowViewModel : BindableBase, INavigatable
     {
-        public bool? DialogResult { get; set; }
-        public object DialogValue { get; set; }
-        public DialogParameters Parameters { get; set; }
-
         private object _content;
 
         public object Content

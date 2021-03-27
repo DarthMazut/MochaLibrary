@@ -9,17 +9,6 @@ namespace Mocha.Dialogs
     /// <summary> 
     /// Marks implementing class as a data for <see cref="IDialogModule"/>.
     /// </summary>
-    public interface IDialog<T>
-    {
-        /// <summary>
-        /// Exposes API for dialog interaction.
-        /// </summary>
-        DialogControl<T> DialogControl { get; }
-    }
-
-    /// <summary> 
-    /// Marks implementing class as a data for <see cref="IDialogModule"/>.
-    /// </summary>
     public interface IDialog
     {
         /// <summary>

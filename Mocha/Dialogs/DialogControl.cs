@@ -8,8 +8,7 @@ namespace Mocha.Dialogs
     /// <summary>
     /// Exposes API for dialog interaction.
     /// </summary>
-    /// <typeparam name="T">Type of value retrieved from dialog interaction.</typeparam>
-    public class DialogControl<T> : IDisposable
+    public class DialogControl : IDisposable
     {
         private readonly Dictionary<string, object> _customParameterDictionary = new Dictionary<string, object>();
         private readonly IDialog _dialog;
@@ -24,7 +23,7 @@ namespace Mocha.Dialogs
         /// <summary>
         /// Value retrieved as a result of dialog interaction. 
         /// </summary>
-        public T DialogValue { get; set; }
+        public object DialogValue { get; set; }
 
         /// <summary>
         /// Parent element which called a dialog parametrized by this instance.
@@ -162,20 +161,5 @@ namespace Mocha.Dialogs
         {
             Opening?.Invoke(this, e);
         }
-    }
-
-    /// <summary>
-    /// Exposes API for dialog interaction.
-    /// </summary>
-    public class DialogControl : DialogControl<object>
-    {
-        /// <summary>
-        /// Returns new instance of <see cref="DialogControl"/> class.
-        /// </summary>
-        /// <param name="dialog">
-        /// An <see cref="IDialog"/> implementation which hosts this instance.
-        /// Pass <see langword="this"/> here.
-        /// </param>
-        public DialogControl(IDialog dialog) : base(dialog) { }
     }
 }
