@@ -46,17 +46,14 @@ namespace MochaWPF
             get => _isOpen;
             protected set
             {
-                if(value == true)
+                if (value != _isOpen)
                 {
-                    if(!_isOpen)
+                    if (value == true)
                     {
                         _isOpen = true;
                         Opening?.Invoke(this, EventArgs.Empty);
                     }
-                }
-                else
-                {
-                    if (_isOpen)
+                    else
                     {
                         _isOpen = false;
                         Closed?.Invoke(this, EventArgs.Empty);
@@ -66,7 +63,7 @@ namespace MochaWPF
         }
 
         /// <summary>
-        /// Fires when dialog is displayed.
+        /// Fires when dialog is about to be displayed.
         /// </summary>
         public event EventHandler Opening;
 
@@ -322,7 +319,7 @@ namespace MochaWPF
         protected abstract void CloseCore();
 
         /// <summary>
-        /// Returns parent <see cref="Window"/> based on value from <see cref="DialogParameters"/>.
+        /// Returns parent <see cref="Window"/> based on value from <see cref="DialogControl.Parent"/>.
         /// </summary>
         protected virtual Window GetParentWindow()
         {
