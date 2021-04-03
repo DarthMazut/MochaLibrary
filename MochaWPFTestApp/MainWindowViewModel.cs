@@ -1,5 +1,7 @@
 ﻿using Mocha.Dialogs;
 using Mocha.Navigation;
+using Mocha.Settings;
+using MochaWPFTestApp.Settings;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -46,6 +48,14 @@ namespace MochaWPFTestApp
         async void OnLoaded()
         {
             await Navigator.NavigateAsync(NavigationModules.Page1);
+
+            ISettingsSection<GeneralSettings> section = SettingsManager.Retrieve<GeneralSettings>("myCustomSettings1");
+            section.Save((s) =>
+            {
+                s.MySetting1 = "MS1";
+                s.MySetting2 = "MS2";
+            });
+
         }
 
         async void NavigateToPage1()

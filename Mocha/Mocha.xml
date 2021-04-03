@@ -587,5 +587,65 @@
             <param name="navigationData">Details on navigation request.</param>
             <param name="e">Allow to reject navigation request.</param>
         </member>
+        <member name="T:Mocha.Settings.ISettingsSection`1">
+            <summary>
+            Represents a single section of settings which can be
+            stored between application lunches.
+            </summary>
+            <typeparam name="T">Type of this section settings.</typeparam>
+        </member>
+        <member name="P:Mocha.Settings.ISettingsSection`1.Settings">
+            <summary>
+            Actual settings values stored by this section.
+            </summary>
+        </member>
+        <member name="M:Mocha.Settings.ISettingsSection`1.Save(System.Action{`0})">
+            <summary>
+            Changes the settings by invoking given delegate and then 
+            saves them to non-volatile memory.
+            </summary>
+            <param name="setSettings">Delegate which changes the settings.</param>
+        </member>
+        <member name="T:Mocha.Settings.ISettingsSectionBase">
+            <summary>
+            Serves as a base interface for <see cref="T:Mocha.Settings.ISettingsSection`1"/>.
+            </summary>
+        </member>
+        <member name="M:Mocha.Settings.ISettingsSectionBase.Load">
+            <summary>
+            Reloads values from persistent storage.
+            </summary>
+        </member>
+        <member name="M:Mocha.Settings.ISettingsSectionBase.RestoreDefault">
+            <summary>
+            Restores section to its default values.
+            </summary>
+        </member>
+        <member name="M:Mocha.Settings.ISettingsSectionBase.Save">
+            <summary>
+            Saves settings to non-volatile memory.
+            </summary>
+        </member>
+        <member name="T:Mocha.Settings.SettingsManager">
+            <summary>
+            Allows for technology-independent settings management.
+            </summary>
+        </member>
+        <member name="M:Mocha.Settings.SettingsManager.Register``1(System.String,Mocha.Settings.ISettingsSection{``0})">
+            <summary>
+            Registers a settings section which can be later used by
+            technology-independent code base.
+            </summary>
+            <typeparam name="T">Type of settings section.</typeparam>
+            <param name="id">Identifier of registering section.</param>
+            <param name="section">Section to be registerd.</param>
+        </member>
+        <member name="M:Mocha.Settings.SettingsManager.Retrieve``1(System.String)">
+            <summary>
+            Retrieves settings section registered with given id.
+            </summary>
+            <typeparam name="T">Type of settings section.</typeparam>
+            <param name="id">Id of settings section to be retrieved.</param>
+        </member>
     </members>
 </doc>

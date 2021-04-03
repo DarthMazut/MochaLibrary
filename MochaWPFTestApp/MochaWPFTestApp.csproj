@@ -75,6 +75,8 @@
     <Compile Include="Dialogs.cs" />
     <Compile Include="NavigationServices.cs" />
     <Compile Include="NavigationModules.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Settings\GeneralSettings.cs" />
     <Compile Include="ViewModels\Dialogs\MyCustomDialogViewModel.cs" />
     <Compile Include="ViewModels\Page1ViewModel.cs" />
     <Compile Include="ViewModels\Page2ViewModel.cs" />

@@ -5,7 +5,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Navigation;
 using Mocha.Navigation;
 using Mocha.Dialogs;
 using MochaWPFTestApp.Views;
@@ -13,6 +12,9 @@ using MochaWPFTestApp.ViewModels;
 using MochaWPF;
 using MochaWPFTestApp.Views.Dialogs;
 using MochaWPFTestApp.ViewModels.Dialogs;
+using Mocha.Settings;
+using MochaWPF.Settings;
+using MochaWPFTestApp.Settings;
 
 namespace MochaWPFTestApp
 {
@@ -23,6 +25,8 @@ namespace MochaWPFTestApp
     {
         public App()
         {
+            // Navigation
+
             NavigationManager.AddModule(PagesIDs.Page1, () =>
             {
                 return new NavigationModule(
@@ -42,6 +46,8 @@ namespace MochaWPFTestApp
                 return new NavigationModule(new Page3(), new Page3ViewModel());
             });
 
+            // Dialogs
+
             DialogManager.DefineDialog(DialogsIDs.MsgBoxDialog, () => 
             {
                 return new StandardDialogModule(this);
@@ -56,6 +62,11 @@ namespace MochaWPFTestApp
             {
                 return new CustomDialogModule(this, new MyCustomDialog(), new MyCustomDialogViewModel());
             });
+
+            // Settings
+
+            SettingsManager.Register("myCustomSettings1", new ApplicationSettingsSection<GeneralSettings>(MochaWPFTestApp.Properties.Settings.Default, "general"));
+
         }
     }
 }
