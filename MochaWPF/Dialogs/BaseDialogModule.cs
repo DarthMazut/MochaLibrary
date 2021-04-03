@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace MochaWPF
+namespace MochaWPF.Dialogs
 {
     /// <summary>
     /// Provides a base class for implementation of <see cref="IDialogModule"/> for WPF apps.

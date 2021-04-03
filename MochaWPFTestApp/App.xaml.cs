@@ -14,6 +14,8 @@ using MochaWPFTestApp.Views.Dialogs;
 using MochaWPFTestApp.ViewModels.Dialogs;
 using Mocha.Settings;
 using MochaWPF.Settings;
+using MochaWPF.Dialogs;
+using MochaWPF.Navigation;
 using MochaWPFTestApp.Settings;
 
 namespace MochaWPFTestApp

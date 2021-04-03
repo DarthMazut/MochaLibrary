@@ -7,7 +7,7 @@ using System.Windows;
 using Microsoft.Win32;
 using Mocha.Dialogs;
 
-namespace MochaWPF
+namespace MochaWPF.Dialogs
 {
     /// <summary>
     /// Provides a standard implementation of a <see cref="IDialogModule"/> for WPF

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaWPF
+namespace MochaWPF.Dialogs
 {
     internal class SimpleDialogData : IDialog
     {

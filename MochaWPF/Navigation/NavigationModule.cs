@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace MochaWPF
+namespace MochaWPF.Navigation
 {
     /// <summary>
     /// Provides a typical implementation of <see cref="INavigationModule"/> for WPF apps.

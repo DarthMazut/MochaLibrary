@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Mocha.Dialogs;
 
-namespace MochaWPF
+namespace MochaWPF.Dialogs
 {
     /// <summary>
     /// Provides a typical implementation of <see cref="IDialogModule"/> for WPF apps.
