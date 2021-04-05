@@ -49,13 +49,11 @@ namespace MochaWPFTestApp
         {
             await Navigator.NavigateAsync(NavigationModules.Page1);
 
-            ISettingsSection<GeneralSettings> section = SettingsManager.Retrieve<GeneralSettings>("myCustomSettings1");
-            section.Save((s) =>
+            SettingsManager.Retrieve<GeneralSettings>("myCustomSettings1").Update(s => 
             {
-                s.MySetting1 = "MS1";
-                s.MySetting2 = "MS2";
+                s.MySetting1 = "xxx";
+                s.MySetting2 = "yyy";
             });
-
         }
 
         async void NavigateToPage1()

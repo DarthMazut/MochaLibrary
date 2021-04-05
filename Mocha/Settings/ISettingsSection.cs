@@ -9,18 +9,24 @@ namespace Mocha.Settings
     /// stored between application lunches.
     /// </summary>
     /// <typeparam name="T">Type of this section settings.</typeparam>
-    public interface ISettingsSection<T> : ISettingsSectionBase where T : new()
+    public interface ISettingsSection<T> : ISettingsSectionBase where T : class, new()
     {
         /// <summary>
-        /// Actual settings values stored by this section.
+        /// Returns settings assocaited with this section saved in non-volatile memory. 
         /// </summary>
-        T Settings { get; set;}
+        T Load();
+
+        /// <summary>
+        /// Saves settings to non-volatile memory.
+        /// </summary>
+        /// <param name="settings">Settings to be saved.</param>
+        void Save(T settings);
 
         /// <summary>
         /// Changes the settings by invoking given delegate and then 
         /// saves them to non-volatile memory.
         /// </summary>
-        /// <param name="setSettings">Delegate which changes the settings.</param>
-        void Save(Action<T> setSettings);
+        /// <param name="updateAction">Delegate which changes the settings.</param>
+        void Update(Action<T> updateAction);
     }
 }

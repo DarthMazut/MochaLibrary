@@ -13,34 +13,15 @@ namespace MochaWPF.Settings
     /// <see cref="ApplicationSettingsBase"/> implementation.
     /// </summary>
     /// <typeparam name="T">Type of settings section.</typeparam>
-    public class ApplicationSettingsSection<T> : ISettingsSection<T> where T : new()
+    public class ApplicationSettingsSection<T> : ISettingsSection<T> where T : class, new()
     {
         private readonly ApplicationSettingsBase _appSettings;
         private readonly string _settingName;
-        private T _settings;
-
-        /// <summary>
-        /// Actual settings values stored by this section.
-        /// </summary>
-        // [UserScopedSetting]
-        public T Settings
-        {
-            get
-            {
-                if(_appSettings[_settingName] == null)
-                {
-                    _appSettings[_settingName] = new T();
-                }
-
-                return (T)_appSettings[_settingName];
-            }
-            set => _appSettings[_settingName] = value;
-        }
 
         /// <summary>
         /// Returns new instance of <see cref="ApplicationSettingsSection{T}"/> class.
         /// </summary>
-        /// <param name="appSettings"><see cref="ApplicationSettingsBase"/> object retrieved from <AppName>.Properties.Settings.Default.</param>
+        /// <param name="appSettings"><see cref="ApplicationSettingsBase"/> object retrieved from [AppName].Properties.Settings.Default.</param>
         /// <param name="settingName">Settings name defined in Settings Designer.</param>
         public ApplicationSettingsSection(ApplicationSettingsBase appSettings, string settingName)
         {
@@ -51,7 +32,7 @@ namespace MochaWPF.Settings
 
             try
             {
-                _settings = (T)appSettings[settingName];
+                _ = (T)appSettings[settingName];
             }
             catch (Exception ex)
             {
@@ -63,26 +44,27 @@ namespace MochaWPF.Settings
         }
 
         /// <summary>
-        /// Restores section to its default values.
+        /// Returns settings assocaited with this section saved in non-volatile memory. 
         /// </summary>
-        public void RestoreDefault()
+        public T Load()
         {
-            _appSettings.Reset();
-        }
+            if (_appSettings[_settingName] == null)
+            {
+                _appSettings[_settingName] = new T();
+            }
 
-        /// <summary>
-        /// Reloads values from persistent storage.
-        /// </summary>
-        public void Load()
-        {
-            _appSettings.Reload();
+            return (T)_appSettings[_settingName];
         }
 
         /// <summary>
         /// Saves settings to non-volatile memory.
         /// </summary>
-        public void Save()
+        /// <param name="settings">Settings to be saved.</param>
+        public void Save(T settings)
         {
+            if (settings is null) throw new ArgumentNullException();
+
+            _appSettings[_settingName] = settings;
             _appSettings.Save();
         }
 
@@ -90,13 +72,22 @@ namespace MochaWPF.Settings
         /// Changes the settings by invoking given delegate and then 
         /// saves them to non-volatile memory.
         /// </summary>
-        /// <param name="setSettings">Delegate which changes the settings.</param>
-        public void Save(Action<T> setSettings)
+        /// <param name="updateAction">Delegate which changes the settings.</param>
+        public void Update(Action<T> updateAction)
         {
-            setSettings?.Invoke(Settings);
-            Save();
+            if (updateAction is null) throw new ArgumentNullException();
+
+            T settings = Load();
+            updateAction.Invoke(settings);
+            Save(settings);
         }
 
-
+        /// <summary>
+        /// Restores section to its default values.
+        /// </summary>
+        public void RestoreDefaults()
+        {
+            _appSettings.Reset();
+        }
     }
 }

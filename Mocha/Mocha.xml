@@ -594,36 +594,32 @@
             </summary>
             <typeparam name="T">Type of this section settings.</typeparam>
         </member>
-        <member name="P:Mocha.Settings.ISettingsSection`1.Settings">
+        <member name="M:Mocha.Settings.ISettingsSection`1.Load">
             <summary>
-            Actual settings values stored by this section.
+            Returns settings assocaited with this section saved in non-volatile memory. 
             </summary>
         </member>
-        <member name="M:Mocha.Settings.ISettingsSection`1.Save(System.Action{`0})">
+        <member name="M:Mocha.Settings.ISettingsSection`1.Save(`0)">
+            <summary>
+            Saves settings to non-volatile memory.
+            </summary>
+            <param name="settings">Settings to be saved.</param>
+        </member>
+        <member name="M:Mocha.Settings.ISettingsSection`1.Update(System.Action{`0})">
             <summary>
             Changes the settings by invoking given delegate and then 
             saves them to non-volatile memory.
             </summary>
-            <param name="setSettings">Delegate which changes the settings.</param>
+            <param name="updateAction">Delegate which changes the settings.</param>
         </member>
         <member name="T:Mocha.Settings.ISettingsSectionBase">
             <summary>
             Serves as a base interface for <see cref="T:Mocha.Settings.ISettingsSection`1"/>.
             </summary>
         </member>
-        <member name="M:Mocha.Settings.ISettingsSectionBase.Load">
-            <summary>
-            Reloads values from persistent storage.
-            </summary>
-        </member>
-        <member name="M:Mocha.Settings.ISettingsSectionBase.RestoreDefault">
+        <member name="M:Mocha.Settings.ISettingsSectionBase.RestoreDefaults">
             <summary>
             Restores section to its default values.
-            </summary>
-        </member>
-        <member name="M:Mocha.Settings.ISettingsSectionBase.Save">
-            <summary>
-            Saves settings to non-volatile memory.
             </summary>
         </member>
         <member name="T:Mocha.Settings.SettingsManager">
