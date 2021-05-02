@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Mocha.Settings
 {
@@ -17,10 +18,21 @@ namespace Mocha.Settings
         T Load();
 
         /// <summary>
+        /// Asynchronously returns settings assocaited with this section saved in non-volatile memory. 
+        /// </summary>
+        Task<T> LoadAsync();
+
+        /// <summary>
         /// Saves settings to non-volatile memory.
         /// </summary>
         /// <param name="settings">Settings to be saved.</param>
         void Save(T settings);
+
+        /// <summary>
+        /// Asynchronously saves settings to non-volatile memory.
+        /// </summary>
+        /// <param name="settings">Settings to be saved.</param>
+        Task SaveAsync(T settings);
 
         /// <summary>
         /// Changes the settings by invoking given delegate and then 
@@ -28,5 +40,12 @@ namespace Mocha.Settings
         /// </summary>
         /// <param name="updateAction">Delegate which changes the settings.</param>
         void Update(Action<T> updateAction);
+
+        /// <summary>
+        /// Asynchronously changes the settings by invoking given delegate and then 
+        /// saves them to non-volatile memory.
+        /// </summary>
+        /// <param name="updateAction">Delegate which changes the settings.</param>
+        Task UpdateAsync(Action<T> updateAction);
     }
 }

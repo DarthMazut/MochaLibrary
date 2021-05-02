@@ -49,8 +49,9 @@ namespace MochaWPFTestApp
         async void OnLoaded()
         {
             await Navigator.NavigateAsync(NavigationModules.Page1);
+            ISettingsSection<GeneralSettings> settings = SettingsManager.Retrieve<GeneralSettings>("myCustomSettings1");
 
-            SettingsManager.Retrieve<GeneralSettings>("myCustomSettings1").Update(s => 
+            await settings.UpdateAsync(s =>
             {
                 s.MySetting1 = "xxx";
                 s.MySetting2 = "yyy";

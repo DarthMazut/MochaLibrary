@@ -712,15 +712,33 @@
             Returns settings assocaited with this section saved in non-volatile memory. 
             </summary>
         </member>
+        <member name="M:Mocha.Settings.ISettingsSection`1.LoadAsync">
+            <summary>
+            Asynchronously returns settings assocaited with this section saved in non-volatile memory. 
+            </summary>
+        </member>
         <member name="M:Mocha.Settings.ISettingsSection`1.Save(`0)">
             <summary>
             Saves settings to non-volatile memory.
             </summary>
             <param name="settings">Settings to be saved.</param>
         </member>
+        <member name="M:Mocha.Settings.ISettingsSection`1.SaveAsync(`0)">
+            <summary>
+            Asynchronously saves settings to non-volatile memory.
+            </summary>
+            <param name="settings">Settings to be saved.</param>
+        </member>
         <member name="M:Mocha.Settings.ISettingsSection`1.Update(System.Action{`0})">
             <summary>
             Changes the settings by invoking given delegate and then 
+            saves them to non-volatile memory.
+            </summary>
+            <param name="updateAction">Delegate which changes the settings.</param>
+        </member>
+        <member name="M:Mocha.Settings.ISettingsSection`1.UpdateAsync(System.Action{`0})">
+            <summary>
+            Asynchronously changes the settings by invoking given delegate and then 
             saves them to non-volatile memory.
             </summary>
             <param name="updateAction">Delegate which changes the settings.</param>
@@ -733,6 +751,11 @@
         <member name="M:Mocha.Settings.ISettingsSectionBase.RestoreDefaults">
             <summary>
             Restores section to its default values.
+            </summary>
+        </member>
+        <member name="M:Mocha.Settings.ISettingsSectionBase.RestoreDefaultsAsync">
+            <summary>
+            Asynchronously restores section to its default values.
             </summary>
         </member>
         <member name="T:Mocha.Settings.SettingsManager">

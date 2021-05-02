@@ -15,6 +15,7 @@ namespace MochaWPF.Settings
     /// <typeparam name="T">Type of settings section.</typeparam>
     public class ApplicationSettingsSection<T> : ISettingsSection<T> where T : class, new()
     {
+        private readonly object _syncLock = new object();
         private readonly ApplicationSettingsBase _appSettings;
         private readonly string _settingName;
 
@@ -43,9 +44,7 @@ namespace MochaWPF.Settings
             _settingName = settingName;
         }
 
-        /// <summary>
-        /// Returns settings assocaited with this section saved in non-volatile memory. 
-        /// </summary>
+        /// <inheritdoc/>
         public T Load()
         {
             if (_appSettings[_settingName] == null)
@@ -56,10 +55,7 @@ namespace MochaWPF.Settings
             return (T)_appSettings[_settingName];
         }
 
-        /// <summary>
-        /// Saves settings to non-volatile memory.
-        /// </summary>
-        /// <param name="settings">Settings to be saved.</param>
+        /// <inheritdoc/>
         public void Save(T settings)
         {
             if (settings is null) throw new ArgumentNullException();
@@ -68,11 +64,7 @@ namespace MochaWPF.Settings
             _appSettings.Save();
         }
 
-        /// <summary>
-        /// Changes the settings by invoking given delegate and then 
-        /// saves them to non-volatile memory.
-        /// </summary>
-        /// <param name="updateAction">Delegate which changes the settings.</param>
+        /// <inheritdoc/>
         public void Update(Action<T> updateAction)
         {
             if (updateAction is null) throw new ArgumentNullException();
@@ -82,12 +74,58 @@ namespace MochaWPF.Settings
             Save(settings);
         }
 
-        /// <summary>
-        /// Restores section to its default values.
-        /// </summary>
+        /// <inheritdoc/>
         public void RestoreDefaults()
         {
             _appSettings.Reset();
+        }
+
+        /// <inheritdoc/>
+        public Task RestoreDefaultsAsync()
+        {
+            return Task.Run(() => 
+            {
+                lock (_syncLock)
+                {
+                    RestoreDefaults();
+                }
+            });
+        }
+
+        /// <inheritdoc/>
+        public Task<T> LoadAsync()
+        {
+            return Task.Run(() =>
+            {
+                lock (_syncLock)
+                {
+                    return Load();
+                }
+            });
+        }
+
+        /// <inheritdoc/>
+        public Task SaveAsync(T settings)
+        {
+            return Task.Run(() => 
+            {
+                lock (_syncLock)
+                {
+                    Save(settings);
+                }
+            });
+        }
+
+        /// <inheritdoc/>
+        public Task UpdateAsync(Action<T> updateAction)
+        {
+            return Task.Run(() =>
+            {
+                lock (_syncLock)
+                {
+                    UpdateAsync(updateAction);
+                }
+            });
         }
     }
 }

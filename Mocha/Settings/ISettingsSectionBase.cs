@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Mocha.Settings
 {
@@ -13,5 +14,10 @@ namespace Mocha.Settings
         /// Restores section to its default values.
         /// </summary>
         void RestoreDefaults();
+
+        /// <summary>
+        /// Asynchronously restores section to its default values.
+        /// </summary>
+        Task RestoreDefaultsAsync();
     }
 }
