@@ -123,7 +123,7 @@ namespace MochaWPF.Settings
             {
                 lock (_syncLock)
                 {
-                    UpdateAsync(updateAction);
+                    Update(updateAction);
                 }
             });
         }

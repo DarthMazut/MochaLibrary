@@ -337,6 +337,43 @@
             Defines a predefined buttons set for displaying dialog.
             </summary>
         </member>
+        <member name="T:Mocha.Dispatching.DispatcherManager">
+            <summary>
+            Allows for registering and retrieving <see cref="T:Mocha.Dispatching.IDispatcher"/> object
+            which allows for code execution on the application Main Thread in MVVM architecure.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dispatching.DispatcherManager.SetMainThreadDispatcher(Mocha.Dispatching.IDispatcher)">
+            <summary>
+            Sets an <see cref="T:Mocha.Dispatching.IDispatcher"/> implementation which allows 
+            for code execution on the application Main Thread
+            </summary>
+            <param name="dispatcher">Object implementing <see cref="T:Mocha.Dispatching.IDispatcher"/> interface.</param>
+        </member>
+        <member name="M:Mocha.Dispatching.DispatcherManager.GetMainThreadDispatcher">
+            <summary>
+            Returns registered <see cref="T:Mocha.Dispatching.IDispatcher"/> implementation.
+            Throws if dispatcher hasn't been registered.
+            </summary>
+            <exception cref="T:System.NullReferenceException"/>
+        </member>
+        <member name="T:Mocha.Dispatching.IDispatcher">
+            <summary>
+            Allows for code execution on Main/UI Thread.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dispatching.IDispatcher.RunOnMainThread(System.Action)">
+            <summary>
+            Executes given delegate on Main Thread and blocks until execution in finished.
+            </summary>
+            <param name="action">Delegate to be executed on Main Thread</param>
+        </member>
+        <member name="M:Mocha.Dispatching.IDispatcher.EnqueueOnMainThread(System.Action)">
+            <summary>
+            Enqueues given delegate to be executed by Main Thread when possible.
+            </summary>
+            <param name="action">Delegate to be enqueued</param>
+        </member>
         <member name="T:Mocha.Navigation.INavigatable">
             <summary>
             Allows implementing class to participate in the navigation process. 

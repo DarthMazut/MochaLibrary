@@ -17,6 +17,9 @@ using MochaWPF.Settings;
 using MochaWPF.Dialogs;
 using MochaWPF.Navigation;
 using MochaWPFTestApp.Settings;
+using Mocha.Dispatching;
+using MochaWPF.Dispatching;
+
 
 namespace MochaWPFTestApp
 {
@@ -69,6 +72,9 @@ namespace MochaWPFTestApp
 
             SettingsManager.Register("myCustomSettings1", new ApplicationSettingsSection<GeneralSettings>(MochaWPFTestApp.Properties.Settings.Default, "general"));
 
+            // Dispatching
+
+            DispatcherManager.SetMainThreadDispatcher(new WpfDispatcher(this));
         }
     }
 }
