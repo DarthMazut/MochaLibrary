@@ -119,6 +119,26 @@
             requested by <see cref="M:Mocha.Dialogs.DialogManager.GetDialog(System.String)"/> method but not yet disposed.
             </summary>
         </member>
+        <member name="T:Mocha.Dialogs.Extensions.DI.DialogFactory">
+            <summary>
+            Provides an implementation of <see cref="T:Mocha.Dialogs.Extensions.DI.IDialogFactory"/> interface.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.Extensions.DI.DialogFactory.Create``1(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Mocha.Dialogs.Extensions.DI.IDialogFactory">
+            <summary>
+            Provides an interface for <see cref="T:Mocha.Dialogs.IDialogModule`1"/> instantiation. Use it with Dependency Injection pattern.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.Extensions.DI.IDialogFactory.Create``1(System.String)">
+            <summary>
+            Creates an instance of specified <see cref="T:Mocha.Dialogs.IDialogModule`1"/> type.
+            </summary>
+            <typeparam name="T">Type of internal <see cref="T:Mocha.Dialogs.DialogControl"/> object.</typeparam>
+            <param name="id">Specifies the dialog identifier.</param>
+        </member>
         <member name="T:Mocha.Dialogs.Extensions.FileDialogControl">
             <summary>
             Exposes API for file dialog interaction.

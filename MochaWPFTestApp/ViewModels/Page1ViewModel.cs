@@ -1,5 +1,6 @@
 ﻿using Mocha.Dialogs;
 using Mocha.Dialogs.Extensions;
+using Mocha.Dialogs.Extensions.DI;
 using Mocha.Navigation;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -79,7 +80,7 @@ namespace MochaWPFTestApp.ViewModels
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
-                IDialogModule<StandardDialogControl> dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
+                IDialogModule<StandardDialogControl> dialog = new DialogFactory().Create<StandardDialogControl>(DialogsIDs.MsgBoxDialog); // MochaWPFTestApp.Dialogs.MsgBoxDialog;
                 dialog.DataContext.DialogControl.Title = "Title";
                 dialog.DataContext.DialogControl.Message = "OnNavigatedTo :)";
                 dialog.DataContext.DialogControl.PredefinedButtons = "OK";
