@@ -137,7 +137,7 @@ namespace MochaWPF.Dialogs
         public virtual void SetDataContext(IDialog dialog)
         {
             DataContext = dialog;
-            // SetBehaviors();
+            dialog.DialogControl.Activate(this);
         }
 
         /// <summary>
@@ -255,14 +255,6 @@ namespace MochaWPF.Dialogs
             }
         }
 
-        ///// <summary>
-        ///// Sets up <see cref="DialogBehaviors"/> for given <see cref="IDialog"/> backend.
-        ///// </summary>
-        //protected virtual void SetBehaviors()
-        //{
-        //    DataContext.DialogActions = new DialogActions(this);
-        //}
-
         /// <summary>
         /// Sets *DataContext* on view object.
         /// </summary>
@@ -367,5 +359,30 @@ namespace MochaWPF.Dialogs
             string currentMember = MethodBase.GetCurrentMethod().Name;
             return $"{currentMember} method was not defined. To use this method please override {currentMember} when deriving from {GetType()} class.";
         }
+    }
+
+    /// <summary>
+    /// Provides a base class for implementation of <see cref="IDialogModule"/> for WPF apps.
+    /// </summary>
+    /// <typeparam name="T">Specifies statically typed parameters for the associated dialog logic.</typeparam>
+    public abstract class BaseDialogModule<T> : BaseDialogModule, IDialogModule<T> where T : DialogControl
+    {
+        /// <summary>
+        /// An <see cref="IDialog"/> object bounded to <see cref="BaseDialogModule.View"/>
+        /// instance by *DataBinding* mechanism.
+        /// </summary>
+        new public IDialog<T> DataContext => base.DataContext as IDialog<T>;
+
+        /// <summary>
+        /// Returns a new instance of <see cref="BaseDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
+        /// <param name="dataContext">A default dialog logic bounded to <see cref="BaseDialogModule"/> by *DataContext* mechanism.</param>
+        protected BaseDialogModule(Application application, IDialog dataContext) : base(application, dataContext) 
+        {
+            SetDataContext(dataContext ?? new SimpleDialogData<T>());
+        }
+
+       
     }
 }

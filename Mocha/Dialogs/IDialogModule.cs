@@ -94,4 +94,17 @@ namespace Mocha.Dialogs
         /// </summary>
         void Close();
     }
+
+    /// <summary>
+    /// Exposes methods and properties for interaction with technology-independent dialog representation.
+    /// </summary>
+    /// <typeparam name="T">Specifies statically typed parameters for the associated dialog logic.</typeparam>
+    public interface IDialogModule<T> : IDialogModule where T : DialogControl
+    {
+        /// <summary>
+        /// An <see cref="IDialog"/> object bounded to <see cref="IDialogModule.View"/>
+        /// instance by *DataBinding* mechanism.
+        /// </summary>
+        new IDialog<T> DataContext { get; }
+    }
 }

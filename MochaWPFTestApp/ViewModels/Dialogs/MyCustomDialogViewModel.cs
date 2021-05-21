@@ -1,4 +1,5 @@
 ﻿using Mocha.Dialogs;
+using Mocha.Dialogs.Extensions;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
 
         private void OnOpening(object sender, EventArgs e)
         {
-            using (IDialogModule msgBoxDialog = MochaWPFTestApp.Dialogs.MsgBoxDialog)
+            using (IDialogModule<StandardDialogControl> msgBoxDialog = MochaWPFTestApp.Dialogs.MsgBoxDialog)
             {
                 msgBoxDialog.DataContext.DialogControl.Message = "Dialog just displayed";
                 msgBoxDialog.ShowModal();
@@ -37,7 +38,7 @@ namespace MochaWPFTestApp.ViewModels.Dialogs
 
         private async void OpenDialog()
         {
-            IDialogModule dialog = MochaWPFTestApp.Dialogs.OpenDialog;
+            IDialogModule<FileDialogControl> dialog = MochaWPFTestApp.Dialogs.OpenDialog;
             dialog.DataContext.DialogControl.Title = "My dialog title";
             dialog.DataContext.DialogControl.InitialDirectory = @"C:\Systemowe";
             dialog.DataContext.DialogControl.Parent = this;

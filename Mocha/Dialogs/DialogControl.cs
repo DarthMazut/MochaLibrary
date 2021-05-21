@@ -10,8 +10,8 @@ namespace Mocha.Dialogs
     /// </summary>
     public class DialogControl : IDisposable
     {
-        private readonly Dictionary<string, object> _customParameterDictionary = new Dictionary<string, object>();
-        private readonly IDialog _dialog;
+        private readonly Dictionary<string, object> _parameters = new Dictionary<string, object>();
+        private IDialog _dialog;
         private IDialogModule _module;
         private Action _closeAction;
         
@@ -19,11 +19,6 @@ namespace Mocha.Dialogs
         /// Describes the result of dialog interaction.
         /// </summary>
         public bool? DialogResult { get; set; }
-
-        /// <summary>
-        /// Value retrieved as a result of dialog interaction. 
-        /// </summary>
-        public object DialogValue { get; set; }
 
         /// <summary>
         /// Parent element which called a dialog parametrized by this instance.
@@ -37,39 +32,9 @@ namespace Mocha.Dialogs
         public string Title { get; set; }
 
         /// <summary>
-        /// Message for displaying dialog.
-        /// </summary>
-        public string Message { get; set; }
-
-        /// <summary>
-        /// Icon for displaying dialog.
-        /// </summary>
-        public string Icon { get; set; }
-
-        /// <summary>
-        /// Defines a predefined buttons set for displaying dialog.
-        /// </summary>
-        public string PredefinedButtons { get; set; }
-
-        /// <summary>
-        /// Defines a filter for Open/Save dialog.
-        /// </summary>
-        public string Filter { get; set; }
-
-        /// <summary>
-        /// Sets initial directory for Open/Save dialog.
-        /// </summary>
-        public string InitialDirectory { get; set; }
-
-        /// <summary>
-        /// Extension added automatically in case none was specified.
-        /// </summary>
-        public string DefaultExtension { get; set; }
-
-        /// <summary>
         /// Allows for storage of custom parameters.
         /// </summary>
-        public Dictionary<string, object> Dictionary => _customParameterDictionary;
+        public Dictionary<string, object> Parameters => _parameters;
 
         /// <summary>
         /// Fires when dialog is displayed.
@@ -101,6 +66,43 @@ namespace Mocha.Dialogs
         }
 
         /// <summary>
+        /// Tries to fetch parameter corresponding to specified key from
+        /// <see cref="Parameters"/> dictionary. Returns default value of
+        /// expected type in case of type mismatch or no parameter was found.
+        /// </summary>
+        /// <typeparam name="T">Expected type of retrieving value.</typeparam>
+        /// <param name="key">Parameter key.</param>
+        public T GetParameter<T>(string key)
+        {
+            if (Parameters.TryGetValue(key, out object parameter))
+            {
+                if (parameter is T value)
+                {
+                    return value;
+                }
+            }
+
+            return default(T);
+        }
+
+        /// <summary>
+        /// Adds or updates specified parameter within <see cref="Parameters"/> dictionary.
+        /// </summary>
+        /// <param name="key">Parameter key.</param>
+        /// <param name="value">Value to be added or updated.</param>
+        public void SetParameter(string key, object value)
+        {
+            if (Parameters.ContainsKey(key))
+            {
+                Parameters[key] = value;
+            }
+            else
+            {
+                Parameters.Add(key, value);
+            }
+        }
+
+        /// <summary>
         /// Closes the dialog if open.
         /// </summary>
         public void Close()
@@ -114,15 +116,16 @@ namespace Mocha.Dialogs
         public void Dispose()
         {
             UnsubscribeAll();
+            _closeAction = null;
         }
 
-        internal void SetBehaviours(IDialogModule module)
+        /// <summary>
+        /// Performs operations to bind specified <see cref="IDialogModule"/> with this instance.
+        /// </summary>
+        /// <param name="module">Module to bind with this instance.</param>
+        public void Activate(IDialogModule module)
         {
             _closeAction = module.Close;
-        }
-
-        internal void ActivateSubscribtion()
-        {
             _module = FindCorrespondingModule(_dialog);
             SubscribeAll();
         }
@@ -142,6 +145,10 @@ namespace Mocha.Dialogs
 
         private void SubscribeAll()
         {
+            // This ensures that even when Activate() is called multiple times
+            // we do not end up with redundant subscribtions
+            UnsubscribeAll(); 
+
             if (_module != null)
             {
                 _module.Closing += OnClosing;

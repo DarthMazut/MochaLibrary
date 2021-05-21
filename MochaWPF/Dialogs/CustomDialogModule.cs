@@ -13,6 +13,9 @@ namespace MochaWPF.Dialogs
     /// </summary>
     public class CustomDialogModule : BaseDialogModule
     {
+        /// <summary>
+        /// Technology specific view object (<see cref="Window"/>).
+        /// </summary>
         protected Window _view;
 
         /// <summary>

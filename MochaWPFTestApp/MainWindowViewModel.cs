@@ -1,4 +1,5 @@
 ﻿using Mocha.Dialogs;
+using Mocha.Dialogs.Extensions;
 using Mocha.Navigation;
 using Mocha.Settings;
 using MochaWPFTestApp.Settings;
@@ -54,6 +55,9 @@ namespace MochaWPFTestApp
                 s.MySetting1 = "xxx";
                 s.MySetting2 = "yyy";
             });
+
+            IDialogModule<FileDialogControl> dialog;
+            //dialog.DataContext.DialogControl
         }
 
         async void NavigateToPage1()

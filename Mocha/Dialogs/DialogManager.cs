@@ -89,9 +89,6 @@ namespace Mocha.Dialogs
                     _activeDialogs[id].Remove(s as IDialogModule);
                 }
             };
-
-            dialog.DataContext.DialogControl.SetBehaviours(dialog);
-            dialog.DataContext.DialogControl.ActivateSubscribtion();
         }
     }
 }

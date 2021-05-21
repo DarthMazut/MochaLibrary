@@ -1,4 +1,5 @@
 ﻿using Mocha.Dialogs;
+using Mocha.Dialogs.Extensions;
 using Mocha.Navigation;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -46,7 +47,7 @@ namespace MochaWPFTestApp.ViewModels
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
-                IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
+                IDialogModule<StandardDialogControl> dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
                 dialog.DataContext.DialogControl.Title = "Title";
                 dialog.DataContext.DialogControl.Message = "OnNavigatingTo :)";
                 dialog.DataContext.DialogControl.PredefinedButtons = "OK";
@@ -61,7 +62,7 @@ namespace MochaWPFTestApp.ViewModels
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
-                IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
+                IDialogModule<StandardDialogControl> dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
                 dialog.DataContext.DialogControl.Title = "Title";
                 dialog.DataContext.DialogControl.Message = "OnNavigatingFrom :)";
                 dialog.DataContext.DialogControl.PredefinedButtons = "OK";
@@ -78,7 +79,7 @@ namespace MochaWPFTestApp.ViewModels
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
-                IDialogModule dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
+                IDialogModule<StandardDialogControl> dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
                 dialog.DataContext.DialogControl.Title = "Title";
                 dialog.DataContext.DialogControl.Message = "OnNavigatedTo :)";
                 dialog.DataContext.DialogControl.PredefinedButtons = "OK";

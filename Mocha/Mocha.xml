@@ -14,11 +14,6 @@
             Describes the result of dialog interaction.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl.DialogValue">
-            <summary>
-            Value retrieved as a result of dialog interaction. 
-            </summary>
-        </member>
         <member name="P:Mocha.Dialogs.DialogControl.Parent">
             <summary>
             Parent element which called a dialog parametrized by this instance.
@@ -30,37 +25,7 @@
             Title for displaying dialog.
             </summary>
         </member>
-        <member name="P:Mocha.Dialogs.DialogControl.Message">
-            <summary>
-            Message for displaying dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogControl.Icon">
-            <summary>
-            Icon for displaying dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogControl.PredefinedButtons">
-            <summary>
-            Defines a predefined buttons set for displaying dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogControl.Filter">
-            <summary>
-            Defines a filter for Open/Save dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogControl.InitialDirectory">
-            <summary>
-            Sets initial directory for Open/Save dialog.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogControl.DefaultExtension">
-            <summary>
-            Extension added automatically in case none was specified.
-            </summary>
-        </member>
-        <member name="P:Mocha.Dialogs.DialogControl.Dictionary">
+        <member name="P:Mocha.Dialogs.DialogControl.Parameters">
             <summary>
             Allows for storage of custom parameters.
             </summary>
@@ -91,6 +56,22 @@
             Pass <see langword="this"/> here.
             </param>
         </member>
+        <member name="M:Mocha.Dialogs.DialogControl.GetParameter``1(System.String)">
+            <summary>
+            Tries to fetch parameter corresponding to specified key from
+            <see cref="P:Mocha.Dialogs.DialogControl.Parameters"/> dictionary. Returns default value of
+            expected type in case of type mismatch or no parameter was found.
+            </summary>
+            <typeparam name="T">Expected type of retrieving value.</typeparam>
+            <param name="key">Parameter key.</param>
+        </member>
+        <member name="M:Mocha.Dialogs.DialogControl.SetParameter(System.String,System.Object)">
+            <summary>
+            Adds or updates specified parameter within <see cref="P:Mocha.Dialogs.DialogControl.Parameters"/> dictionary.
+            </summary>
+            <param name="key">Parameter key.</param>
+            <param name="value">Value to be added or updated.</param>
+        </member>
         <member name="M:Mocha.Dialogs.DialogControl.Close">
             <summary>
             Closes the dialog if open.
@@ -100,6 +81,12 @@
             <summary>
             Perform cleaning operations allowing this object to be garbage collected.
             </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.DialogControl.Activate(Mocha.Dialogs.IDialogModule)">
+            <summary>
+            Performs operations to bind specified <see cref="T:Mocha.Dialogs.IDialogModule"/> with this instance.
+            </summary>
+            <param name="module">Module to bind with this instance.</param>
         </member>
         <member name="T:Mocha.Dialogs.DialogManager">
             <summary>
@@ -132,14 +119,88 @@
             requested by <see cref="M:Mocha.Dialogs.DialogManager.GetDialog(System.String)"/> method but not yet disposed.
             </summary>
         </member>
+        <member name="T:Mocha.Dialogs.Extensions.FileDialogControl">
+            <summary>
+            Exposes API for file dialog interaction.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.Extensions.FileDialogControl.#ctor(Mocha.Dialogs.IDialog)">
+            <summary>
+            Returns new instance of <see cref="T:Mocha.Dialogs.Extensions.FileDialogControl"/> class.
+            </summary>
+            <param name="dialog">
+            An <see cref="T:Mocha.Dialogs.IDialog`1"/> implementation which hosts this instance.
+            Pass <see langword="this"/> here.
+            </param>
+        </member>
+        <member name="P:Mocha.Dialogs.Extensions.FileDialogControl.SelectedPath">
+            <summary>
+            Path selected as a result of interaction with file dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.Extensions.FileDialogControl.Filter">
+            <summary>
+            Defines a filter for Open/Save dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.Extensions.FileDialogControl.InitialDirectory">
+            <summary>
+            Sets initial directory for Open/Save dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.Extensions.FileDialogControl.DefaultExtension">
+            <summary>
+            Extension added automatically in case none was specified.
+            </summary>
+        </member>
+        <member name="T:Mocha.Dialogs.Extensions.StandardDialogControl">
+            <summary>
+            Exposes API for standard dialog interaction.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.Extensions.StandardDialogControl.#ctor(Mocha.Dialogs.IDialog)">
+            <summary>
+            Returns new instance of <see cref="T:Mocha.Dialogs.Extensions.StandardDialogControl"/> class.
+            </summary>
+            <param name="dialog">
+            An <see cref="T:Mocha.Dialogs.IDialog`1"/> implementation which hosts this instance.
+            Pass <see langword="this"/> here.
+            </param>
+        </member>
+        <member name="P:Mocha.Dialogs.Extensions.StandardDialogControl.Message">
+            <summary>
+            Message for displaying dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.Extensions.StandardDialogControl.Icon">
+            <summary>
+            Icon for displaying dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.Extensions.StandardDialogControl.PredefinedButtons">
+            <summary>
+            Defines a predefined buttons set for displaying dialog.
+            </summary>
+        </member>
         <member name="T:Mocha.Dialogs.IDialog">
             <summary> 
-            Marks implementing class as a data for <see cref="T:Mocha.Dialogs.IDialogModule"/>.
+            Marks implementing class as dialog logic.
             </summary>
         </member>
         <member name="P:Mocha.Dialogs.IDialog.DialogControl">
             <summary>
-            Exposes API for dialog interaction.
+            Exposes API for dialog management.
+            </summary>
+        </member>
+        <member name="T:Mocha.Dialogs.IDialog`1">
+            <summary>
+            Marks implementing class as dialog logic.
+            </summary>
+            <typeparam name="T">Specifies statically typed parameters for the associated dialog.</typeparam>
+        </member>
+        <member name="P:Mocha.Dialogs.IDialog`1.DialogControl">
+            <summary>
+            Exposes API for dialog management.
             </summary>
         </member>
         <member name="T:Mocha.Dialogs.IDialogModule">
@@ -222,6 +283,58 @@
         <member name="M:Mocha.Dialogs.IDialogModule.Close">
             <summary>
             Closes the dialog if open.
+            </summary>
+        </member>
+        <member name="T:Mocha.Dialogs.IDialogModule`1">
+            <summary>
+            Exposes methods and properties for interaction with technology-independent dialog representation.
+            </summary>
+            <typeparam name="T">Specifies statically typed parameters for the associated dialog logic.</typeparam>
+        </member>
+        <member name="P:Mocha.Dialogs.IDialogModule`1.DataContext">
+            <summary>
+            An <see cref="T:Mocha.Dialogs.IDialog"/> object bounded to <see cref="P:Mocha.Dialogs.IDialogModule.View"/>
+            instance by *DataBinding* mechanism.
+            </summary>
+        </member>
+        <member name="T:Mocha.Dialogs.StandardDialogParameters">
+            <summary>
+            Contains standarized keys for dialog parameters.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.StandardDialogParameters.SelectedPath">
+            <summary>
+            Path selected as a result of interaction with file dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.StandardDialogParameters.Filter">
+            <summary>
+            Defines a filter for Open/Save dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.StandardDialogParameters.InitialDirectory">
+            <summary>
+            Sets initial directory for Open/Save dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.StandardDialogParameters.DefaultExtension">
+            <summary>
+            Extension added automatically in case none was specified.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.StandardDialogParameters.Message">
+            <summary>
+            Message for displaying dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.StandardDialogParameters.Icon">
+            <summary>
+            Icon for displaying dialog.
+            </summary>
+        </member>
+        <member name="P:Mocha.Dialogs.StandardDialogParameters.PredefinedButtons">
+            <summary>
+            Defines a predefined buttons set for displaying dialog.
             </summary>
         </member>
         <member name="T:Mocha.Navigation.INavigatable">
@@ -642,6 +755,44 @@
             </summary>
             <typeparam name="T">Type of settings section.</typeparam>
             <param name="id">Id of settings section to be retrieved.</param>
+        </member>
+        <member name="T:MochaWPF.SimpleDialogData">
+            <summary>
+            Sometimes you don't need a custom logic for particular dialog. Use <see cref="T:MochaWPF.SimpleDialogData"/>
+            to satisfy backend requirement for <see cref="T:Mocha.Dialogs.IDialogModule"/> when no specific backend is needed.
+            </summary>
+        </member>
+        <member name="P:MochaWPF.SimpleDialogData.DialogControl">
+            <summary>
+            Exposes API for dialog interaction.
+            </summary>
+        </member>
+        <member name="M:MochaWPF.SimpleDialogData.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:MochaWPF.SimpleDialogData"/> class. 
+            </summary>
+        </member>
+        <member name="T:MochaWPF.SimpleDialogData`1">
+            <summary>
+            Sometimes you don't need a custom logic for particular dialog. Use <see cref="T:MochaWPF.SimpleDialogData"/>
+            to satisfy backend requirement for <see cref="T:Mocha.Dialogs.IDialogModule"/> when no specific backend is needed.
+            </summary>
+            <typeparam name="T">Specifies statically typed parameters for the associated dialog.</typeparam>
+        </member>
+        <member name="P:MochaWPF.SimpleDialogData`1.DialogControl">
+            <summary>
+            Exposes API for dialog interaction.
+            </summary>
+        </member>
+        <member name="P:MochaWPF.SimpleDialogData`1.Mocha#Dialogs#IDialog#DialogControl">
+            <summary>
+            Exposes API for dialog interaction.
+            </summary>
+        </member>
+        <member name="M:MochaWPF.SimpleDialogData`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:MochaWPF.SimpleDialogData`1"/> class. 
+            </summary>
         </member>
     </members>
 </doc>

@@ -30,7 +30,7 @@ namespace MochaWPFTestApp.ViewModels
             using (IDialogModule myDialog = MochaWPFTestApp.Dialogs.CustomDialog1)
             {
                 myDialog.DataContext.DialogControl.Title = "Title";
-                myDialog.DataContext.DialogControl.Message = "Hello World";
+                //myDialog.DataContext.DialogControl.Message = "Hello World";
 
                 myDialog.DataContext.DialogControl.Opened += (s, e) =>
                 {

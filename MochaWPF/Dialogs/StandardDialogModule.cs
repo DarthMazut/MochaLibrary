@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Mocha.Dialogs;
+using Mocha.Dialogs.Extensions;
 
 namespace MochaWPF.Dialogs
 {
     /// <summary>
     /// Provides an implementation of windows <see cref="MessageBox"/> for WPF app.
     /// </summary>
-    public class StandardDialogModule : BaseDialogModule
+    public class StandardDialogModule : BaseDialogModule<StandardDialogControl>
     {
         /// <summary>
         /// There is no view object which represents WPF <see cref="MessageBox"/> dialog
@@ -119,20 +120,28 @@ namespace MochaWPF.Dialogs
         }
 
         #region SEALED MEMBERS
-
+        /// <inheritdoc/>
         protected sealed override void Customize(DialogControl dialogControl) => base.Customize(dialogControl);
+        /// <inheritdoc/>
         protected sealed override Window GetParentWindow() => base.GetParentWindow();
-        //protected sealed override void SetBehaviors() => base.SetBehaviors();
+        /// <inheritdoc/>
         public sealed override void SetDataContext(IDialog dialog) => base.SetDataContext(dialog);
+        /// <inheritdoc/>
         protected sealed override void SetParent(Window parentWindow) => base.SetParent(parentWindow);
+        /// <inheritdoc/>
         public sealed override void Show() => base.Show();
+        /// <inheritdoc/>
         public sealed override Task ShowAsync() => base.ShowAsync();
+        /// <inheritdoc/>
         protected sealed override void SetResults(bool? result) => base.SetResults(result);
+        /// <inheritdoc/>
         protected sealed override void ShowCore() => base.ShowCore();
+        /// <inheritdoc/>
         protected sealed override Task ShowCoreAsync() => base.ShowCoreAsync();
+        /// <inheritdoc/>
         public sealed override bool? ShowModal() => base.ShowModal();
+        /// <inheritdoc/>
         public sealed override Task<bool?> ShowModalAsync() => base.ShowModalAsync();
-
         #endregion
     }
 }

@@ -52,7 +52,6 @@
     <Compile Include="Dialogs\FileDialogModule.cs" />
     <Compile Include="Settings\ApplicationSettingsSection.cs" />
     <Compile Include="Dialogs\StandardDialogModule.cs" />
-    <Compile Include="Dialogs\SimpleDialogData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mocha\Mocha.csproj">

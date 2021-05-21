@@ -1,4 +1,5 @@
 ﻿using Mocha.Dialogs;
+using Mocha.Dialogs.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,8 @@ namespace MochaWPFTestApp
     static class Dialogs
     {
         public static IDialogModule CustomDialog1 => DialogManager.GetDialog(DialogsIDs.CustomDialog1);
-        public static IDialogModule MsgBoxDialog => DialogManager.GetDialog(DialogsIDs.MsgBoxDialog);
-        public static IDialogModule OpenDialog => DialogManager.GetDialog(DialogsIDs.OpenDialog);
+        public static IDialogModule<StandardDialogControl> MsgBoxDialog => (IDialogModule<StandardDialogControl>)DialogManager.GetDialog(DialogsIDs.MsgBoxDialog);
+        public static IDialogModule<FileDialogControl> OpenDialog => (IDialogModule<FileDialogControl>)DialogManager.GetDialog(DialogsIDs.OpenDialog);
     }
 
     static class DialogsIDs

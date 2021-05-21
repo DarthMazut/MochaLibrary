@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Win32;
 using Mocha.Dialogs;
+using Mocha.Dialogs.Extensions;
 
 namespace MochaWPF.Dialogs
 {
@@ -14,7 +15,7 @@ namespace MochaWPF.Dialogs
     /// <see cref="FileDialog"/> classes. Use this class for handling Open and Save 
     /// dialogs from Win32 namespace.
     /// </summary>
-    public sealed class FileDialogModule : BaseDialogModule
+    public sealed class FileDialogModule : BaseDialogModule<FileDialogControl>
     {
         private FileDialog _view;
 
@@ -35,7 +36,7 @@ namespace MochaWPF.Dialogs
         /// </summary>
         /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
         /// <param name="dialog">A concrete implementation of <see cref="FileDialog"/> abstract class.</param>
-        /// <param name="dataContext">Provides a backedn data for represented <see cref="FileDialog"/>.</param>
+        /// <param name="dataContext">Provides a backend data for represented <see cref="FileDialog"/>.</param>
         public FileDialogModule(Application application, FileDialog dialog, IDialog dataContext) : base(application, dataContext)
         {
             _view = dialog;
@@ -115,7 +116,7 @@ namespace MochaWPF.Dialogs
 
             if (result == true)
             {
-                DataContext.DialogControl.DialogValue = _view.FileName;
+                DataContext.DialogControl.SelectedPath = _view.FileName;
             }
         }
 
