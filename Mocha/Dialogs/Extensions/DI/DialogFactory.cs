@@ -12,7 +12,7 @@ namespace Mocha.Dialogs.Extensions.DI
         /// <inheritdoc/>
         public IDialogModule<T> Create<T>(string id) where T : DialogControl
         {
-            return DialogManager.GetDialog<T>(id);
+            return (IDialogModule<T>)DialogManager.GetDialog(id);
         }
     }
 }
