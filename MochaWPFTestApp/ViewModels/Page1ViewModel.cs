@@ -32,7 +32,7 @@ namespace MochaWPFTestApp.ViewModels
         public Page1ViewModel()
         {
             Navigator = new Navigator(this, NavigationServices.MainNavigationService);
-            Navigator.SaveCurrent = true;
+            //Navigator.SaveCurrent = true;
 
             //Navigator.NavigatingTo += Navigator_NavigatingTo;
             //Navigator.NavigatingFrom += Navigator_NavigatingFrom;
@@ -73,7 +73,7 @@ namespace MochaWPFTestApp.ViewModels
                 dialog.Dispose();
             }
 
-            NavigationServices.MainNavigationService.ClearCached(NavigationModules.Page1);
+            // NavigationServices.MainNavigationService.ClearCached(NavigationModules.Page1);
         }
 
         public async Task OnNavigatedTo(NavigationData navigationData)

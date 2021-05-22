@@ -12,12 +12,12 @@ namespace Mocha.Navigation
     public class NavigationData
     {
         /// <summary>
-        /// Active <see cref="NavigationModule"/> at the time navigation was requested.
+        /// Active <see cref="INavigationModule"/> at the time navigation was requested.
         /// </summary>
         public INavigationModule PreviousModule { get; set; }
 
         /// <summary>
-        /// <see cref="NavigationModule"/> which requested a navigation transition.
+        /// <see cref="INavigationModule"/> which requested a navigation transition.
         /// </summary>
         public INavigationModule CallingModule { get; set; }
 
@@ -28,7 +28,7 @@ namespace Mocha.Navigation
 
         /// <summary>
         /// If set to <see langword="true"/> unconditionally prevents from loading cached 
-        /// <see cref="NavigationModule"/> instances.
+        /// <see cref="INavigationModule"/> instances.
         /// </summary>
         public bool IgnoreCached { get; set; }
 

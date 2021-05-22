@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MochaWPFTestApp.ViewModels
 {
-    class Page3ViewModel : BindableBase, INavigatable
+    class Page3ViewModel : BindableBase, INavigatable, IOnNavigatingTo
     {
         public Navigator Navigator { get; }
 
@@ -50,7 +50,7 @@ namespace MochaWPFTestApp.ViewModels
         public Page3ViewModel()
         {
             Navigator = new Navigator(this, NavigationServices.MainNavigationService);
-            Navigator.SaveCurrent = true;
+            //Navigator.SaveCurrent = true;
         }
 
         private async void Start()
@@ -86,6 +86,12 @@ namespace MochaWPFTestApp.ViewModels
                 progress.Report(i);
             }
             progress.Report(100);
+        }
+
+        public async Task OnNavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)
+        {
+            e.Cancel = true;
+            await Navigator.NavigateAsync(NavigationModules.Page2);
         }
     }
 }

@@ -497,12 +497,12 @@
         </member>
         <member name="P:Mocha.Navigation.NavigationData.PreviousModule">
             <summary>
-            Active <see cref="!:NavigationModule"/> at the time navigation was requested.
+            Active <see cref="T:Mocha.Navigation.INavigationModule"/> at the time navigation was requested.
             </summary>
         </member>
         <member name="P:Mocha.Navigation.NavigationData.CallingModule">
             <summary>
-            <see cref="!:NavigationModule"/> which requested a navigation transition.
+            <see cref="T:Mocha.Navigation.INavigationModule"/> which requested a navigation transition.
             </summary>
         </member>
         <member name="P:Mocha.Navigation.NavigationData.RequestedModule">
@@ -513,7 +513,7 @@
         <member name="P:Mocha.Navigation.NavigationData.IgnoreCached">
             <summary>
             If set to <see langword="true"/> unconditionally prevents from loading cached 
-            <see cref="!:NavigationModule"/> instances.
+            <see cref="T:Mocha.Navigation.INavigationModule"/> instances.
             </summary>
         </member>
         <member name="P:Mocha.Navigation.NavigationData.Data">
@@ -615,7 +615,7 @@
         </member>
         <member name="E:Mocha.Navigation.NavigationService.NavigationRequested">
             <summary>
-            Fires every time a navigation action has been requested by one of the <see cref="!:IINavigatable"/> object.
+            Fires every time a navigation action has been requested by one of the <see cref="T:Mocha.Navigation.INavigatable"/> object.
             </summary>
         </member>
         <member name="M:Mocha.Navigation.NavigationService.RequestNavigation(Mocha.Navigation.NavigationData)">
@@ -634,13 +634,13 @@
             Removes cached <see cref="T:Mocha.Navigation.INavigatable"/> object of given type. 
             Returns <see langword="true"/> if specified type was found and removed, otherwise <see langword="false"/>.
             </summary>
-            <param name="type">Type to be found and removed from cache.</param>
+            <param name="module">Type to be found and removed from cache.</param>
         </member>
         <member name="M:Mocha.Navigation.NavigationService.CheckCached(Mocha.Navigation.INavigationModule)">
             <summary>
             Checks whether given type it cached.
             </summary>
-            <param name="type">Type to be checked.</param>
+            <param name="module">Type to be checked.</param>
         </member>
         <member name="T:Mocha.Navigation.Navigator">
             <summary>

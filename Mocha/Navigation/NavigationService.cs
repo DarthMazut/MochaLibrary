@@ -23,7 +23,7 @@ namespace Mocha.Navigation
         public INavigationModule CurrentView => _currentView;
 
         /// <summary>
-        /// Fires every time a navigation action has been requested by one of the <see cref="IINavigatable"/> object.
+        /// Fires every time a navigation action has been requested by one of the <see cref="INavigatable"/> object.
         /// </summary>
         public event EventHandler<NavigationData> NavigationRequested;
 
@@ -80,7 +80,7 @@ namespace Mocha.Navigation
         /// Removes cached <see cref="INavigatable"/> object of given type. 
         /// Returns <see langword="true"/> if specified type was found and removed, otherwise <see langword="false"/>.
         /// </summary>
-        /// <param name="type">Type to be found and removed from cache.</param>
+        /// <param name="module">Type to be found and removed from cache.</param>
         public bool ClearCached(INavigationModule module)
         {
             if (module == null) return false;
@@ -89,7 +89,10 @@ namespace Mocha.Navigation
             {
                 if(_moduleComparer.Equals(m, module))
                 {
-                    m.CleanUp();
+                    if(m != module)
+                    {
+                        m.CleanUp();
+                    }
                     return true;
                 }
 
@@ -100,7 +103,7 @@ namespace Mocha.Navigation
         /// <summary>
         /// Checks whether given type it cached.
         /// </summary>
-        /// <param name="type">Type to be checked.</param>
+        /// <param name="module">Type to be checked.</param>
         public bool CheckCached(INavigationModule module)
         {
             return _cachedModules.Contains(module);
@@ -190,9 +193,9 @@ namespace Mocha.Navigation
         private async Task<NavigationResultData> HandleNavigatingFrom(NavigationData navigationData)
         {
             NavigationCancelEventArgs e = new NavigationCancelEventArgs();
-            navigationData.CallingModule?.DataContext.Navigator.OnNavigatingFromBase(navigationData, e);
+            navigationData.PreviousModule?.DataContext.Navigator.OnNavigatingFromBase(navigationData, e);
 
-            if (navigationData.CallingModule.DataContext is IOnNavigatingFrom onNavigatingFrom)
+            if (navigationData.PreviousModule?.DataContext is IOnNavigatingFrom onNavigatingFrom)
             {
                 await onNavigatingFrom.OnNavigatingFrom(navigationData, e);
             }
@@ -225,7 +228,10 @@ namespace Mocha.Navigation
 
         private void CleanUp(NavigationData navigationData)
         {
-            navigationData.PreviousModule?.CleanUp();
+            if (navigationData.PreviousModule != _currentView)
+            {
+                navigationData.PreviousModule?.CleanUp();
+            }
         }
 
         // We know that developers are lazy and so they won't implement properly Equals() on 
