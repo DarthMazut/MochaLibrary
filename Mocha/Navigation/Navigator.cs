@@ -20,35 +20,6 @@ namespace Mocha.Navigation
 
         #endregion
 
-        #region EVENTS
-
-        public delegate void NavigationRequestedEventHandler(NavigationData navigationData, NavigationCancelEventArgs e);
-        public delegate void NavigationEventHandler(NavigationData navigationData);
-
-        /// <summary>
-        /// Fires whenever any <see cref="INavigatable"/> requested a navigation to <see cref="INavigationModule"/> that
-        /// holds this <see cref="Navigator"/> instance. Do not put any set up code here including event subscribtion as 
-        /// navigation can be rejected at this point. Use this event for deciding whether to reject navigation process.
-        /// </summary>
-        public event NavigationRequestedEventHandler NavigatingTo;
-
-        /// <summary>
-        /// Fires whenever <see cref="INavigationModule"/> that holds this <see cref="Navigator"/> instance is currently 
-        /// active and the request has been made to navigate to antoher <see cref="INavigationModule"/> instance.
-        /// Currently active <see cref="Navigator"/> can reject the navigation at this point. Any cleaning code 
-        /// should be put here including unsubscribing from events.
-        /// </summary>
-        public event NavigationRequestedEventHandler NavigatingFrom;
-
-        /// <summary>
-        /// Fires when navigation process is about to finish and new view is displayed.
-        /// This event should contain a set up code for parent <see cref="INavigatable"/>
-        /// including event subscribtion. At this point navigation process cannot be rejected. 
-        /// </summary>
-        public event NavigationEventHandler NavigatedTo;
-
-        #endregion
-
         #region PROPERTIES
 
         /// <summary>
@@ -166,37 +137,9 @@ namespace Mocha.Navigation
 
         #region INTERNAL METHODS
 
-        /// <summary>
-        /// Used internally by <see cref="NavigationService"/>.
-        /// Prepares an <see cref="INavigatable"/> object for which navigation has been requested.
-        /// </summary>
-        /// <param name="navigationData">Details on navigation request.</param>
-        /// <param name="e">Allow to reject navigation request.</param>
-        internal void OnNavigatingToBase(NavigationData navigationData, NavigationCancelEventArgs e)
+        internal void SetHostView(NavigationData navigationData)
         {
             _hostView = navigationData.RequestedModule;
-            NavigatingTo?.Invoke(navigationData, e);
-        }
-
-        /// <summary>
-        /// Used internally by <see cref="NavigationService"/>.
-        /// Prepares an <see cref="INavigatable"/> object for which navigation has been requested.
-        /// </summary>
-        /// <param name="navigationData">Details on navigation request.</param>
-        internal void OnNavigatedToBase(NavigationData navigationData)
-        {
-            NavigatedTo?.Invoke(navigationData);
-        }
-
-        /// <summary>
-        /// Used internally by <see cref="NavigationService"/>.
-        /// Cleans up <see cref="INavigatable"/> object which was currently active.
-        /// </summary>
-        /// <param name="navigationData">Details on navigation request.</param>
-        /// <param name="e">Allow to reject navigation request.</param>
-        internal void OnNavigatingFromBase(NavigationData navigationData, NavigationCancelEventArgs e)
-        {
-            NavigatingFrom?.Invoke(navigationData, e);
         }
 
         #endregion

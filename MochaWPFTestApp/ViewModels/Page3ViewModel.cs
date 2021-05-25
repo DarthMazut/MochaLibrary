@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MochaWPFTestApp.ViewModels
 {
-    class Page3ViewModel : BindableBase, INavigatable, IOnNavigatingTo
+    class Page3ViewModel : BindableBase, INavigatable, IOnNavigatingToAsync
     {
         public Navigator Navigator { get; }
 
@@ -88,7 +88,7 @@ namespace MochaWPFTestApp.ViewModels
             progress.Report(100);
         }
 
-        public async Task OnNavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)
+        public async Task OnNavigatingToAsync(NavigationData navigationData, NavigationCancelEventArgs e)
         {
             e.Cancel = true;
             await Navigator.NavigateAsync(NavigationModules.Page2);

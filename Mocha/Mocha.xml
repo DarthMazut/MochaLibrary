@@ -437,11 +437,26 @@
         </member>
         <member name="T:Mocha.Navigation.IOnNavigatedTo">
             <summary>
+            Allows implementing class to expose an *OnNavigatedTo* method 
+            which is called by <see cref="T:Mocha.Navigation.NavigationService"/> whenever 
+            navigation process is about to finish.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.IOnNavigatedTo.OnNavigatedTo(Mocha.Navigation.NavigationData)">
+            <summary>
+            Called when navigation process is about to finish and new view is displayed.
+            This event should contain a set up code for current <see cref="T:Mocha.Navigation.INavigatable"/>
+            including event subscribtion. At this point navigation process cannot be rejected. 
+            </summary>
+            <param name="navigationData">Details of navigation request.</param>
+        </member>
+        <member name="T:Mocha.Navigation.IOnNavigatedToAsync">
+            <summary>
             Allows implementing class to expose an asynchronous version of
             *OnNavigatedTo* method which is called by <see cref="T:Mocha.Navigation.NavigationService"/>.
             </summary>
         </member>
-        <member name="M:Mocha.Navigation.IOnNavigatedTo.OnNavigatedTo(Mocha.Navigation.NavigationData)">
+        <member name="M:Mocha.Navigation.IOnNavigatedToAsync.OnNavigatedToAsync(Mocha.Navigation.NavigationData)">
             <summary>
             Called when navigation process is about to finish. 
             </summary>
@@ -449,11 +464,28 @@
         </member>
         <member name="T:Mocha.Navigation.IOnNavigatingFrom">
             <summary>
+            Allows implementing class to expose an *OnNavigatingFrom* method 
+            which is called by <see cref="T:Mocha.Navigation.NavigationService"/> whenever 
+            navigation is requested to another <see cref="T:Mocha.Navigation.INavigationModule"/>.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.IOnNavigatingFrom.OnNavigatingFrom(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
+            <summary>
+            Called whenever <see cref="T:Mocha.Navigation.INavigationModule"/> that holds this <see cref="T:Mocha.Navigation.INavigatable"/> instance is currently 
+            active and the request has been made to navigate to antoher <see cref="T:Mocha.Navigation.INavigationModule"/> instance.
+            Currently active <see cref="T:Mocha.Navigation.INavigatable"/> can reject the navigation at this point. Any cleaning code 
+            should be put here including unsubscribing from events.
+            </summary>
+            <param name="navigationData">Details of navigation request.</param>
+            <param name="e">Allows for rejecting current navigation process.</param>
+        </member>
+        <member name="T:Mocha.Navigation.IOnNavigatingFromAsync">
+            <summary>
             Allows implementing class to expose an asynchronous version of
             *OnNavigatingFrom* method which is called by <see cref="T:Mocha.Navigation.NavigationService"/>.
             </summary>
         </member>
-        <member name="M:Mocha.Navigation.IOnNavigatingFrom.OnNavigatingFrom(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
+        <member name="M:Mocha.Navigation.IOnNavigatingFromAsync.OnNavigatingFromAsync(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
             <summary>
             Called when navigation was requested when the owner of this method is currently active. 
             At this point navigation can be rejected.
@@ -463,11 +495,27 @@
         </member>
         <member name="T:Mocha.Navigation.IOnNavigatingTo">
             <summary>
+            Allows implementing class to expose an *OnNavigatingTo* method 
+            which is called by <see cref="T:Mocha.Navigation.NavigationService"/> whenever 
+            navigation is requested to parent <see cref="T:Mocha.Navigation.INavigationModule"/>.
+            </summary>
+        </member>
+        <member name="M:Mocha.Navigation.IOnNavigatingTo.OnNavigatingTo(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
+            <summary>
+            Called whenever any <see cref="T:Mocha.Navigation.INavigatable"/> requested a navigation to <see cref="T:Mocha.Navigation.INavigationModule"/> that
+            holds this <see cref="T:Mocha.Navigation.INavigatable"/> instance. Do not put any set up code here including event subscribtion as 
+            navigation can be rejected at this point. Use this event for deciding whether to reject navigation process.
+            </summary>
+            <param name="navigationData">Details of navigation request.</param>
+            <param name="e">Allows for rejecting current navigation process.</param>
+        </member>
+        <member name="T:Mocha.Navigation.IOnNavigatingToAsync">
+            <summary>
             Allows implementing class to expose an asynchronous version of
             *OnNavigatingTo* method which is called by <see cref="T:Mocha.Navigation.NavigationService"/>.
             </summary>
         </member>
-        <member name="M:Mocha.Navigation.IOnNavigatingTo.OnNavigatingTo(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
+        <member name="M:Mocha.Navigation.IOnNavigatingToAsync.OnNavigatingToAsync(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
             <summary>
             Called when navigation was requested to the owner of this method. At this point navigation
             can be rejected.
@@ -647,28 +695,6 @@
             Exposes API for navigation.
             </summary>
         </member>
-        <member name="E:Mocha.Navigation.Navigator.NavigatingTo">
-            <summary>
-            Fires whenever any <see cref="T:Mocha.Navigation.INavigatable"/> requested a navigation to <see cref="T:Mocha.Navigation.INavigationModule"/> that
-            holds this <see cref="T:Mocha.Navigation.Navigator"/> instance. Do not put any set up code here including event subscribtion as 
-            navigation can be rejected at this point. Use this event for deciding whether to reject navigation process.
-            </summary>
-        </member>
-        <member name="E:Mocha.Navigation.Navigator.NavigatingFrom">
-            <summary>
-            Fires whenever <see cref="T:Mocha.Navigation.INavigationModule"/> that holds this <see cref="T:Mocha.Navigation.Navigator"/> instance is currently 
-            active and the request has been made to navigate to antoher <see cref="T:Mocha.Navigation.INavigationModule"/> instance.
-            Currently active <see cref="T:Mocha.Navigation.Navigator"/> can reject the navigation at this point. Any cleaning code 
-            should be put here including unsubscribing from events.
-            </summary>
-        </member>
-        <member name="E:Mocha.Navigation.Navigator.NavigatedTo">
-            <summary>
-            Fires when navigation process is about to finish and new view is displayed.
-            This event should contain a set up code for parent <see cref="T:Mocha.Navigation.INavigatable"/>
-            including event subscribtion. At this point navigation process cannot be rejected. 
-            </summary>
-        </member>
         <member name="P:Mocha.Navigation.Navigator.SaveCurrent">
             <summary>
             Determines whether <see cref="T:Mocha.Navigation.INavigationModule"/> associated with this
@@ -733,29 +759,6 @@
             Sends navigation request to navigate with specified <see cref="T:Mocha.Navigation.NavigationData"/> object.
             </summary>
             <param name="navigationData">Contains details for requested navigation process.</param>
-        </member>
-        <member name="M:Mocha.Navigation.Navigator.OnNavigatingToBase(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
-            <summary>
-            Used internally by <see cref="T:Mocha.Navigation.NavigationService"/>.
-            Prepares an <see cref="T:Mocha.Navigation.INavigatable"/> object for which navigation has been requested.
-            </summary>
-            <param name="navigationData">Details on navigation request.</param>
-            <param name="e">Allow to reject navigation request.</param>
-        </member>
-        <member name="M:Mocha.Navigation.Navigator.OnNavigatedToBase(Mocha.Navigation.NavigationData)">
-            <summary>
-            Used internally by <see cref="T:Mocha.Navigation.NavigationService"/>.
-            Prepares an <see cref="T:Mocha.Navigation.INavigatable"/> object for which navigation has been requested.
-            </summary>
-            <param name="navigationData">Details on navigation request.</param>
-        </member>
-        <member name="M:Mocha.Navigation.Navigator.OnNavigatingFromBase(Mocha.Navigation.NavigationData,Mocha.Navigation.NavigationCancelEventArgs)">
-            <summary>
-            Used internally by <see cref="T:Mocha.Navigation.NavigationService"/>.
-            Cleans up <see cref="T:Mocha.Navigation.INavigatable"/> object which was currently active.
-            </summary>
-            <param name="navigationData">Details on navigation request.</param>
-            <param name="e">Allow to reject navigation request.</param>
         </member>
         <member name="T:Mocha.Settings.ISettingsSection`1">
             <summary>

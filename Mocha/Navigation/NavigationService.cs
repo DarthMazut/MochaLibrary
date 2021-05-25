@@ -173,12 +173,17 @@ namespace Mocha.Navigation
 
         private async Task<NavigationResultData> HandleNavigatingTo(NavigationData navigationData)
         {
+            navigationData.RequestedModule.DataContext.Navigator.SetHostView(navigationData);
             NavigationCancelEventArgs e = new NavigationCancelEventArgs();
-            navigationData.RequestedModule.DataContext.Navigator.OnNavigatingToBase(navigationData, e);
 
             if(navigationData.RequestedModule.DataContext is IOnNavigatingTo onNavigatingTo)
             {
-                await onNavigatingTo.OnNavigatingTo(navigationData, e);
+                onNavigatingTo.OnNavigatingTo(navigationData, e);
+            }
+
+            if(navigationData.RequestedModule.DataContext is IOnNavigatingToAsync onNavigatingToAsync)
+            {
+                await onNavigatingToAsync.OnNavigatingToAsync(navigationData, e);
             }
 
             if (e.Cancel)
@@ -192,12 +197,17 @@ namespace Mocha.Navigation
 
         private async Task<NavigationResultData> HandleNavigatingFrom(NavigationData navigationData)
         {
+            navigationData.RequestedModule.DataContext.Navigator.SetHostView(navigationData);
             NavigationCancelEventArgs e = new NavigationCancelEventArgs();
-            navigationData.PreviousModule?.DataContext.Navigator.OnNavigatingFromBase(navigationData, e);
-
+            
             if (navigationData.PreviousModule?.DataContext is IOnNavigatingFrom onNavigatingFrom)
             {
-                await onNavigatingFrom.OnNavigatingFrom(navigationData, e);
+                onNavigatingFrom.OnNavigatingFrom(navigationData, e);
+            }
+
+            if (navigationData.PreviousModule?.DataContext is IOnNavigatingFromAsync onNavigatingFromAsync)
+            {
+                await onNavigatingFromAsync.OnNavigatingFromAsync(navigationData, e);
             }
 
             if (e.Cancel)
@@ -211,10 +221,16 @@ namespace Mocha.Navigation
 
         private async Task HandleNavigatedTo(NavigationData navigationData)
         {
-            navigationData.RequestedModule.DataContext.Navigator.OnNavigatedToBase(navigationData);
+            navigationData.RequestedModule.DataContext.Navigator.SetHostView(navigationData);
+
             if (navigationData.RequestedModule.DataContext is IOnNavigatedTo onNavigatedTo)
             {
-                await onNavigatedTo.OnNavigatedTo(navigationData);
+                onNavigatedTo.OnNavigatedTo(navigationData);
+            }
+
+            if (navigationData.RequestedModule.DataContext is IOnNavigatedToAsync onNavigatedToAsync)
+            {
+                await onNavigatedToAsync.OnNavigatedToAsync(navigationData);
             }
         }
 

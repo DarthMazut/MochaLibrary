@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MochaWPFTestApp.ViewModels
 {
-    class Page1ViewModel : BindableBase, INavigatable, IOnNavigatingTo, IOnNavigatingFrom, IOnNavigatedTo
+    class Page1ViewModel : BindableBase, INavigatable, IOnNavigatingToAsync, IOnNavigatingFromAsync, IOnNavigatedToAsync, IOnNavigatingFrom
     {
         public string Text => "Page 1";
 
@@ -44,7 +44,7 @@ namespace MochaWPFTestApp.ViewModels
             await Navigator.NavigateAsync(NavigationModules.Page2);
         }
 
-        public async Task OnNavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)
+        public async Task OnNavigatingToAsync(NavigationData navigationData, NavigationCancelEventArgs e)
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
@@ -59,7 +59,7 @@ namespace MochaWPFTestApp.ViewModels
             }
         }
 
-        public async Task OnNavigatingFrom(NavigationData navigationData, NavigationCancelEventArgs e)
+        public async Task OnNavigatingFromAsync(NavigationData navigationData, NavigationCancelEventArgs e)
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
@@ -76,7 +76,7 @@ namespace MochaWPFTestApp.ViewModels
             // NavigationServices.MainNavigationService.ClearCached(NavigationModules.Page1);
         }
 
-        public async Task OnNavigatedTo(NavigationData navigationData)
+        public async Task OnNavigatedToAsync(NavigationData navigationData)
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
@@ -89,6 +89,11 @@ namespace MochaWPFTestApp.ViewModels
                 await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
+        }
+
+        public void OnNavigatingFrom(NavigationData navigationData, NavigationCancelEventArgs e)
+        {
+            // this fires before async
         }
     }
 }
