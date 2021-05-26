@@ -33,10 +33,6 @@ namespace MochaWPFTestApp.ViewModels
         {
             Navigator = new Navigator(this, NavigationServices.MainNavigationService);
             //Navigator.SaveCurrent = true;
-
-            //Navigator.NavigatingTo += Navigator_NavigatingTo;
-            //Navigator.NavigatingFrom += Navigator_NavigatingFrom;
-            //Navigator.NavigatedTo += Navigator_NavigatedTo;
         }
 
         private async void Navigate()
