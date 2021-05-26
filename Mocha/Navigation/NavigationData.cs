@@ -43,6 +43,8 @@ namespace Mocha.Navigation
         /// </summary>
         public bool SaveCurrent { get; internal set; }
 
+        internal NavigationData() { }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationData"/>class.
         /// </summary>

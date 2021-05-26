@@ -575,6 +575,21 @@
             Determines whether <see cref="P:Mocha.Navigation.NavigationData.CallingModule"/> will be cached.
             </summary>
         </member>
+        <member name="M:Mocha.Navigation.NavigationData.#ctor(Mocha.Navigation.INavigationModule,System.Object,System.Boolean,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mocha.Navigation.NavigationData"/>class.
+            </summary>
+            <param name="requestedModule">Target of navigation process.</param>
+            <param name="data">
+            An extra data object used to pass information between <see cref="T:Mocha.Navigation.INavigatable"/>
+            objects that take part in navigation transition.
+            </param>
+            <param name="saveCurrent">Determines whether current <see cref="T:Mocha.Navigation.INavigationModule"/> will be cached.</param>
+            <param name="ignoreCached">
+            If set to <see langword="true"/> unconditionally prevents from loading cached 
+            <see cref="T:Mocha.Navigation.INavigationModule"/> instances.
+            </param>
+        </member>
         <member name="T:Mocha.Navigation.NavigationManager">
             <summary>
             Mediates between the technology-specific and technology-independent layers.
