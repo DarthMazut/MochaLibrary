@@ -11,26 +11,19 @@ namespace Mocha.Navigation
     /// <summary>
     /// Contains a core logic for navigation handling.
     /// </summary>
-    public class NavigationService
+    public class NavigationService : INavigationService
     {
         private List<INavigationModule> _cachedModules = new List<INavigationModule>();
         private INavigationModule _currentView;
         private NavigationModuleInternalComparer _moduleComparer = new NavigationModuleInternalComparer();
 
-        /// <summary>
-        /// Returns a currently active <see cref="INavigationModule"/> object.
-        /// </summary>
+        /// <inheritdoc/>
         public INavigationModule CurrentView => _currentView;
 
-        /// <summary>
-        /// Fires every time a navigation action has been requested by one of the <see cref="INavigatable"/> object.
-        /// </summary>
+        /// <inheritdoc/>
         public event EventHandler<NavigationData> NavigationRequested;
 
-        /// <summary>
-        /// Handles a navigation requests.
-        /// </summary>
-        /// <param name="navigationData">Essential data for navigation process.</param>
+        /// <inheritdoc/>
         public async Task<NavigationResultData> RequestNavigation(NavigationData navigationData)
         {
             if (SameViewRequested(navigationData))
@@ -76,20 +69,16 @@ namespace Mocha.Navigation
             _cachedModules.Clear();
         }
 
-        /// <summary>
-        /// Removes cached <see cref="INavigatable"/> object of given type. 
-        /// Returns <see langword="true"/> if specified type was found and removed, otherwise <see langword="false"/>.
-        /// </summary>
-        /// <param name="module">Type to be found and removed from cache.</param>
+        /// <inheritdoc/>
         public bool ClearCached(INavigationModule module)
         {
             if (module == null) return false;
 
             return _cachedModules.RemoveAll(m =>
             {
-                if(_moduleComparer.Equals(m, module))
+                if (_moduleComparer.Equals(m, module))
                 {
-                    if(m != module)
+                    if (m != module)
                     {
                         m.CleanUp();
                     }
@@ -100,10 +89,7 @@ namespace Mocha.Navigation
             }) > 0;
         }
 
-        /// <summary>
-        /// Checks whether given type it cached.
-        /// </summary>
-        /// <param name="module">Type to be checked.</param>
+        /// <inheritdoc/>
         public bool CheckCached(INavigationModule module)
         {
             return _cachedModules.Contains(module);
@@ -160,7 +146,7 @@ namespace Mocha.Navigation
                 throw new InvalidOperationException("Cannot navigate because caller is null.");
             }
 
-            if(navigationData.RequestedModule.View == null)
+            if (navigationData.RequestedModule.View == null)
             {
                 throw new InvalidOperationException("Cannot navigate because requested module's view is null.");
             }
@@ -176,12 +162,12 @@ namespace Mocha.Navigation
             navigationData.RequestedModule.DataContext.Navigator.SetHostView(navigationData);
             NavigationCancelEventArgs e = new NavigationCancelEventArgs();
 
-            if(navigationData.RequestedModule.DataContext is IOnNavigatingTo onNavigatingTo)
+            if (navigationData.RequestedModule.DataContext is IOnNavigatingTo onNavigatingTo)
             {
                 onNavigatingTo.OnNavigatingTo(navigationData, e);
             }
 
-            if(navigationData.RequestedModule.DataContext is IOnNavigatingToAsync onNavigatingToAsync)
+            if (navigationData.RequestedModule.DataContext is IOnNavigatingToAsync onNavigatingToAsync)
             {
                 await onNavigatingToAsync.OnNavigatingToAsync(navigationData, e);
             }
@@ -197,9 +183,9 @@ namespace Mocha.Navigation
 
         private async Task<NavigationResultData> HandleNavigatingFrom(NavigationData navigationData)
         {
-            navigationData.RequestedModule.DataContext.Navigator.SetHostView(navigationData);
+            // navigationData.RequestedModule.DataContext.Navigator.SetHostView(navigationData);
             NavigationCancelEventArgs e = new NavigationCancelEventArgs();
-            
+
             if (navigationData.PreviousModule?.DataContext is IOnNavigatingFrom onNavigatingFrom)
             {
                 onNavigatingFrom.OnNavigatingFrom(navigationData, e);
@@ -221,7 +207,7 @@ namespace Mocha.Navigation
 
         private async Task HandleNavigatedTo(NavigationData navigationData)
         {
-            navigationData.RequestedModule.DataContext.Navigator.SetHostView(navigationData);
+            //navigationData.RequestedModule.DataContext.Navigator.SetHostView(navigationData);
 
             if (navigationData.RequestedModule.DataContext is IOnNavigatedTo onNavigatedTo)
             {

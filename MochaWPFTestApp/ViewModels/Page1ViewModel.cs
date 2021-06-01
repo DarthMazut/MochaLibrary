@@ -32,10 +32,12 @@ namespace MochaWPFTestApp.ViewModels
 
         public Navigator Navigator { get; }
 
-        public Page1ViewModel(NavigationService navigationService, IBehaviourService behaviourService)
+        public Page1ViewModel(INavigationService navigationService, IBehaviourService behaviourService)
         {
             _behaviourService = behaviourService;
             Navigator = new Navigator(this, navigationService);
+            
+            Navigator.SaveCurrent = true;
         }
 
         private async void Navigate()

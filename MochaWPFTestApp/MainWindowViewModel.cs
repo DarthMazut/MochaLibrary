@@ -41,7 +41,7 @@ namespace MochaWPFTestApp
         public DelegateCommand NavigateToPage3Command =>
             _navigateToPage3Command ?? (_navigateToPage3Command = new DelegateCommand(NavigateToPage3));
 
-        public MainWindowViewModel(NavigationService navigationService)
+        public MainWindowViewModel(INavigationService navigationService)
         {
             Navigator = new Navigator(this, navigationService);
             navigationService.NavigationRequested += OnNavigationRequested;

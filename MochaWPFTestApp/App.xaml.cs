@@ -45,7 +45,7 @@ namespace MochaWPFTestApp
 
             // Behaviours
 
-            BehaviourService behaviourService = new BehaviourService();
+            IBehaviourService behaviourService = new BehaviourService();
             behaviourService.Record<object, Task<string>>("exit", (o) =>
             {
                 return Task.Delay(3000).ContinueWith(t => Task.FromResult("haha")).Unwrap();
@@ -53,7 +53,7 @@ namespace MochaWPFTestApp
 
             // Navigation
 
-            NavigationService navigationService = new NavigationService();
+            INavigationService navigationService = new NavigationService();
 
             NavigationManager.AddModule(PagesIDs.Page1, () =>
             {

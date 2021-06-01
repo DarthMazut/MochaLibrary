@@ -47,7 +47,7 @@ namespace MochaWPFTestApp.ViewModels
         }
 
 
-        public Page3ViewModel(NavigationService navigationService)
+        public Page3ViewModel(INavigationService navigationService)
         {
             Navigator = new Navigator(this, navigationService);
         }

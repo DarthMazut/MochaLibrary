@@ -16,7 +16,7 @@ namespace Mocha.Navigation
         #region PRIVATE FIELDS
 
         private INavigationModule _hostView;
-        private NavigationService _navigationService;
+        private INavigationService _navigationService;
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace Mocha.Navigation
         /// A <see cref="NavigationService"/> object which will process 
         /// the requestes send by this instance.
         /// </param>
-        public Navigator(INavigatable host, NavigationService navigationService)
+        public Navigator(INavigatable host, INavigationService navigationService)
         {
             if (host == null || navigationService == null) throw new ArgumentNullException();
 
