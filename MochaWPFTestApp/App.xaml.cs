@@ -19,7 +19,9 @@ using MochaWPF.Navigation;
 using MochaWPFTestApp.Settings;
 using Mocha.Dispatching;
 using MochaWPF.Dispatching;
-
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Mocha.Behaviours;
 
 namespace MochaWPFTestApp
 {
@@ -30,25 +32,46 @@ namespace MochaWPFTestApp
     {
         public App()
         {
+            /*
+            IHost host = Host.CreateDefaultBuilder().ConfigureServices((_, services) => 
+            {
+                services.AddSingleton<IBehaviourService, BehaviourService>();
+                services.AddTransient<Page1ViewModel>();
+            }).Build();
+
+            IServiceScope serviceScope = host.Services.CreateScope();
+            IServiceProvider provider = serviceScope.ServiceProvider;
+            */
+
+            // Behaviours
+
+            BehaviourService behaviourService = new BehaviourService();
+            behaviourService.Record<object, Task<string>>("exit", (o) =>
+            {
+                return Task.Delay(3000).ContinueWith(t => Task.FromResult("haha")).Unwrap();
+            });
+
             // Navigation
+
+            NavigationService navigationService = new NavigationService();
 
             NavigationManager.AddModule(PagesIDs.Page1, () =>
             {
                 return new NavigationModule(
                     new Page1(),
-                    new Page1ViewModel());
+                    new Page1ViewModel(navigationService, behaviourService));
             });
 
             NavigationManager.AddModule(PagesIDs.Page2, () =>
             {
                 return new NavigationModule(
                     new Page2(),
-                    new Page2ViewModel());
+                    new Page2ViewModel(navigationService));
             });
 
             NavigationManager.AddModule(PagesIDs.Page3, () =>
             {
-                return new NavigationModule(new Page3(), new Page3ViewModel());
+                return new NavigationModule(new Page3(), new Page3ViewModel(navigationService));
             });
 
             // Dialogs
@@ -75,6 +98,11 @@ namespace MochaWPFTestApp
             // Dispatching
 
             DispatcherManager.SetMainThreadDispatcher(new WpfDispatcher(this));
+
+            new MainWindow()
+            {
+                DataContext = new MainWindowViewModel(navigationService)
+            }.Show();
         }
     }
 }

@@ -4,6 +4,124 @@
         <name>Mocha</name>
     </assembly>
     <members>
+        <member name="T:Mocha.Behaviours.BehaviourService">
+            <summary>
+            Allows for registration of technology-specific actions (behaviours)
+            and later invocation of recorded behaviours within technology-independent modules.
+            </summary>
+        </member>
+        <member name="P:Mocha.Behaviours.BehaviourService.RegisteredBehaviours">
+            <summary>
+            Dictionary containing registered behaviours.
+            </summary>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourService.Record(System.String,System.Action)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourService.Record``1(System.String,System.Action{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourService.Record``2(System.String,System.Func{``0,``1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourService.Recall(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourService.Recall``1(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourService.Recall``2(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Mocha.Behaviours.IBehaviour">
+            <summary>
+            Represent encapsulated action (behaviour) which can be executed by 
+            technology-independent moduels.
+            </summary>
+        </member>
+        <member name="M:Mocha.Behaviours.IBehaviour.Execute">
+            <summary>
+            Executes encapsulated behaviour.
+            </summary>
+        </member>
+        <member name="T:Mocha.Behaviours.IBehaviour`1">
+            <summary>
+            Represent encapsulated action (behaviour) which can be executed by 
+            technology-independent moduels.
+            </summary>
+            <typeparam name="TParam">Type of behaviour parameter.</typeparam>
+        </member>
+        <member name="M:Mocha.Behaviours.IBehaviour`1.Execute(`0)">
+            <summary>
+            Executes encapsulated behaviour.
+            </summary>
+            <param name="param">Parameter of execution.</param>
+        </member>
+        <member name="T:Mocha.Behaviours.IBehaviour`2">
+            <summary>
+            Represent encapsulated action (behaviour) which can be executed by 
+            technology-independent moduels.
+            </summary>
+            <typeparam name="TParam">Type of behaviour parameter.</typeparam>
+            <typeparam name="TResult">Type of value returned as a result of behaviour execution.</typeparam>
+        </member>
+        <member name="M:Mocha.Behaviours.IBehaviour`2.Execute(`0)">
+            <summary>
+            Executes encapsulated behaviour.
+            </summary>
+            <param name="param">Parameter of execution.</param>
+        </member>
+        <member name="T:Mocha.Behaviours.IBehaviourService">
+            <summary>
+            Allows for registration of technology-specific actions (behaviours)
+            and later invocation of recorded behaviours within technology-independent modules.
+            </summary>
+        </member>
+        <member name="M:Mocha.Behaviours.IBehaviourService.Record(System.String,System.Action)">
+            <summary>
+            Registers an action (behaviour).
+            </summary>
+            <param name="id">Identifier for registered behaviour.</param>
+            <param name="behaviour">Action to be registered.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.IBehaviourService.Record``1(System.String,System.Action{``0})">
+            <summary>
+            Registers an action (behaviour) with parameter.
+            </summary>
+            <typeparam name="TParam">Type of action parameter.</typeparam>
+            <param name="id">Identifier for registered behaviour.</param>
+            <param name="behaviour">Action to be registered.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.IBehaviourService.Record``2(System.String,System.Func{``0,``1})">
+            <summary>
+            Registers an action (behaviour) with parameter which returns a value.
+            </summary>
+            <typeparam name="TParam">Type of action parameter.</typeparam>
+            <typeparam name="TResult">Type of returning value.</typeparam>
+            <param name="id">Identifier for registered behaviour.</param>
+            <param name="behaviour">Function to be registered.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.IBehaviourService.Recall(System.String)">
+            <summary>
+            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour"/> object associated with givent ID.
+            </summary>
+            <param name="id">Identifier of requested behaviour.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.IBehaviourService.Recall``1(System.String)">
+            <summary>
+            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour`1"/> object associated with givent ID.
+            </summary>
+            <typeparam name="TParam">Parameter type of requested behaviour.</typeparam>
+            <param name="id">Identifier of requested behaviour.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.IBehaviourService.Recall``2(System.String)">
+            <summary>
+            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour`2"/> object associated with givent ID.
+            </summary>
+            <typeparam name="TParam">Parameter type of requested behaviour.</typeparam>
+            <typeparam name="TResult">Type returning by requested behaviour.</typeparam>
+            <param name="id">Identifier of requested behaviour.</param>
+        </member>
         <member name="T:Mocha.Dialogs.DialogControl">
             <summary>
             Exposes API for dialog interaction.

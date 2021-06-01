@@ -22,7 +22,6 @@ namespace MochaWPFTestApp
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
         }
     }
 }

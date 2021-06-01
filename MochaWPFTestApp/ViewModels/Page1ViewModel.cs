@@ -1,4 +1,5 @@
-﻿using Mocha.Dialogs;
+﻿using Mocha.Behaviours;
+using Mocha.Dialogs;
 using Mocha.Dialogs.Extensions;
 using Mocha.Dialogs.Extensions.DI;
 using Mocha.Navigation;
@@ -14,6 +15,8 @@ namespace MochaWPFTestApp.ViewModels
 {
     class Page1ViewModel : BindableBase, INavigatable, IOnNavigatingToAsync, IOnNavigatingFromAsync, IOnNavigatedToAsync, IOnNavigatingFrom
     {
+        private readonly IBehaviourService _behaviourService;
+
         public string Text => "Page 1";
 
         private string _input;
@@ -29,15 +32,16 @@ namespace MochaWPFTestApp.ViewModels
 
         public Navigator Navigator { get; }
 
-        public Page1ViewModel()
+        public Page1ViewModel(NavigationService navigationService, IBehaviourService behaviourService)
         {
-            Navigator = new Navigator(this, NavigationServices.MainNavigationService);
-            //Navigator.SaveCurrent = true;
+            _behaviourService = behaviourService;
+            Navigator = new Navigator(this, navigationService);
         }
 
         private async void Navigate()
         {
             await Navigator.NavigateAsync(NavigationModules.Page2);
+            var result = await _behaviourService.Recall<object, Task<string>>("exit").Execute(null);
         }
 
         public async Task OnNavigatingToAsync(NavigationData navigationData, NavigationCancelEventArgs e)
@@ -68,8 +72,6 @@ namespace MochaWPFTestApp.ViewModels
                 await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
-
-            // NavigationServices.MainNavigationService.ClearCached(NavigationModules.Page1);
         }
 
         public async Task OnNavigatedToAsync(NavigationData navigationData)

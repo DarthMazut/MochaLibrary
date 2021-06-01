@@ -47,10 +47,9 @@ namespace MochaWPFTestApp.ViewModels
         }
 
 
-        public Page3ViewModel()
+        public Page3ViewModel(NavigationService navigationService)
         {
-            Navigator = new Navigator(this, NavigationServices.MainNavigationService);
-            //Navigator.SaveCurrent = true;
+            Navigator = new Navigator(this, navigationService);
         }
 
         private async void Start()
