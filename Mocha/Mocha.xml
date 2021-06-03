@@ -4,34 +4,102 @@
         <name>Mocha</name>
     </assembly>
     <members>
-        <member name="T:Mocha.Behaviours.BehaviourService">
+        <member name="T:Mocha.Behaviours.BehaviourManager">
             <summary>
             Allows for registration of technology-specific actions (behaviours)
             and later invocation of recorded behaviours within technology-independent modules.
             </summary>
         </member>
-        <member name="P:Mocha.Behaviours.BehaviourService.RegisteredBehaviours">
+        <member name="P:Mocha.Behaviours.BehaviourManager.RegisteredBehaviours">
             <summary>
             Dictionary containing registered behaviours.
             </summary>
         </member>
-        <member name="M:Mocha.Behaviours.BehaviourService.Record(System.String,System.Action)">
+        <member name="M:Mocha.Behaviours.BehaviourManager.Record(System.String,System.Action)">
+            <summary>
+            Registers an action (behaviour).
+            </summary>
+            <param name="id">Identifier for registered behaviour.</param>
+            <param name="behaviour">Action to be registered.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourManager.Record``1(System.String,System.Action{``0})">
+            <summary>
+            Registers an action (behaviour) with parameter.
+            </summary>
+            <typeparam name="TParam">Type of action parameter.</typeparam>
+            <param name="id">Identifier for registered behaviour.</param>
+            <param name="behaviour">Action to be registered.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourManager.Record``2(System.String,System.Func{``0,``1})">
+            <summary>
+            Registers an action (behaviour) with parameter which returns a value.
+            </summary>
+            <typeparam name="TParam">Type of action parameter.</typeparam>
+            <typeparam name="TResult">Type of returning value.</typeparam>
+            <param name="id">Identifier for registered behaviour.</param>
+            <param name="behaviour">Function to be registered.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourManager.Recall(System.String)">
+            <summary>
+            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour"/> object associated with givent ID.
+            </summary>
+            <param name="id">Identifier of requested behaviour.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourManager.Recall``1(System.String)">
+            <summary>
+            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour`1"/> object associated with givent ID.
+            </summary>
+            <typeparam name="TParam">Parameter type of requested behaviour.</typeparam>
+            <param name="id">Identifier of requested behaviour.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.BehaviourManager.Recall``2(System.String)">
+            <summary>
+            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour`2"/> object associated with givent ID.
+            </summary>
+            <typeparam name="TParam">Parameter type of requested behaviour.</typeparam>
+            <typeparam name="TResult">Type returning by requested behaviour.</typeparam>
+            <param name="id">Identifier of requested behaviour.</param>
+        </member>
+        <member name="T:Mocha.Behaviours.Extensions.DI.BehaviourService">
+            <summary>
+            Provides implementation for <see cref="T:Mocha.Behaviours.Extensions.DI.IBehaviourService"/>.
+            </summary>
+        </member>
+        <member name="M:Mocha.Behaviours.Extensions.DI.BehaviourService.Recall(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Mocha.Behaviours.BehaviourService.Record``1(System.String,System.Action{``0})">
+        <member name="M:Mocha.Behaviours.Extensions.DI.BehaviourService.Recall``1(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Mocha.Behaviours.BehaviourService.Record``2(System.String,System.Func{``0,``1})">
+        <member name="M:Mocha.Behaviours.Extensions.DI.BehaviourService.Recall``2(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Mocha.Behaviours.BehaviourService.Recall(System.String)">
-            <inheritdoc/>
+        <member name="T:Mocha.Behaviours.Extensions.DI.IBehaviourService">
+            <summary>
+            Allows for registration of technology-specific actions (behaviours)
+            and later invocation of recorded behaviours within technology-independent modules.
+            </summary>
         </member>
-        <member name="M:Mocha.Behaviours.BehaviourService.Recall``1(System.String)">
-            <inheritdoc/>
+        <member name="M:Mocha.Behaviours.Extensions.DI.IBehaviourService.Recall(System.String)">
+            <summary>
+            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour"/> object associated with givent ID.
+            </summary>
+            <param name="id">Identifier of requested behaviour.</param>
         </member>
-        <member name="M:Mocha.Behaviours.BehaviourService.Recall``2(System.String)">
-            <inheritdoc/>
+        <member name="M:Mocha.Behaviours.Extensions.DI.IBehaviourService.Recall``1(System.String)">
+            <summary>
+            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour`1"/> object associated with givent ID.
+            </summary>
+            <typeparam name="TParam">Parameter type of requested behaviour.</typeparam>
+            <param name="id">Identifier of requested behaviour.</param>
+        </member>
+        <member name="M:Mocha.Behaviours.Extensions.DI.IBehaviourService.Recall``2(System.String)">
+            <summary>
+            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour`2"/> object associated with givent ID.
+            </summary>
+            <typeparam name="TParam">Parameter type of requested behaviour.</typeparam>
+            <typeparam name="TResult">Type returning by requested behaviour.</typeparam>
+            <param name="id">Identifier of requested behaviour.</param>
         </member>
         <member name="T:Mocha.Behaviours.IBehaviour">
             <summary>
@@ -70,57 +138,6 @@
             Executes encapsulated behaviour.
             </summary>
             <param name="param">Parameter of execution.</param>
-        </member>
-        <member name="T:Mocha.Behaviours.IBehaviourService">
-            <summary>
-            Allows for registration of technology-specific actions (behaviours)
-            and later invocation of recorded behaviours within technology-independent modules.
-            </summary>
-        </member>
-        <member name="M:Mocha.Behaviours.IBehaviourService.Record(System.String,System.Action)">
-            <summary>
-            Registers an action (behaviour).
-            </summary>
-            <param name="id">Identifier for registered behaviour.</param>
-            <param name="behaviour">Action to be registered.</param>
-        </member>
-        <member name="M:Mocha.Behaviours.IBehaviourService.Record``1(System.String,System.Action{``0})">
-            <summary>
-            Registers an action (behaviour) with parameter.
-            </summary>
-            <typeparam name="TParam">Type of action parameter.</typeparam>
-            <param name="id">Identifier for registered behaviour.</param>
-            <param name="behaviour">Action to be registered.</param>
-        </member>
-        <member name="M:Mocha.Behaviours.IBehaviourService.Record``2(System.String,System.Func{``0,``1})">
-            <summary>
-            Registers an action (behaviour) with parameter which returns a value.
-            </summary>
-            <typeparam name="TParam">Type of action parameter.</typeparam>
-            <typeparam name="TResult">Type of returning value.</typeparam>
-            <param name="id">Identifier for registered behaviour.</param>
-            <param name="behaviour">Function to be registered.</param>
-        </member>
-        <member name="M:Mocha.Behaviours.IBehaviourService.Recall(System.String)">
-            <summary>
-            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour"/> object associated with givent ID.
-            </summary>
-            <param name="id">Identifier of requested behaviour.</param>
-        </member>
-        <member name="M:Mocha.Behaviours.IBehaviourService.Recall``1(System.String)">
-            <summary>
-            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour`1"/> object associated with givent ID.
-            </summary>
-            <typeparam name="TParam">Parameter type of requested behaviour.</typeparam>
-            <param name="id">Identifier of requested behaviour.</param>
-        </member>
-        <member name="M:Mocha.Behaviours.IBehaviourService.Recall``2(System.String)">
-            <summary>
-            Retrieves an <see cref="T:Mocha.Behaviours.IBehaviour`2"/> object associated with givent ID.
-            </summary>
-            <typeparam name="TParam">Parameter type of requested behaviour.</typeparam>
-            <typeparam name="TResult">Type returning by requested behaviour.</typeparam>
-            <param name="id">Identifier of requested behaviour.</param>
         </member>
         <member name="T:Mocha.Dialogs.DialogControl">
             <summary>
@@ -255,23 +272,40 @@
         <member name="M:Mocha.Dialogs.Extensions.DI.DialogFactory.Create``1(System.String)">
             <inheritdoc/>
         </member>
+        <member name="M:Mocha.Dialogs.Extensions.DI.DialogFactory.GetActiveDialogs(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Mocha.Dialogs.Extensions.DI.DialogFactory.GetActiveDialogs">
+            <inheritdoc/>
+        </member>
         <member name="T:Mocha.Dialogs.Extensions.DI.IDialogFactory">
             <summary>
-            Provides an interface for <see cref="T:Mocha.Dialogs.IDialogModule`1"/> instantiation. Use it with Dependency Injection pattern.
+            Provides instances of dialogs registered by <see cref="T:Mocha.Dialogs.DialogManager"/> class.
             </summary>
         </member>
         <member name="M:Mocha.Dialogs.Extensions.DI.IDialogFactory.Create(System.String)">
             <summary>
-            Initializes and returns instance of <see cref="T:Mocha.Dialogs.IDialogModule"/> corresponding to given identifier.
+            Returns new instance of <see cref="T:Mocha.Dialogs.IDialogModule"/> corresponding to given identifier.
             </summary>
             <param name="id">Specifies the dialog identifier.</param>
         </member>
         <member name="M:Mocha.Dialogs.Extensions.DI.IDialogFactory.Create``1(System.String)">
             <summary>
-            Creates an instance of specified <see cref="T:Mocha.Dialogs.IDialogModule`1"/> type.
+            Returns new instance of <see cref="T:Mocha.Dialogs.IDialogModule`1"/> corresponding to given indetifier.
             </summary>
-            <typeparam name="T">Type of internal <see cref="T:Mocha.Dialogs.DialogControl"/> object.</typeparam>
+            <typeparam name="T">Type of <see cref="T:Mocha.Dialogs.DialogControl"/> object used by created dialog.</typeparam>
             <param name="id">Specifies the dialog identifier.</param>
+        </member>
+        <member name="M:Mocha.Dialogs.Extensions.DI.IDialogFactory.GetActiveDialogs(System.String)">
+            <summary>
+            Returns a collection of instantiated <see cref="T:Mocha.Dialogs.IDialogModule"/> with given ID which haven't been disposed yet.
+            </summary>
+            <param name="id">Specifies the dialog identifier.</param>
+        </member>
+        <member name="M:Mocha.Dialogs.Extensions.DI.IDialogFactory.GetActiveDialogs">
+            <summary>
+            Returns a collection of all instantiated <see cref="T:Mocha.Dialogs.IDialogModule"/>, which haven't been disposed yet.
+            </summary>
         </member>
         <member name="T:Mocha.Dialogs.Extensions.FileDialogControl">
             <summary>
@@ -505,6 +539,26 @@
             <param name="dispatcher">Object implementing <see cref="T:Mocha.Dispatching.IDispatcher"/> interface.</param>
         </member>
         <member name="M:Mocha.Dispatching.DispatcherManager.GetMainThreadDispatcher">
+            <summary>
+            Returns registered <see cref="T:Mocha.Dispatching.IDispatcher"/> implementation.
+            Throws if dispatcher hasn't been registered.
+            </summary>
+            <exception cref="T:System.NullReferenceException"/>
+        </member>
+        <member name="T:Mocha.Dispatching.Extensions.DI.DispatcherService">
+            <summary>
+            Provides implementation for <see cref="T:Mocha.Dispatching.Extensions.DI.IDispatcherService"/>.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dispatching.Extensions.DI.DispatcherService.GetMainThreadDispatcher">
+            <inheritdoc/>
+        </member>
+        <member name="T:Mocha.Dispatching.Extensions.DI.IDispatcherService">
+            <summary>
+            Allows for retrieving main thread dispatcher object for Dependency Injection architecure.
+            </summary>
+        </member>
+        <member name="M:Mocha.Dispatching.Extensions.DI.IDispatcherService.GetMainThreadDispatcher">
             <summary>
             Returns registered <see cref="T:Mocha.Dispatching.IDispatcher"/> implementation.
             Throws if dispatcher hasn't been registered.
@@ -933,6 +987,26 @@
             Sends navigation request to navigate with specified <see cref="T:Mocha.Navigation.NavigationData"/> object.
             </summary>
             <param name="navigationData">Contains details for requested navigation process.</param>
+        </member>
+        <member name="T:Mocha.Settings.Extensions.DI.ISettingsService">
+            <summary>
+            Allows obtaining <see cref="T:Mocha.Settings.ISettingsSection`1"/> objects for a Dependency Injection based architecture. 
+            </summary>
+        </member>
+        <member name="M:Mocha.Settings.Extensions.DI.ISettingsService.Retrieve``1(System.String)">
+            <summary>
+            Retrieves settings section registered with given id.
+            </summary>
+            <typeparam name="T">Type of settings section.</typeparam>
+            <param name="id">Id of settings section to be retrieved.</param>
+        </member>
+        <member name="T:Mocha.Settings.Extensions.DI.SettingsService">
+            <summary>
+            Provides implementation of <see cref="T:Mocha.Settings.Extensions.DI.ISettingsService"/>.
+            </summary>
+        </member>
+        <member name="M:Mocha.Settings.Extensions.DI.SettingsService.Retrieve``1(System.String)">
+            <inheritdoc/>
         </member>
         <member name="T:Mocha.Settings.ISettingsSection`1">
             <summary>

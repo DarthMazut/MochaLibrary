@@ -1,4 +1,5 @@
 ﻿using Mocha.Behaviours;
+using Mocha.Behaviours.Extensions.DI;
 using Mocha.Dialogs;
 using Mocha.Dialogs.Extensions;
 using Mocha.Dialogs.Extensions.DI;
@@ -45,7 +46,7 @@ namespace MochaWPFTestApp.ViewModels
         private async void Navigate()
         {
             await Navigator.NavigateAsync(NavigationModules.Page2);
-            // var result = await _behaviourService.Recall<object, Task<string>>("exit").Execute(null);
+            var result = await _behaviourService.Recall<object, Task<string>>("exit").Execute(null);
         }
 
         public async Task OnNavigatingToAsync(NavigationData navigationData, NavigationCancelEventArgs e)

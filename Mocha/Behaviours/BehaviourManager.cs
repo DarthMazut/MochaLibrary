@@ -9,17 +9,21 @@ namespace Mocha.Behaviours
     /// Allows for registration of technology-specific actions (behaviours)
     /// and later invocation of recorded behaviours within technology-independent modules.
     /// </summary>
-    public class BehaviourService : IBehaviourService
+    public static class BehaviourManager
     {
-        private readonly Dictionary<string, object> _behaviours = new Dictionary<string, object>();
+        private static readonly Dictionary<string, object> _behaviours = new Dictionary<string, object>();
 
         /// <summary>
         /// Dictionary containing registered behaviours.
         /// </summary>
-        public IReadOnlyDictionary<string, object> RegisteredBehaviours => new ReadOnlyDictionary<string, object>(_behaviours);
+        public static IReadOnlyDictionary<string, object> RegisteredBehaviours => new ReadOnlyDictionary<string, object>(_behaviours);
 
-        /// <inheritdoc/>
-        public void Record(string id, Action behaviour)
+        /// <summary>
+        /// Registers an action (behaviour).
+        /// </summary>
+        /// <param name="id">Identifier for registered behaviour.</param>
+        /// <param name="behaviour">Action to be registered.</param>
+        public static void Record(string id, Action behaviour)
         {
             if (_behaviours.ContainsKey(id))
             {
@@ -31,8 +35,13 @@ namespace Mocha.Behaviours
             }
         }
 
-        /// <inheritdoc/>
-        public void Record<TParam>(string id, Action<TParam> behaviour)
+        /// <summary>
+        /// Registers an action (behaviour) with parameter.
+        /// </summary>
+        /// <typeparam name="TParam">Type of action parameter.</typeparam>
+        /// <param name="id">Identifier for registered behaviour.</param>
+        /// <param name="behaviour">Action to be registered.</param>
+        public static void Record<TParam>(string id, Action<TParam> behaviour)
         {
             if (_behaviours.ContainsKey(id))
             {
@@ -44,8 +53,14 @@ namespace Mocha.Behaviours
             }
         }
 
-        /// <inheritdoc/>
-        public void Record<TParam, TResult>(string id, Func<TParam, TResult> behaviour)
+        /// <summary>
+        /// Registers an action (behaviour) with parameter which returns a value.
+        /// </summary>
+        /// <typeparam name="TParam">Type of action parameter.</typeparam>
+        /// <typeparam name="TResult">Type of returning value.</typeparam>
+        /// <param name="id">Identifier for registered behaviour.</param>
+        /// <param name="behaviour">Function to be registered.</param>
+        public static void Record<TParam, TResult>(string id, Func<TParam, TResult> behaviour)
         {
             if (_behaviours.ContainsKey(id))
             {
@@ -57,8 +72,11 @@ namespace Mocha.Behaviours
             }
         }
 
-        /// <inheritdoc/>
-        public IBehaviour Recall(string id)
+        /// <summary>
+        /// Retrieves an <see cref="IBehaviour"/> object associated with givent ID.
+        /// </summary>
+        /// <param name="id">Identifier of requested behaviour.</param>
+        public static IBehaviour Recall(string id)
         {
             if(_behaviours.ContainsKey(id))
             {
@@ -73,8 +91,12 @@ namespace Mocha.Behaviours
             throw new KeyNotFoundException($"Behaviour {id} was never registered.");
         }
 
-        /// <inheritdoc/>
-        public IBehaviour<TParam> Recall<TParam>(string id)
+        /// <summary>
+        /// Retrieves an <see cref="IBehaviour{T}"/> object associated with givent ID.
+        /// </summary>
+        /// <typeparam name="TParam">Parameter type of requested behaviour.</typeparam>
+        /// <param name="id">Identifier of requested behaviour.</param>
+        public static IBehaviour<TParam> Recall<TParam>(string id)
         {
             if (_behaviours.ContainsKey(id))
             {
@@ -89,8 +111,13 @@ namespace Mocha.Behaviours
             throw new KeyNotFoundException($"Behaviour {id} was never registered.");
         }
 
-        /// <inheritdoc/>
-        public IBehaviour<TParam, TResult> Recall<TParam, TResult>(string id)
+        /// <summary>
+        /// Retrieves an <see cref="IBehaviour{T, U}"/> object associated with givent ID.
+        /// </summary>
+        /// <typeparam name="TParam">Parameter type of requested behaviour.</typeparam>
+        /// <typeparam name="TResult">Type returning by requested behaviour.</typeparam>
+        /// <param name="id">Identifier of requested behaviour.</param>
+        public static IBehaviour<TParam, TResult> Recall<TParam, TResult>(string id)
         {
             if (_behaviours.ContainsKey(id))
             {

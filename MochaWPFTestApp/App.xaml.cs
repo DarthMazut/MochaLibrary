@@ -23,6 +23,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mocha.Behaviours;
 using Mocha.Dialogs.Extensions.DI;
+using Mocha.Behaviours.Extensions.DI;
 
 namespace MochaWPFTestApp
 {
@@ -35,24 +36,11 @@ namespace MochaWPFTestApp
         {
             IServiceProvider provider = RegisterServices();
 
-            // Behaviours
-
-            //IBehaviourService behaviourService = new BehaviourService();
-            //behaviourService.Record<object, Task<string>>("exit", (o) =>
-            //{
-            //    return Task.Delay(3000).ContinueWith(t => Task.FromResult("haha")).Unwrap();
-            //});
-
             SetupNavigation(provider);
             SetupDialogs(provider);
-
-            // Settings
-
-            SettingsManager.Register("myCustomSettings1", new ApplicationSettingsSection<GeneralSettings>(MochaWPFTestApp.Properties.Settings.Default, "general"));
-
-            // Dispatching
-
-            DispatcherManager.SetMainThreadDispatcher(new WpfDispatcher(this));
+            SetupSettings();
+            SetupDispatching();
+            SetupBehaviours();
 
             new MainWindow()
             {
@@ -120,6 +108,24 @@ namespace MochaWPFTestApp
                 return new NavigationModule(
                     new Page3(),
                     provider.GetRequiredService<Page2ViewModel>());
+            });
+        }
+
+        private void SetupDispatching()
+        {
+            DispatcherManager.SetMainThreadDispatcher(new WpfDispatcher(this));
+        }
+
+        private void SetupSettings()
+        {
+            SettingsManager.Register("myCustomSettings1", new ApplicationSettingsSection<GeneralSettings>(MochaWPFTestApp.Properties.Settings.Default, "general"));
+        }
+
+        private void SetupBehaviours()
+        {
+            BehaviourManager.Record<object, Task<string>>("exit", (o) =>
+            {
+                return Task.Delay(3000).ContinueWith(t => Task.FromResult("haha")).Unwrap();
             });
         }
     }
