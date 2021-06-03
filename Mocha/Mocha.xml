@@ -225,6 +225,13 @@
             </summary>
             <param name="id">Identifier of registered dialog to be retrieved.</param>
         </member>
+        <member name="M:Mocha.Dialogs.DialogManager.GetDialog``1(System.String)">
+            <summary>
+            Creates an instance of specified <see cref="T:Mocha.Dialogs.IDialogModule`1"/> type.
+            </summary>
+            <typeparam name="T">Type of internal <see cref="T:Mocha.Dialogs.DialogControl"/> object.</typeparam>
+            <param name="id">Specifies the dialog identifier.</param>
+        </member>
         <member name="M:Mocha.Dialogs.DialogManager.GetActiveDialogs(System.String)">
             <summary>
             Returns a collection of references to created dialogs, which hasn't been disposed yet.
@@ -242,6 +249,9 @@
             Provides an implementation of <see cref="T:Mocha.Dialogs.Extensions.DI.IDialogFactory"/> interface.
             </summary>
         </member>
+        <member name="M:Mocha.Dialogs.Extensions.DI.DialogFactory.Create(System.String)">
+            <inheritdoc/>
+        </member>
         <member name="M:Mocha.Dialogs.Extensions.DI.DialogFactory.Create``1(System.String)">
             <inheritdoc/>
         </member>
@@ -249,6 +259,12 @@
             <summary>
             Provides an interface for <see cref="T:Mocha.Dialogs.IDialogModule`1"/> instantiation. Use it with Dependency Injection pattern.
             </summary>
+        </member>
+        <member name="M:Mocha.Dialogs.Extensions.DI.IDialogFactory.Create(System.String)">
+            <summary>
+            Initializes and returns instance of <see cref="T:Mocha.Dialogs.IDialogModule"/> corresponding to given identifier.
+            </summary>
+            <param name="id">Specifies the dialog identifier.</param>
         </member>
         <member name="M:Mocha.Dialogs.Extensions.DI.IDialogFactory.Create``1(System.String)">
             <summary>

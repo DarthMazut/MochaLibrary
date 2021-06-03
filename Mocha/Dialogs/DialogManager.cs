@@ -49,6 +49,16 @@ namespace Mocha.Dialogs
         }
 
         /// <summary>
+        /// Creates an instance of specified <see cref="IDialogModule{T}"/> type.
+        /// </summary>
+        /// <typeparam name="T">Type of internal <see cref="DialogControl"/> object.</typeparam>
+        /// <param name="id">Specifies the dialog identifier.</param>
+        public static IDialogModule<T> GetDialog<T>(string id) where T : DialogControl
+        {
+            return (IDialogModule<T>)GetDialog(id);
+        }
+
+        /// <summary>
         /// Returns a collection of references to created dialogs, which hasn't been disposed yet.
         /// </summary>
         /// <param name="id">Identifier of specific dialog.</param>

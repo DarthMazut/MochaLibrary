@@ -22,6 +22,7 @@ using MochaWPF.Dispatching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mocha.Behaviours;
+using Mocha.Dialogs.Extensions.DI;
 
 namespace MochaWPFTestApp
 {
@@ -32,64 +33,18 @@ namespace MochaWPFTestApp
     {
         public App()
         {
-            /*
-            IHost host = Host.CreateDefaultBuilder().ConfigureServices((_, services) => 
-            {
-                services.AddSingleton<IBehaviourService, BehaviourService>();
-                services.AddTransient<Page1ViewModel>();
-            }).Build();
-
-            IServiceScope serviceScope = host.Services.CreateScope();
-            IServiceProvider provider = serviceScope.ServiceProvider;
-            */
+            IServiceProvider provider = RegisterServices();
 
             // Behaviours
 
-            IBehaviourService behaviourService = new BehaviourService();
-            behaviourService.Record<object, Task<string>>("exit", (o) =>
-            {
-                return Task.Delay(3000).ContinueWith(t => Task.FromResult("haha")).Unwrap();
-            });
+            //IBehaviourService behaviourService = new BehaviourService();
+            //behaviourService.Record<object, Task<string>>("exit", (o) =>
+            //{
+            //    return Task.Delay(3000).ContinueWith(t => Task.FromResult("haha")).Unwrap();
+            //});
 
-            // Navigation
-
-            INavigationService navigationService = new NavigationService();
-
-            NavigationManager.AddModule(PagesIDs.Page1, () =>
-            {
-                return new NavigationModule(
-                    new Page1(),
-                    new Page1ViewModel(navigationService, behaviourService));
-            });
-
-            NavigationManager.AddModule(PagesIDs.Page2, () =>
-            {
-                return new NavigationModule(
-                    new Page2(),
-                    new Page2ViewModel(navigationService));
-            });
-
-            NavigationManager.AddModule(PagesIDs.Page3, () =>
-            {
-                return new NavigationModule(new Page3(), new Page3ViewModel(navigationService));
-            });
-
-            // Dialogs
-
-            DialogManager.DefineDialog(DialogsIDs.MsgBoxDialog, () => 
-            {
-                return new StandardDialogModule(this);
-            });
-
-            DialogManager.DefineDialog(DialogsIDs.OpenDialog, () =>
-            {
-                return new FileDialogModule(this, new Microsoft.Win32.OpenFileDialog());
-            });
-
-            DialogManager.DefineDialog(DialogsIDs.CustomDialog1, () =>
-            {
-                return new CustomDialogModule(this, new MyCustomDialog(), new MyCustomDialogViewModel());
-            });
+            SetupNavigation(provider);
+            SetupDialogs(provider);
 
             // Settings
 
@@ -101,8 +56,71 @@ namespace MochaWPFTestApp
 
             new MainWindow()
             {
-                DataContext = new MainWindowViewModel(navigationService)
+                DataContext = provider.GetRequiredService<MainWindowViewModel>()
             }.Show();
+        }
+
+        private IServiceProvider RegisterServices()
+        {
+            IHost host = Host.CreateDefaultBuilder().ConfigureServices((_, services) =>
+            {
+                services.AddSingleton<IBehaviourService, BehaviourService>();
+                services.AddSingleton<INavigationService, NavigationService>();
+                services.AddSingleton<IDialogFactory, DialogFactory>();
+
+                services.AddTransient<MainWindowViewModel>();
+                
+                services.AddTransient<Page1ViewModel>();
+                services.AddTransient<Page2ViewModel>();
+                services.AddTransient<Page3ViewModel>();
+
+                services.AddTransient<MyCustomDialogViewModel>();
+                
+            }).Build();
+
+            return host.Services.CreateScope().ServiceProvider;
+        }
+
+        private void SetupDialogs(IServiceProvider provider)
+        {
+            DialogManager.DefineDialog(DialogsIDs.MsgBoxDialog, () =>
+            {
+                return new StandardDialogModule(this);
+            });
+
+            DialogManager.DefineDialog(DialogsIDs.OpenDialog, () =>
+            {
+                return new FileDialogModule(this, new Microsoft.Win32.OpenFileDialog());
+            });
+
+            DialogManager.DefineDialog(DialogsIDs.CustomDialog1, () =>
+            {
+                return new CustomDialogModule(this, new MyCustomDialog(), provider.GetRequiredService<MyCustomDialogViewModel>());
+            });
+        }
+
+        private void SetupNavigation(IServiceProvider provider)
+        {
+            NavigationManager.AddModule(PagesIDs.Page1, () =>
+            {
+                return new NavigationModule(
+                    new Page1(),
+                    provider.GetRequiredService<Page1ViewModel>());
+            });
+
+            NavigationManager.AddModule(PagesIDs.Page2, () =>
+            {
+                return new NavigationModule(
+                    new Page2(),
+                    provider.GetRequiredService<Page2ViewModel>());
+            });
+
+            NavigationManager.AddModule(PagesIDs.Page3, () =>
+            {
+                return new NavigationModule(
+                    new Page3(),
+                    provider.GetRequiredService<Page2ViewModel>());
+            });
         }
     }
 }

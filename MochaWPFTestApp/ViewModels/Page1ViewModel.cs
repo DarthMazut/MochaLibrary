@@ -16,6 +16,7 @@ namespace MochaWPFTestApp.ViewModels
     class Page1ViewModel : BindableBase, INavigatable, IOnNavigatingToAsync, IOnNavigatingFromAsync, IOnNavigatedToAsync, IOnNavigatingFrom
     {
         private readonly IBehaviourService _behaviourService;
+        private readonly IDialogFactory _dialogFactory;
 
         public string Text => "Page 1";
 
@@ -32,25 +33,27 @@ namespace MochaWPFTestApp.ViewModels
 
         public Navigator Navigator { get; }
 
-        public Page1ViewModel(INavigationService navigationService, IBehaviourService behaviourService)
+        public Page1ViewModel(INavigationService navigationService, IBehaviourService behaviourService, IDialogFactory dialogFactory)
         {
             _behaviourService = behaviourService;
+            _dialogFactory = dialogFactory;
+
             Navigator = new Navigator(this, navigationService);
-            
             Navigator.SaveCurrent = true;
         }
 
         private async void Navigate()
         {
             await Navigator.NavigateAsync(NavigationModules.Page2);
-            var result = await _behaviourService.Recall<object, Task<string>>("exit").Execute(null);
+            // var result = await _behaviourService.Recall<object, Task<string>>("exit").Execute(null);
         }
 
         public async Task OnNavigatingToAsync(NavigationData navigationData, NavigationCancelEventArgs e)
         {
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
-                IDialogModule<StandardDialogControl> dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
+                //IDialogModule<StandardDialogControl> dialog = MochaWPFTestApp.Dialogs.MsgBoxDialog;
+                IDialogModule<StandardDialogControl> dialog = _dialogFactory.Create<StandardDialogControl>(DialogsIDs.MsgBoxDialog);
                 dialog.DataContext.DialogControl.Title = "Title";
                 dialog.DataContext.DialogControl.Message = "OnNavigatingTo :)";
                 dialog.DataContext.DialogControl.PredefinedButtons = "OK";
