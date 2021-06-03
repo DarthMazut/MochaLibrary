@@ -24,6 +24,11 @@ using Microsoft.Extensions.Hosting;
 using Mocha.Behaviours;
 using Mocha.Dialogs.Extensions.DI;
 using Mocha.Behaviours.Extensions.DI;
+using Mocha.Events;
+using MochaWPF.Events;
+using Mocha.Events.Extensions.DI;
+using Mocha.Settings.Extensions.DI;
+using Mocha.Dispatching.Extensions.DI;
 
 namespace MochaWPFTestApp
 {
@@ -36,25 +41,31 @@ namespace MochaWPFTestApp
         {
             IServiceProvider provider = RegisterServices();
 
+            MainWindow mainWindow = new MainWindow();
+
             SetupNavigation(provider);
             SetupDialogs(provider);
             SetupSettings();
             SetupDispatching();
             SetupBehaviours();
+            SetupEvents(mainWindow);
 
-            new MainWindow()
-            {
-                DataContext = provider.GetRequiredService<MainWindowViewModel>()
-            }.Show();
+            mainWindow.DataContext = provider.GetRequiredService<MainWindowViewModel>();
+
+            // Start app :)
+            mainWindow.Show();
         }
 
         private IServiceProvider RegisterServices()
         {
             IHost host = Host.CreateDefaultBuilder().ConfigureServices((_, services) =>
             {
-                services.AddSingleton<IBehaviourService, BehaviourService>();
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<IDialogFactory, DialogFactory>();
+                services.AddSingleton<ISettingsService, SettingsService>();
+                services.AddSingleton<IDispatcherService, DispatcherService>();
+                services.AddSingleton<IBehaviourService, BehaviourService>();
+                services.AddSingleton<IEventService, EventService>();
 
                 services.AddTransient<MainWindowViewModel>();
                 
@@ -127,6 +138,11 @@ namespace MochaWPFTestApp
             {
                 return Task.Delay(3000).ContinueWith(t => Task.FromResult("haha")).Unwrap();
             });
+        }
+
+        private void SetupEvents(Window window)
+        {
+            AppEventManager.Initialize(new EventProvider(window));
         }
     }
 }

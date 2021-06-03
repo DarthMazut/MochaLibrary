@@ -1,6 +1,9 @@
 ﻿using Mocha.Dialogs;
 using Mocha.Dialogs.Extensions;
+using Mocha.Dialogs.Extensions.DI;
 using Mocha.Dispatching;
+using Mocha.Events.Extensions;
+using Mocha.Events.Extensions.DI;
 using Mocha.Navigation;
 using Mocha.Settings;
 using MochaWPFTestApp.Settings;
@@ -16,6 +19,8 @@ namespace MochaWPFTestApp
 {
     class MainWindowViewModel : BindableBase, INavigatable
     {
+        private readonly IDialogFactory _dialogFactory;
+
         private object _content;
 
         public object Content
@@ -41,10 +46,35 @@ namespace MochaWPFTestApp
         public DelegateCommand NavigateToPage3Command =>
             _navigateToPage3Command ?? (_navigateToPage3Command = new DelegateCommand(NavigateToPage3));
 
-        public MainWindowViewModel(INavigationService navigationService)
+        public MainWindowViewModel(INavigationService navigationService, IEventService eventService, IDialogFactory dialogFactory)
         {
+            _dialogFactory = dialogFactory;
+
             Navigator = new Navigator(this, navigationService);
             navigationService.NavigationRequested += OnNavigationRequested;
+
+            eventService.EventProvider.SubscribeAsyncAppClosing(OnClosingAsync);
+        }
+
+        private async Task<AppClosingEventArgs> OnClosingAsync()
+        {
+            using (IDialogModule<StandardDialogControl> dialog = _dialogFactory.Create<StandardDialogControl>(DialogsIDs.MsgBoxDialog))
+            {
+                dialog.DataContext.DialogControl.Title = "Application closing";
+                dialog.DataContext.DialogControl.Message = "Are you sure you want close the app?";
+                dialog.DataContext.DialogControl.PredefinedButtons = "YesNo";
+                dialog.DataContext.DialogControl.Icon = "Question";
+
+                bool? result = await dialog.ShowModalAsync();
+                //bool? result = dialog.ShowModal();
+
+                if (result != true)
+                {
+                    return new AppClosingEventArgs() { Cancel = true };
+                }
+
+                return new AppClosingEventArgs() { Cancel = false };
+            }
         }
 
         async void OnLoaded()

@@ -582,6 +582,91 @@
             </summary>
             <param name="action">Delegate to be enqueued</param>
         </member>
+        <member name="T:Mocha.Events.AppEventManager">
+            <summary>
+            Allows for handling technology-specific events within technology-independent modules.
+            </summary>
+        </member>
+        <member name="P:Mocha.Events.AppEventManager.EventProvider">
+            <summary>
+            Returns provided implementation of <see cref="T:Mocha.Events.IEventProvider"/>.
+            Throws if no such was provided.
+            </summary>
+        </member>
+        <member name="M:Mocha.Events.AppEventManager.Initialize(Mocha.Events.IEventProvider)">
+            <summary>
+            Initializes <see cref="T:Mocha.Events.AppEventManager"/> class. <see cref="T:Mocha.Events.IEventProvider"/>
+            instance is required.
+            </summary>
+            <param name="eventProvider">Technology-specific implementation of <see cref="T:Mocha.Events.IEventProvider"/>.</param>
+        </member>
+        <member name="T:Mocha.Events.Extensions.AppClosingEventArgs">
+            <summary>
+            Represents arguments for <see cref="E:Mocha.Events.IEventProvider.AppClosing"/> event.
+            </summary>
+        </member>
+        <member name="P:Mocha.Events.Extensions.AppClosingEventArgs.Cancel">
+            <summary>
+            If set to <see langword="true"/> allows to discard event effects.
+            </summary>
+        </member>
+        <member name="T:Mocha.Events.Extensions.DI.EventService">
+            <summary>
+            Allows for handling technology-specific events within technology-independent modules.
+            Use it for Dependency Injection architecture.
+            </summary>
+        </member>
+        <member name="P:Mocha.Events.Extensions.DI.EventService.EventProvider">
+            <inheritdoc/>
+        </member>
+        <member name="T:Mocha.Events.Extensions.DI.IEventService">
+            <summary>
+            Allows for handling technology-specific events within technology-independent modules.
+            Use it for Dependency Injection architecture.
+            </summary>
+        </member>
+        <member name="P:Mocha.Events.Extensions.DI.IEventService.EventProvider">
+            <summary>
+            Returns provided implementation of <see cref="T:Mocha.Events.IEventProvider"/>.
+            Throws if no such was provided.
+            </summary>
+        </member>
+        <member name="T:Mocha.Events.Extensions.HardwareBackButtonPressedEventArgs">
+            <summary>
+            Represents arguments for <see cref="E:Mocha.Events.IEventProvider.HardwareBackButtonPressed"/> event.
+            </summary>
+        </member>
+        <member name="P:Mocha.Events.Extensions.HardwareBackButtonPressedEventArgs.Cancel">
+            <summary>
+            If set to <see langword="true"/> allows to discard event effects.
+            </summary>
+        </member>
+        <member name="T:Mocha.Events.IEventProvider">
+            <summary>
+            Shares technology specific events which can be subsribed to.
+            </summary>
+        </member>
+        <member name="E:Mocha.Events.IEventProvider.AppClosing">
+            <summary>
+            Fires whenever application is about to close.
+            </summary>
+        </member>
+        <member name="E:Mocha.Events.IEventProvider.AppClosed">
+            <summary>
+            Fires after app was closed.
+            </summary>
+        </member>
+        <member name="E:Mocha.Events.IEventProvider.HardwareBackButtonPressed">
+            <summary>
+            Fires whenever user presses mobile device *Back Button*.
+            </summary>
+        </member>
+        <member name="M:Mocha.Events.IEventProvider.SubscribeAsyncAppClosing(System.Func{System.Threading.Tasks.Task{Mocha.Events.Extensions.AppClosingEventArgs}})">
+            <summary>
+            Stores <see cref="T:System.Threading.Tasks.Task"/> which will be executed whenever application is about to close.
+            </summary>
+            <param name="task"></param>
+        </member>
         <member name="T:Mocha.Navigation.INavigatable">
             <summary>
             Allows implementing class to participate in the navigation process. 
