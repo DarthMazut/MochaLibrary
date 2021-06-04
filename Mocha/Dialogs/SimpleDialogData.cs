@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaWPF
+namespace Mocha
 {
     /// <summary>
     /// Sometimes you don't need a custom logic for particular dialog. Use <see cref="SimpleDialogData"/>

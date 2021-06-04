@@ -9,35 +9,46 @@ namespace Mocha.Events
     /// </summary>
     public static class AppEventManager
     {
-        private static IEventProvider _eventProvider;
+        private static Dictionary<string, object> _events = new Dictionary<string, object>();
 
         /// <summary>
-        /// Returns provided implementation of <see cref="IEventProvider"/>.
-        /// Throws if no such was provided.
+        /// Registers provided implementation of <see cref="IEventProvider{TEventArgs}"/> with given ID.
         /// </summary>
-        public static IEventProvider EventProvider
+        /// <typeparam name="TEventArgs">Type of event arguments.</typeparam>
+        /// <param name="id"><see cref="IEventProvider{TEventArgs}"/> unique identifier.</param>
+        /// <param name="eventProvider">Implementation of <see cref="IEventProvider{TEventArgs}"/>.</param>
+        public static void IncludeEventProvider<TEventArgs>(string id, IEventProvider<TEventArgs> eventProvider) where TEventArgs : EventArgs
         {
-            get
+            if (_events.ContainsKey(id))
             {
-                if (_eventProvider != null)
-                {
-                    return _eventProvider;
-                }
-                else
-                {
-                    throw new InvalidOperationException($"No implementation of {typeof(IEventProvider)} was provided. Use *Initialize* method first.");
-                }
+                throw new InvalidOperationException($"Event provider with id {id} was already included.");
+            }
+            else
+            {
+                _events.Add(id, eventProvider);
             }
         }
 
         /// <summary>
-        /// Initializes <see cref="AppEventManager"/> class. <see cref="IEventProvider"/>
-        /// instance is required.
+        /// Returns provided implementation of <see cref="IEventProvider{TEventArgs}"/> corresponding to given ID.
         /// </summary>
-        /// <param name="eventProvider">Technology-specific implementation of <see cref="IEventProvider"/>.</param>
-        public static void Initialize(IEventProvider eventProvider)
+        /// <typeparam name="TEventArgs">Type of event arguments.</typeparam>
+        /// <param name="id">ID of requesting <see cref="IEventProvider{TEventArgs}"/>.</param>
+        public static IEventProvider<TEventArgs> RequestEventProvider<TEventArgs>(string id) where TEventArgs : EventArgs
         {
-            _eventProvider = eventProvider;
+            if (_events.ContainsKey(id))
+            {
+                if (_events[id] is IEventProvider<TEventArgs> eventHandler)
+                {
+                    return eventHandler;
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Requested type {typeof(TEventArgs)} did not match the one registered with id {id}.");
+                }
+            }
+
+            throw new InvalidOperationException($"Requested event provider {id} was never registered.");
         }
     }
 }

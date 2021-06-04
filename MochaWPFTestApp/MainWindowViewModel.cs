@@ -2,6 +2,7 @@
 using Mocha.Dialogs.Extensions;
 using Mocha.Dialogs.Extensions.DI;
 using Mocha.Dispatching;
+using Mocha.Events;
 using Mocha.Events.Extensions;
 using Mocha.Events.Extensions.DI;
 using Mocha.Navigation;
@@ -53,10 +54,10 @@ namespace MochaWPFTestApp
             Navigator = new Navigator(this, navigationService);
             navigationService.NavigationRequested += OnNavigationRequested;
 
-            eventService.EventProvider.SubscribeAsyncAppClosing(OnClosingAsync);
+            eventService.RequestEventProvider<AppClosingEventArgs>("OnClosingEvent").SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(OnClosingAsync));
         }
 
-        private async Task<AppClosingEventArgs> OnClosingAsync()
+        private async Task OnClosingAsync(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> invocationList)
         {
             using (IDialogModule<StandardDialogControl> dialog = _dialogFactory.Create<StandardDialogControl>(DialogsIDs.MsgBoxDialog))
             {
@@ -66,14 +67,11 @@ namespace MochaWPFTestApp
                 dialog.DataContext.DialogControl.Icon = "Question";
 
                 bool? result = await dialog.ShowModalAsync();
-                //bool? result = dialog.ShowModal();
 
                 if (result != true)
                 {
-                    return new AppClosingEventArgs() { Cancel = true };
+                    e.Cancel = true;
                 }
-
-                return new AppClosingEventArgs() { Cancel = false };
             }
         }
 

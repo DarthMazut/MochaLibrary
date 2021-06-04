@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dispatching\WpfDispatcher.cs" />
-    <Compile Include="Events\EventProvider.cs" />
+    <Compile Include="Events\AppClosingEventProvider.cs" />
     <Compile Include="Navigation\NavigationModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Dialogs\BaseDialogModule.cs" />

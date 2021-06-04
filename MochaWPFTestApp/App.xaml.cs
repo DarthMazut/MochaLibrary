@@ -80,24 +80,6 @@ namespace MochaWPFTestApp
             return host.Services.CreateScope().ServiceProvider;
         }
 
-        private void SetupDialogs(IServiceProvider provider)
-        {
-            DialogManager.DefineDialog(DialogsIDs.MsgBoxDialog, () =>
-            {
-                return new StandardDialogModule(this);
-            });
-
-            DialogManager.DefineDialog(DialogsIDs.OpenDialog, () =>
-            {
-                return new FileDialogModule(this, new Microsoft.Win32.OpenFileDialog());
-            });
-
-            DialogManager.DefineDialog(DialogsIDs.CustomDialog1, () =>
-            {
-                return new CustomDialogModule(this, new MyCustomDialog(), provider.GetRequiredService<MyCustomDialogViewModel>());
-            });
-        }
-
         private void SetupNavigation(IServiceProvider provider)
         {
             NavigationManager.AddModule(PagesIDs.Page1, () =>
@@ -122,6 +104,24 @@ namespace MochaWPFTestApp
             });
         }
 
+        private void SetupDialogs(IServiceProvider provider)
+        {
+            DialogManager.DefineDialog(DialogsIDs.MsgBoxDialog, () =>
+            {
+                return new StandardDialogModule(this);
+            });
+
+            DialogManager.DefineDialog(DialogsIDs.OpenDialog, () =>
+            {
+                return new FileDialogModule(this, new Microsoft.Win32.OpenFileDialog());
+            });
+
+            DialogManager.DefineDialog(DialogsIDs.CustomDialog1, () =>
+            {
+                return new CustomDialogModule(this, new MyCustomDialog(), provider.GetRequiredService<MyCustomDialogViewModel>());
+            });
+        }
+
         private void SetupDispatching()
         {
             DispatcherManager.SetMainThreadDispatcher(new WpfDispatcher(this));
@@ -142,7 +142,7 @@ namespace MochaWPFTestApp
 
         private void SetupEvents(Window window)
         {
-            AppEventManager.Initialize(new EventProvider(window));
+            AppEventManager.IncludeEventProvider("OnClosingEvent", new AppClosingEventProvider(window));
         }
     }
 }

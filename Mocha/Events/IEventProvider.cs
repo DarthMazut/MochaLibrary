@@ -1,33 +1,30 @@
 ﻿using Mocha.Events.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Mocha.Events
 {
     /// <summary>
-    /// Shares technology specific events which can be subsribed to.
+    /// Encapsulates single event which can be subscribed to.
     /// </summary>
-    public interface IEventProvider
+    public interface IEventProvider<TEventArgs> where TEventArgs : EventArgs
     {
         /// <summary>
-        /// Fires whenever application is about to close.
+        /// Encapsulated event.
         /// </summary>
-        event EventHandler<AppClosingEventArgs> AppClosing;
+        event EventHandler<TEventArgs> Event;
 
         /// <summary>
-        /// Fires after app was closed.
+        /// Registers <see cref="AsyncEventHandler{T}"/> object which will be executed whenever encapsulated event occurs.
         /// </summary>
-        event EventHandler AppClosed;
+        /// <param name="asyncEventHandler">Object to be registered.</param>
+        void SubscribeAsync(AsyncEventHandler<TEventArgs> asyncEventHandler);
 
         /// <summary>
-        /// Fires whenever user presses mobile device *Back Button*.
+        /// Removes given function from subscribtion collection.
         /// </summary>
-        event EventHandler<HardwareBackButtonPressedEventArgs> HardwareBackButtonPressed;
-
-        /// <summary>
-        /// Stores <see cref="Task"/> which will be executed whenever application is about to close.
-        /// </summary>
-        /// <param name="task"></param>
-        void SubscribeAsyncAppClosing(Func<Task<AppClosingEventArgs>> task);
+        /// <param name="function">Function to be unsubscribed.</param>
+        void UnsubscribeAsync(Func<TEventArgs, IReadOnlyCollection<AsyncEventHandler>, Task> function);
     }
 }

@@ -525,6 +525,44 @@
             Defines a predefined buttons set for displaying dialog.
             </summary>
         </member>
+        <member name="T:Mocha.SimpleDialogData">
+            <summary>
+            Sometimes you don't need a custom logic for particular dialog. Use <see cref="T:Mocha.SimpleDialogData"/>
+            to satisfy backend requirement for <see cref="T:Mocha.Dialogs.IDialogModule"/> when no specific backend is needed.
+            </summary>
+        </member>
+        <member name="P:Mocha.SimpleDialogData.DialogControl">
+            <summary>
+            Exposes API for dialog interaction.
+            </summary>
+        </member>
+        <member name="M:Mocha.SimpleDialogData.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mocha.SimpleDialogData"/> class. 
+            </summary>
+        </member>
+        <member name="T:Mocha.SimpleDialogData`1">
+            <summary>
+            Sometimes you don't need a custom logic for particular dialog. Use <see cref="T:Mocha.SimpleDialogData"/>
+            to satisfy backend requirement for <see cref="T:Mocha.Dialogs.IDialogModule"/> when no specific backend is needed.
+            </summary>
+            <typeparam name="T">Specifies statically typed parameters for the associated dialog.</typeparam>
+        </member>
+        <member name="P:Mocha.SimpleDialogData`1.DialogControl">
+            <summary>
+            Exposes API for dialog interaction.
+            </summary>
+        </member>
+        <member name="P:Mocha.SimpleDialogData`1.Mocha#Dialogs#IDialog#DialogControl">
+            <summary>
+            Exposes API for dialog interaction.
+            </summary>
+        </member>
+        <member name="M:Mocha.SimpleDialogData`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mocha.SimpleDialogData`1"/> class. 
+            </summary>
+        </member>
         <member name="T:Mocha.Dispatching.DispatcherManager">
             <summary>
             Allows for registering and retrieving <see cref="T:Mocha.Dispatching.IDispatcher"/> object
@@ -587,27 +625,119 @@
             Allows for handling technology-specific events within technology-independent modules.
             </summary>
         </member>
-        <member name="P:Mocha.Events.AppEventManager.EventProvider">
+        <member name="M:Mocha.Events.AppEventManager.IncludeEventProvider``1(System.String,Mocha.Events.IEventProvider{``0})">
             <summary>
-            Returns provided implementation of <see cref="T:Mocha.Events.IEventProvider"/>.
-            Throws if no such was provided.
+            Registers provided implementation of <see cref="T:Mocha.Events.IEventProvider`1"/> with given ID.
+            </summary>
+            <typeparam name="TEventArgs">Type of event arguments.</typeparam>
+            <param name="id"><see cref="T:Mocha.Events.IEventProvider`1"/> unique identifier.</param>
+            <param name="eventProvider">Implementation of <see cref="T:Mocha.Events.IEventProvider`1"/>.</param>
+        </member>
+        <member name="M:Mocha.Events.AppEventManager.RequestEventProvider``1(System.String)">
+            <summary>
+            Returns provided implementation of <see cref="T:Mocha.Events.IEventProvider`1"/> corresponding to given ID.
+            </summary>
+            <typeparam name="TEventArgs">Type of event arguments.</typeparam>
+            <param name="id">ID of requesting <see cref="T:Mocha.Events.IEventProvider`1"/>.</param>
+        </member>
+        <member name="T:Mocha.Events.AsyncEventHandler">
+            <summary>
+            Base type for <see cref="T:Mocha.Events.AsyncEventHandler`1"/> class.
             </summary>
         </member>
-        <member name="M:Mocha.Events.AppEventManager.Initialize(Mocha.Events.IEventProvider)">
+        <member name="P:Mocha.Events.AsyncEventHandler.Skip">
             <summary>
-            Initializes <see cref="T:Mocha.Events.AppEventManager"/> class. <see cref="T:Mocha.Events.IEventProvider"/>
-            instance is required.
+            Determines whether execution of this <see cref="T:Mocha.Events.AsyncEventHandler"/> will be skipped.
             </summary>
-            <param name="eventProvider">Technology-specific implementation of <see cref="T:Mocha.Events.IEventProvider"/>.</param>
+        </member>
+        <member name="P:Mocha.Events.AsyncEventHandler.Executed">
+            <summary>
+            Determines whether this <see cref="T:Mocha.Events.AsyncEventHandler"/> has been already executed.
+            </summary>
+        </member>
+        <member name="P:Mocha.Events.AsyncEventHandler.Id">
+            <summary>
+            Identifier of <see cref="T:Mocha.Events.AsyncEventHandler"/>.
+            </summary>
+        </member>
+        <member name="P:Mocha.Events.AsyncEventHandler.ExecuteInParallel">
+            <summary>
+            Determines whether this <see cref="T:Mocha.Events.AsyncEventHandler"/> can be executed in parallel together with
+            other subscribed <see cref="T:Mocha.Events.AsyncEventHandler"/> objects.
+            </summary>
+        </member>
+        <member name="P:Mocha.Events.AsyncEventHandler.Priority">
+            <summary>
+            Determines order of this <see cref="T:Mocha.Events.AsyncEventHandler"/> execution. Lower priority means first to execute.
+            </summary>
+        </member>
+        <member name="M:Mocha.Events.AsyncEventHandler.#ctor(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Base constructor.
+            </summary>
+            <param name="id">Identifier of <see cref="T:Mocha.Events.AsyncEventHandler"/>.</param>
+            <param name="priority">Determines order of execution.</param>
+            <param name="executeInParallel">See <see cref="P:Mocha.Events.AsyncEventHandler.ExecuteInParallel"/> property.</param>
+        </member>
+        <member name="T:Mocha.Events.AsyncEventHandler`1">
+            <summary>
+            Encapsulates event handler which can be executed asynchronously.
+            </summary>
+            <typeparam name="T">Type of event arguments.</typeparam>
+        </member>
+        <member name="M:Mocha.Events.AsyncEventHandler`1.#ctor(System.Func{`0,System.Collections.Generic.IReadOnlyCollection{Mocha.Events.AsyncEventHandler},System.Threading.Tasks.Task})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mocha.Events.AsyncEventHandler`1"/> class.
+            </summary>
+            <param name="eventHandler">Delegate returning asynchronous event handler.</param>
+        </member>
+        <member name="M:Mocha.Events.AsyncEventHandler`1.#ctor(System.Func{`0,System.Collections.Generic.IReadOnlyCollection{Mocha.Events.AsyncEventHandler},System.Threading.Tasks.Task},System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mocha.Events.AsyncEventHandler`1"/> class.
+            </summary>
+            <param name="eventHandler">Delegate returning asynchronous event handler.</param>
+            <param name="id">Identifier of <see cref="T:Mocha.Events.AsyncEventHandler"/>.</param>
+        </member>
+        <member name="M:Mocha.Events.AsyncEventHandler`1.#ctor(System.Func{`0,System.Collections.Generic.IReadOnlyCollection{Mocha.Events.AsyncEventHandler},System.Threading.Tasks.Task},System.String,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mocha.Events.AsyncEventHandler`1"/> class.
+            </summary>
+            <param name="eventHandler">Delegate returning asynchronous event handler.</param>
+            <param name="id">Identifier of <see cref="T:Mocha.Events.AsyncEventHandler"/>.</param>
+            <param name="priority">Determines order of execution.</param>
+        </member>
+        <member name="M:Mocha.Events.AsyncEventHandler`1.#ctor(System.Func{`0,System.Collections.Generic.IReadOnlyCollection{Mocha.Events.AsyncEventHandler},System.Threading.Tasks.Task},System.String,System.Int32,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mocha.Events.AsyncEventHandler`1"/> class.
+            </summary>
+            <param name="eventHandler">Delegate returning asynchronous event handler.</param>
+            <param name="id">Identifier of <see cref="T:Mocha.Events.AsyncEventHandler"/>.</param>
+            <param name="priority">Determines order of execution.</param>
+            <param name="parallel">See <see cref="P:Mocha.Events.AsyncEventHandler.ExecuteInParallel"/> property.</param>
+        </member>
+        <member name="M:Mocha.Events.AsyncEventHandler`1.Execute(`0,System.Collections.Generic.IReadOnlyCollection{Mocha.Events.AsyncEventHandler})">
+            <summary>
+            Executes asynchronosuly encapsulated event handler.
+            </summary>
+            <param name="eventArgs">Event arguments.</param>
+            <param name="invocationList">
+            Read-only collection of other <see cref="T:Mocha.Events.AsyncEventHandler`1"/> objects which subscribe to common event.
+            </param>
+        </member>
+        <member name="M:Mocha.Events.AsyncEventHandler`1.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Mocha.Events.AsyncEventHandler`1.GetHashCode">
+            <inheritdoc/>
         </member>
         <member name="T:Mocha.Events.Extensions.AppClosingEventArgs">
             <summary>
-            Represents arguments for <see cref="E:Mocha.Events.IEventProvider.AppClosing"/> event.
+            Provides arguments for application closing event.
             </summary>
         </member>
         <member name="P:Mocha.Events.Extensions.AppClosingEventArgs.Cancel">
             <summary>
-            If set to <see langword="true"/> allows to discard event effects.
+            If set to <see langword="true"/> application won't close.
             </summary>
         </member>
         <member name="T:Mocha.Events.Extensions.DI.EventService">
@@ -616,7 +746,7 @@
             Use it for Dependency Injection architecture.
             </summary>
         </member>
-        <member name="P:Mocha.Events.Extensions.DI.EventService.EventProvider">
+        <member name="M:Mocha.Events.Extensions.DI.EventService.RequestEventProvider``1(System.String)">
             <inheritdoc/>
         </member>
         <member name="T:Mocha.Events.Extensions.DI.IEventService">
@@ -625,15 +755,16 @@
             Use it for Dependency Injection architecture.
             </summary>
         </member>
-        <member name="P:Mocha.Events.Extensions.DI.IEventService.EventProvider">
+        <member name="M:Mocha.Events.Extensions.DI.IEventService.RequestEventProvider``1(System.String)">
             <summary>
-            Returns provided implementation of <see cref="T:Mocha.Events.IEventProvider"/>.
-            Throws if no such was provided.
+            Returns provided implementation of <see cref="T:Mocha.Events.IEventProvider`1"/> corresponding to given ID.
             </summary>
+            <typeparam name="TEventArgs">Type of event arguments.</typeparam>
+            <param name="id">ID of requesting <see cref="T:Mocha.Events.IEventProvider`1"/>.</param>
         </member>
         <member name="T:Mocha.Events.Extensions.HardwareBackButtonPressedEventArgs">
             <summary>
-            Represents arguments for <see cref="E:Mocha.Events.IEventProvider.HardwareBackButtonPressed"/> event.
+            Represents arguments for hardware back button pressed event.
             </summary>
         </member>
         <member name="P:Mocha.Events.Extensions.HardwareBackButtonPressedEventArgs.Cancel">
@@ -641,31 +772,27 @@
             If set to <see langword="true"/> allows to discard event effects.
             </summary>
         </member>
-        <member name="T:Mocha.Events.IEventProvider">
+        <member name="T:Mocha.Events.IEventProvider`1">
             <summary>
-            Shares technology specific events which can be subsribed to.
+            Encapsulates single event which can be subscribed to.
             </summary>
         </member>
-        <member name="E:Mocha.Events.IEventProvider.AppClosing">
+        <member name="E:Mocha.Events.IEventProvider`1.Event">
             <summary>
-            Fires whenever application is about to close.
+            Encapsulated event.
             </summary>
         </member>
-        <member name="E:Mocha.Events.IEventProvider.AppClosed">
+        <member name="M:Mocha.Events.IEventProvider`1.SubscribeAsync(Mocha.Events.AsyncEventHandler{`0})">
             <summary>
-            Fires after app was closed.
+            Registers <see cref="T:Mocha.Events.AsyncEventHandler`1"/> object which will be executed whenever encapsulated event occurs.
             </summary>
+            <param name="asyncEventHandler">Object to be registered.</param>
         </member>
-        <member name="E:Mocha.Events.IEventProvider.HardwareBackButtonPressed">
+        <member name="M:Mocha.Events.IEventProvider`1.UnsubscribeAsync(System.Func{`0,System.Collections.Generic.IReadOnlyCollection{Mocha.Events.AsyncEventHandler},System.Threading.Tasks.Task})">
             <summary>
-            Fires whenever user presses mobile device *Back Button*.
+            Removes given function from subscribtion collection.
             </summary>
-        </member>
-        <member name="M:Mocha.Events.IEventProvider.SubscribeAsyncAppClosing(System.Func{System.Threading.Tasks.Task{Mocha.Events.Extensions.AppClosingEventArgs}})">
-            <summary>
-            Stores <see cref="T:System.Threading.Tasks.Task"/> which will be executed whenever application is about to close.
-            </summary>
-            <param name="task"></param>
+            <param name="function">Function to be unsubscribed.</param>
         </member>
         <member name="T:Mocha.Navigation.INavigatable">
             <summary>
@@ -1171,44 +1298,6 @@
             </summary>
             <typeparam name="T">Type of settings section.</typeparam>
             <param name="id">Id of settings section to be retrieved.</param>
-        </member>
-        <member name="T:MochaWPF.SimpleDialogData">
-            <summary>
-            Sometimes you don't need a custom logic for particular dialog. Use <see cref="T:MochaWPF.SimpleDialogData"/>
-            to satisfy backend requirement for <see cref="T:Mocha.Dialogs.IDialogModule"/> when no specific backend is needed.
-            </summary>
-        </member>
-        <member name="P:MochaWPF.SimpleDialogData.DialogControl">
-            <summary>
-            Exposes API for dialog interaction.
-            </summary>
-        </member>
-        <member name="M:MochaWPF.SimpleDialogData.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:MochaWPF.SimpleDialogData"/> class. 
-            </summary>
-        </member>
-        <member name="T:MochaWPF.SimpleDialogData`1">
-            <summary>
-            Sometimes you don't need a custom logic for particular dialog. Use <see cref="T:MochaWPF.SimpleDialogData"/>
-            to satisfy backend requirement for <see cref="T:Mocha.Dialogs.IDialogModule"/> when no specific backend is needed.
-            </summary>
-            <typeparam name="T">Specifies statically typed parameters for the associated dialog.</typeparam>
-        </member>
-        <member name="P:MochaWPF.SimpleDialogData`1.DialogControl">
-            <summary>
-            Exposes API for dialog interaction.
-            </summary>
-        </member>
-        <member name="P:MochaWPF.SimpleDialogData`1.Mocha#Dialogs#IDialog#DialogControl">
-            <summary>
-            Exposes API for dialog interaction.
-            </summary>
-        </member>
-        <member name="M:MochaWPF.SimpleDialogData`1.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:MochaWPF.SimpleDialogData`1"/> class. 
-            </summary>
         </member>
     </members>
 </doc>

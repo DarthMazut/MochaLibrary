@@ -5,7 +5,7 @@ using System.Text;
 namespace Mocha.Events.Extensions
 {
     /// <summary>
-    /// Represents arguments for <see cref="IEventProvider.HardwareBackButtonPressed"/> event.
+    /// Represents arguments for hardware back button pressed event.
     /// </summary>
     public class HardwareBackButtonPressedEventArgs : EventArgs
     {

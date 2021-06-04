@@ -114,6 +114,7 @@ namespace Mocha.Navigation
 
                 if (_cachedModules.Contains(requestedModule, _moduleComparer))
                 {
+                    navigationData.RequestedModule.CleanUp();
                     navigationData.RequestedModule = _cachedModules.First(m => _moduleComparer.Equals(m, requestedModule));
                 }
             }

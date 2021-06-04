@@ -3,6 +3,9 @@ using Mocha.Behaviours.Extensions.DI;
 using Mocha.Dialogs;
 using Mocha.Dialogs.Extensions;
 using Mocha.Dialogs.Extensions.DI;
+using Mocha.Events;
+using Mocha.Events.Extensions;
+using Mocha.Events.Extensions.DI;
 using Mocha.Navigation;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -18,6 +21,7 @@ namespace MochaWPFTestApp.ViewModels
     {
         private readonly IBehaviourService _behaviourService;
         private readonly IDialogFactory _dialogFactory;
+        private readonly IEventService _eventService;
 
         public string Text => "Page 1";
 
@@ -34,13 +38,24 @@ namespace MochaWPFTestApp.ViewModels
 
         public Navigator Navigator { get; }
 
-        public Page1ViewModel(INavigationService navigationService, IBehaviourService behaviourService, IDialogFactory dialogFactory)
+        public Page1ViewModel(INavigationService navigationService, IBehaviourService behaviourService, IDialogFactory dialogFactory, IEventService eventService)
         {
             _behaviourService = behaviourService;
             _dialogFactory = dialogFactory;
+            _eventService = eventService;
 
             Navigator = new Navigator(this, navigationService);
             Navigator.SaveCurrent = true;
+
+            eventService.RequestEventProvider<AppClosingEventArgs>("OnClosingEvent").SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(OnAppClosing, "myEvent", -1));
+        }
+
+        private async Task OnAppClosing(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> invocationList)
+        {
+            using (var dialog = _dialogFactory.Create<StandardDialogControl>(DialogsIDs.MsgBoxDialog))
+            {
+                await dialog.ShowModalAsync();
+            }
         }
 
         private async void Navigate()
@@ -78,10 +93,14 @@ namespace MochaWPFTestApp.ViewModels
                 await dialog.ShowModalAsync();
                 dialog.Dispose();
             }
+
+            _eventService.RequestEventProvider<AppClosingEventArgs>("OnClosingEvent").UnsubscribeAsync(OnAppClosing);
         }
 
         public async Task OnNavigatedToAsync(NavigationData navigationData)
         {
+            //_eventService.RequestEventProvider<AppClosingEventArgs>("OnClosingEvent").SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(OnAppClosing, "myEvent", -1));
+
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {
                 IDialogModule<StandardDialogControl> dialog = new DialogFactory().Create<StandardDialogControl>(DialogsIDs.MsgBoxDialog); // MochaWPFTestApp.Dialogs.MsgBoxDialog;

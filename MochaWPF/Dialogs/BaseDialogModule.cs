@@ -1,4 +1,5 @@
-﻿using Mocha.Dialogs;
+﻿using Mocha;
+using Mocha.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -11,9 +11,10 @@ namespace Mocha.Events.Extensions.DI
     public interface IEventService
     {
         /// <summary>
-        /// Returns provided implementation of <see cref="IEventProvider"/>.
-        /// Throws if no such was provided.
+        /// Returns provided implementation of <see cref="IEventProvider{TEventArgs}"/> corresponding to given ID.
         /// </summary>
-        IEventProvider EventProvider { get; }
+        /// <typeparam name="TEventArgs">Type of event arguments.</typeparam>
+        /// <param name="id">ID of requesting <see cref="IEventProvider{TEventArgs}"/>.</param>
+        IEventProvider<TEventArgs> RequestEventProvider<TEventArgs>(string id) where TEventArgs : EventArgs;
     }
 }
