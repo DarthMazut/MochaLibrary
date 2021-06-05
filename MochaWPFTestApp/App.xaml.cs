@@ -100,7 +100,7 @@ namespace MochaWPFTestApp
             {
                 return new NavigationModule(
                     new Page3(),
-                    provider.GetRequiredService<Page2ViewModel>());
+                    provider.GetRequiredService<Page3ViewModel>());
             });
         }
 

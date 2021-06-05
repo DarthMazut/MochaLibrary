@@ -46,8 +46,6 @@ namespace MochaWPFTestApp.ViewModels
 
             Navigator = new Navigator(this, navigationService);
             Navigator.SaveCurrent = true;
-
-            eventService.RequestEventProvider<AppClosingEventArgs>("OnClosingEvent").SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(OnAppClosing, "myEvent", -1));
         }
 
         private async Task OnAppClosing(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> invocationList)
@@ -55,6 +53,7 @@ namespace MochaWPFTestApp.ViewModels
             using (var dialog = _dialogFactory.Create<StandardDialogControl>(DialogsIDs.MsgBoxDialog))
             {
                 await dialog.ShowModalAsync();
+                e.Cancel = true;
             }
         }
 
@@ -99,7 +98,7 @@ namespace MochaWPFTestApp.ViewModels
 
         public async Task OnNavigatedToAsync(NavigationData navigationData)
         {
-            //_eventService.RequestEventProvider<AppClosingEventArgs>("OnClosingEvent").SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(OnAppClosing, "myEvent", -1));
+            _eventService.RequestEventProvider<AppClosingEventArgs>("OnClosingEvent").SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(OnAppClosing, "myEvent", -1));
 
             if (navigationData.CallingModule.DataContext.GetType() != typeof(MainWindowViewModel))
             {

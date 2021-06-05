@@ -53,12 +53,15 @@ namespace MochaWPFTestApp
 
             Navigator = new Navigator(this, navigationService);
             navigationService.NavigationRequested += OnNavigationRequested;
-
-            eventService.RequestEventProvider<AppClosingEventArgs>("OnClosingEvent").SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(OnClosingAsync));
         }
 
         private async Task OnClosingAsync(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> invocationList)
         {
+            if(invocationList.Where(h => h.Id == "myEvent").ToList().Count > 0)
+            {
+                return;
+            }
+
             using (IDialogModule<StandardDialogControl> dialog = _dialogFactory.Create<StandardDialogControl>(DialogsIDs.MsgBoxDialog))
             {
                 dialog.DataContext.DialogControl.Title = "Application closing";
@@ -77,6 +80,8 @@ namespace MochaWPFTestApp
 
         async void OnLoaded()
         {
+            AppEventManager.RequestEventProvider<AppClosingEventArgs>("OnClosingEvent").SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(OnClosingAsync, "mainOnClosingHandler"));
+
             await Navigator.NavigateAsync(NavigationModules.Page1);
             ISettingsSection<GeneralSettings> settings = SettingsManager.Retrieve<GeneralSettings>("myCustomSettings1");
 

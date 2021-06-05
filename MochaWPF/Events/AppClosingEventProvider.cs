@@ -3,6 +3,7 @@ using Mocha.Events.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,22 +20,42 @@ namespace MochaWPF.Events
         private readonly Window _window;
         private readonly List<AsyncEventHandler<AppClosingEventArgs>> _asyncInvocationList = new List<AsyncEventHandler<AppClosingEventArgs>>();
 
+        private bool _allowConstructorSubscribtion;
+        private EventHandler<AppClosingEventArgs> _event;
+
         /// <inheritdoc/>
-        public event EventHandler<AppClosingEventArgs> Event;
+        public event EventHandler<AppClosingEventArgs> Event
+        {
+            add
+            {
+                ThrowIfInConstructor();
+                _event += value; 
+            }
+            remove { _event -= value; }
+        }
 
         /// <summary>
         /// Initializes a new instance of <see cref="AppClosingEventProvider"/> class.
         /// </summary>
         /// <param name="mainWindow">Main window of WPF application.</param>
-        public AppClosingEventProvider(Window mainWindow)
+        public AppClosingEventProvider(Window mainWindow) : this(mainWindow, false) { }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="AppClosingEventProvider"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Main window of WPF application.</param>
+        /// <param name="allowConstructorSubscribtion">Determines whether an exception will be thrown when trying to subscribe inside constructors.</param>
+        public AppClosingEventProvider(Window mainWindow, bool allowConstructorSubscribtion)
         {
             _window = mainWindow;
+            _allowConstructorSubscribtion = allowConstructorSubscribtion;
             mainWindow.Closing += OnClosing;
         }
 
         /// <inheritdoc/>
         public void SubscribeAsync(AsyncEventHandler<AppClosingEventArgs> asyncEventHandler)
         {
+            ThrowIfInConstructor();
             _asyncInvocationList.Add(asyncEventHandler);
         }
 
@@ -49,7 +70,7 @@ namespace MochaWPF.Events
         {
             // Execute synchronous events
             AppClosingEventArgs eventArgs = new AppClosingEventArgs();
-            Event?.Invoke(sender, eventArgs);
+            _event?.Invoke(sender, eventArgs);
             e.Cancel = eventArgs.Cancel;
 
             // Execute asynchronouse tasks
@@ -69,16 +90,29 @@ namespace MochaWPF.Events
 
                 foreach (AsyncEventHandler<AppClosingEventArgs> eventHandler in sortedInvocationList)
                 {
-                    await eventHandler.Execute(eventArgs, _asyncInvocationList.AsReadOnly());
+                    if(eventHandler.SkipCurrentIteration == false)
+                    {
+                        await eventHandler.Execute(eventArgs, _asyncInvocationList.AsReadOnly());
+                    }
                 }
+                sortedInvocationList.ForEach(h => h.SkipCurrentIteration = false);
 
                 await Task.WhenAll(parallelCollection);
 
+                await Dispatcher.Yield();
                 if (eventArgs.Cancel == false)
                 {
                     _window.Closing -= OnClosing;
                     _window.Close();
                 }
+            }
+        }
+
+        private void ThrowIfInConstructor()
+        {
+            if (!_allowConstructorSubscribtion && new StackFrame(2).GetMethod().IsConstructor)
+            {
+                throw new Exception("Do not subscribe to events within constructor method. For INavigatable elements use IOnNavigatedTo(Async) and IOnNavigatingFrom(Async) methods.");
             }
         }
     }
