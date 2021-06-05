@@ -12,10 +12,12 @@ namespace Mocha.Events
     {
         protected bool _executed;
 
+        /*
         /// <summary>
         /// Determines whether execution of this <see cref="AsyncEventHandler"/> will be skipped in current iteration.
         /// </summary>
         public bool SkipCurrentIteration { get; set; }
+        */
 
         /// <summary>
         /// Determines whether this <see cref="AsyncEventHandler"/> has been already executed.
@@ -124,7 +126,6 @@ namespace Mocha.Events
         {
             int hashCode = 692590352;
             hashCode = hashCode * -1521134295 + _executed.GetHashCode();
-            hashCode = hashCode * -1521134295 + SkipCurrentIteration.GetHashCode();
             hashCode = hashCode * -1521134295 + Executed.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Id);
             hashCode = hashCode * -1521134295 + ExecuteInParallel.GetHashCode();

@@ -90,12 +90,8 @@ namespace MochaWPF.Events
 
                 foreach (AsyncEventHandler<AppClosingEventArgs> eventHandler in sortedInvocationList)
                 {
-                    if(eventHandler.SkipCurrentIteration == false)
-                    {
-                        await eventHandler.Execute(eventArgs, _asyncInvocationList.AsReadOnly());
-                    }
+                    await eventHandler.Execute(eventArgs, _asyncInvocationList.AsReadOnly());
                 }
-                sortedInvocationList.ForEach(h => h.SkipCurrentIteration = false);
 
                 await Task.WhenAll(parallelCollection);
 

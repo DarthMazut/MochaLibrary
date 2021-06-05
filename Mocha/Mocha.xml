@@ -645,11 +645,6 @@
             Base type for <see cref="T:Mocha.Events.AsyncEventHandler`1"/> class.
             </summary>
         </member>
-        <member name="P:Mocha.Events.AsyncEventHandler.SkipCurrentIteration">
-            <summary>
-            Determines whether execution of this <see cref="T:Mocha.Events.AsyncEventHandler"/> will be skipped in current iteration.
-            </summary>
-        </member>
         <member name="P:Mocha.Events.AsyncEventHandler.Executed">
             <summary>
             Determines whether this <see cref="T:Mocha.Events.AsyncEventHandler"/> has been already executed.
