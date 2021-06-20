@@ -15,16 +15,14 @@ namespace MochaWPF.Events
     /// <summary>
     /// Provides WPF implementation for main window *OnClosing* event.
     /// </summary>
-    public class AppClosingEventProvider : IEventProvider<AppClosingEventArgs>
+    public class AppClosingEventProvider : BaseEventProvider<AppClosingEventArgs>
     {
         private readonly Window _window;
-        private readonly List<AsyncEventHandler<AppClosingEventArgs>> _asyncInvocationList = new List<AsyncEventHandler<AppClosingEventArgs>>();
-
         private bool _allowConstructorSubscribtion;
         private EventHandler<AppClosingEventArgs> _event;
 
         /// <inheritdoc/>
-        public event EventHandler<AppClosingEventArgs> Event
+        public override event EventHandler<AppClosingEventArgs> Event
         {
             add
             {
@@ -53,17 +51,10 @@ namespace MochaWPF.Events
         }
 
         /// <inheritdoc/>
-        public void SubscribeAsync(AsyncEventHandler<AppClosingEventArgs> asyncEventHandler)
+        public override void SubscribeAsync(AsyncEventHandler<AppClosingEventArgs> asyncEventHandler)
         {
             ThrowIfInConstructor();
-            _asyncInvocationList.Add(asyncEventHandler);
-        }
-
-        /// <inheritdoc/>
-        public void UnsubscribeAsync(Func<AppClosingEventArgs, IReadOnlyCollection<AsyncEventHandler>, Task> function)
-        {
-            int toRemove = _asyncInvocationList.FindIndex(h => h.Equals(function));
-            _asyncInvocationList.RemoveAt(toRemove);
+            base.SubscribeAsync(asyncEventHandler);
         }
 
         private async void OnClosing(object sender, CancelEventArgs e)
@@ -74,23 +65,15 @@ namespace MochaWPF.Events
             e.Cancel = eventArgs.Cancel;
 
             // Execute asynchronouse tasks
-            if (_asyncInvocationList.Any())
+            if (AsyncInvocationList.Any())
             {
                 e.Cancel = true;
-
-                List<Task> parallelCollection =
-                    _asyncInvocationList
-                    .Where(h => h.ExecuteInParallel)
-                    .Select(h => h.Execute(eventArgs, _asyncInvocationList.AsReadOnly())).ToList();
-
-                List<AsyncEventHandler<AppClosingEventArgs>> sortedInvocationList = 
-                    _asyncInvocationList
-                    .Where(h => h.ExecuteInParallel == false)
-                    .OrderBy(h => h.Priority).ToList();
+                List<Task> parallelCollection = StartAndGetParallelCollection(eventArgs);
+                List<AsyncEventHandler<AppClosingEventArgs>> sortedInvocationList = GetSortedInvocationList();
 
                 foreach (AsyncEventHandler<AppClosingEventArgs> eventHandler in sortedInvocationList)
                 {
-                    await eventHandler.Execute(eventArgs, _asyncInvocationList.AsReadOnly());
+                    await eventHandler.Execute(eventArgs, AsyncInvocationList.AsReadOnly());
                 }
 
                 await Task.WhenAll(parallelCollection);

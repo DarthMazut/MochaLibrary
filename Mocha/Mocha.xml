@@ -742,6 +742,39 @@
             </summary>
             <param name="rawArgs">Event arguments from original event.</param>
         </member>
+        <member name="T:Mocha.Events.BaseEventProvider`1">
+            <summary>
+            Provides a base class for <see cref="T:Mocha.Events.IEventProvider`1"/> implementations.
+            </summary>
+            <typeparam name="TEventArgs">Type of arguments for encapsulated event.</typeparam>
+        </member>
+        <member name="P:Mocha.Events.BaseEventProvider`1.AsyncInvocationList">
+            <summary>
+            A collection of <see cref="T:Mocha.Events.AsyncEventHandler`1"/> event handlers, which are to be
+            executed when encapsulated event occurs.
+            </summary>
+        </member>
+        <member name="E:Mocha.Events.BaseEventProvider`1.Event">
+            <inheritdoc/>
+        </member>
+        <member name="M:Mocha.Events.BaseEventProvider`1.SubscribeAsync(Mocha.Events.AsyncEventHandler{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Mocha.Events.BaseEventProvider`1.UnsubscribeAsync(System.Func{`0,System.Collections.Generic.IReadOnlyCollection{Mocha.Events.AsyncEventHandler},System.Threading.Tasks.Task})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Mocha.Events.BaseEventProvider`1.GetSortedInvocationList">
+            <summary>
+            Returns a collection of <see cref="T:Mocha.Events.AsyncEventHandler`1"/> event handlers in order of their execution priority.
+            </summary>
+        </member>
+        <member name="M:Mocha.Events.BaseEventProvider`1.StartAndGetParallelCollection(`0)">
+            <summary>
+            Starts execution and returns collection of event handlers with <see cref="P:Mocha.Events.AsyncEventHandler.ExecuteInParallel"/>
+            flag set to <see langword="true"/> for encapsulated event.
+            </summary>
+            <param name="eventArgs">Common arguments for execution of parallel event handlers.</param>
+        </member>
         <member name="T:Mocha.Events.Extensions.AppClosingEventArgs">
             <summary>
             Provides arguments for application closing event.
@@ -791,6 +824,7 @@
             <summary>
             Encapsulates single event which can be subscribed to.
             </summary>
+            <typeparam name="TEventArgs">Type of arguments for encapsulated event.</typeparam>
         </member>
         <member name="E:Mocha.Events.IEventProvider`1.Event">
             <summary>
