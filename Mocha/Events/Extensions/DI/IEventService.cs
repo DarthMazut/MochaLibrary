@@ -15,6 +15,6 @@ namespace Mocha.Events.Extensions.DI
         /// </summary>
         /// <typeparam name="TEventArgs">Type of event arguments.</typeparam>
         /// <param name="id">ID of requesting <see cref="IEventProvider{TEventArgs}"/>.</param>
-        IEventProvider<TEventArgs> RequestEventProvider<TEventArgs>(string id) where TEventArgs : EventArgs;
+        IEventProvider<TEventArgs> RequestEventProvider<TEventArgs>(string id) where TEventArgs : BaseEventArgs;
     }
 }

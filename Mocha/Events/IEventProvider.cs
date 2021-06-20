@@ -8,7 +8,7 @@ namespace Mocha.Events
     /// <summary>
     /// Encapsulates single event which can be subscribed to.
     /// </summary>
-    public interface IEventProvider<TEventArgs> where TEventArgs : EventArgs
+    public interface IEventProvider<TEventArgs> where TEventArgs : BaseEventArgs
     {
         /// <summary>
         /// Encapsulated event.

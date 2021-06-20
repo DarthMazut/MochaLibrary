@@ -725,6 +725,23 @@
         <member name="M:Mocha.Events.AsyncEventHandler`1.GetHashCode">
             <inheritdoc/>
         </member>
+        <member name="T:Mocha.Events.BaseEventArgs">
+            <summary>
+            Provides a base class for <see cref="T:System.EventArgs"/> objects
+            used with <see cref="N:Mocha.Events"/> namespace.
+            </summary>
+        </member>
+        <member name="P:Mocha.Events.BaseEventArgs.RawArgs">
+            <summary>
+            Contains <see cref="T:System.EventArgs"/> object from the original technology-specific event.
+            </summary>
+        </member>
+        <member name="M:Mocha.Events.BaseEventArgs.#ctor(System.EventArgs)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mocha.Events.BaseEventArgs"/> class.
+            </summary>
+            <param name="rawArgs">Event arguments from original event.</param>
+        </member>
         <member name="T:Mocha.Events.Extensions.AppClosingEventArgs">
             <summary>
             Provides arguments for application closing event.
@@ -734,6 +751,9 @@
             <summary>
             If set to <see langword="true"/> application won't close.
             </summary>
+        </member>
+        <member name="M:Mocha.Events.Extensions.AppClosingEventArgs.#ctor(System.EventArgs)">
+            <inheritdoc/>
         </member>
         <member name="T:Mocha.Events.Extensions.DI.EventService">
             <summary>

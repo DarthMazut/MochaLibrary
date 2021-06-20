@@ -11,7 +11,7 @@ namespace Mocha.Events.Extensions.DI
     public class EventService : IEventService
     {
         /// <inheritdoc/>
-        public IEventProvider<TEventArgs> RequestEventProvider<TEventArgs>(string id) where TEventArgs : EventArgs
+        public IEventProvider<TEventArgs> RequestEventProvider<TEventArgs>(string id) where TEventArgs : BaseEventArgs
         {
             return AppEventManager.RequestEventProvider<TEventArgs>(id);
         }

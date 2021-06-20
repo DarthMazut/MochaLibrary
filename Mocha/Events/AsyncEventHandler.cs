@@ -58,7 +58,7 @@ namespace Mocha.Events
     /// Encapsulates event handler which can be executed asynchronously.
     /// </summary>
     /// <typeparam name="T">Type of event arguments.</typeparam>
-    public class AsyncEventHandler<T> : AsyncEventHandler where T : EventArgs
+    public class AsyncEventHandler<T> : AsyncEventHandler where T : BaseEventArgs
     {
         private const string DefaultID = "__MochaLibDefaultAsyncEventID__";
        

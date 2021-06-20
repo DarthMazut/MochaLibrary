@@ -17,7 +17,7 @@ namespace Mocha.Events
         /// <typeparam name="TEventArgs">Type of event arguments.</typeparam>
         /// <param name="id"><see cref="IEventProvider{TEventArgs}"/> unique identifier.</param>
         /// <param name="eventProvider">Implementation of <see cref="IEventProvider{TEventArgs}"/>.</param>
-        public static void IncludeEventProvider<TEventArgs>(string id, IEventProvider<TEventArgs> eventProvider) where TEventArgs : EventArgs
+        public static void IncludeEventProvider<TEventArgs>(string id, IEventProvider<TEventArgs> eventProvider) where TEventArgs : BaseEventArgs
         {
             if (_events.ContainsKey(id))
             {
@@ -34,7 +34,7 @@ namespace Mocha.Events
         /// </summary>
         /// <typeparam name="TEventArgs">Type of event arguments.</typeparam>
         /// <param name="id">ID of requesting <see cref="IEventProvider{TEventArgs}"/>.</param>
-        public static IEventProvider<TEventArgs> RequestEventProvider<TEventArgs>(string id) where TEventArgs : EventArgs
+        public static IEventProvider<TEventArgs> RequestEventProvider<TEventArgs>(string id) where TEventArgs : BaseEventArgs
         {
             if (_events.ContainsKey(id))
             {

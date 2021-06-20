@@ -69,7 +69,7 @@ namespace MochaWPF.Events
         private async void OnClosing(object sender, CancelEventArgs e)
         {
             // Execute synchronous events
-            AppClosingEventArgs eventArgs = new AppClosingEventArgs();
+            AppClosingEventArgs eventArgs = new AppClosingEventArgs(e);
             _event?.Invoke(sender, eventArgs);
             e.Cancel = eventArgs.Cancel;
 
