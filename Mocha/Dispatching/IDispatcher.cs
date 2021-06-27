@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Mocha.Dispatching
 {
@@ -20,5 +21,11 @@ namespace Mocha.Dispatching
         /// </summary>
         /// <param name="action">Delegate to be enqueued</param>
         void EnqueueOnMainThread(Action action);
+
+        /// <summary>
+        /// Returns control to the Main/UI thread and executes succeeding code 
+        /// when Main/UI thread is free.
+        /// </summary>
+        Task Yield();
     }
 }

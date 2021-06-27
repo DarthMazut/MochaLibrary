@@ -23,6 +23,7 @@ namespace MochaWPFTestApp.Views
         public Page3()
         {
             InitializeComponent();
+            //Loaded += (s, e) => xe_Button.Focus();
         }
     }
 }

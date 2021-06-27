@@ -21,7 +21,7 @@
                     </LinearGradientBrush>
                 </ProgressBar.Foreground>
             </ProgressBar>
-            <Button Content="{Binding ButtonCaption}" Width="120" Height="30" IsEnabled="{Binding IsButtonEnabled}" Command="{Binding StartCommand}"/>
+            <Button x:Name="xe_Button" Content="{Binding ButtonCaption}" Width="120" Height="30" IsEnabled="{Binding IsButtonEnabled}" Command="{Binding StartCommand}"/>
         </StackPanel>   
     </Grid>
 </UserControl>

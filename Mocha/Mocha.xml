@@ -620,6 +620,12 @@
             </summary>
             <param name="action">Delegate to be enqueued</param>
         </member>
+        <member name="M:Mocha.Dispatching.IDispatcher.Yield">
+            <summary>
+            Returns control to the Main/UI thread and executes succeeding code 
+            when Main/UI thread is free.
+            </summary>
+        </member>
         <member name="T:Mocha.Events.AppEventManager">
             <summary>
             Allows for handling technology-specific events within technology-independent modules.

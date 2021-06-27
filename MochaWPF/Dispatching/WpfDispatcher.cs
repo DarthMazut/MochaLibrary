@@ -36,5 +36,11 @@ namespace MochaWPF.Dispatching
         {
             _dispatcher.Invoke(action);
         }
+
+        /// <inheritdoc/>
+        public async Task Yield()
+        {
+            await Dispatcher.Yield();
+        }
     }
 }

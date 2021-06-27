@@ -1,5 +1,7 @@
 ﻿using Mocha.Dialogs;
+using Mocha.Dispatching;
 using Mocha.Navigation;
+using MochaWPFTestApp.Views;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -7,10 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace MochaWPFTestApp.ViewModels
 {
-    class Page3ViewModel : BindableBase, INavigatable, IOnNavigatingToAsync
+    class Page3ViewModel : BindableBase, INavigatable, IOnNavigatingToAsync, IOnNavigatedToAsync
     {
         public Navigator Navigator { get; }
 
@@ -89,8 +92,14 @@ namespace MochaWPFTestApp.ViewModels
 
         public async Task OnNavigatingToAsync(NavigationData navigationData, NavigationCancelEventArgs e)
         {
-            e.Cancel = true;
-            await Navigator.NavigateAsync(NavigationModules.Page2);
+            //e.Cancel = true;
+            //await Navigator.NavigateAsync(NavigationModules.Page2);
+        }
+
+        public async Task OnNavigatedToAsync(NavigationData navigationData)
+        {
+            await DispatcherManager.GetMainThreadDispatcher().Yield();
+            (navigationData.RequestedModule.View as Page3).xe_Button.Focus();
         }
     }
 }
