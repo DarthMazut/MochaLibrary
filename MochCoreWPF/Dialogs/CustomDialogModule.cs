@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 using MochaCore.Dialogs;
 
@@ -17,6 +19,12 @@ namespace MochaCoreWPF.Dialogs
         /// <inheritdoc/>
         public sealed override object View => _view;
 
+        /// <inheritdoc/>
+        public override event EventHandler? Opened;
+
+        /// <inheritdoc/>
+        public override event EventHandler<CancelEventArgs>? Closing;
+
         /// <summary>
         /// Returns a new instance of <see cref="CustomDialogModule"/> class.
         /// </summary>
@@ -29,8 +37,8 @@ namespace MochaCoreWPF.Dialogs
 
             _view.Loaded += (s, e) => IsOpen = true;
             _view.Closed += (s, e) => IsOpen = false;
-            _view.Closing += (s, e) => OnClosing(e);
-            _view.Loaded += (s, e) => OnOpened();
+            _view.Closing += (s, e) => Closing?.Invoke(this, e);
+            _view.Loaded += (s, e) => Opened?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

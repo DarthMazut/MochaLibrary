@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using MochaCore.Dialogs;
@@ -22,6 +23,20 @@ namespace MochaCoreWPF.Dialogs
         /// </summary>
         /// <param name="application">A reference to WPF <see cref="Application"/> object.</param>
         public StandardDialogModule(Application application) : this(application, null) { }
+
+        /// <inheritdoc/>
+        public override event EventHandler? Opened
+        {
+            add => throw new InvalidOperationException($"{nameof(Opened)} event is not supported by {GetType().Name}.");
+            remove => throw new InvalidOperationException($"{nameof(Opened)} event is not supported by {GetType().Name}.");
+        }
+
+        /// <inheritdoc/>
+        public override event EventHandler<CancelEventArgs>? Closing
+        {
+            add => throw new InvalidOperationException($"{nameof(Closing)} event is not supported by {GetType().Name}.");
+            remove => throw new InvalidOperationException($"{nameof(Closing)} event is not supported by {GetType().Name}.");
+        }
 
         /// <summary>
         /// Returns new instance of <see cref="StandardDialogModule"/> class.

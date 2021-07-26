@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Win32;
@@ -15,6 +16,16 @@ namespace MochaCoreWPF.Dialogs
     public sealed class FileDialogModule : BaseDialogModule<FileDialogControl>
     {
         private readonly FileDialog _view;
+
+        /// <inheritdoc/>
+        public override event EventHandler? Opened
+        {
+            add => throw new InvalidOperationException($"{nameof(Opened)} event is not supported by {GetType().Name}.");
+            remove => throw new InvalidOperationException($"{nameof(Opened)} event is not supported by {GetType().Name}.");
+        }
+
+        /// <inheritdoc/>
+        public override event EventHandler<CancelEventArgs>? Closing;
 
         /// <summary>
         /// Returns the underlying <see cref="FileDialog"/> concrete implementation. 
@@ -37,7 +48,7 @@ namespace MochaCoreWPF.Dialogs
         public FileDialogModule(Application application, FileDialog dialog, IDialog? dataContext) : base(application, dataContext)
         {
             _view = dialog;
-            _view.FileOk += (s, e) => OnClosing(e);
+            _view.FileOk += (s, e) => Closing?.Invoke(this, e);
         }
 
         /// <summary>

@@ -60,10 +60,10 @@ namespace MochaCoreWPF.Dialogs
         public event EventHandler? Opening;
 
         /// <inheritdoc/>
-        public event EventHandler? Opened;
+        public abstract event EventHandler? Opened;
 
         /// <inheritdoc/>
-        public event EventHandler<CancelEventArgs>? Closing;
+        public abstract event EventHandler<CancelEventArgs>? Closing;
 
         /// <inheritdoc/>
         public event EventHandler? Closed;
@@ -84,23 +84,6 @@ namespace MochaCoreWPF.Dialogs
         {
             Application = application ?? throw new ArgumentNullException(nameof(application));
             SetDataContext(dataContext ?? new SimpleDialogData());
-        }
-
-        /// <summary>
-        /// Invokes <see cref="IDialogModule.Closing"/> event for derived types.
-        /// </summary>
-        /// <param name="e">Arguments allowing for close cancellation.</param>
-        protected void OnClosing(CancelEventArgs e)
-        {
-            Closing?.Invoke(this, e);
-        }
-
-        /// <summary>
-        /// Invokes <see cref="IDialogModule.Opened"/> event for derived types.
-        /// </summary>
-        protected void OnOpened()
-        {
-            Opened?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
