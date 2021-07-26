@@ -12,11 +12,11 @@ namespace MochaCore.Dialogs
         /// <summary>
         /// Reference to technology-specific view object.
         /// </summary>
-        object View { get; }
+        object? View { get; }
 
         /// <summary>
         /// An <see cref="IDialog"/> object bounded to <see cref="View"/>
-        /// instance by *DataBinding* mechanism.
+        /// instance by DataBinding mechanism.
         /// </summary>
         IDialog DataContext { get; }
 
@@ -33,28 +33,28 @@ namespace MochaCore.Dialogs
         /// <summary>
         /// Fires when dialog is about to be displayed.
         /// </summary>
-        event EventHandler Opening;
+        event EventHandler? Opening;
 
         /// <summary>
         /// Fires right after the dialog opens.
         /// </summary>
-        event EventHandler Opened;
+        event EventHandler? Opened;
 
         /// <summary>
         /// Fires when dialog is about to close.
         /// </summary>
-        event EventHandler<CancelEventArgs> Closing;
+        event EventHandler<CancelEventArgs>? Closing;
 
         /// <summary>
         /// Fires when dialog closes.
         /// </summary>
-        event EventHandler Closed;
+        event EventHandler? Closed;
 
         /// <summary>
         /// Fires when dialog is done.
         /// <para><c>"Comrade soldier, you're done!"</c></para>
         /// </summary>
-        event EventHandler Disposed;
+        event EventHandler? Disposed;
 
         /// <summary>
         /// Opens a dialog represented by this instance.
