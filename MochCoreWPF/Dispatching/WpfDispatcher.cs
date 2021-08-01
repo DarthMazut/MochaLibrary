@@ -35,6 +35,12 @@ namespace MochaCoreWPF.Dispatching
         }
 
         /// <inheritdoc/>
+        public async Task RunOnMainThreadAsync(Func<Task> func)
+        {
+            await _dispatcher.InvokeAsync(func);
+        }
+
+        /// <inheritdoc/>
         public async Task Yield()
         {
             await Dispatcher.Yield();

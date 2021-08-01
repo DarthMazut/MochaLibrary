@@ -15,6 +15,12 @@ namespace MochaCore.Dispatching
         void RunOnMainThread(Action action);
 
         /// <summary>
+        /// Executes asynchronous delegate on Main Thread and blocks until execution is finished.
+        /// </summary>
+        /// <param name="func">Asynchronous function to be executed on Main Thread.</param>
+        Task RunOnMainThreadAsync(Func<Task> func);
+
+        /// <summary>
         /// Enqueues given delegate to be executed by Main Thread when possible.
         /// </summary>
         /// <param name="action">Delegate to be enqueued</param>
