@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MochaCoreWPFTestApp.Views"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" MinHeight="400" MinWidth="600">
 
@@ -38,7 +39,8 @@
 
         </Grid>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-        <ContentControl Grid.Column="2" Content="{Binding Content}"/>
-
+        <!--<ContentControl Grid.Column="2" Content="{Binding Content}"/>-->
+        <hc:TransitioningContentControl x:Name="xe_MainContentControl" Grid.Column="2" Content="{Binding Content}" TransitionMode="Left2RightWithFade"/>
+   
     </Grid>
 </Window>

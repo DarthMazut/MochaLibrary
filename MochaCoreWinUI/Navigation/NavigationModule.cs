@@ -1,11 +1,11 @@
-﻿using MochaCore.Navigation;
+﻿using Microsoft.UI.Xaml;
+using MochaCore.Navigation;
 using System;
-using System.Windows;
 
-namespace MochaCoreWPF.Navigation
+namespace MochaCoreWinUI.Navigation
 {
     /// <summary>
-    /// Provides a typical implementation of <see cref="INavigationModule"/> for WPF apps.
+    /// Provides implementation of <see cref="INavigationModule"/> for WinUI 3 applications. 
     /// </summary>
     public class NavigationModule : INavigationModule
     {
@@ -21,7 +21,7 @@ namespace MochaCoreWPF.Navigation
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationModule"/> class.
         /// </summary>
-        /// <param name="view">Visual representation for this module. A <see langword="UserControl"/> is a good choice here.</param>
+        /// <param name="view">Visual representation for this module. A <see langword="Page"/> is a good choice here.</param>
         /// <param name="dataContext">
         /// An <see cref="INavigatable"/> which will be bounded to <see cref="View"/> object by DataBinding mechanism.
         /// </param>

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,18 +14,40 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
+using hc = HandyControl.Controls;
 
 namespace MochaCoreWPFTestApp.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : System.Windows.Window
+    public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
             DataContext = new MainWindowViewModel();
+
+            HandleTransitioningContentControlAnimation();
+        }
+
+        private void HandleTransitioningContentControlAnimation()
+        {
+            if (DataContext is MainWindowViewModel viewModel)
+            {
+                viewModel.PropertyChanged += (s, e) =>
+                {
+                    if (e.PropertyName == "Content")
+                    {
+                        MethodInfo? transitionMethod = typeof(hc.TransitioningContentControl).GetMethod("StartTransition", BindingFlags.NonPublic | BindingFlags.Instance);
+                        transitionMethod?.Invoke(xe_MainContentControl, null);
+                    }
+                };
+            }
+            else
+            {
+                throw new InvalidCastException($"ViewModel must be of type {typeof(MainWindowViewModel)}");
+            }
         }
 
         //private OperationResult<bool> VerifyFunc(string input)
