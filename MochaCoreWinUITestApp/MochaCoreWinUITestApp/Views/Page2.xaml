@@ -11,10 +11,9 @@
     <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="This is Page 2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
-            <TextBlock Text="This is Page 2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
-            <TextBlock Text="This is Page 2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
-            <TextBlock Text="This is Page 2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
-            <TextBlock Text="This is Page 2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
+            <Rectangle Height="10" />
+            <Button Content="Click to open dialog" HorizontalAlignment="Center" Command="{Binding OpenDialogCommand}"/>
+            <Button Content="Open File Picker" HorizontalAlignment="Center" Command="{Binding OpenFilePickerCommand}" />
         </StackPanel>
     </Grid>
 </Page>

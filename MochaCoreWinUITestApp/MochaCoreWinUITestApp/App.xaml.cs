@@ -6,7 +6,9 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using MochaCore.Dialogs;
 using MochaCore.Navigation;
+using MochaCoreWinUI.Dialogs;
 using MochaCoreWinUI.Navigation;
 using MochaCoreWinUITestApp.ViewModels;
 using MochaCoreWinUITestApp.Views;
@@ -19,6 +21,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Pickers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,7 +33,7 @@ namespace MochaCoreWinUITestApp
     /// </summary>
     public partial class App : Application
     {
-        private Window _window;
+        private Window? _window;
 
         /// <summary>
         /// Initializes the singleton application object. This is the first line of authored code
@@ -39,9 +42,6 @@ namespace MochaCoreWinUITestApp
         public App()
         {
             InitializeComponent();
-
-            NavigationManager.AddModule(Pages.Page1.Id, () => new NavigationModule(new Page1(), new Page1ViewModel()));
-            NavigationManager.AddModule(Pages.Page2.Id, () => new NavigationModule(new Page2(), new Page2ViewModel()));
         }
 
         /// <summary>
@@ -52,6 +52,24 @@ namespace MochaCoreWinUITestApp
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             _window = new MainWindow();
+
+            NavigationManager.AddModule(Pages.Page1.Id, () => new NavigationModule(new Page1(), new Page1ViewModel()));
+            NavigationManager.AddModule(Pages.Page2.Id, () => new NavigationModule(new Page2(), new Page2ViewModel()));
+
+            DialogManager.DefineDialog("TestDialog1", () =>
+            {
+                ContentDialogModule dialogModule = new ContentDialogModule(_window);
+                dialogModule.DialogPlacementDelegate = (w, d) =>
+                {
+                    StackPanel sp = new StackPanel();
+                    sp.Children.Add(d);
+                    (w.Content as Grid).Children.Add(sp);
+                };
+                return dialogModule;
+            });
+
+            DialogManager.DefineDialog("OpenFileDialog", () => new FileDialogModule(_window, new FileOpenPicker()));
+
             _window.Activate();
         }
     }

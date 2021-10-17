@@ -27,5 +27,16 @@ namespace MochaCoreWinUITestApp.Views
         {
             this.InitializeComponent();
         }
+
+        private void OpenDialogInPlaceOnClick(object sender, RoutedEventArgs e)
+        {
+            ContentDialog cd = new ContentDialog();
+            cd.Title = "In place";
+            cd.Content = "In place content";
+            cd.PrimaryButtonText = "Ok";
+            cd.XamlRoot = this.XamlRoot;
+
+            _ = cd.ShowAsync(ContentDialogPlacement.InPlace);
+        }
     }
 }

@@ -25,7 +25,7 @@
                         </NavigationViewItem.Icon>
                         <!--<i:Interaction.Behaviors>
                             <core:DataTriggerBehavior Binding="{Binding IsSelected, ElementName=currentViewItem}" Value="True">
-                                --><!--<core:ChangePropertyAction TargetObject="{Binding ElementName=currentViewItem}" PropertyName="Foreground" Value="Red" />--><!--
+                                <core:ChangePropertyAction TargetObject="{Binding ElementName=currentViewItem}" PropertyName="Foreground" Value="Red" />
                                 <core:InvokeCommandAction Command="{Binding DataContext.NavigationItemSelectionChangedCommand, ElementName=xe_Grid, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
                             </core:DataTriggerBehavior>
                         </i:Interaction.Behaviors>-->

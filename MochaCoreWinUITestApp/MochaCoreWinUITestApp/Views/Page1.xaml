@@ -9,7 +9,7 @@
     Background="#333333">
 
     <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel x:Name="xe_StackPanel" HorizontalAlignment="Center" VerticalAlignment="Center">
             <!--<StackPanel.ChildrenTransitions>
                 <TransitionCollection>
                     <EntranceThemeTransition IsStaggeringEnabled="True" FromVerticalOffset="0" FromHorizontalOffset="100"/>
@@ -20,6 +20,7 @@
             <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
             <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
             <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
+            <Button Content="OpenDialogInPlace" Click="OpenDialogInPlaceOnClick"/>
         </StackPanel>
     </Grid>
 </Page>
