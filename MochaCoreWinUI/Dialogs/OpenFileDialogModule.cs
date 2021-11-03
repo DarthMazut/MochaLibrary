@@ -12,15 +12,16 @@ using Windows.Storage.Pickers;
 
 namespace MochaCoreWinUI.Dialogs
 {
-    public class FileDialogModule : IDialogModule<FileDialogControl>
+    public class OpenFileDialogModule : IDialogModule<FileDialogControl>
     {
         private Window _parentWindow;
         private readonly FileOpenPicker _view;
+        private readonly FileSavePicker _view2;
         private IDialog<FileDialogControl> _dataContext;
         private bool _isOpen;
         private bool _isDisposed;
 
-        public FileDialogModule(Window parentWindow, FileOpenPicker picker)
+        public OpenFileDialogModule(Window parentWindow, FileOpenPicker picker)
         {
             _parentWindow = parentWindow;
             _view = picker;

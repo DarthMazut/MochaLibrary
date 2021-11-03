@@ -65,8 +65,8 @@ namespace MochaCoreWinUITestApp.ViewModels
 
         private async void OpenFilePicker(object? obj)
         {
-            IDialogModule<FileDialogControl>? openFileDialog = DialogManager.GetDialog<FileDialogControl>("OpenFileDialog");
-            bool? result = await openFileDialog.ShowModalAsync();
+            IDialogModule<FileDialogControl>? saveFileDialog = DialogManager.GetDialog<FileDialogControl>("SaveFileDialog");
+            bool? result = await saveFileDialog.ShowModalAsync();
         }
     }
 }

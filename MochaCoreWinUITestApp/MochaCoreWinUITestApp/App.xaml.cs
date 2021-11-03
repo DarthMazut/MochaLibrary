@@ -68,7 +68,8 @@ namespace MochaCoreWinUITestApp
                 return dialogModule;
             });
 
-            DialogManager.DefineDialog("OpenFileDialog", () => new FileDialogModule(_window, new FileOpenPicker()));
+            DialogManager.DefineDialog("OpenFileDialog", () => new OpenFileDialogModule(_window, new FileOpenPicker()));
+            DialogManager.DefineDialog("SaveFileDialog", () => new SaveFileDialogModule(new FileSavePicker()));
 
             _window.Activate();
         }
