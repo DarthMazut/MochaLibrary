@@ -24,11 +24,8 @@ namespace MochaCoreWinUITestApp.ViewModels
 
         private async void OpenDialog(object? obj)
         {
-            IDialogModule<ContentDialogControl> testDialog1 = DialogManager.GetDialog<ContentDialogControl>("TestDialog1");
+            IDialogModule<DialogControl> testDialog1 = DialogManager.GetDialog<DialogControl>("TestDialog1");
             testDialog1.DataContext.DialogControl.Title = "Hello dialog world!";
-            testDialog1.DataContext.DialogControl.PrimaryButtonText = "OK";
-            testDialog1.DataContext.DialogControl.SecondaryButtonText = "Not OK";
-            testDialog1.DataContext.DialogControl.CloseButtonText = "Clozet";
 
             testDialog1.Opening += (s, e) =>
             {

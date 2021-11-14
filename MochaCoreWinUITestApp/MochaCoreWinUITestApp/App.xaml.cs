@@ -58,7 +58,7 @@ namespace MochaCoreWinUITestApp
 
             DialogManager.DefineDialog("TestDialog1", () =>
             {
-                ContentDialogModule dialogModule = new ContentDialogModule(_window);
+                ContentDialogModule<ContentDialog, DialogControl> dialogModule = new(_window, new ContentDialog());
                 dialogModule.DialogPlacementDelegate = (w, d) =>
                 {
                     StackPanel sp = new StackPanel();
@@ -68,7 +68,7 @@ namespace MochaCoreWinUITestApp
                 return dialogModule;
             });
 
-            DialogManager.DefineDialog("OpenFileDialog", () => new OpenFileDialogModule(_window, new FileOpenPicker()));
+            DialogManager.DefineDialog("OpenFileDialog", () => new OpenFileDialogModuleOld(_window, new FileOpenPicker()));
             DialogManager.DefineDialog("SaveFileDialog", () => new SaveFileDialogModule(new FileSavePicker()));
 
             _window.Activate();
