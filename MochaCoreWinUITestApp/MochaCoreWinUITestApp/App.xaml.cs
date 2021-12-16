@@ -7,8 +7,11 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Dialogs;
+using MochaCore.Dispatching;
 using MochaCore.Navigation;
+using MochaCore.Utils;
 using MochaCoreWinUI.Dialogs;
+using MochaCoreWinUI.Dispatching;
 using MochaCoreWinUI.Navigation;
 using MochaCoreWinUITestApp.ViewModels;
 using MochaCoreWinUITestApp.Views;
@@ -68,8 +71,10 @@ namespace MochaCoreWinUITestApp
                 return dialogModule;
             });
 
-            DialogManager.DefineDialog("OpenFileDialog", () => new OpenFileDialogModuleOld(_window, new FileOpenPicker()));
-            DialogManager.DefineDialog("SaveFileDialog", () => new SaveFileDialogModule(new FileSavePicker()));
+            DialogManager.DefineDialog("OpenFileDialog", () => new OpenFileDialogModule(_window, new FileOpenPicker()));
+            DialogManager.DefineDialog("SaveFileDialog", () => new SaveFileDialogModule(_window, new FileSavePicker()));
+
+            DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(_window));
 
             _window.Activate();
         }

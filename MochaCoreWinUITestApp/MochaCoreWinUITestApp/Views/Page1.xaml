@@ -9,18 +9,24 @@
     Background="#333333">
 
     <Grid>
-        <StackPanel x:Name="xe_StackPanel" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <!--<StackPanel.ChildrenTransitions>
-                <TransitionCollection>
-                    <EntranceThemeTransition IsStaggeringEnabled="True" FromVerticalOffset="0" FromHorizontalOffset="100"/>
-                </TransitionCollection>
-            </StackPanel.ChildrenTransitions>-->
-            <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
-            <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
-            <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
-            <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
-            <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" />
-            <Button Content="OpenDialogInPlace" Click="OpenDialogInPlaceOnClick"/>
-        </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <ListView SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">
+            <ListViewItem Content="Item 1" />
+            <ListViewItem Content="Item 2" />
+            <ListViewItem Content="Item 3" />
+            <ListViewItem Content="Item 4" />
+            <ListViewItem Content="Item 5" />
+            <ListViewItem Content="Item 6" />
+            <ListViewItem Content="Item 7" />
+            <ListViewItem Content="Item 8" />
+            <ListViewItem Content="Item 9" />
+            <ListViewItem Content="Item 10" />
+        </ListView>
+        <TextBlock Grid.Column="1" Text="{Binding AsyncOperationResult}" FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
     </Grid>
 </Page>

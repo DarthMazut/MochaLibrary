@@ -35,7 +35,7 @@ namespace MochaCoreWinUI.Dialogs
         /// <inheritdoc/>
         protected override void CustomizeCore(FileSavePicker view, FileDialogControl dialogControl)
         {
-            view.FileTypeChoices.Add("Default", new List<string> { ".*" });
+            view.FileTypeChoices.Add("Default", new List<string> { "." });
         }
 
         /// <inheritdoc/>
