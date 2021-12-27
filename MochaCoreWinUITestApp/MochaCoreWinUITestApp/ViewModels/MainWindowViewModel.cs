@@ -13,11 +13,10 @@ namespace MochaCoreWinUITestApp.ViewModels
 {
     public class MainWindowViewModel : INavigatable, INotifyPropertyChanged
     {
-        private PropertyNotifier _notifier;
+        private readonly DynamicProperty<object> _content = new(nameof(Content));
 
         public MainWindowViewModel()
         {
-            _notifier = new PropertyNotifier(this);
             Navigator = new(this, NavigationServices.MainNavigationService);
 
             NavigationServices.MainNavigationService.NavigationRequested += NavigationRequested;
@@ -34,11 +33,10 @@ namespace MochaCoreWinUITestApp.ViewModels
             Pages.Page2
         };
 
-        private object? _content;
         public object? Content
         {
-            get => _content;
-            set => _notifier.ChangeAndNotify(value, ref _content);
+            get => _content.Get();
+            set => _content.Set(this, value);
         }
 
         public SimpleCommand NavigationItemSelectionChangedCommand { get; set; }
