@@ -1,9 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using MochaCore.Dispatching;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MochaCoreWinUI.Dispatching
@@ -32,9 +29,9 @@ namespace MochaCoreWinUI.Dispatching
             throw new NotImplementedException();
         }
 
-        public Task Yield()
+        public async Task Yield()
         {
-            throw new NotImplementedException();
+            await Task.Yield();
         }
     }
 }
