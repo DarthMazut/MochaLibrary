@@ -43,7 +43,10 @@ namespace MochaCoreWPF.Dispatching
         /// <inheritdoc/>
         public async Task Yield()
         {
-            await Dispatcher.Yield();
+            if (_dispatcher.CheckAccess())
+            {
+                await Dispatcher.Yield();
+            }
         }
     }
 }
