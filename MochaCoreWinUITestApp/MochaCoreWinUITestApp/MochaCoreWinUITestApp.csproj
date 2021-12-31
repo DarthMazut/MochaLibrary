@@ -10,33 +10,17 @@
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Views\Page1.xaml" />
-    <None Remove="Views\Page2.xaml" />
-  </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ProjectReunion" Version="0.8.4" />
-    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="0.8.4" />
-    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="0.8.4" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.4" />
+    <PackageReference Include="Microsoft.ProjectReunion" Version="0.8.6" />
+    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="0.8.6" />
+    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="0.8.6" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.8" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <ProjectReference Include="..\..\MochaCoreWinUI\MochaCoreWinUI.csproj" />
     <ProjectReference Include="..\..\MochaCore\MochaCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Views\Page2.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Views\Page1.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
 </Project>
