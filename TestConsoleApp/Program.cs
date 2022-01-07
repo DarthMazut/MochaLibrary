@@ -9,45 +9,25 @@ namespace TestConsoleApp
 {
     public class VM : BindableBase
     {
-        private readonly DynamicProperty<string> _myDynamicProperty = new(nameof(MyDynamicProperty))
-        {
-            //AsyncOperation = (c, e) =>
-            //{
-            //    await Task.Delay(5000);
-            //    Console.WriteLine("Async operation completed");
-            //    return new object();
-            //},
-            //AsyncOperationCallback = (e) =>
-            //{
-            //    Console.WriteLine("Async callback ;)");
-            //}
-        };
+        private readonly AsyncProperty<string> _myDynamicProperty;
 
         public VM()
         {
-
+            _myDynamicProperty = new(this, nameof(MyDynamicProperty));
+            //_myDynamicProperty.SynchronizedProperties.Add(nameof(MyPrismProperty));
         }
 
         public string MyDynamicProperty
         {
             get => _myDynamicProperty.Get();
-            set => _myDynamicProperty.Set(this, value);
+            set => _myDynamicProperty.Set(value);
         }
 
         private string _myPrismProperty;
-
         public string MyPrismProperty
         {
             get => _myPrismProperty;
             set => SetProperty(ref _myPrismProperty, value);
-        }
-
-        private string _myNormalProperty;
-
-        public string MyNormalProperty
-        {
-            get => _myNormalProperty;
-            set => _myNormalProperty = value;
         }
     }
 
@@ -58,22 +38,6 @@ namespace TestConsoleApp
             Console.WriteLine("Press any key to start:");
             _ = Console.ReadKey(false);
             VM vm = new();
-            vm.PropertyChanged += (s, e) =>
-            {
-
-            };
-            vm.PropertyChanged += (s, e) =>
-            {
-
-            };
-            vm.PropertyChanged += (s, e) =>
-            {
-
-            };
-            vm.PropertyChanged += (s, e) =>
-            {
-
-            };
             vm.PropertyChanged += (s, e) =>
             {
 

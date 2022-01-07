@@ -20,27 +20,50 @@ namespace MochaCore.Utils
     /// This class is <see cref="INotifyPropertyChanged"/> compatible.
     /// </summary>
     /// <typeparam name="T">Type of corresponding property.</typeparam>
-    public class DynamicProperty<T>
+    public class AsyncProperty<T>
     {
         private delegate ref MulticastDelegate GetEventFieldValue(object obj);
-        
-        private readonly SemaphoreSlim _semaphore = new(1);
+
+        private readonly INotifyPropertyChanged _host;
         private readonly string _propertyName;
+        private readonly SemaphoreSlim _semaphore = new(1);
         
         private T _initialValue;
         private T _internalValue;
-        private INotifyPropertyChanged _host;
+        
         private GetEventFieldValue _multicastDelegateGetter;
         private CancellationTokenSource _cts;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicProperty{T}"/> class.
+        /// Initializes a new instance of the <see cref="AsyncProperty{T}"/> class.
         /// </summary>
+        /// <param name="host">Host of this property. Pass <see langword="this"/> here.</param>
         /// <param name="propertyName">Name of linked property.</param>
-        public DynamicProperty(string propertyName)
+        public AsyncProperty(INotifyPropertyChanged host, string propertyName)
         {
+            _host = host;
             _propertyName = propertyName;
+
+            host.PropertyChanged += (s, e) =>
+            {
+                if (SynchronizedProperties.Any())
+                {
+                    if (SynchronizedProperties.Contains(e.PropertyName))
+                    {
+                        if (e.PropertyName == _propertyName)
+                        {
+                            throw new InvalidOperationException("You cannot synchronize property with itself!");
+                        }
+                        NotifyPropertyChangeViaReflection();
+                    }
+                }
+            };
         }
+
+        /// <summary>
+        /// Fires whenever <see cref="AsyncOperation"/> is cancelled successfully.
+        /// </summary>
+        public event EventHandler<AsyncPropertyChangedEventArgs<T>> AsyncOperationCancelled;
 
         /// <summary>
         /// Returns an initial value for represented property.
@@ -58,24 +81,31 @@ namespace MochaCore.Utils
         /// <summary>
         /// Provides a delegate which is invoked whenever value of this object changes.
         /// </summary>
-        public Action<DynamicPropertyChangedEventArgs<T>> PropertyChangedCallback { get; init; }
+        public Action<AsyncPropertyChangedEventArgs<T>> PropertyChangedCallback { get; init; }
 
         /// <summary>
         /// Provides a definition of asynchronous operation initiated whenever value of this object changes.
         /// </summary>
-        public Func<CancellationToken, DynamicPropertyChangedEventArgs<T>, Task<object>> AsyncOperation { get; init; }
+        public Func<CancellationToken, AsyncPropertyChangedEventArgs<T>, Task<object>> AsyncOperation { get; init; }
 
         /// <summary>
         /// A delegate which is invoked after asynchronous operation is completed successfully.
         /// </summary>
-        public Action<object, DynamicPropertyChangedEventArgs<T>> AsyncOperationCallback { get; init; }
+        public Action<object, AsyncPropertyChangedEventArgs<T>> AsyncOperationCallback { get; init; }
 
         /// <summary>
-        /// Gets or initializes <see cref="IDispatcher"/> associated with this <see cref="DynamicProperty{T}"/>.
+        /// Gets or initializes <see cref="IDispatcher"/> associated with this <see cref="AsyncProperty{T}"/>.
         /// If this property is set (not null) the <see cref="AsyncOperationCallback"/> delegate is invoked via provided
         /// <see cref="IDispatcher"/> object.
         /// </summary>
         public IDispatcher Dispatcher { get; init; }
+
+        /// <summary>
+        /// Provides names of properties which this <see cref="AsyncProperty{T}"/> is synchronized with.
+        /// When an <see cref="AsyncProperty{T}"/> is synchronized with another property it gets updated 
+        /// (<see cref="INotifyPropertyChanged.PropertyChanged"/>) whenever that property changes.
+        /// </summary>
+        public ICollection<string> SynchronizedProperties { get; } = new List<string>();
 
         /// <summary>
         /// Returns value of this object.
@@ -95,33 +125,30 @@ namespace MochaCore.Utils
         /// <param name="caller">Host of this property. <para>Pass <see langword="this"/> here.</para></param>
         /// <param name="value">New value fot this object.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public bool Set(INotifyPropertyChanged caller, T value)
+        public bool Set(T value)
         {
-            _ = caller ?? throw new ArgumentNullException(nameof(caller));
-
             _semaphore.Wait();
+
+            if (EqualityComparer<T>.Default.Equals(value, _internalValue))
+            {
+                return false;
+            }
+
+            T previousValue = _internalValue;
+            _internalValue = value;
+
             try
             {
-                if (EqualityComparer<T>.Default.Equals(value, _internalValue))
-                {
-                    return false;
-                }
-
-                T previousValue = _internalValue;
-
-                _host = caller;
-                _internalValue = value;
-
                 if (AsyncOperation is not null)
                 {
                     CancelAsyncOperation();
 
                     _cts = new CancellationTokenSource();
-                    _ = HandleAsyncOperation(_cts, previousValue, value);
+                    _ = HandleAsyncOperation(_cts, new AsyncPropertyChangedEventArgs<T>(_host, previousValue, value));
                 }
 
                 NotifyPropertyChangeViaReflection();
-                PropertyChangedCallback?.Invoke(new DynamicPropertyChangedEventArgs<T>(_host, previousValue, value));
+                PropertyChangedCallback?.Invoke(new AsyncPropertyChangedEventArgs<T>(_host, previousValue, value));
             }
             finally
             {
@@ -132,7 +159,7 @@ namespace MochaCore.Utils
         }
 
         /// <summary>
-        /// Tries to cancel currently active asynchronous operation initiated by this <see cref="DynamicProperty{T}"/>.
+        /// Tries to cancel currently active asynchronous operation initiated by this <see cref="AsyncProperty{T}"/>.
         /// </summary>
         public void CancelAsyncOperation()
         {
@@ -154,11 +181,11 @@ namespace MochaCore.Utils
             }
         }
 
-        private async Task HandleAsyncOperation(CancellationTokenSource cts, T previousValue, T newValue)
+        private async Task HandleAsyncOperation(CancellationTokenSource cts, AsyncPropertyChangedEventArgs<T> eventArgs)
         {
             try
             {
-                object result = await AsyncOperation.Invoke(cts.Token, new DynamicPropertyChangedEventArgs<T>(_host, previousValue, newValue));
+                object result = await AsyncOperation.Invoke(cts.Token, eventArgs);
 
                 if (cts.IsCancellationRequested)
                 {
@@ -178,13 +205,17 @@ namespace MochaCore.Utils
                 {
                     Dispatcher.EnqueueOnMainThread(() =>
                     {
-                        AsyncOperationCallback!.Invoke(result, new DynamicPropertyChangedEventArgs<T>(_host, previousValue, newValue));
+                        AsyncOperationCallback!.Invoke(result, eventArgs);
                     });
                 }
                 else
                 {
-                    AsyncOperationCallback!.Invoke(result, new DynamicPropertyChangedEventArgs<T>(_host, previousValue, newValue));
+                    AsyncOperationCallback!.Invoke(result, eventArgs);
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                AsyncOperationCancelled?.Invoke(this, eventArgs);
             }
             finally
             {

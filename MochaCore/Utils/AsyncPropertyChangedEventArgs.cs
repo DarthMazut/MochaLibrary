@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MochaCore.Utils
 {
-    public class DynamicPropertyChangedEventArgs<T> : EventArgs
+    public class AsyncPropertyChangedEventArgs<T> : EventArgs
     {
-        public DynamicPropertyChangedEventArgs(INotifyPropertyChanged host, T? previousValue, T? newValue)
+        public AsyncPropertyChangedEventArgs(INotifyPropertyChanged host, T? previousValue, T? newValue)
         {
             Host = host;
             PreviousValue = previousValue;
