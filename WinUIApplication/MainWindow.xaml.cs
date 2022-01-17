@@ -5,6 +5,8 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using MochaCore.DialogsEx;
+using MochaCore.DialogsEx.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,9 +30,13 @@ namespace WinUIApplication
             this.InitializeComponent();
         }
 
-        private void myButton_Click(object sender, RoutedEventArgs e)
+        private async void myButton_Click(object sender, RoutedEventArgs e)
         {
             myButton.Content = "Clicked";
+            IDialogModule<MessageDialogProperties> dialog = DialogManager.GetDialog<MessageDialogProperties>("Dialog1");
+            dialog.Properties.Title = "Hello World!";
+            dialog.Properties.Message = "Msg!";
+            await dialog.ShowModalAsync(this);
         }
     }
 }

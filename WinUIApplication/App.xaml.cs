@@ -6,6 +6,8 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using MochaCore.DialogsEx;
+using MochaCoreWinUI.DialogsEx;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,6 +45,9 @@ namespace WinUIApplication
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             m_window = new MainWindow();
+
+            DialogManager.DefineDialog("Dialog1", () => new StandardDialogModule(m_window, new ContentDialog()));
+
             m_window.Activate();
         }
 
