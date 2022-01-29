@@ -10,8 +10,8 @@ namespace MochaCore.DialogsEx
     /// Extends <see cref="ICustomDialogModule{T}"/> with <see cref="IDialogOpened.Opened"/> and <see cref="IDialogClosing.Closing"/> events.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
-    public interface IUserDialogModule<T> : IDialogOpened, IDialogClosing, ICustomDialogModule<T> where T : DialogProperties
+    public interface IUserDialogModule<T> : IDialogOpened, IDialogClosing, ICustomDialogModule<T>
     {
-        // Do not define empty interfaces ;)
+
     }
 }

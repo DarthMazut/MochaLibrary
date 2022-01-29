@@ -27,8 +27,7 @@ namespace MochaCoreWinUI.DialogsEx
 
         public object? View => _view;
         public object? Parent => _parent;
-        public StandardMessageDialogProperties Properties { get; set; } = new();
-        DialogProperties IDialogModule.Properties => Properties;
+        public StandardMessageDialogProperties Properties { get; set; } = new("Title","content...");
 
         public Action<StandardMessageDialogProperties, ContentDialog>? ApplyPropertiesDelegate { get; set; }
 
@@ -40,7 +39,6 @@ namespace MochaCoreWinUI.DialogsEx
 
         public void Dispose() 
         {
-            // Satisfies interface but does not require cleaning.
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
@@ -58,17 +56,9 @@ namespace MochaCoreWinUI.DialogsEx
         {
             _view.Title = Properties.Title;
             _view.Content = Properties.Message;
-            _view.PrimaryButtonText = Properties.Buttons?.ConfirmationButton;
-
-            if (!string.IsNullOrEmpty(Properties.Buttons?.DeclineButton))
-            {
-                _view.SecondaryButtonText = Properties.Buttons?.DeclineButton;
-            }
-
-            if (!string.IsNullOrEmpty(Properties.Buttons?.CancelButton))
-            {
-                _view.CloseButtonText = Properties.Buttons?.CancelButton;
-            }
+            _view.PrimaryButtonText = Properties.ConfirmationButtonText;
+            _view.SecondaryButtonText = Properties?.DeclineButtonText;
+            _view.CloseButtonText = Properties?.CancelButtonText;
         }
 
         protected virtual bool? HandleResult(ContentDialogResult contentDialogResult)

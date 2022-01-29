@@ -22,11 +22,6 @@ namespace MochaCore.DialogsEx
         object? Parent { get; }
 
         /// <summary>
-        /// Properties object which serves for configuration of this module.
-        /// </summary>
-        DialogProperties Properties { get; }
-
-        /// <summary>
         /// Asynchronously opens a dialog represented by this instance in modal mode. 
         /// Returns result of dialog interaction.
         /// </summary>
@@ -57,11 +52,11 @@ namespace MochaCore.DialogsEx
     /// Exposes methods and properties for interaction with technology-independent dialog representation.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
-    public interface IDialogModule<T> : IDialogModule where T : DialogProperties
+    public interface IDialogModule<T> : IDialogModule
     {
         /// <summary>
         /// Statically typed properties object which serves for configuration of this module.
         /// </summary>
-        new T Properties { get; set; }
+        T Properties { get; set; }
     }
 }

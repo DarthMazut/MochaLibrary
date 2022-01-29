@@ -10,50 +10,47 @@ namespace MochaCore.DialogsEx.Extensions
     /// <summary>
     /// Provides a set of properties for standard dialog.
     /// </summary>
-    public class StandardMessageDialogProperties : DialogProperties // Add Standard* prefix...
+    public class StandardMessageDialogProperties
     {
-        // I don't think this must be deriving from DialogProperties
-
-        public StandardMessageDialogProperties()
+        public StandardMessageDialogProperties(string title, string message)
         {
-            Buttons = new();
+            Title = title;
+            Message = message;
         }
 
         /// <summary>
-        /// Dialog title.
+        /// Title for standard message dialog.
         /// </summary>
-        public string? Title 
-        {
-            get => GetParameter<string>($"__MochaLibParam__{MethodBase.GetCurrentMethod()?.Name}");
-            set => SetParameter($"__MochaLibParam__{MethodBase.GetCurrentMethod()?.Name}", value);
-        }
+        public string Title { get; set; }
 
         /// <summary>
-        /// Dialog message.
+        /// Message content for standard message dialog.
         /// </summary>
-        public string? Message
-        {
-            get => GetParameter<string>($"__MochaLibParam__{MethodBase.GetCurrentMethod()?.Name}");
-            set => SetParameter($"__MochaLibParam__{MethodBase.GetCurrentMethod()?.Name}", value);
-        }
+        public string Message { get; set; }
 
         /// <summary>
-        /// Allows for configuration of dialog icon.
+        /// Specifies icon for standard message dialog.
+        /// <see langword="Null"/> means icon won't show up.
+        /// <para>Check <see cref="StandardMessageDialogIcons"/> class for predefined icons identifiers.</para>
         /// </summary>
-        public string? Icon 
-        {
-            get => GetParameter<string>($"__MochaLibParam__{MethodBase.GetCurrentMethod()?.Name}");
-            set => SetParameter($"__MochaLibParam__{MethodBase.GetCurrentMethod()?.Name}", value);
-        }
+        public string? Icon { get; set; }
 
         /// <summary>
-        /// Buttons definition.
+        /// Label for confirmation button. This button is always present.
         /// </summary>
-        public MessageDialogButtons? Buttons
-        {
-            get => GetParameter<MessageDialogButtons>($"__MochaLibParam__{nameof(Buttons)}");
-            set => SetParameter($"__MochaLibParam__{nameof(Buttons)}", value);
-        } 
+        public string ConfirmationButtonText { get; set; } = "OK";
+
+        /// <summary>
+        /// Label for decline button. This button is optional. 
+        /// <see langword="Null"/> means this button won't be present.
+        /// </summary>
+        public string? DeclineButtonText { get; set; }
+
+        /// <summary>
+        /// Label for cancellation button. This button is optional. 
+        /// <see langword="Null"/> means this button is not present.
+        /// </summary>
+        public string? CancelButtonText { get; set; }
     }
 
 

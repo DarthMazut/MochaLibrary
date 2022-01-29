@@ -11,7 +11,7 @@ namespace MochaCore.DialogsEx
     /// Allows for displaying represented dialog in non-modal manner and closing it with <c>Close()</c> method.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
-    public interface ICustomDialogModule<T> : IDialogModule<T> where T : DialogProperties
+    public interface ICustomDialogModule<T> : IDialogModule<T>
     {
         /// <summary>
         /// Returns a reference to <see cref="IDialog"/> object which acts as a DataContext for dialog represented by this module. 
@@ -19,7 +19,7 @@ namespace MochaCore.DialogsEx
         IDialog<T> DataContext { get; }
 
         /// <summary>
-        /// Allows to assign a new *DataContext* for this module.
+        /// Allows to assign new *DataContext* for this module.
         /// </summary>
         /// <param name="dataContext">DataContext to be assigned.</param>
         void SetDataContext(IDialog<T> dataContext);

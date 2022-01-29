@@ -17,8 +17,8 @@ namespace WinUIApplication
             IDialogModule<StandardMessageDialogProperties> messageDialog = DialogManager.GetDialog<StandardMessageDialogProperties>("Dialog1");
             messageDialog.Properties.Title = "Hello There!";
             messageDialog.Properties.Message = "Our long awaited meeting has come at last!";
-            messageDialog.Properties.Buttons.ConfirmationButton = "General Kenobi!";
-            messageDialog.Properties.Buttons.DeclineButton = "Nah!";
+            messageDialog.Properties.ConfirmationButtonText = "General Kenobi!";
+            messageDialog.Properties.DeclineButtonText = "Nah!";
             messageDialog.ShowModalAsync(this);
         });
     }
