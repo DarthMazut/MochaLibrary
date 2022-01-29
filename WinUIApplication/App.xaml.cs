@@ -46,7 +46,7 @@ namespace WinUIApplication
         {
             m_window = new MainWindow();
 
-            DialogManager.DefineDialog("Dialog1", () => new StandardDialogModule(m_window, new ContentDialog()));
+            DialogManager.DefineDialog("Dialog1", () => new StandardMessageDialogModule(m_window, new ContentDialog()));
 
             m_window.Activate();
         }

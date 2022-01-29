@@ -30,7 +30,38 @@ namespace MochaCore.DialogsEx
         }
 
         /// <summary>
-        /// Retrieves a registered dialog by its identifier.
+        /// Retrieves an instance of registered <see cref="IDialogModule{T}"/> type by its identifier.
+        /// </summary>
+        /// <typeparam name="T">Type of internal <see cref="DialogProperties"/> object.</typeparam>
+        /// <param name="id">Identifier of registered dialog to be retrieved.</param>
+        public static IDialogModule<T> GetDialog<T>(string id) where T : DialogProperties
+        {
+            return (IDialogModule<T>)GetDialog(id);
+        }
+
+        /// <summary>
+        /// Retrieves an instance of registered <see cref="ICustomDialogModule{T}"/> type by its identifier.
+        /// </summary>
+        /// <typeparam name="T">Type of internal <see cref="DialogProperties"/> object.</typeparam>
+        /// <param name="id">Identifier of registered dialog to be retrieved.</param>
+        public static ICustomDialogModule<T> GetCustomDialog<T>(string id) where T : DialogProperties
+        {
+            return (ICustomDialogModule<T>)GetDialog(id);
+        }
+
+        /// <summary>
+        /// Retrieves an instance of registered <see cref="IUserDialogModule{T}"/> type by its identifier.
+        /// </summary>
+        /// <typeparam name="T">Type of internal <see cref="DialogProperties"/> object.</typeparam>
+        /// <param name="id">Identifier of registered dialog to be retrieved.</param>
+        public static IUserDialogModule<T> GetUserDialog<T>(string id) where T : DialogProperties
+        {
+            return (IUserDialogModule<T>)GetDialog(id);
+        }
+
+        /// <summary>
+        /// Retrieves an instance of registered <see cref="IDialogModule"/> type by its identifier.
+        /// It is not recommended to use this non-generic method. Use *, * or * instead.
         /// </summary>
         /// <param name="id">Identifier of registered dialog to be retrieved.</param>
         public static IDialogModule GetDialog(string id)
@@ -47,14 +78,6 @@ namespace MochaCore.DialogsEx
             }
         }
 
-        /// <summary>
-        /// Creates an instance of specified <see cref="IDialogModule{T}"/> type.
-        /// </summary>
-        /// <typeparam name="T">Type of internal <see cref="DialogControl"/> object.</typeparam>
-        /// <param name="id">Specifies the dialog identifier.</param>
-        public static IDialogModule<T> GetDialog<T>(string id) where T : DialogProperties
-        {
-            return (IDialogModule<T>)GetDialog(id);
-        }
+
     }
 }

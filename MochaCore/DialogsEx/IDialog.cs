@@ -8,6 +8,14 @@ namespace MochaCore.DialogsEx
 {
     public interface IDialog
     {
+        IDialogModule DialogModule { get; set; }
+    }
 
+    /// <summary> 
+    /// Marks implementing class as dialog logic.
+    /// </summary>
+    public interface IDialog<T> where T : DialogProperties
+    {
+        IDialogModule<T> DialogModule { get; set; }
     }
 }

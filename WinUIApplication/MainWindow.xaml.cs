@@ -27,16 +27,8 @@ namespace WinUIApplication
     {
         public MainWindow()
         {
-            this.InitializeComponent();
-        }
-
-        private async void myButton_Click(object sender, RoutedEventArgs e)
-        {
-            myButton.Content = "Clicked";
-            IDialogModule<MessageDialogProperties> dialog = DialogManager.GetDialog<MessageDialogProperties>("Dialog1");
-            dialog.Properties.Title = "Hello World!";
-            dialog.Properties.Message = "Msg!";
-            await dialog.ShowModalAsync(this);
+            InitializeComponent();
+            xe_rootGrid.DataContext = new MainWindowViewModel();
         }
     }
 }
