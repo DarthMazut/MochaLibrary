@@ -7,7 +7,9 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.DialogsEx;
+using MochaCore.Events;
 using MochaCoreWinUI.DialogsEx;
+using MochaCoreWinUI.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +19,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Pickers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,6 +31,8 @@ namespace WinUIApplication
     /// </summary>
     public partial class App : Application
     {
+        private Window _mainWindow;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -35,6 +40,7 @@ namespace WinUIApplication
         public App()
         {
             this.InitializeComponent();
+            
         }
 
         /// <summary>
@@ -44,13 +50,14 @@ namespace WinUIApplication
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
+            _mainWindow = new MainWindow();
 
-            DialogManager.DefineDialog("Dialog1", () => new StandardMessageDialogModule(m_window, new ContentDialog()));
+            DialogManager.DefineDialog("Dialog1", () => new StandardMessageDialogModule(_mainWindow));
+            DialogManager.DefineDialog("OpenDialog", () => new OpenFileDialogModule(_mainWindow, new FileOpenPicker()));
 
-            m_window.Activate();
+            AppEventManager.IncludeEventProvider("OnClosing", new AppClosingEventProvider(_mainWindow));
+
+            _mainWindow.Activate();
         }
-
-        private Window m_window;
     }
 }

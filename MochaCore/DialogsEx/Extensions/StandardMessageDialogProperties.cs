@@ -10,23 +10,17 @@ namespace MochaCore.DialogsEx.Extensions
     /// <summary>
     /// Provides a set of properties for standard dialog.
     /// </summary>
-    public class StandardMessageDialogProperties
+    public class StandardMessageDialogProperties : DialogProperties
     {
-        public StandardMessageDialogProperties(string title, string message)
-        {
-            Title = title;
-            Message = message;
-        }
-
         /// <summary>
         /// Title for standard message dialog.
         /// </summary>
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         /// <summary>
         /// Message content for standard message dialog.
         /// </summary>
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         /// <summary>
         /// Specifies icon for standard message dialog.
@@ -54,4 +48,23 @@ namespace MochaCore.DialogsEx.Extensions
     }
 
 
+    /// <summary>
+    /// Provides identifiers of standard icons for message dialogs.
+    /// </summary>
+    public static class StandardMessageDialogIcons
+    {
+        /// <summary>
+        /// Returns a string interpreted as an error icon. 
+        /// </summary>
+        public static string Error => "Error";
+
+        /// <summary>
+        /// Returns a string interpreted as a warning icon. 
+        /// </summary>
+        public static string Warning => "Warning";
+
+        public static string Information => "Info";
+
+        public static string Question => "Question";
+    }
 }

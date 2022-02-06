@@ -72,7 +72,7 @@ namespace MochaCore.Events
         /// </summary>
         /// <param name="eventHandler">Delegate returning asynchronous event handler.</param>
         /// <param name="id">Identifier of <see cref="AsyncEventHandler"/>.</param>
-        /// <param name="priority">Determines order of execution.</param>
+        /// <param name="priority">Determines order of execution. Higher priority means first to execute.</param>
         public AsyncEventHandler(Func<T, IReadOnlyCollection<AsyncEventHandler>, Task> eventHandler, string id, int priority) : this(eventHandler, id, priority, false) { }
 
         /// <summary>
@@ -80,8 +80,11 @@ namespace MochaCore.Events
         /// </summary>
         /// <param name="eventHandler">Delegate returning asynchronous event handler.</param>
         /// <param name="id">Identifier of <see cref="AsyncEventHandler"/>.</param>
-        /// <param name="priority">Determines order of execution.</param>
-        /// <param name="parallel">See <see cref="AsyncEventHandler.ExecuteInParallel"/> property.</param>
+        /// <param name="priority">Determines order of execution. Higher priority means first to execute.</param>
+        /// <param name="parallel">
+        /// Determines whether this <see cref="AsyncEventHandler"/> can be executed in parallel together with
+        /// other subscribed <see cref="AsyncEventHandler"/> objects.
+        /// </param>
         public AsyncEventHandler(Func<T, IReadOnlyCollection<AsyncEventHandler>, Task> eventHandler, string id, int priority, bool parallel) : base(id, priority, parallel)
         {
             _asyncEvent = eventHandler;
