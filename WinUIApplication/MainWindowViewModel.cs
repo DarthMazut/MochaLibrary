@@ -15,47 +15,34 @@ namespace WinUIApplication
 {
     public class MainWindowViewModel
     {
+        public ICommand OnLoadedCommand => new SimpleCommand((o) =>
+        {
+            IEventProvider<AppClosingEventArgs> closeEventProvider = AppEventManager.RequestEventProvider<AppClosingEventArgs>("OnClosing");
+            closeEventProvider.SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(myAsyncOnClosingEvent));
+        });
 
         public ICommand OpenDialogCommand => new SimpleCommand(async (o) =>
         {
-            //IDialogModule<StandardMessageDialogProperties> messageDialog = DialogManager.GetDialog<StandardMessageDialogProperties>("Dialog1");
-            //messageDialog.Properties.CustomProperties.Add("Tick", 5);
-            //messageDialog.Properties.Title = "Save changes?";
-            //messageDialog.Properties.Message = $"Would you like to save changes befor exit application? ({messageDialog.Properties.CustomProperties["Tick"]})";
-            //messageDialog.Properties.ConfirmationButtonText = "Save";
-            //messageDialog.Properties.DeclineButtonText = "Don't save";
-            //messageDialog.Properties.CancelButtonText = "Cancel";
-
-            //DispatcherTimer timer = new();
-            //timer.Interval = TimeSpan.FromSeconds(1);
-            //timer.Tick += (s, e) =>
-            //{
-            //    int currentTickValue = (int)messageDialog.Properties.CustomProperties["Tick"];
-            //    if (currentTickValue == 0)
-            //    {
-            //        (messageDialog as IDialogClose).Close();
-            //    }
-            //    messageDialog.Properties.CustomProperties["Tick"] = --currentTickValue;
-            //};
-            //timer.Start();
-
-            //await messageDialog.ShowModalAsync(this);
-            //timer.Stop();
-
-            IDialogModule<OpenFileDialogProperties> openDialog = DialogManager.GetDialog<OpenFileDialogProperties>("OpenDialog");
-            openDialog.Properties.Title = "Dupa!";
-            openDialog.Properties.MultipleSelection = true;
-            openDialog.Properties.Filters.Add(new ExtensionFilter("Filter1", new List<string> { "txt" }));
-            bool? result = await openDialog.ShowModalAsync(this);
-
-            IEventProvider<AppClosingEventArgs> closeEventProvider = AppEventManager.RequestEventProvider<AppClosingEventArgs>("OnClosing");
-            closeEventProvider.SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(myAsyncOnClosingEvent));
-
+            IDialogModule<StandardMessageDialogProperties> dlg = DialogManager.GetDialog<StandardMessageDialogProperties>("Dialog1");
+            _ = await dlg.ShowModalAsync(this);
         });
 
         private async Task myAsyncOnClosingEvent(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> collection)
         {
-            await Task.Delay(5000);
+            IDialogModule<StandardMessageDialogProperties> exitDialog = DialogManager.GetDialog<StandardMessageDialogProperties>("Dialog1");
+            StandardMessageDialogProperties properties = new();
+            properties.Title = "Confirm app close";
+            properties.Message = "Are you sure you want to quit app now?";
+            properties.ConfirmationButtonText = "Yes";
+            properties.DeclineButtonText = "No";
+            properties.CancelButtonText = "Cancel";
+            exitDialog.Properties = properties;
+
+            bool? result = await exitDialog.ShowModalAsync(this);
+            if (result != true)
+            {
+                e.Cancel = true;
+            }
         }
     }
 }

@@ -57,7 +57,7 @@ namespace MochaWPFTestApp
 
         private async Task OnClosingAsync(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> invocationList)
         {
-            if(invocationList.Where(h => h.Id == "myEvent").ToList().Count > 0)
+            if (invocationList.Where(h => h.Id == "myEvent").ToList().Count > 0)
             {
                 return;
             }
