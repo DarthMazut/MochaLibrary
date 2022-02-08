@@ -55,7 +55,7 @@ namespace MochaCoreWinUI.DialogsEx
 
         public Action<T, ContentDialog>? ApplyPropertiesDelegate { get; set; }
 
-        public Func<ContentDialogResult, T, bool?>? HandleResultDelegate { get; set; }
+        public Func<ContentDialogResult, ContentDialog, T, bool?>? HandleResultDelegate { get; set; }
 
         public event EventHandler? Opening;
         public event EventHandler? Closed;
@@ -104,7 +104,7 @@ namespace MochaCoreWinUI.DialogsEx
             _view.DataContext = null;
         }
 
-        protected virtual bool? HandleResultCore(ContentDialogResult contentDialogResult, T? properties)
+        protected virtual bool? HandleResultCore(ContentDialogResult contentDialogResult, ContentDialog view, T? properties)
         {
             switch (contentDialogResult)
             {
@@ -150,11 +150,11 @@ namespace MochaCoreWinUI.DialogsEx
         {
             if (HandleResultDelegate is not null)
             {
-                return HandleResultDelegate?.Invoke(contentDialogResult, Properties);
+                return HandleResultDelegate?.Invoke(contentDialogResult, _view, Properties);
             }
             else
             {
-                return HandleResultCore(contentDialogResult, Properties);
+                return HandleResultCore(contentDialogResult, _view, Properties);
             }
         }
 
