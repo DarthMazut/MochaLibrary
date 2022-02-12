@@ -13,6 +13,17 @@ namespace MochaCore.DialogsEx.Extensions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExtensionFilter"/> class.
+        /// </summary>
+        /// <param name="name">Filter name displayed to the user.</param>
+        /// <param name="extension">Extension handled by this <see cref="ExtensionFilter"/> without leading dot.</param>
+        public ExtensionFilter(string name, string extension)
+        {
+            Name = name;
+            Extensions = new List<string> { extension }; 
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExtensionFilter"/> class.
         /// <code>
         /// // e.g.
         /// new ExtensionFilter("TIFF (*.tif; *.tiff)", new List&lt;string&gt; { "tif", "tiff" });

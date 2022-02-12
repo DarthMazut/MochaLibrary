@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Windows.Storage.Pickers;
 
 namespace WinUIApplication
 {
@@ -18,16 +19,17 @@ namespace WinUIApplication
         public ICommand OnLoadedCommand => new SimpleCommand((o) =>
         {
             IEventProvider<AppClosingEventArgs> closeEventProvider = AppEventManager.RequestEventProvider<AppClosingEventArgs>("OnClosing");
-            closeEventProvider.SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(myAsyncOnClosingEvent));
+            closeEventProvider.SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(OnClosingEventAsync));
         });
 
         public ICommand OpenDialogCommand => new SimpleCommand(async (o) =>
         {
-            IDialogModule<StandardMessageDialogProperties> dlg = DialogManager.GetDialog<StandardMessageDialogProperties>("Dialog1");
-            _ = await dlg.ShowModalAsync(this);
+            IDialogModule<SaveFileDialogProperties> saveDialog = DialogManager.GetDialog<SaveFileDialogProperties>("SaveDialog");
+            saveDialog.Properties.Filters.Add(new ExtensionFilter("Text", "txt"));
+            await saveDialog.ShowModalAsync(this);
         });
 
-        private async Task myAsyncOnClosingEvent(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> collection)
+        private async Task OnClosingEventAsync(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> collection)
         {
             IDialogModule<StandardMessageDialogProperties> exitDialog = DialogManager.GetDialog<StandardMessageDialogProperties>("Dialog1");
             StandardMessageDialogProperties properties = new();

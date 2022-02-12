@@ -1,0 +1,115 @@
+﻿using Microsoft.UI.Xaml;
+using MochaCore.DialogsEx;
+using MochaCore.DialogsEx.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+
+namespace MochaCoreWinUI.DialogsEx
+{
+    /// <summary>
+    /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FileSavePicker"/> classes.
+    /// </summary>
+    public class SaveFileDialogModule : IDialogModule<SaveFileDialogProperties>
+    {
+        private readonly Window _mainWindow;
+        private readonly FileSavePicker _view;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SaveFileDialogModule"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window.</param>
+        /// <param name="view">Technology-specific dialog object.</param>
+        public SaveFileDialogModule(Window mainWindow, FileSavePicker view)
+        {
+            _mainWindow = mainWindow;
+            _view = view;
+        }
+
+        /// <inheritdoc/>
+        public object? View => _view;
+
+        /// <inheritdoc/>
+        public object? Parent => FindParent(this);
+
+        /// <inheritdoc/>
+        public SaveFileDialogProperties Properties { get; set; } = new();
+
+        /// <inheritdoc/>
+        public event EventHandler? Opening;
+
+        /// <inheritdoc/>
+        public event EventHandler? Closed;
+
+        /// <inheritdoc/>
+        public event EventHandler? Disposed;
+
+        /// <summary>
+        /// Satisfies <see cref="IDisposable"/> interface.
+        /// In this particular case no resources are explicitly freed.
+        /// </summary>
+        public void Dispose()
+        {
+            Disposed?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool?> ShowModalAsync(object host)
+        {
+            ApplyProperties();
+            WorkaroundForBug466();
+
+            Opening?.Invoke(this, EventArgs.Empty);
+            
+            bool? result;
+            result = HandleSelectionResult(await _view.PickSaveFileAsync());
+            
+            Closed?.Invoke(this, EventArgs.Empty);
+            
+            return result;
+        }
+
+        protected virtual Window FindParent(object host)
+        {
+            // This has to be done after windowing API is released.
+            // Nothing can be done at this point. 
+            return _mainWindow;
+        }
+
+        private void ApplyProperties()
+        {
+            if (!Properties.Filters.Any())
+            {
+                _view.FileTypeChoices.Add(string.Empty, new List<string> { "." });
+                return;
+            }
+
+            foreach (ExtensionFilter filter in Properties.Filters)
+            {
+                _view.FileTypeChoices.Add(filter.Name, filter.Extensions.Select(e => $".{e}").ToList());
+            }
+        }
+
+        private bool? HandleSelectionResult(StorageFile storageFile)
+        {
+            if (storageFile is not null)
+            {
+                Properties.SelectedPath = storageFile.Path;
+                return true;
+            }
+
+            return false;
+        }
+
+        // Workaround for bug https://github.com/microsoft/WindowsAppSDK/issues/466
+        private void WorkaroundForBug466()
+        {
+            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(Parent);
+            WinRT.Interop.InitializeWithWindow.Initialize(_view, hwnd);
+        }
+    }
+}
