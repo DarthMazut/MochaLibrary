@@ -13,32 +13,53 @@ using WinRT;
 
 namespace MochaCoreWinUI.DialogsEx
 {
+    /// <summary>
+    /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FileOpenPicker"/> classes.
+    /// </summary>
     public class OpenFileDialogModule : IDialogModule<OpenFileDialogProperties>
     {
         private Window _mainWindow;
         private FileOpenPicker _view;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenFileDialogModule"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window.</param>
+        /// <param name="view">Technology-specific dialog object.</param>
         public OpenFileDialogModule(Window mainWindow, FileOpenPicker view)
         {
             _view = view;
             _mainWindow = mainWindow;
         }
 
+        /// <inheritdoc/>
         public object? View => _view;
 
+        /// <inheritdoc/>
         public object? Parent => _mainWindow;
 
+        /// <inheritdoc/>
         public OpenFileDialogProperties Properties { get; set; } = new();
 
+        /// <inheritdoc/>
         public event EventHandler? Opening;
+        
+        /// <inheritdoc/>
         public event EventHandler? Closed;
+
+        /// <inheritdoc/>
         public event EventHandler? Disposed;
 
+        /// <summary>
+        /// Satisfies <see cref="IDisposable"/> interface.
+        /// In this particular case no resources are explicitly freed.
+        /// </summary>
         public void Dispose()
         {
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <inheritdoc/>
         public async Task<bool?> ShowModalAsync(object host)
         {
             ApplyProperties();
@@ -58,6 +79,11 @@ namespace MochaCoreWinUI.DialogsEx
             }
             Closed?.Invoke(this, EventArgs.Empty);
             return result;
+        }
+
+        protected virtual Window FindParent(object host)
+        {
+            return _mainWindow;
         }
 
         private void ApplyProperties()
@@ -98,11 +124,5 @@ namespace MochaCoreWinUI.DialogsEx
             
             return false;
         }
-
-        protected virtual Window FindParent(object host)
-        {
-            return _mainWindow;
-        }
-
     }
 }
