@@ -8,6 +8,10 @@ namespace MochaCore.DialogsEx
 {
     /// <summary>
     /// Marks implementing <see cref="IDialogModule"/> as able to perform <see cref="ShowAsync(object)"/> operation.
+    /// <para>
+    /// This interface allows for showing a <see cref="IDialogModule"/> object in non-modal manner.
+    /// This possibility replaces <c>Windowing</c> namespace which <c>MochaLib</c> does not implement at this time.
+    /// </para>
     /// </summary>
     public interface IDialogShow
     {

@@ -118,7 +118,7 @@ namespace MochaCoreWinUI.DialogsEx
         {
             if (storageFile is not null)
             {
-                Properties.SelectedPath = storageFile.Path;
+                Properties.SelectedPaths.Add(storageFile.Path);
                 return true;
             }
 

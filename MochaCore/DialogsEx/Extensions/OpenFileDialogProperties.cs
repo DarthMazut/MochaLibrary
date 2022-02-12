@@ -9,16 +9,33 @@ namespace MochaCore.DialogsEx.Extensions
     /// <summary>
     /// Provides a set of properties used to customize dialogs for file opening. 
     /// </summary>
-    public class OpenFileDialogProperties : FileDialogProperties
+    public class OpenFileDialogProperties : DialogProperties
     {
         /// <summary>
-        /// Determines whether selecting multiple files is allowed.
+        /// Title of dialog window.
         /// </summary>
-        public bool MultipleSelection { get; set; }
+        public string? Title { get; set; }
+
+        /// <summary>
+        /// Specifies directory where browsing begins.
+        /// </summary>
+        public string? InitialDirectory { get; set; }
+
+        /// <summary>
+        /// A collection of <see cref="ExtensionFilter"/> objectes, that 
+        /// determines which file types will be visible when browsing the folder structure.
+        /// </summary>
+        public IList<ExtensionFilter> Filters { get; set; } = new List<ExtensionFilter>();
 
         /// <summary>
         /// Contains a list of paths selected as a result of dialog interaction.
         /// </summary>
         public IList<string> SelectedPaths { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Determines whether selecting multiple files is allowed.
+        /// </summary>
+        public bool MultipleSelection { get; set; }
+
     }
 }
