@@ -35,7 +35,7 @@ namespace MochaCoreWinUI.DialogsEx
         public object? View => _view;
 
         /// <inheritdoc/>
-        public object? Parent => _parent
+        public object? Parent => _parent;
 
         /// <inheritdoc/>
         public SaveFileDialogProperties Properties { get; set; } = new();
