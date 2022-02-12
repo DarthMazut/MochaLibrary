@@ -88,13 +88,14 @@ namespace MochaCoreWinUI.DialogsEx
         public async Task<bool?> ShowModalAsync(object host)
         {
             ApplyProperties();
+            Opening?.Invoke(this, EventArgs.Empty);
             _parent = FindParent(host);
             _view.XamlRoot = _parent;
-            Opening?.Invoke(this, EventArgs.Empty);
             _isOpen = true;
             _wasClosed = false;
             bool? result = HandleResult(await _view.ShowAsync());
             _isOpen = false;
+            _parent = null;
             OnClose();
             return result;
         }

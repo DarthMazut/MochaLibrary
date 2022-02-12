@@ -18,6 +18,7 @@ namespace MochaCoreWinUI.DialogsEx
     {
         private readonly Window _mainWindow;
         private readonly FileSavePicker _view;
+        private object? _parent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SaveFileDialogModule"/> class.
@@ -34,7 +35,7 @@ namespace MochaCoreWinUI.DialogsEx
         public object? View => _view;
 
         /// <inheritdoc/>
-        public object? Parent => FindParent(this);
+        public object? Parent => _parent
 
         /// <inheritdoc/>
         public SaveFileDialogProperties Properties { get; set; } = new();
@@ -61,15 +62,15 @@ namespace MochaCoreWinUI.DialogsEx
         public async Task<bool?> ShowModalAsync(object host)
         {
             ApplyProperties();
+            Opening?.Invoke(this, EventArgs.Empty);
+            _parent = FindParent(host);
             WorkaroundForBug466();
 
-            Opening?.Invoke(this, EventArgs.Empty);
-            
             bool? result;
             result = HandleSelectionResult(await _view.PickSaveFileAsync());
-            
+
+            _parent = null;
             Closed?.Invoke(this, EventArgs.Empty);
-            
             return result;
         }
 

@@ -20,6 +20,7 @@ namespace MochaCoreWinUI.DialogsEx
     {
         private Window _mainWindow;
         private FileOpenPicker _view;
+        private object? _parent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenFileDialogModule"/> class.
@@ -36,7 +37,7 @@ namespace MochaCoreWinUI.DialogsEx
         public object? View => _view;
 
         /// <inheritdoc/>
-        public object? Parent => _mainWindow;
+        public object? Parent => _parent;
 
         /// <inheritdoc/>
         public OpenFileDialogProperties Properties { get; set; } = new();
@@ -63,12 +64,11 @@ namespace MochaCoreWinUI.DialogsEx
         public async Task<bool?> ShowModalAsync(object host)
         {
             ApplyProperties();
-            // Workaround for bug https://github.com/microsoft/WindowsAppSDK/issues/466
-            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(_mainWindow);
-            WinRT.Interop.InitializeWithWindow.Initialize(_view, hwnd);
-
             Opening?.Invoke(this, EventArgs.Empty);
-            bool? result = default;
+            _parent = FindParent(host);
+            WorkaroundForBug466();
+
+            bool? result;
             if (Properties.MultipleSelection)
             {
                 result = HandleMultipleSelectionResult(await _view.PickMultipleFilesAsync());
@@ -77,13 +77,24 @@ namespace MochaCoreWinUI.DialogsEx
             {
                 result = HandleSelectionResult(await _view.PickSingleFileAsync());
             }
+
+            _parent = null;
             Closed?.Invoke(this, EventArgs.Empty);
             return result;
         }
 
         protected virtual Window FindParent(object host)
         {
+            // This has to be done after windowing API is released.
+            // Nothing can be done at this point. 
             return _mainWindow;
+        }
+
+        // Workaround for bug https://github.com/microsoft/WindowsAppSDK/issues/466
+        private void WorkaroundForBug466()
+        {
+            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(_parent);
+            WinRT.Interop.InitializeWithWindow.Initialize(_view, hwnd);
         }
 
         private void ApplyProperties()
