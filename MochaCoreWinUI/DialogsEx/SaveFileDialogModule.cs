@@ -12,7 +12,7 @@ using Windows.Storage.Pickers;
 namespace MochaCoreWinUI.DialogsEx
 {
     /// <summary>
-    /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FileSavePicker"/> classes.
+    /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FileSavePicker"/> class.
     /// </summary>
     public class SaveFileDialogModule : IDialogModule<SaveFileDialogProperties>
     {
@@ -74,6 +74,10 @@ namespace MochaCoreWinUI.DialogsEx
             return result;
         }
 
+        /// <summary>
+        /// Tries to find technology-specific parent of provided technology-independent element.
+        /// </summary>
+        /// <param name="host">Technology-independent element, which technology-specific parent is to be found.</param>
         protected virtual Window FindParent(object host)
         {
             // This has to be done after windowing API is released.

@@ -24,14 +24,13 @@ namespace WinUIApplication
 
         public ICommand OpenDialogCommand => new SimpleCommand(async (o) =>
         {
-            IDialogModule<SaveFileDialogProperties> saveDialog = DialogManager.GetDialog<SaveFileDialogProperties>("SaveDialog");
-            saveDialog.Properties.Filters.Add(new ExtensionFilter("Text", "txt"));
+            IDialogModule<BrowseFolderDialogProperties> saveDialog = DialogManager.GetDialog<BrowseFolderDialogProperties>("FolderDialog");
             await saveDialog.ShowModalAsync(this);
         });
 
         private async Task OnClosingEventAsync(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> collection)
         {
-            IDialogModule<StandardMessageDialogProperties> exitDialog = DialogManager.GetDialog<StandardMessageDialogProperties>("Dialog1");
+            IDialogModule<StandardMessageDialogProperties> exitDialog = DialogManager.GetDialog<StandardMessageDialogProperties>("MessageDialog");
             StandardMessageDialogProperties properties = new();
             properties.Title = "Confirm app close";
             properties.Message = "Are you sure you want to quit app now?";

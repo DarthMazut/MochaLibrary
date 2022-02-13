@@ -19,7 +19,7 @@ namespace MochaCore.DialogsEx.Extensions
         /// <summary>
         /// Specifies directory where browsing begins.
         /// </summary>
-        public string? InitialDirectory { get; set; }
+        public string? InitialDirectory { get; set; } // Special folder ??
 
         /// <summary>
         /// A collection of <see cref="ExtensionFilter"/> objectes, that 

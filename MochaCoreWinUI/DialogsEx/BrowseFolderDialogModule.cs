@@ -4,7 +4,6 @@ using MochaCore.DialogsEx.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -14,20 +13,20 @@ using WinRT;
 namespace MochaCoreWinUI.DialogsEx
 {
     /// <summary>
-    /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FileOpenPicker"/> class.
+    /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FolderPicker"/> class.
     /// </summary>
-    public class OpenFileDialogModule : IDialogModule<OpenFileDialogProperties>
+    public class BrowseFolderDialogModule : IDialogModule<BrowseFolderDialogProperties>
     {
         private Window _mainWindow;
-        private FileOpenPicker _view;
+        private FolderPicker _view;
         private object? _parent;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OpenFileDialogModule"/> class.
+        /// Initializes a new instance of the <see cref="BrowseFolderDialogModule"/> class.
         /// </summary>
         /// <param name="mainWindow">Application main window.</param>
-        /// <param name="view">Technology-specific dialog object.</param>
-        public OpenFileDialogModule(Window mainWindow, FileOpenPicker view)
+        /// <param name="view">Technology-specific counterpart of this module.</param>
+        public BrowseFolderDialogModule(Window mainWindow, FolderPicker view)
         {
             _view = view;
             _mainWindow = mainWindow;
@@ -40,11 +39,11 @@ namespace MochaCoreWinUI.DialogsEx
         public object? Parent => _parent;
 
         /// <inheritdoc/>
-        public OpenFileDialogProperties Properties { get; set; } = new();
+        public BrowseFolderDialogProperties Properties { get; set; } = new();
 
         /// <inheritdoc/>
         public event EventHandler? Opening;
-        
+
         /// <inheritdoc/>
         public event EventHandler? Closed;
 
@@ -68,15 +67,7 @@ namespace MochaCoreWinUI.DialogsEx
             _parent = FindParent(host);
             WorkaroundForBug466();
 
-            bool? result;
-            if (Properties.MultipleSelection)
-            {
-                result = HandleMultipleSelectionResult(await _view.PickMultipleFilesAsync());
-            }
-            else
-            {
-                result = HandleSelectionResult(await _view.PickSingleFileAsync());
-            }
+            bool? result = HandleSelectionResult(await _view.PickSingleFolderAsync());
 
             _parent = null;
             Closed?.Invoke(this, EventArgs.Empty);
@@ -103,40 +94,17 @@ namespace MochaCoreWinUI.DialogsEx
 
         private void ApplyProperties()
         {
-            if (!Properties.Filters.Any())
-            {
-                _view.FileTypeFilter.Add("*");
-                return;
-            }
-
-            foreach (ExtensionFilter filter in Properties.Filters)
-            {
-                foreach (string ext in filter.Extensions)
-                {
-                    _view.FileTypeFilter.Add($".{ext}");
-                }
-            }
+            _view.FileTypeFilter.Add("*");
         }
 
-        private bool? HandleSelectionResult(StorageFile storageFile)
+        private bool? HandleSelectionResult(StorageFolder storageFolder)
         {
-            if (storageFile is not null)
+            if (storageFolder is not null)
             {
-                Properties.SelectedPaths.Add(storageFile.Path);
+                Properties.SelectedPath = storageFolder.Path;
                 return true;
             }
 
-            return false;
-        }
-
-        private bool? HandleMultipleSelectionResult(IReadOnlyList<StorageFile> storageFiles)
-        {
-            if (storageFiles.Any())
-            {
-                Properties.SelectedPaths = storageFiles.Select(f => f.Path).ToList();
-                return true;
-            }
-            
             return false;
         }
     }
