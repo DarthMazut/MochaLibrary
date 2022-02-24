@@ -182,7 +182,11 @@ namespace MochCoreWPF.DialogsEx
 
             if (host is INavigatable navigatable)
             {
-                throw new NotImplementedException("Implement an explicit interface to retrieve a View object form INavigatable...");
+                foundWindow = TraverseVisualTreeToFindWindow((navigatable.Navigator as INavigatorGetHostView).HostView!);
+                if (foundWindow is not null)
+                {
+                    return foundWindow;
+                }
             }
 
             return _mainWindow;

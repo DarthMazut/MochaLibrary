@@ -6,7 +6,7 @@ namespace MochaCore.Navigation
     /// <summary>
     /// Exposes API for navigation.
     /// </summary>
-    public class Navigator
+    public class Navigator : INavigatorGetHostView
     {
         #region PRIVATE FIELDS
 
@@ -22,6 +22,9 @@ namespace MochaCore.Navigation
         /// <see cref="Navigator"/> object should be cached.
         /// </summary>
         public bool SaveCurrent { get; set; }
+
+        /// <inheritdoc/>
+        object? INavigatorGetHostView.HostView => _hostView.View;
 
         #endregion
 

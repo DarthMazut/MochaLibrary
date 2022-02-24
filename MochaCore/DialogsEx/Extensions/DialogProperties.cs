@@ -9,7 +9,7 @@ namespace MochaCore.DialogsEx.Extensions
     /// <summary>
     /// Base class for dialog properties objects.
     /// </summary>
-    public abstract class DialogProperties
+    public class DialogProperties
     {
         /// <summary>
         /// Allows to provide additional, custom properties, which hasn't been 

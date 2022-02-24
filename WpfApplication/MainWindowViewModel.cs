@@ -12,10 +12,24 @@ namespace WpfApplication
 
         private async void ShowDialog(object? param)
         {
-            IDialogModule<StandardMessageDialogProperties> dialog = DialogManager.GetDialog<StandardMessageDialogProperties>("MessageBox");
-            dialog.Properties.Title = "Title";
-            dialog.Properties.Message = "Hello there!";
+            IUserDialogModule<DialogProperties> dialog = DialogManager.GetUserDialog<DialogProperties>("MyDialog");
+            dialog.Closing += async (s, e) =>
+            {
+                IDialogModule<StandardMessageDialogProperties> dialog = DialogManager.GetDialog<StandardMessageDialogProperties>("MessageBox");
+                dialog.Properties.Title = "Confirmation";
+                dialog.Properties.Message = "Are you sure you want quit current dialog?";
+                dialog.Properties.DeclineButtonText = "No";
+                bool? result = await dialog.ShowModalAsync(this);
+
+                if (result != true)
+                {
+                    e.Cancel = true;
+                }
+            };
+
             await dialog.ShowModalAsync(this);
+            
+            
         }
     }
 }
