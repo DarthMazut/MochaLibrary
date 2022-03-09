@@ -11,16 +11,15 @@ using System.Windows.Input;
 
 namespace WpfApplication
 {
-    public class MyDialogWindowViewModel : IDialog<DialogProperties>, INotifyPropertyChanged
+    public class MyDialogWindowViewModel : ICustomDialog<DialogProperties>, INotifyPropertyChanged
     {
         private readonly AsyncProperty<string> _inputText;
-
         public MyDialogWindowViewModel()
         {
             _inputText = new(this, nameof(InputText));
         }
 
-        public IDialogModule<DialogProperties> DialogModule { get; set; }
+        public ICustomDialogModule<DialogProperties> DialogModule { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -39,6 +38,6 @@ namespace WpfApplication
         public ICommand NoCommand => new SimpleCommand((o) =>
         {
             (DialogModule as IDialogClose)?.Close();
-        });
+        });  
     }
 }

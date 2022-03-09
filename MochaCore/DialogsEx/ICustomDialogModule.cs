@@ -7,20 +7,13 @@ using System.Threading.Tasks;
 namespace MochaCore.DialogsEx
 {
     /// <summary>
-    /// Extends <see cref="IDialogModule{T}"/> with possibility to work with <see cref="IDialog"/> as DataContext.
+    /// Extends <see cref="IDialogModule{T}"/> with possibility to work with <see cref="ICustomDialog{T}"/> as DataContext.
+    /// Provides <see cref="IDialogClose.Close"/> method, as well as <see cref="IDialogOpened.Opened"/> 
+    /// and <see cref="IDialogClosing.Closing"/> events.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
-    public interface ICustomDialogModule<T> : IDialogModule<T>
+    public interface ICustomDialogModule<T> : IDialogModule<T>, IDialogDataContext<ICustomDialog<T>>, IDialogClose, IDialogOpened, IDialogClosing
     {
-        /// <summary>
-        /// Returns a reference to <see cref="IDialog"/> object which acts as a DataContext for dialog represented by this module. 
-        /// </summary>
-        IDialog<T>? DataContext { get; }
 
-        /// <summary>
-        /// Allows to assign new *DataContext* for this module.
-        /// </summary>
-        /// <param name="dataContext">DataContext to be assigned.</param>
-        void SetDataContext(IDialog<T> dataContext);
     }
 }

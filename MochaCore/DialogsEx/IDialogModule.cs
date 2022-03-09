@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace MochaCore.DialogsEx
 {
     /// <summary>
-    /// Non-generic, base type for <see cref="IDialogModule{T}"/> and its descendants.
+    /// Provides base type for <see cref="IDialogModule{T}"/> and its descendants.
     /// </summary>
     public interface IDialogModule : IDisposable
     {
@@ -15,11 +15,6 @@ namespace MochaCore.DialogsEx
         /// Technology-specific dialog object which is represented by this module.
         /// </summary>
         object? View { get; }
-
-        /// <summary>
-        /// Technology-specific object which is a logical parent of represented dialog (<see cref="View"/>). 
-        /// </summary>
-        object? Parent { get; }
 
         /// <summary>
         /// Asynchronously opens a dialog represented by this instance in modal mode. 

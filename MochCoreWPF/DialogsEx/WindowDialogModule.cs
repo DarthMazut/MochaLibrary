@@ -9,15 +9,15 @@ using System.Windows;
 
 namespace MochCoreWPF.DialogsEx
 {
-    public class WindowDialogModule<T> : IUserDialogModule<T>, IDialogClose
+    public class WindowDialogModule<T> : ICustomDialogModule<T>, IDialogClose
     {
         private readonly Window _mainWindow;
         private readonly Window _dialogWindow;
 
         private Window? _parent;
-        private IDialog<T>? _dataContext;
+        private ICustomDialog<T>? _dataContext;
 
-        public WindowDialogModule(Window mainWindow, Window dialogWindow, IDialog<T> dataContext, T properties)
+        public WindowDialogModule(Window mainWindow, Window dialogWindow, ICustomDialog<T> dataContext, T properties)
         {
             _ = mainWindow ?? throw new ArgumentNullException(nameof(mainWindow));
             _ = dialogWindow ?? throw new ArgumentNullException(nameof(dialogWindow));
@@ -40,15 +40,15 @@ namespace MochCoreWPF.DialogsEx
 
         public T Properties { get; set; }
 
-        public IDialog<T>? DataContext => _dataContext;
-
         public Action<Window, T>? ApplyProperties { get; set; }
 
-        public Func<bool?, T, IDialog<T>?, bool?> HandleResult { get; set; } = (result, properties, dataContext) => result;
+        public Func<bool?, T, ICustomDialog<T>?, bool?> HandleResult { get; set; } = (result, properties, dataContext) => result;
 
-        public Action<IDialog<T>?>? DisposeCore { get; set; }
+        public Action<ICustomDialog<T>?>? DisposeCore { get; set; }
 
         public Func<object, Window?> FindParent { get; set; }
+
+        public ICustomDialog<T> DataContext => _dataContext!;
 
         public event EventHandler? Opening;
         public event EventHandler? Closed;
@@ -69,7 +69,7 @@ namespace MochCoreWPF.DialogsEx
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
-        public void SetDataContext(IDialog<T> dataContext)
+        public void SetDataContext(ICustomDialog<T> dataContext)
         {
             _dataContext = dataContext;
             _dataContext.DialogModule = this;

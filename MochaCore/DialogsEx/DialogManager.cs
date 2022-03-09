@@ -40,23 +40,23 @@ namespace MochaCore.DialogsEx
         }
 
         /// <summary>
+        /// Retrieves an instance of registered <see cref="IDataContextDialogModule{T}"/> type by its identifier.
+        /// </summary>
+        /// <typeparam name="T">Type of internal <see cref="DialogProperties"/> object.</typeparam>
+        /// <param name="id">Identifier of registered dialog to be retrieved.</param>
+        public static IDataContextDialogModule<T> GetCustomDialog<T>(string id)
+        {
+            return (IDataContextDialogModule<T>)GetDialog(id);
+        }
+
+        /// <summary>
         /// Retrieves an instance of registered <see cref="ICustomDialogModule{T}"/> type by its identifier.
         /// </summary>
         /// <typeparam name="T">Type of internal <see cref="DialogProperties"/> object.</typeparam>
         /// <param name="id">Identifier of registered dialog to be retrieved.</param>
-        public static ICustomDialogModule<T> GetCustomDialog<T>(string id)
+        public static ICustomDialogModule<T> GetUserDialog<T>(string id)
         {
             return (ICustomDialogModule<T>)GetDialog(id);
-        }
-
-        /// <summary>
-        /// Retrieves an instance of registered <see cref="IUserDialogModule{T}"/> type by its identifier.
-        /// </summary>
-        /// <typeparam name="T">Type of internal <see cref="DialogProperties"/> object.</typeparam>
-        /// <param name="id">Identifier of registered dialog to be retrieved.</param>
-        public static IUserDialogModule<T> GetUserDialog<T>(string id)
-        {
-            return (IUserDialogModule<T>)GetDialog(id);
         }
 
         /// <summary>
