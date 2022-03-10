@@ -21,7 +21,7 @@ namespace MochCoreWPF.DialogsEx
             _mainWindow = mainWindow;
             _dialog = dialog;
 
-            FindParent = (host) => ParentResolver.FindParent(host) ?? _mainWindow;
+            FindParent = (host) => ParentResolver.FindParent<OpenFileDialogProperties>(host) ?? _mainWindow;
         }
 
         public object? View => _dialog;

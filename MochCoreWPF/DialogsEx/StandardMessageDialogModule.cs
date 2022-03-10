@@ -16,24 +16,40 @@ namespace MochCoreWPF.DialogsEx
     public class StandardMessageDialogModule : IDialogModule<StandardMessageDialogProperties>
     {
         private readonly Window _mainWindow;
-        private Window? _parent;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StandardMessageDialogModule"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Main application window.</param>
         public StandardMessageDialogModule(Window mainWindow)
         {
             _mainWindow = mainWindow;
+
+            ShowDialog = ShowDialogCore;
+            HandleResult = HandleResultCore;
+            ResolveButtons = ResolveButtonsCore;
+            ResolveIcon = ResolveIconCore;
+            FindParent = FindParentCore;
         }
 
+        /// <inheritdoc/>
         public object? View => null;
-        public object? Parent => _parent;
+
+        /// <inheritdoc/>
         public StandardMessageDialogProperties Properties { get; set; } = new();
 
-        public Func<StandardMessageDialogProperties, MessageBoxResult>? ShowDialogDelegate { get; set; }
+        /// <summary>
+        /// A delegate which describes the process of showing dialog represented by this module.
+        /// </summary>
+        public Func<Window?, StandardMessageDialogProperties, MessageBoxResult> ShowDialog { get; set; }
 
-        public Func<MessageBoxResult, StandardMessageDialogProperties, bool?>? HandleResultDelegate { get; set; }
+        public Func<MessageBoxResult, StandardMessageDialogProperties, bool?> HandleResult { get; set; }
 
-        public Func<StandardMessageDialogProperties, MessageBoxButton>? ResolveButtonsDelegate { get; set; }
+        public Func<StandardMessageDialogProperties, MessageBoxButton> ResolveButtons { get; set; }
 
-        public Func<StandardMessageDialogProperties, MessageBoxImage>? ResolveIconDelegate { get; set; }
+        public Func<StandardMessageDialogProperties, MessageBoxImage> ResolveIcon{ get; set; }
+
+        public Func<object, Window?> FindParent { get; set; }
 
         public event EventHandler? Opening;
         public event EventHandler? Closed;
@@ -47,23 +63,9 @@ namespace MochCoreWPF.DialogsEx
         public Task<bool?> ShowModalAsync(object host)
         {
             Opening?.Invoke(this, EventArgs.Empty);
-            _parent = FindParent(host);
-            bool? result = HandleResult(ShowDialog());
-            _parent = null;
+            bool? result = HandleResult.Invoke(ShowDialog.Invoke(FindParent.Invoke(host), Properties), Properties);
             Closed?.Invoke(this, EventArgs.Empty);
             return Task.FromResult(result);
-        }
-
-        private bool? HandleResult(MessageBoxResult messageBoxResult)
-        {
-            if (HandleResultDelegate is not null)
-            {
-                return HandleResultDelegate?.Invoke(messageBoxResult, Properties);
-            }
-            else
-            {
-                return HandleResultCore(messageBoxResult, Properties);
-            }
         }
 
         protected virtual bool? HandleResultCore(MessageBoxResult messageBoxResult, StandardMessageDialogProperties properties)
@@ -83,11 +85,6 @@ namespace MochCoreWPF.DialogsEx
                 default:
                     return null;
             }
-        }
-
-        protected virtual MessageBoxResult ShowDialogCore(StandardMessageDialogProperties properties)
-        {
-            return MessageBox.Show(_parent, properties.Message, properties.Title, ResolveButtons(properties), ResolveIcon(properties));
         }
 
         protected virtual MessageBoxButton ResolveButtonsCore(StandardMessageDialogProperties properties)
@@ -123,94 +120,14 @@ namespace MochCoreWPF.DialogsEx
             return MessageBoxImage.None;
         }
 
-        private MessageBoxResult ShowDialog()
+        protected virtual MessageBoxResult ShowDialogCore(Window? host, StandardMessageDialogProperties properties)
         {
-            if (ShowDialogDelegate is not null)
-            {
-                return ShowDialogDelegate.Invoke(Properties);
-            }
-            else
-            {
-                return ShowDialogCore(Properties);
-            }
+            return MessageBox.Show(host, properties.Message, properties.Title, ResolveButtons.Invoke(properties), ResolveIcon.Invoke(properties));
         }
 
-        private MessageBoxButton ResolveButtons(StandardMessageDialogProperties properties)
+        protected virtual Window? FindParentCore(object host)
         {
-            if (ResolveButtonsDelegate is not null)
-            {
-                return ResolveButtonsDelegate.Invoke(properties);
-            }
-            else
-            {
-                return ResolveButtonsCore(properties);
-            }
-        }
-
-        private MessageBoxImage ResolveIcon(StandardMessageDialogProperties properties)
-        {
-            if (ResolveIconDelegate is not null)
-            {
-                return ResolveIconDelegate.Invoke(properties);
-            }
-            else
-            {
-                return ResolveIconCore(properties);
-            }
-        }
-
-        private Window FindParent(object host)
-        {
-            Window? foundWindow;
-            if (host is FrameworkElement hostFrameworkElement)
-            {
-                foundWindow = TraverseVisualTreeToFindWindow(hostFrameworkElement);
-                if (foundWindow is not null)
-                {
-                    return foundWindow;
-                }
-            }
-
-            if (host is IDialog dialog && dialog.DialogModule.View is FrameworkElement viewFrameworkElement)
-            {
-                foundWindow = TraverseVisualTreeToFindWindow(viewFrameworkElement);
-                if (foundWindow is not null)
-                {
-                    return foundWindow;
-                }
-            }
-
-            if (host is INavigatable navigatable)
-            {
-                foundWindow = TraverseVisualTreeToFindWindow((navigatable.Navigator as INavigatorGetHostView).HostView!);
-                if (foundWindow is not null)
-                {
-                    return foundWindow;
-                }
-            }
-
-            return _mainWindow;
-        }
-
-        private Window? TraverseVisualTreeToFindWindow(object root)
-        {
-            object currentElement = root;
-            while (true)
-            {
-                if (currentElement is Window foundWindow)
-                {
-                    return foundWindow;
-                }
-                else if (currentElement is FrameworkElement foundElement)
-                {
-                    currentElement = foundElement.Parent;
-                    continue;
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            return ParentResolver.FindParent<StandardMessageDialogProperties>(host) ?? _mainWindow;
         }
     }
 }

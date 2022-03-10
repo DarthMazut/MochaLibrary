@@ -19,7 +19,7 @@ namespace MochCoreWPF.DialogsEx
             _mainWindow = mainWindow;
             _view = view;
 
-            FindParent = (host) => ParentResolver.FindParent(host) ?? _mainWindow;
+            FindParent = (host) => ParentResolver.FindParent<TProperties>(host) ?? _mainWindow;
         }
 
         public abstract TProperties Properties { get; set; }

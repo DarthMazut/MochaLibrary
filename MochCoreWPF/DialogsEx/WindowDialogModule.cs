@@ -14,7 +14,6 @@ namespace MochCoreWPF.DialogsEx
         private readonly Window _mainWindow;
         private readonly Window _dialogWindow;
 
-        private Window? _parent;
         private ICustomDialog<T>? _dataContext;
 
         public WindowDialogModule(Window mainWindow, Window dialogWindow, ICustomDialog<T> dataContext, T properties)
@@ -31,12 +30,10 @@ namespace MochCoreWPF.DialogsEx
             dialogWindow.Closing += (s, e) => this.Closing?.Invoke(this, e);
             dialogWindow.Loaded += (s, e) => this.Opened?.Invoke(this, EventArgs.Empty);
 
-            FindParent = (host) => ParentResolver.FindParent(host) ?? _mainWindow;
+            FindParent = (host) => ParentResolver.FindParent<T>(host) ?? _mainWindow;
         }
 
         public object? View => _mainWindow;
-
-        public object? Parent => _parent;
 
         public T Properties { get; set; }
 
@@ -80,10 +77,8 @@ namespace MochCoreWPF.DialogsEx
         {
             ApplyProperties?.Invoke(_dialogWindow, Properties);
             Opening?.Invoke(this, EventArgs.Empty);
-            _parent = FindParent.Invoke(host);
-            _dialogWindow.Owner = _parent;
+            _dialogWindow.Owner = FindParent.Invoke(host);
             bool? result = HandleResult.Invoke(_dialogWindow.ShowDialog(), Properties, DataContext);
-            _parent = null;
             Closed?.Invoke(this, EventArgs.Empty);
 
             return Task.FromResult(result);
