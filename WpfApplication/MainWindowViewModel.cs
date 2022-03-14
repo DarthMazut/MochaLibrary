@@ -10,6 +10,8 @@ namespace WpfApplication
     {
         public ICommand ShowDialogCommand => new SimpleCommand(ShowDialog);
 
+        public ICommand ShowBrowseDialogCommand => new SimpleCommand(ShowBrowseDialog);
+
         private async void ShowDialog(object? param)
         {
             ICustomDialogModule<DialogProperties> dialog = DialogManager.GetUserDialog<DialogProperties>("MyDialog");
@@ -27,9 +29,15 @@ namespace WpfApplication
                 }
             };
 
-            await dialog.ShowModalAsync(this);
-            
-            
+            await dialog.ShowModalAsync(this); 
+        }
+
+        private async void ShowBrowseDialog(object? obj)
+        {
+            IDialogModule<BrowseFolderDialogProperties> myBrowseDialog = DialogManager.GetDialog<BrowseFolderDialogProperties>("BrowseDialog");
+            myBrowseDialog.Properties.Title = "Hello There!";
+            myBrowseDialog.Properties.InitialDirectory = @"D:\Dokumenty\Personal\Seba\Statystyki\";
+            bool? result = await myBrowseDialog.ShowModalAsync(this);
         }
     }
 }

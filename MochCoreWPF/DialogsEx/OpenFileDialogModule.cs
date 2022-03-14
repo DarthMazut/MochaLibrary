@@ -10,35 +10,25 @@ using System.Windows;
 
 namespace MochCoreWPF.DialogsEx
 {
-    public class OpenFileDialogModule : IDialogModule<OpenFileDialogProperties>
+    /// <summary>
+    /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WPF <see cref="OpenFileDialog"/> class.
+    /// </summary>
+    public class OpenFileDialogModule : BrowseBaseDialogModule<OpenFileDialog, bool?, OpenFileDialogProperties>
     {
-        private readonly Window _mainWindow;
-        private readonly OpenFileDialog _dialog;
-        private Window? _parent;
-
-        public OpenFileDialogModule(Window mainWindow, OpenFileDialog dialog)
+        public OpenFileDialogModule(Window mainWindow, OpenFileDialog view) : base(mainWindow, view)
         {
-            _mainWindow = mainWindow;
-            _dialog = dialog;
-
-            FindParent = (host) => ParentResolver.FindParent<OpenFileDialogProperties>(host) ?? _mainWindow;
+            Properties = new OpenFileDialogProperties();
         }
 
-        public object? View => _dialog;
-
-        public object? Parent => _parent;
-
-        public OpenFileDialogProperties Properties { get; set; } = new();
-
-        public Action<OpenFileDialog, OpenFileDialogProperties> ApplyProperties { get; set; } = (dialog, properties) =>
+        protected override void ApplyPropertiesCore(OpenFileDialog dialog, OpenFileDialogProperties properties)
         {
             dialog.Title = properties.Title;
             dialog.Filter = properties.Filters.ToWpfFilterFormat();
             dialog.InitialDirectory = properties.InitialDirectory;
             dialog.Multiselect = properties.MultipleSelection;
-        };
+        }
 
-        public Func<OpenFileDialog, bool?, OpenFileDialogProperties, bool?> HandleResult { get; set; } = (dialog, result, properties) =>
+        protected override bool? HandleResultCore(OpenFileDialog dialog, bool? result, OpenFileDialogProperties properties)
         {
             if (dialog.Multiselect)
             {
@@ -51,31 +41,14 @@ namespace MochCoreWPF.DialogsEx
             {
                 properties.SelectedPaths.Add(dialog.FileName);
             }
-            
+
 
             return result;
-        };
-
-        public Func<object, Window> FindParent { get; set; }
-
-        public event EventHandler? Opening;
-        public event EventHandler? Closed;
-        public event EventHandler? Disposed;
-
-        public void Dispose()
-        {
-            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
-        public Task<bool?> ShowModalAsync(object host)
+        protected override bool? ShowDialogCore(OpenFileDialog dialog, Window parent)
         {
-            ApplyProperties.Invoke(_dialog, Properties);
-            Opening?.Invoke(this, EventArgs.Empty);
-            _parent = FindParent(host);
-            bool? result = HandleResult.Invoke(_dialog, _dialog.ShowDialog(_parent), Properties);
-            _parent = null;
-            Closed?.Invoke(this, EventArgs.Empty);
-            return Task.FromResult(result);
+            return dialog.ShowDialog(parent);
         }
     }
 }

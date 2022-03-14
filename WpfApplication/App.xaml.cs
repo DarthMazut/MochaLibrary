@@ -26,6 +26,8 @@ namespace WpfApplication
                     new MyDialogWindow(), 
                     new MyDialogWindowViewModel(), 
                     new DialogProperties()));
+
+            DialogManager.DefineDialog("BrowseDialog", () => new BrowseFolderDialogModule(this));
         }
     }
 }

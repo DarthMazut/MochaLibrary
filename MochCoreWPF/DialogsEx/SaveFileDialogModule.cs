@@ -13,24 +13,24 @@ namespace MochCoreWPF.DialogsEx
     {
         public SaveFileDialogModule(Window mainWindow, SaveFileDialog view) : base(mainWindow, view)
         {
+            Properties = new SaveFileDialogProperties();
         }
 
-        public override SaveFileDialogProperties Properties { get; set; } = new();
-
-        public override Action<SaveFileDialog, SaveFileDialogProperties> ApplyProperties { get; set; } = (dialog, properties) =>
+        protected override void ApplyPropertiesCore(SaveFileDialog dialog, SaveFileDialogProperties properties)
         {
             dialog.Title = properties.Title;
             dialog.Filter = properties.Filters.ToWpfFilterFormat();
-        };
+        }
 
-        public override Func<SaveFileDialog, Window, bool?> ShowModalCore { get; set; } = (dialog, parent) =>
+        protected override bool? HandleResultCore(SaveFileDialog dialog, bool? result, SaveFileDialogProperties properties)
+        {
+            properties.SelectedPath = dialog.FileName;
+            return result;
+        }
+
+        protected override bool? ShowDialogCore(SaveFileDialog dialog, Window parent)
         {
             return dialog.ShowDialog(parent);
-        };
-
-        public override Func<SaveFileDialog, bool?, SaveFileDialogProperties, bool?> HandleResult { get; set; } = (dialog, result, properties) =>
-        {
-            throw new NotImplementedException();
-        };
+        }
     }
 }
