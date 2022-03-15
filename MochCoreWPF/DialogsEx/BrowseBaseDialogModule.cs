@@ -14,7 +14,7 @@ namespace MochCoreWPF.DialogsEx
     /// </summary>
     /// <typeparam name="TView">Type of underlying dialog object.</typeparam>
     /// <typeparam name="TResult">Technology specific result type of underlying dialog object.</typeparam>
-    /// <typeparam name="TProperties">Tyep of statically typed properties for represented dialog.</typeparam>
+    /// <typeparam name="TProperties">Type of statically typed properties for represented dialog.</typeparam>
     public abstract class BrowseBaseDialogModule<TView, TResult, TProperties> : IDialogModule<TProperties>
     {
         private readonly Window _mainWindow;

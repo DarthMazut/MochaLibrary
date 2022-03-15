@@ -23,7 +23,7 @@ namespace MochaCoreWinUI.DialogsEx
         protected Window _mainWindow;
         protected ContentDialog _view;
         protected XamlRoot? _parent;
-        protected IDialog<T>? _dataContext;
+        protected ICustomDialog<T>? _dataContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
@@ -38,7 +38,7 @@ namespace MochaCoreWinUI.DialogsEx
         /// <param name="mainWindow">Main application window object.</param>
         /// <param name="view">Instance of <see cref="ContentDialog"/> or its descendant.</param>
         /// <param name="dataContext">Datacontext for view object.</param>
-        public ContentDialogModule(Window mainWindow, ContentDialog view, IDialog<T> dataContext) : this(mainWindow, view, dataContext, default(T)) { }
+        public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<T> dataContext) : this(mainWindow, view, dataContext, default(T)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
@@ -47,7 +47,7 @@ namespace MochaCoreWinUI.DialogsEx
         /// <param name="view">Instance of <see cref="ContentDialog"/> or its descendant.</param>
         /// <param name="dataContext">Datacontext for view object.</param>
         /// <param name="properties">Properties object associated with this instance.</param>
-        public ContentDialogModule(Window mainWindow, ContentDialog view, IDialog<T>? dataContext, T? properties)
+        public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<T>? dataContext, T? properties)
         {
             _mainWindow = mainWindow;
             _view = view;
@@ -74,7 +74,7 @@ namespace MochaCoreWinUI.DialogsEx
         public object? Parent => _parent;
 
         /// <inheritdoc/>
-        public IDialog<T>? DataContext => _dataContext;
+        public ICustomDialog<T>? DataContext => _dataContext;
 
         /// <inheritdoc/>
         public T Properties { get; set; }
@@ -127,7 +127,7 @@ namespace MochaCoreWinUI.DialogsEx
         }
 
         /// <inheritdoc/>
-        public void SetDataContext(IDialog<T> dataContext)
+        public void SetDataContext(ICustomDialog<T> dataContext)
         {
             _view.DataContext = dataContext;
             dataContext.DialogModule = this;
@@ -193,7 +193,7 @@ namespace MochaCoreWinUI.DialogsEx
         /// <param name="host">Object which technology-specific parent is to be found.</param>
         protected virtual XamlRoot FindParent(object host)
         {
-            if (host is IDialog dialog)
+            if (host is ICustomDialog<T> dialog)
             {
                 if (dialog.DialogModule.View is Window window)
                 {
