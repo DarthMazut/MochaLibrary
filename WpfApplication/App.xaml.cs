@@ -18,13 +18,13 @@ namespace WpfApplication
     {
         public App()
         {
-            DialogManager.DefineDialog("MessageBox", () => new StandardMessageDialogModule(MainWindow));
+            DialogManager.DefineDialog("MessageBox", () => new StandardMessageDialogModule(this));
             DialogManager.DefineDialog(
                 "MyDialog", 
                 () => new WindowDialogModule<DialogProperties>(
-                    MainWindow, 
+                    this, 
                     new MyDialogWindow(), 
-                    new MyDialogWindowViewModel(), 
+                    new MyDialogWindowViewModel(),
                     new DialogProperties()));
 
             DialogManager.DefineDialog("BrowseDialog", () => new BrowseFolderDialogModule(this));

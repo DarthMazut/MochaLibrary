@@ -12,6 +12,38 @@ using WinRT;
 
 namespace MochaCoreWinUI.DialogsEx
 {
+    public class BrowseFolderDialogModule : BrowseBaseDialogModule<FolderPicker, StorageFolder, BrowseFolderDialogProperties>
+    {
+        public BrowseFolderDialogModule(Window mainWindow) : base(mainWindow, new BrowseFolderDialogProperties(), new FolderPicker()) { }
+
+        public BrowseFolderDialogModule(Window mainWindow, BrowseFolderDialogProperties properties) : base(mainWindow, properties, new FolderPicker()) { }
+
+        public BrowseFolderDialogModule(Window mainWindow, BrowseFolderDialogProperties properties, FolderPicker view) : base(mainWindow, properties, view) { }
+
+        protected override void ApplyPropertiesCore(FolderPicker dialog, BrowseFolderDialogProperties properties)
+        {
+            dialog.FileTypeFilter.Add("*");
+        }
+
+        protected override bool? HandleResultCore(FolderPicker dialog, StorageFolder result, BrowseFolderDialogProperties properties)
+        {
+            if (result is null)
+            {
+                return false;
+            }
+
+            properties.SelectedPath = result.Path;
+            return true;
+        }
+
+        protected override Task<StorageFolder> ShowDialogCore(FolderPicker dialog, Window parent)
+        {
+            return dialog.PickSingleFolderAsync().AsTask();
+        }
+    }
+
+
+    /*
     /// <summary>
     /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FolderPicker"/> class.
     /// </summary>
@@ -108,4 +140,5 @@ namespace MochaCoreWinUI.DialogsEx
             return false;
         }
     }
+    */
 }
