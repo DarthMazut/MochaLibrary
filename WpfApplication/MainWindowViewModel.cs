@@ -36,7 +36,7 @@ namespace WpfApplication
         {
             IDialogModule<BrowseFolderDialogProperties> myBrowseDialog = DialogManager.GetDialog<BrowseFolderDialogProperties>("BrowseDialog");
             myBrowseDialog.Properties.Title = "Hello There!";
-            myBrowseDialog.Properties.InitialDirectory = @"D:\Dokumenty\Personal\Seba\Statystyki\";
+            myBrowseDialog.Properties.InitialDirectory = @"C:\Users\Sebastian Kasperczyk\Desktop\InstallTest\";
             bool? result = await myBrowseDialog.ShowModalAsync(this);
         }
     }

@@ -23,12 +23,15 @@ namespace MochCoreWPF.DialogsEx
         /// <summary>
         /// Provides base constructor for descendants of <see cref="BrowseBaseDialogModule{TView, TResult, TProperties}"/>.
         /// </summary>
-        /// <param name="mainWindow">Application main window.</param>
+        /// <param name="application">WPF Application object.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         /// <param name="view">Technology-specific dialog object.</param>
-        public BrowseBaseDialogModule(Window mainWindow, TView view)
+        public BrowseBaseDialogModule(Application application, TProperties properties, TView view)
         {
-            _mainWindow = mainWindow;
+            _mainWindow = application.MainWindow;
             _view = view;
+
+            Properties = properties;
 
             ApplyProperties = ApplyPropertiesCore;
             ShowDialog = ShowDialogCore;
@@ -97,14 +100,14 @@ namespace MochCoreWPF.DialogsEx
         /// <summary>
         /// Applies <see cref="Properties"/> values to technology-specific dialog object.
         /// </summary>
-        /// <param name="view">Technology-specific dialog object.</param>
+        /// <param name="dialog">Technology-specific dialog object.</param>
         /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         protected abstract void ApplyPropertiesCore(TView dialog, TProperties properties);
 
         /// <summary>
         /// Handles technology-specific process of dialog show.
         /// </summary>
-        /// <param name="view">Technology-specific dialog object.</param>
+        /// <param name="dialog">Technology-specific dialog object.</param>
         /// <param name="parent">Parent <see cref="Window"/> for technology-specific dialog object.</param>
         protected abstract TResult ShowDialogCore(TView dialog, Window parent);
 
@@ -112,7 +115,7 @@ namespace MochCoreWPF.DialogsEx
         /// Translates technology-specific dialog result into technolog-independant value.
         /// Sets suitable properties in <see cref="Properties"/> if required.
         /// </summary>
-        /// <param name="view">Technology-specific dialog object.</param>
+        /// <param name="dialog">Technology-specific dialog object.</param>
         /// <param name="result">Technology-specific result of dialog interaction.</param>
         /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         protected abstract bool? HandleResultCore(TView dialog, TResult result, TProperties properties);

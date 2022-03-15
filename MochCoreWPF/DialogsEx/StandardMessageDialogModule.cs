@@ -20,10 +20,10 @@ namespace MochCoreWPF.DialogsEx
         /// <summary>
         /// Initializes a new instance of the <see cref="StandardMessageDialogModule"/> class.
         /// </summary>
-        /// <param name="mainWindow">Main application window.</param>
-        public StandardMessageDialogModule(Window mainWindow)
+        /// <param name="application">WPF application object.</param>
+        public StandardMessageDialogModule(Application application)
         {
-            _mainWindow = mainWindow;
+            _mainWindow = application.MainWindow;
 
             ShowDialog = ShowDialogCore;
             HandleResult = HandleResultCore;
@@ -51,8 +51,13 @@ namespace MochCoreWPF.DialogsEx
 
         public Func<object, Window?> FindParent { get; set; }
 
+        /// <inheritdoc/>
         public event EventHandler? Opening;
+
+        /// <inheritdoc/>
         public event EventHandler? Closed;
+
+        /// <inheritdoc/>
         public event EventHandler? Disposed;
 
         public void Dispose()

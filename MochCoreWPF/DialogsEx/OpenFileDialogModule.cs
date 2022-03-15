@@ -15,11 +15,13 @@ namespace MochCoreWPF.DialogsEx
     /// </summary>
     public class OpenFileDialogModule : BrowseBaseDialogModule<OpenFileDialog, bool?, OpenFileDialogProperties>
     {
-        public OpenFileDialogModule(Window mainWindow, OpenFileDialog view) : base(mainWindow, view)
-        {
-            Properties = new OpenFileDialogProperties();
-        }
+        public OpenFileDialogModule(Application application) : base(application, new OpenFileDialogProperties(), new OpenFileDialog()) { }
 
+        public OpenFileDialogModule(Application application, OpenFileDialogProperties properties) : base(application, properties, new OpenFileDialog()) { }
+
+        public OpenFileDialogModule(Application application, OpenFileDialogProperties properties, OpenFileDialog dialog) : base(application, properties, dialog) { }
+
+        /// <inheritdoc/>
         protected override void ApplyPropertiesCore(OpenFileDialog dialog, OpenFileDialogProperties properties)
         {
             dialog.Title = properties.Title;
@@ -28,6 +30,7 @@ namespace MochCoreWPF.DialogsEx
             dialog.Multiselect = properties.MultipleSelection;
         }
 
+        /// <inheritdoc/>
         protected override bool? HandleResultCore(OpenFileDialog dialog, bool? result, OpenFileDialogProperties properties)
         {
             if (dialog.Multiselect)
@@ -46,6 +49,7 @@ namespace MochCoreWPF.DialogsEx
             return result;
         }
 
+        /// <inheritdoc/>
         protected override bool? ShowDialogCore(OpenFileDialog dialog, Window parent)
         {
             return dialog.ShowDialog(parent);

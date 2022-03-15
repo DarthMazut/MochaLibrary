@@ -12,7 +12,7 @@ namespace MochCoreWPF.DialogsEx
     /// <summary>
     /// Provides a default algorithm for searching parent window for given object.
     /// </summary>
-    internal static class ParentResolver
+    public static class ParentResolver
     {
         /// <summary>
         /// Tries to find parent <see cref="Window"/> for provided object by traversing tree of WPF visual elements.

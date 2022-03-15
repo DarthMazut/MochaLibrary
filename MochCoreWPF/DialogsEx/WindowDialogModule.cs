@@ -16,8 +16,10 @@ namespace MochCoreWPF.DialogsEx
 
         private ICustomDialog<T>? _dataContext;
 
-        public WindowDialogModule(Window mainWindow, Window dialogWindow, ICustomDialog<T> dataContext, T properties)
+        public WindowDialogModule(Application application, Window dialogWindow, ICustomDialog<T> dataContext, T properties)
         {
+            Window mainWindow = application.MainWindow;
+
             _ = mainWindow ?? throw new ArgumentNullException(nameof(mainWindow));
             _ = dialogWindow ?? throw new ArgumentNullException(nameof(dialogWindow));
 
