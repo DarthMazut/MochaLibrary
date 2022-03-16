@@ -116,11 +116,11 @@ namespace MochaCore.Utils
         }
 
         /// <summary>
-        /// Sets a new value for this object. 
-        /// If <see cref="AsyncOperation"/> is defined (not null) it will be started after new value is set.
-        /// If <see cref="PropertyChangedCallback"/> is defined it will be invoked after value changed.
-        /// If <see cref="AsyncOperationCallback"/> is defined it will be executed after async operation is completed successfully.
-        /// If async operation is currently running it will be cancelled and async callback won't be executed (if still possible).
+        /// Sets a new value for this object.<br/>
+        /// If <see cref="AsyncOperation"/> is defined (not null) it will be started after new value is set.<br/>
+        /// If <see cref="PropertyChangedCallback"/> is defined it will be invoked after value changed.<br/>
+        /// If <see cref="AsyncOperationCallback"/> is defined it will be executed after async operation is completed successfully.<br/>
+        /// If async operation is currently running it will be cancelled and async callback won't be executed (if still possible).<br/>
         /// </summary>
         /// <param name="caller">Host of this property. <para>Pass <see langword="this"/> here.</para></param>
         /// <param name="value">New value fot this object.</param>
