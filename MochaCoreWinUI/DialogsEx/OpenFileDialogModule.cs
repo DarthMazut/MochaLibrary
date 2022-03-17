@@ -26,21 +26,33 @@ namespace MochaCoreWinUI.DialogsEx
         /// Initializes a new instance of the <see cref="OpenFileDialogModule"/> class.
         /// </summary>
         /// <param name="mainWindow">Application main window.</param>
+        public OpenFileDialogModule(Window mainWindow) : this(mainWindow, new OpenFileDialogProperties(), new FileOpenPicker()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenFileDialogModule"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
+        public OpenFileDialogModule(Window mainWindow, OpenFileDialogProperties properties) : this(mainWindow, properties, new FileOpenPicker()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenFileDialogModule"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         /// <param name="view">Technology-specific dialog object.</param>
-        public OpenFileDialogModule(Window mainWindow, FileOpenPicker view)
+        public OpenFileDialogModule(Window mainWindow, OpenFileDialogProperties properties, FileOpenPicker view)
         {
             _view = view;
             _mainWindow = mainWindow;
+            Properties = properties;
         }
 
         /// <inheritdoc/>
         public object? View => _view;
 
         /// <inheritdoc/>
-        public object? Parent => _parent;
-
-        /// <inheritdoc/>
-        public OpenFileDialogProperties Properties { get; set; } = new();
+        public OpenFileDialogProperties Properties { get; set; }
 
         /// <inheritdoc/>
         public event EventHandler? Opening;

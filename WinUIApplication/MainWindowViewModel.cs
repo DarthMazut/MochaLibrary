@@ -24,8 +24,8 @@ namespace WinUIApplication
 
         public ICommand OpenDialogCommand => new SimpleCommand(async (o) =>
         {
-            IDialogModule<BrowseFolderDialogProperties> saveDialog = DialogManager.GetDialog<BrowseFolderDialogProperties>("FolderDialog");
-            await saveDialog.ShowModalAsync(this);
+            IDialogModule<OpenFileDialogProperties> dialog = DialogManager.GetDialog<OpenFileDialogProperties>("OpenDialog");
+            await dialog.ShowModalAsync(this);
         });
 
         private async Task OnClosingEventAsync(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> collection)

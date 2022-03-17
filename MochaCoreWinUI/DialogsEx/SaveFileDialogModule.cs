@@ -11,6 +11,46 @@ using Windows.Storage.Pickers;
 
 namespace MochaCoreWinUI.DialogsEx
 {
+    public class SaveFileDialogModule : BrowseBaseDialogModule<FileSavePicker, StorageFile, SaveFileDialogProperties>
+    {
+        public SaveFileDialogModule(Window mainWindow) : base(mainWindow, new SaveFileDialogProperties(), new FileSavePicker()) { }
+
+        public SaveFileDialogModule(Window mainWindow, SaveFileDialogProperties properties) : base(mainWindow, properties, new FileSavePicker()) { }
+
+        public SaveFileDialogModule(Window mainWindow, SaveFileDialogProperties properties, FileSavePicker view) : base(mainWindow, properties, view) { }
+
+        protected override void ApplyPropertiesCore(FileSavePicker dialog, SaveFileDialogProperties properties)
+        {
+            if (!Properties.Filters.Any())
+            {
+                dialog.FileTypeChoices.Add(string.Empty, new List<string> { "." });
+                return;
+            }
+
+            foreach (ExtensionFilter filter in Properties.Filters)
+            {
+                dialog.FileTypeChoices.Add(filter.Name, filter.Extensions.Select(e => $".{e}").ToList());
+            }
+        }
+
+        protected override bool? HandleResultCore(FileSavePicker dialog, StorageFile result, SaveFileDialogProperties properties)
+        {
+            if (result is not null)
+            {
+                properties.SelectedPath = result.Path;
+                return true;
+            }
+
+            return null;
+        }
+
+        protected override Task<StorageFile> ShowDialogCore(FileSavePicker dialog)
+        {
+            return dialog.PickSaveFileAsync().AsTask();
+        }
+    }
+
+    /*
     /// <summary>
     /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FileSavePicker"/> class.
     /// </summary>
@@ -117,4 +157,5 @@ namespace MochaCoreWinUI.DialogsEx
             WinRT.Interop.InitializeWithWindow.Initialize(_view, hwnd);
         }
     }
+    */
 }

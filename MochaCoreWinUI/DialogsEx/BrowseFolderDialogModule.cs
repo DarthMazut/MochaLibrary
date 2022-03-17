@@ -56,7 +56,7 @@ namespace MochaCoreWinUI.DialogsEx
         }
 
         /// <inheritdoc/>
-        protected override Task<StorageFolder> ShowDialogCore(FolderPicker dialog, Window parent)
+        protected override Task<StorageFolder> ShowDialogCore(FolderPicker dialog)
         {
             return dialog.PickSingleFolderAsync().AsTask();
         }

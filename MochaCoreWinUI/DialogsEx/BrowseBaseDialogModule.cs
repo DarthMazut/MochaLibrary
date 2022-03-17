@@ -41,7 +41,7 @@ namespace MochaCoreWinUI.DialogsEx
 
         public Action<TView, TProperties> ApplyProperties { get; set; }
 
-        public Func<TView, Window, Task<TResult>> ShowDialog { get; set; }
+        public Func<TView, Task<TResult>> ShowDialog { get; set; }
 
         public Func<TView, TResult, TProperties, bool?> HandleResult { get; set; }
 
@@ -62,7 +62,7 @@ namespace MochaCoreWinUI.DialogsEx
             WorkaroundForBug466(FindParent.Invoke(host));
             
             Opening?.Invoke(this, EventArgs.Empty);
-            bool? result = HandleResult.Invoke(_view, await ShowDialog.Invoke(_view, FindParent.Invoke(host)), Properties);
+            bool? result = HandleResult.Invoke(_view, await ShowDialog.Invoke(_view), Properties);
             Closed?.Invoke(this, EventArgs.Empty);
 
             return result;
@@ -70,7 +70,7 @@ namespace MochaCoreWinUI.DialogsEx
 
         protected abstract void ApplyPropertiesCore(TView dialog, TProperties properties);
 
-        protected abstract Task<TResult> ShowDialogCore(TView dialog, Window parent);
+        protected abstract Task<TResult> ShowDialogCore(TView dialog);
 
         protected abstract bool? HandleResultCore(TView dialog, TResult result, TProperties properties);
 
