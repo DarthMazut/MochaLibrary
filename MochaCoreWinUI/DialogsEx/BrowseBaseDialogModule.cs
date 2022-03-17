@@ -8,11 +8,23 @@ using System.Threading.Tasks;
 
 namespace MochaCoreWinUI.DialogsEx
 {
+    /// <summary>
+    /// Provides a base class for <see cref="OpenFileDialogModule"/>, <see cref="SaveFileDialogModule"/> and <see cref="BrowseFolderDialogModule"/>.
+    /// </summary>
+    /// <typeparam name="TView">Type of underlying dialog object.</typeparam>
+    /// <typeparam name="TResult">Technology specific result type of underlying dialog object.</typeparam>
+    /// <typeparam name="TProperties">Type of statically typed properties for represented dialog.</typeparam>
     public abstract class BrowseBaseDialogModule<TView, TResult, TProperties> : IDialogModule<TProperties>
     {
         private readonly Window _mainWindow;
         private readonly TView _view;
 
+        /// <summary>
+        /// Provides base constructor for descendants of <see cref="BrowseBaseDialogModule{TView, TResult, TProperties}"/>.
+        /// </summary>
+        /// <param name="mainWindow">Main application window.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
+        /// <param name="view">Technology-specific dialog object.</param>
         public BrowseBaseDialogModule(Window mainWindow, TProperties properties, TView view)
         {
             _mainWindow = mainWindow;
@@ -26,8 +38,10 @@ namespace MochaCoreWinUI.DialogsEx
             DisposeDialog = DisposeDialogCore;
         }
 
+        /// <inheritdoc/>
         public TProperties Properties { get; set; }
 
+        /// <inheritdoc/>
         public object? View => _view;
 
         /// <inheritdoc/>
@@ -39,16 +53,34 @@ namespace MochaCoreWinUI.DialogsEx
         /// <inheritdoc/>
         public event EventHandler? Disposed;
 
+        /// <summary>
+        /// Applies <see cref="Properties"/> values to technology-specific dialog object.
+        /// </summary>
         public Action<TView, TProperties> ApplyProperties { get; set; }
 
+        /// <summary>
+        /// Handles technology-specific process of dialog show.
+        /// </summary>
         public Func<TView, Task<TResult>> ShowDialog { get; set; }
 
+        /// <summary>
+        /// Translates technology-specific dialog result into technolog-independant value.
+        /// Sets suitable properties in <see cref="Properties"/> if required.
+        /// </summary>
         public Func<TView, TResult, TProperties, bool?> HandleResult { get; set; }
 
+        /// <summary>
+        /// Handles the process of search for parent <see cref="Window"/> for technology-specific dialog object.
+        /// </summary>
         public Func<object, Window> FindParent { get; set; }
 
+        /// <summary>
+        /// Allows for providing a custom code to be executed while this object is being disposed of.
+        /// Use this delegate when there are disposable resources within your custom <see cref="Properties"/> object.
+        /// </summary>
         public Action<BrowseBaseDialogModule<TView, TResult, TProperties>> DisposeDialog { get; set; }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             DisposeDialog.Invoke(this);
@@ -56,6 +88,7 @@ namespace MochaCoreWinUI.DialogsEx
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <inheritdoc/>
         public async Task<bool?> ShowModalAsync(object host)
         {
             ApplyProperties.Invoke(_view, Properties);
@@ -68,17 +101,42 @@ namespace MochaCoreWinUI.DialogsEx
             return result;
         }
 
+        /// <summary>
+        /// Applies <see cref="Properties"/> values to technology-specific dialog object.
+        /// </summary>
+        /// <param name="dialog">Technology-specific dialog object.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         protected abstract void ApplyPropertiesCore(TView dialog, TProperties properties);
 
+        /// <summary>
+        /// Handles technology-specific process of dialog show.
+        /// </summary>
+        /// <param name="dialog">Technology-specific dialog object.</param>
         protected abstract Task<TResult> ShowDialogCore(TView dialog);
 
+        /// <summary>
+        /// Translates technology-specific dialog result into technolog-independant value.
+        /// Sets suitable properties in <see cref="Properties"/> if required.
+        /// </summary>
+        /// <param name="dialog">Technology-specific dialog object.</param>
+        /// <param name="result">Technology-specific result of dialog interaction.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         protected abstract bool? HandleResultCore(TView dialog, TResult result, TProperties properties);
 
+        /// <summary>
+        /// Handles the process of search for parent <see cref="Window"/> for technology-specific dialog object.
+        /// </summary>
+        /// <param name="host">Object which parent window is to be found.</param>
         protected virtual Window FindParentCore(object host)
         {
             return _mainWindow; // wow!
         }
 
+        /// <summary>
+        /// Allows for providing a custom code to be executed while this object is being disposed of.
+        /// Override this when there are disposable resources within your custom <see cref="Properties"/> object.
+        /// </summary>
+        /// <param name="module">Module that's being disposed.</param>
         protected virtual void DisposeDialogCore(BrowseBaseDialogModule<TView, TResult, TProperties> module) { }
 
         // Workaround for bug https://github.com/microsoft/WindowsAppSDK/issues/466

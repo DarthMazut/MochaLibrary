@@ -20,7 +20,6 @@ namespace MochaCoreWinUI.DialogsEx
     {
         private Window _mainWindow;
         private FileOpenPicker _view;
-        private object? _parent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenFileDialogModule"/> class.
@@ -46,6 +45,8 @@ namespace MochaCoreWinUI.DialogsEx
             _view = view;
             _mainWindow = mainWindow;
             Properties = properties;
+
+            ApplyProperties = ApplyPropertiesCore;
         }
 
         /// <inheritdoc/>
@@ -64,21 +65,57 @@ namespace MochaCoreWinUI.DialogsEx
         public event EventHandler? Disposed;
 
         /// <summary>
-        /// Satisfies <see cref="IDisposable"/> interface.
-        /// In this particular case no resources are explicitly freed.
+        /// Applies <see cref="Properties"/> values to technology-specific dialog object.
         /// </summary>
+        public Action<FileOpenPicker, OpenFileDialogProperties> ApplyProperties { get; set; }
+
+        /// <summary>
+        /// Handles technology-specific process of dialog show for single file to be opened.
+        /// </summary>
+        public Func<FileOpenPicker, Task<StorageFile>> ShowDialogForSingleFile { get; set; }
+
+        /// <summary>
+        /// Handles technology-specific process of dialog show for multiple files to be opened.
+        /// </summary>
+        public Func<FileOpenPicker, Task<IReadOnlyList<StorageFile>>> ShowDialogForMultipleFiles { get; set; }
+
+        /// <summary>
+        /// Translates technology-specific dialog result into technolog-independant value for single file.
+        /// Sets suitable properties in <see cref="Properties"/> if required.
+        /// </summary>
+        public Func<FileOpenPicker, StorageFile, OpenFileDialogProperties, bool?> HandleSingleResult { get; set; }
+
+        /// <summary>
+        /// Translates technology-specific dialog result into technolog-independant value for multiple files.
+        /// Sets suitable properties in <see cref="Properties"/> if required.
+        /// </summary>
+        public Func<FileOpenPicker, IReadOnlyList<StorageFile>, OpenFileDialogProperties, bool?> HandleMultipleResults { get; set; }
+
+        /// <summary>
+        /// Handles the process of search for parent <see cref="Window"/> for technology-specific dialog object.
+        /// </summary>
+        public Func<object, Window> FindParent { get; set; }
+
+        /// <summary>
+        /// Allows for providing a custom code to be executed while this object is being disposed of.
+        /// Use this delegate when there are disposable resources within your custom <see cref="Properties"/> object.
+        /// </summary>
+        public Action<OpenFileDialogModule> DisposeDialog { get; set; }
+
+        /// <inheritdoc/>
         public void Dispose()
         {
+            DisposeDialog.Invoke(this);
             Disposed?.Invoke(this, EventArgs.Empty);
+            GC.SuppressFinalize(this);
         }
 
         /// <inheritdoc/>
         public async Task<bool?> ShowModalAsync(object host)
         {
-            ApplyProperties();
+            ApplyProperties.Invoke(_view, Properties);
             Opening?.Invoke(this, EventArgs.Empty);
-            _parent = FindParent(host);
-            WorkaroundForBug466();
+            WorkaroundForBug466(FindParent(host));
 
             bool? result;
             if (Properties.MultipleSelection)
@@ -90,16 +127,37 @@ namespace MochaCoreWinUI.DialogsEx
                 result = HandleSelectionResult(await _view.PickSingleFileAsync());
             }
 
-            _parent = null;
             Closed?.Invoke(this, EventArgs.Empty);
             return result;
+        }
+
+        /// <summary>
+        /// Applies <see cref="Properties"/> values to technology-specific dialog object.
+        /// </summary>
+        /// <param name="dialog">Technology-specific dialog object.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
+        protected virtual void ApplyPropertiesCore(FileOpenPicker dialog, OpenFileDialogProperties properties)
+        {
+            if (!properties.Filters.Any())
+            {
+                dialog.FileTypeFilter.Add("*");
+                return;
+            }
+
+            foreach (ExtensionFilter filter in properties.Filters)
+            {
+                foreach (string ext in filter.Extensions)
+                {
+                    dialog.FileTypeFilter.Add($".{ext}");
+                }
+            }
         }
 
         /// <summary>
         /// Tries to find technology-specific parent of provided technology-independent element.
         /// </summary>
         /// <param name="host">Technology-independent element, which technology-specific parent is to be found.</param>
-        protected virtual Window FindParent(object host)
+        protected virtual Window FindParentCore(object host)
         {
             // This has to be done after windowing API is released.
             // Nothing can be done at this point. 
@@ -107,49 +165,34 @@ namespace MochaCoreWinUI.DialogsEx
         }
 
         // Workaround for bug https://github.com/microsoft/WindowsAppSDK/issues/466
-        private void WorkaroundForBug466()
+        private void WorkaroundForBug466(Window parent)
         {
-            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(_parent);
+            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(parent);
             WinRT.Interop.InitializeWithWindow.Initialize(_view, hwnd);
         }
 
-        private void ApplyProperties()
-        {
-            if (!Properties.Filters.Any())
-            {
-                _view.FileTypeFilter.Add("*");
-                return;
-            }
 
-            foreach (ExtensionFilter filter in Properties.Filters)
-            {
-                foreach (string ext in filter.Extensions)
-                {
-                    _view.FileTypeFilter.Add($".{ext}");
-                }
-            }
-        }
 
-        private bool? HandleSelectionResult(StorageFile storageFile)
-        {
-            if (storageFile is not null)
-            {
-                Properties.SelectedPaths.Add(storageFile.Path);
-                return true;
-            }
+        //protected virtual bool? HandleSelectionResult(StorageFile storageFile)
+        //{
+        //    if (storageFile is not null)
+        //    {
+        //        Properties.SelectedPaths.Add(storageFile.Path);
+        //        return true;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
-        private bool? HandleMultipleSelectionResult(IReadOnlyList<StorageFile> storageFiles)
-        {
-            if (storageFiles.Any())
-            {
-                Properties.SelectedPaths = storageFiles.Select(f => f.Path).ToList();
-                return true;
-            }
+        //protected virtual bool? HandleMultipleSelectionResult(IReadOnlyList<StorageFile> storageFiles)
+        //{
+        //    if (storageFiles.Any())
+        //    {
+        //        Properties.SelectedPaths = storageFiles.Select(f => f.Path).ToList();
+        //        return true;
+        //    }
             
-            return false;
-        }
+        //    return false;
+        //}
     }
 }

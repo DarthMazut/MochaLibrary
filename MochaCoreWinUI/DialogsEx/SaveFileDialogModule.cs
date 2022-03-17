@@ -11,14 +11,33 @@ using Windows.Storage.Pickers;
 
 namespace MochaCoreWinUI.DialogsEx
 {
+    /// <summary>
+    /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FileSavePicker"/> class.
+    /// </summary>
     public class SaveFileDialogModule : BrowseBaseDialogModule<FileSavePicker, StorageFile, SaveFileDialogProperties>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SaveFileDialogModule"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Main application window.</param>
         public SaveFileDialogModule(Window mainWindow) : base(mainWindow, new SaveFileDialogProperties(), new FileSavePicker()) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SaveFileDialogModule"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Main application window.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         public SaveFileDialogModule(Window mainWindow, SaveFileDialogProperties properties) : base(mainWindow, properties, new FileSavePicker()) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SaveFileDialogModule"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Main application window.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
+        /// <param name="view">Technology-specific dialog object.</param>
         public SaveFileDialogModule(Window mainWindow, SaveFileDialogProperties properties, FileSavePicker view) : base(mainWindow, properties, view) { }
 
+        /// <inheritdoc/>
         protected override void ApplyPropertiesCore(FileSavePicker dialog, SaveFileDialogProperties properties)
         {
             if (!Properties.Filters.Any())
@@ -33,6 +52,7 @@ namespace MochaCoreWinUI.DialogsEx
             }
         }
 
+        /// <inheritdoc/>
         protected override bool? HandleResultCore(FileSavePicker dialog, StorageFile result, SaveFileDialogProperties properties)
         {
             if (result is not null)
@@ -44,6 +64,7 @@ namespace MochaCoreWinUI.DialogsEx
             return null;
         }
 
+        /// <inheritdoc/>
         protected override Task<StorageFile> ShowDialogCore(FileSavePicker dialog)
         {
             return dialog.PickSaveFileAsync().AsTask();
