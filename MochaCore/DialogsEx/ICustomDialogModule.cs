@@ -12,8 +12,35 @@ namespace MochaCore.DialogsEx
     /// and <see cref="IDialogClosing.Closing"/> events.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
-    public interface ICustomDialogModule<T> : IDialogModule<T>, IDialogDataContext<ICustomDialog<T>>, IDialogClose, IDialogOpened, IDialogClosing
+    public interface ICustomDialogModule<T> : IDataContextDialogModule<T>, IDialogClose, IDialogOpened, IDialogClosing
     {
+        /// <summary>
+        /// Returns a reference to <see cref="IDialog"/> object which acts as a DataContext for dialog represented by this module. 
+        /// </summary>
+        new ICustomDialog<T> DataContext { get; }
 
+        /// <summary>
+        /// Allows to assign new *DataContext* for this module.
+        /// </summary>
+        /// <param name="dataContext">DataContext to be assigned.</param>
+        void SetDataContext(ICustomDialog<T> dataContext);
+
+        IDataContextDialog<T> IDataContextDialogModule<T>.DataContext => (IDataContextDialog<T>)DataContext;
+
+        void IDataContextDialogModule<T>.SetDataContext(IDataContextDialog<T> dataContext)
+        {
+            SetDataContext(dataContext);
+
+            //if (dataContext is ICustomDialog<T> typedDataContext)
+            //{
+            //    SetDataContext(typedDataContext);
+            //}
+            //else
+            //{
+            //    throw new InvalidCastException($"Cannot assign dataContext of different type than {typeof(ICustomDialog<T>)}" +
+            //        $"because this module is {typeof(ICustomDialogModule<T>)}.");
+            //}
+        }
     }
+
 }

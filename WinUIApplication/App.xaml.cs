@@ -54,7 +54,7 @@ namespace WinUIApplication
 
             DialogManager.DefineDialog("MessageDialog", () => new StandardMessageDialogModule(_mainWindow));
             DialogManager.DefineDialog("OpenDialog", () => new OpenFileDialogModule(_mainWindow));
-            DialogManager.DefineDialog("SaveDialog", () => new SaveFileDialogModule(_mainWindow, new FileSavePicker()));
+            DialogManager.DefineDialog("SaveDialog", () => new SaveFileDialogModule(_mainWindow));
             DialogManager.DefineDialog("FolderDialog", () => new BrowseFolderDialogModule(_mainWindow));
 
             AppEventManager.IncludeEventProvider("OnClosing", new AppClosingEventProvider(_mainWindow));
