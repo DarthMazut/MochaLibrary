@@ -16,12 +16,12 @@ namespace MochaCore.DialogsEx
         /// <summary>
         /// Returns a reference to <see cref="IDialog"/> object which acts as a DataContext for dialog represented by this module. 
         /// </summary>
-        IDataContextDialog<T> DataContext { get; }
+        IDataContextDialog<T>? DataContext { get; }
 
         /// <summary>
         /// Allows to assign new *DataContext* for this module.
         /// </summary>
         /// <param name="dataContext">DataContext to be assigned.</param>
-        void SetDataContext(IDataContextDialog<T> dataContext);
+        void SetDataContext(IDataContextDialog<T>? dataContext);
     }
 }

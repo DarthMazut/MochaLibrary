@@ -14,7 +14,7 @@ namespace WpfApplication
 
         private async void ShowDialog(object? param)
         {
-            ICustomDialogModule<DialogProperties> dialog = DialogManager.GetUserDialog<DialogProperties>("MyDialog");
+            ICustomDialogModule<DialogProperties> dialog = DialogManager.GetCustomDialog<DialogProperties>("MyDialog");
             dialog.Closing += async (s, e) =>
             {
                 IDialogModule<StandardMessageDialogProperties> dialog = DialogManager.GetDialog<StandardMessageDialogProperties>("MessageBox");

@@ -17,29 +17,19 @@ namespace MochaCore.DialogsEx
         /// <summary>
         /// Returns a reference to <see cref="IDialog"/> object which acts as a DataContext for dialog represented by this module. 
         /// </summary>
-        new ICustomDialog<T> DataContext { get; }
+        new ICustomDialog<T>? DataContext { get; }
 
         /// <summary>
         /// Allows to assign new *DataContext* for this module.
         /// </summary>
         /// <param name="dataContext">DataContext to be assigned.</param>
-        void SetDataContext(ICustomDialog<T> dataContext);
+        void SetDataContext(ICustomDialog<T>? dataContext);
 
-        IDataContextDialog<T> IDataContextDialogModule<T>.DataContext => (IDataContextDialog<T>)DataContext;
+        IDataContextDialog<T> IDataContextDialogModule<T>.DataContext => DataContext!;
 
-        void IDataContextDialogModule<T>.SetDataContext(IDataContextDialog<T> dataContext)
+        void IDataContextDialogModule<T>.SetDataContext(IDataContextDialog<T>? dataContext)
         {
             SetDataContext(dataContext);
-
-            //if (dataContext is ICustomDialog<T> typedDataContext)
-            //{
-            //    SetDataContext(typedDataContext);
-            //}
-            //else
-            //{
-            //    throw new InvalidCastException($"Cannot assign dataContext of different type than {typeof(ICustomDialog<T>)}" +
-            //        $"because this module is {typeof(ICustomDialogModule<T>)}.");
-            //}
         }
     }
 

@@ -18,6 +18,7 @@ namespace MochCoreWPF.DialogsEx
         /// Tries to find parent <see cref="Window"/> for provided object by traversing tree of WPF visual elements.
         /// Returns <see langword="null"/> if no parent window can be found.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="host">Object which parent window is to be found.</param>
         public static Window? FindParent<T>(object host)
         {
@@ -40,14 +41,14 @@ namespace MochCoreWPF.DialogsEx
                 }
             }
 
-            if (host is ICustomDialog<T> customDlg && customDlg.DialogModule.View is FrameworkElement customViewFrameworkElement)
-            {
-                foundWindow = TraverseVisualTreeToFindWindow(customViewFrameworkElement);
-                if (foundWindow is not null)
-                {
-                    return foundWindow;
-                }
-            }
+            //if (host is ICustomDialog<T> customDlg && customDlg.DialogModule.View is FrameworkElement customViewFrameworkElement)
+            //{
+            //    foundWindow = TraverseVisualTreeToFindWindow(customViewFrameworkElement);
+            //    if (foundWindow is not null)
+            //    {
+            //        return foundWindow;
+            //    }
+            //}
 
             if (host is INavigatable navigatable)
             {

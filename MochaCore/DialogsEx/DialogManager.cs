@@ -12,6 +12,7 @@ namespace MochaCore.DialogsEx
     public static class DialogManager
     {
         private static readonly Dictionary<string, Func<IDialogModule>> _dialogsDictionary = new();
+        private static readonly Dictionary<string, List<IDialogModule>> _activeDialogs = new();
 
         /// <summary>
         /// Allows to register a <see cref="IDialogModule"/>. Dialogs registered by this method can
@@ -36,7 +37,7 @@ namespace MochaCore.DialogsEx
         /// <param name="id">Identifier of registered dialog to be retrieved.</param>
         public static IDialogModule<T> GetDialog<T>(string id)
         {
-            return (IDialogModule<T>)GetDialog(id);
+            return (IDialogModule<T>)GetDialogCore(id);
         }
 
         /// <summary>
@@ -44,9 +45,9 @@ namespace MochaCore.DialogsEx
         /// </summary>
         /// <typeparam name="T">Type of internal <see cref="DialogProperties"/> object.</typeparam>
         /// <param name="id">Identifier of registered dialog to be retrieved.</param>
-        public static IDataContextDialogModule<T> GetCustomDialog<T>(string id)
+        public static IDataContextDialogModule<T> GetDataContextDialog<T>(string id)
         {
-            return (IDataContextDialogModule<T>)GetDialog(id);
+            return (IDataContextDialogModule<T>)GetDialogCore(id);
         }
 
         /// <summary>
@@ -54,23 +55,21 @@ namespace MochaCore.DialogsEx
         /// </summary>
         /// <typeparam name="T">Type of internal <see cref="DialogProperties"/> object.</typeparam>
         /// <param name="id">Identifier of registered dialog to be retrieved.</param>
-        public static ICustomDialogModule<T> GetUserDialog<T>(string id)
+        public static ICustomDialogModule<T> GetCustomDialog<T>(string id)
         {
-            return (ICustomDialogModule<T>)GetDialog(id);
+            return (ICustomDialogModule<T>)GetDialogCore(id);
         }
 
-        /// <summary>
-        /// Retrieves an instance of registered <see cref="IDialogModule"/> type by its identifier.
-        /// It is not recommended to use this non-generic method. Use *, * or * instead.
-        /// </summary>
-        /// <param name="id">Identifier of registered dialog to be retrieved.</param>
-        public static IDialogModule GetDialog(string id)
+        // <summary>
+        // Retrieves an instance of registered <see cref="IDialogModule"/> type by its identifier.
+        // It is not recommended to use this non-generic method. Use *, * or * instead.
+        // </summary>
+        // <param name="id">Identifier of registered dialog to be retrieved.</param>
+        private static IDialogModule GetDialogCore(string id)
         {
             if (_dialogsDictionary.ContainsKey(id))
             {
-                IDialogModule? dialog = _dialogsDictionary[id]?.Invoke();
-                //HandleCreatedDialog(id, dialog);
-                return dialog!;
+                return HandleCreateDialog(id);
             }
             else
             {
@@ -78,6 +77,58 @@ namespace MochaCore.DialogsEx
             }
         }
 
+        /// <summary>
+        /// Returns a collection of references to opened dialogs, which hasn't been disposed yet.
+        /// </summary>
+        /// <param name="id">Identifier of specific dialog.</param>
+        public static List<IDialogModule> GetOpenedDialogs(string id)
+        {
+            if (_activeDialogs.ContainsKey(id))
+            {
+                return _activeDialogs[id];
+            }
 
+            return new List<IDialogModule>();
+        }
+
+        /// <summary>
+        /// Returns a collection of all <see cref="IDialogModule"/>, which has been opened but not yet disposed.
+        /// </summary>
+        public static List<IDialogModule> GetOpenedDialogs()
+        {
+            return _activeDialogs.Where(kvp => kvp.Value.Any()).SelectMany(kvp => kvp.Value).ToList();
+        }
+
+        private static IDialogModule HandleCreateDialog(string id)
+        {
+            IDialogModule? dialog = _dialogsDictionary[id]?.Invoke();
+            if (dialog is null)
+            {
+                throw new NullReferenceException($"Dialog creation delegate with id {id} returned null. " +
+                    $"Make sure that delegate which creates dialog is properly defined.");
+            }
+
+            dialog.Opening += (s, e) =>
+            {
+                if (_activeDialogs.ContainsKey(id))
+                {
+                    _activeDialogs[id].Add(dialog);
+                }
+                else
+                {
+                    _activeDialogs.Add(id, new List<IDialogModule>() { dialog });
+                }
+            };
+
+            dialog.Disposed += (s, e) => 
+            {
+                if (_activeDialogs.ContainsKey(id))
+                {
+                    _activeDialogs[id].Remove(dialog);
+                }
+            };
+
+            return dialog;
+        }
     }
 }

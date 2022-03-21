@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using MochaCore.DialogsEx;
+using MochaCore.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -129,7 +130,7 @@ namespace MochaCoreWinUI.DialogsEx
         /// <param name="host">Object which parent window is to be found.</param>
         protected virtual Window FindParentCore(object host)
         {
-            return _mainWindow; // wow!
+            return ParentResolver.FindParentWindow<TProperties>(host) ?? _mainWindow;
         }
 
         /// <summary>

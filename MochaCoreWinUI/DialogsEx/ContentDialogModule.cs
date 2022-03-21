@@ -22,7 +22,6 @@ namespace MochaCoreWinUI.DialogsEx
         private bool _wasClosed = false;
         protected Window _mainWindow;
         protected ContentDialog _view;
-        protected XamlRoot? _parent;
         protected ICustomDialog<T>? _dataContext;
 
         /// <summary>
@@ -47,16 +46,24 @@ namespace MochaCoreWinUI.DialogsEx
         /// <param name="view">Instance of <see cref="ContentDialog"/> or its descendant.</param>
         /// <param name="dataContext">Datacontext for view object.</param>
         /// <param name="properties">Properties object associated with this instance.</param>
-        public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<T>? dataContext, T? properties)
+        public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<T> dataContext, T properties)
         {
             _mainWindow = mainWindow;
             _view = view;
-            if (dataContext is not null)
-            {
-                SetDataContext(dataContext);
-            }
 
-            Properties = properties;
+            SetDataContext(dataContext);
+
+            if (properties is null)
+            {
+                if (typeof(T).GetConstructor(Array.Empty<Type>()) != null)
+                {
+                    Properties = (T)Activator.CreateInstance(typeof(T))!;
+                }
+            }
+            else
+            {
+                Properties = properties;
+            }
 
             view.Opened += (s, e) => Opened?.Invoke(this, EventArgs.Empty);
             view.Closing += (s, e) =>
@@ -65,13 +72,15 @@ namespace MochaCoreWinUI.DialogsEx
                 Closing?.Invoke(this, cancelEventArgs);
                 e.Cancel = cancelEventArgs.Cancel;
             };
+
+            ApplyProperties = ApplyPropertiesCore;
+            HandleResult = HandleResultCore;
+            FindParent = FindParentCore;
+            DisposeDialog = DisposeDialogCore;
         }
 
         /// <inheritdoc/>
         public object? View => _view;
-
-        /// <inheritdoc/>
-        public object? Parent => _parent;
 
         /// <inheritdoc/>
         public ICustomDialog<T>? DataContext => _dataContext;
@@ -84,7 +93,7 @@ namespace MochaCoreWinUI.DialogsEx
         /// Use this delagate to avoiding subcalssing only for overriding <see cref="ApplyPropertiesCore(T?, ContentDialog)"/>.
         /// <para>Setting this delegate overrides default <c>ApplyPropertiesCore()</c> implementation.</para>
         /// </summary>
-        public Action<T, ContentDialog>? ApplyPropertiesDelegate { get; set; }
+        public Action<T, ContentDialog> ApplyProperties { get; set; }
 
         /// <summary>
         /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
@@ -92,7 +101,17 @@ namespace MochaCoreWinUI.DialogsEx
         /// Use this delagate to avoiding subcalssing only for overriding <see cref="HandleResultCore(ContentDialogResult, ContentDialog, T?)"/>.
         /// <para>Setting this delegate overrides default <c>HandleResultCore()</c> implementation.</para>
         /// </summary>
-        public Func<ContentDialogResult, ContentDialog, T, bool?>? HandleResultDelegate { get; set; }
+        public Func<ContentDialogResult, ContentDialog, T, bool?> HandleResult { get; set; }
+
+        /// <summary>
+        /// Resolves parent <see cref="XamlRoot"/> of provided object.
+        /// </summary>
+        public Func<object, XamlRoot> FindParent { get; set; }
+
+        /// <summary>
+        /// Allows to define additional code to be invoked while this module is being disposed.
+        /// </summary>
+        public Action<ContentDialogModule<T>> DisposeDialog { get; set; }
 
         /// <inheritdoc/>
         public event EventHandler? Opening;
@@ -122,30 +141,34 @@ namespace MochaCoreWinUI.DialogsEx
         /// <inheritdoc/>
         public void Dispose()
         {
-            DisposeCore();
+            DisposeDialogCore(this);
+            GC.SuppressFinalize(this);
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         /// <inheritdoc/>
-        public void SetDataContext(ICustomDialog<T> dataContext)
+        public void SetDataContext(ICustomDialog<T>? dataContext)
         {
             _view.DataContext = dataContext;
-            dataContext.DialogModule = this;
+
+            if(dataContext is not null)
+            {
+                dataContext.DialogModule = this;
+            }
+
             _dataContext = dataContext;
         }
 
         /// <inheritdoc/>
         public async Task<bool?> ShowModalAsync(object host)
         {
-            ApplyProperties();
+            ApplyProperties.Invoke(Properties, _view);
             Opening?.Invoke(this, EventArgs.Empty);
-            _parent = FindParent(host);
-            _view.XamlRoot = _parent;
+            _view.XamlRoot = FindParentCore(host);
             _isOpen = true;
             _wasClosed = false;
-            bool? result = HandleResult(await _view.ShowAsync());
+            bool? result = HandleResult.Invoke(await _view.ShowAsync(), _view, Properties);
             _isOpen = false;
-            _parent = null;
             OnClose();
             return result;
         }
@@ -153,7 +176,7 @@ namespace MochaCoreWinUI.DialogsEx
         /// <summary>
         /// Sets *DataContex* of <see cref="View"/> object to <see langword="null"/>.
         /// </summary>
-        protected virtual void DisposeCore() 
+        protected virtual void DisposeDialogCore(ContentDialogModule<T> module) 
         {
             _view.DataContext = null;
         }
@@ -191,53 +214,15 @@ namespace MochaCoreWinUI.DialogsEx
         /// Searches for technology-specific parent of host object.
         /// </summary>
         /// <param name="host">Object which technology-specific parent is to be found.</param>
-        protected virtual XamlRoot FindParent(object host)
+        protected virtual XamlRoot FindParentCore(object host)
         {
-            if (host is ICustomDialog<T> dialog)
+            XamlRoot? parentRoot = ParentResolver.FindParentXamlRoot<T>(host);
+            if (parentRoot is null)
             {
-                if (dialog.DialogModule.View is Window window)
-                {
-                    return window.Content.XamlRoot;
-                }
-
-                if (dialog.DialogModule.View is UIElement uiElement)
-                {
-                    return uiElement.XamlRoot;
-                }
-
-                return _mainWindow.Content.XamlRoot;
+                parentRoot = _mainWindow.Content.XamlRoot;
             }
 
-            if (host is INavigatable navigatable)
-            {
-                throw new NotImplementedException("Implement an explicit interface to retrieve a View object form INavigatable...");
-            }
-
-            return _mainWindow.Content.XamlRoot;
-        }
-
-        private bool? HandleResult(ContentDialogResult contentDialogResult)
-        {
-            if (HandleResultDelegate is not null)
-            {
-                return HandleResultDelegate?.Invoke(contentDialogResult, _view, Properties);
-            }
-            else
-            {
-                return HandleResultCore(contentDialogResult, _view, Properties);
-            }
-        }
-
-        private void ApplyProperties()
-        {
-            if (ApplyPropertiesDelegate is not null)
-            {
-                ApplyPropertiesDelegate?.Invoke(Properties, _view);
-            }
-            else
-            {
-                ApplyPropertiesCore(Properties, _view);
-            }
+            return parentRoot;
         }
 
         private void OnClose()
