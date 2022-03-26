@@ -9,41 +9,58 @@ using System.Windows;
 
 namespace MochCoreWPF.DialogsEx
 {
+    /// <summary>
+    /// Provides standard implementation of <see cref="ICustomDialogModule{T}"/> for WPF <see cref="Window"/> object.
+    /// </summary>
+    /// <typeparam name="T">Type of statically typed properties object used for configuration of this module.</typeparam>
     public class WindowDialogModule<T> : ICustomDialogModule<T>, IDialogClose
     {
-        private readonly Window _mainWindow;
         private readonly Window _dialogWindow;
-
         private ICustomDialog<T>? _dataContext;
 
-        public WindowDialogModule(Application application, Window dialogWindow, ICustomDialog<T> dataContext, T properties)
-        {
-            Window mainWindow = application.MainWindow;
+        public WindowDialogModule(Window dialogWindow) : this(dialogWindow, null, default(T)) { }
 
-            _ = mainWindow ?? throw new ArgumentNullException(nameof(mainWindow));
+        public WindowDialogModule(Window dialogWindow, ICustomDialog<T> dataContext) : this(dialogWindow, dataContext, default(T)) { }
+
+        public WindowDialogModule(Window dialogWindow, ICustomDialog<T> dataContext, T properties)
+        {
             _ = dialogWindow ?? throw new ArgumentNullException(nameof(dialogWindow));
 
-            _mainWindow = mainWindow;
             _dialogWindow = dialogWindow;
-
             SetDataContext(dataContext);
-            Properties = properties;
+
+            if (properties is null)
+            {
+                if (typeof(T).GetConstructor(Array.Empty<Type>()) != null)
+                {
+                    Properties = (T)Activator.CreateInstance(typeof(T))!;
+                }
+            }
+            else
+            {
+                Properties = properties;
+            }
 
             dialogWindow.Closing += (s, e) => this.Closing?.Invoke(this, e);
             dialogWindow.Loaded += (s, e) => this.Opened?.Invoke(this, EventArgs.Empty);
 
-            FindParent = (host) => ParentResolver.FindParent<T>(host) ?? _mainWindow;
+            FindParent = FindParentCore;
+            ApplyProperties = ApplyPropertiesCore;
+            HandleResult = HandleResultCore;
+            DisposeDialog = DisposeDialogCore;
         }
 
-        public object? View => _mainWindow;
+        /// <inheritdoc/>
+        public object? View => _dialogWindow;
 
+        /// <inheritdoc/>
         public T Properties { get; set; }
 
-        public Action<Window, T>? ApplyProperties { get; set; }
+        public Action<Window, T> ApplyProperties { get; set; }
 
-        public Func<bool?, T, ICustomDialog<T>?, bool?> HandleResult { get; set; } = (result, properties, dataContext) => result;
+        public Func<bool?, T, ICustomDialog<T>?, bool?> HandleResult { get; set; }
 
-        public Action<ICustomDialog<T>?>? DisposeCore { get; set; }
+        public Action<ICustomDialog<T>?>? DisposeDialog { get; set; }
 
         public Func<object, Window?> FindParent { get; set; }
 
@@ -55,6 +72,7 @@ namespace MochCoreWPF.DialogsEx
         public event EventHandler? Opened;
         public event EventHandler<CancelEventArgs>? Closing;
 
+        /// <inheritdoc/>
         public void Close()
         {
             _dialogWindow.Close();
@@ -64,14 +82,20 @@ namespace MochCoreWPF.DialogsEx
         public void Dispose()
         {
             _dialogWindow.DataContext = null;
-            DisposeCore?.Invoke(DataContext);
+            DisposeDialog?.Invoke(DataContext);
+            GC.SuppressFinalize(this);
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
-        public void SetDataContext(ICustomDialog<T> dataContext)
+        public void SetDataContext(ICustomDialog<T>? dataContext)
         {
             _dataContext = dataContext;
-            _dataContext.DialogModule = this;
+
+            if (dataContext is not null)
+            {
+                dataContext.DialogModule = this;
+            }
+
             _dialogWindow.DataContext = dataContext;
         }
 
@@ -84,6 +108,20 @@ namespace MochCoreWPF.DialogsEx
             Closed?.Invoke(this, EventArgs.Empty);
 
             return Task.FromResult(result);
+        }
+
+        protected virtual void ApplyPropertiesCore(Window dialogWindow, T properties) { }
+
+        protected virtual bool? HandleResultCore(bool? result, T properties, ICustomDialog<T>? dataContext)
+        {
+            return result;
+        }
+
+        protected virtual void DisposeDialogCore(ICustomDialog<T>? module) { }
+
+        protected virtual Window? FindParentCore(object host)
+        {
+            return ParentResolver.FindParent<T>(host) ?? Application.Current.MainWindow;
         }
     }
 }
