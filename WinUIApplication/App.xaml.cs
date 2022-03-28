@@ -6,25 +6,21 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
-using MochaCore.DialogsEx;
-using MochaCore.Events;
-using MochaCoreWinUI.DialogsEx;
-using MochaCoreWinUI.Events;
+using MochaCore.Navigation;
+using MochaCoreWinUI.Navigation;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using ViewModels;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Storage.Pickers;
+using WinUiApplication.Pages;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
-namespace WinUIApplication
+namespace WinUiApplication
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
@@ -34,13 +30,15 @@ namespace WinUIApplication
         private Window _mainWindow;
 
         /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
+        /// Initializes the singleton application object. This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
-            this.InitializeComponent();
-            
+            InitializeComponent();
+
+            NavigationManager.AddModule(ViewModels.Pages.BlankPage1.Id, () => new NavigationModule(new BlankPage1(), new BlankPage1ViewModel()));
+            NavigationManager.AddModule(ViewModels.Pages.BlankPage2.Id, () => new NavigationModule(new BlankPage2(), new BlankPage2ViewModel()));
         }
 
         /// <summary>
@@ -51,14 +49,6 @@ namespace WinUIApplication
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             _mainWindow = new MainWindow();
-
-            DialogManager.DefineDialog("MessageDialog", () => new StandardMessageDialogModule(_mainWindow));
-            DialogManager.DefineDialog("OpenDialog", () => new OpenFileDialogModule(_mainWindow));
-            DialogManager.DefineDialog("SaveDialog", () => new SaveFileDialogModule(_mainWindow));
-            DialogManager.DefineDialog("FolderDialog", () => new BrowseFolderDialogModule(_mainWindow));
-
-            AppEventManager.IncludeEventProvider("OnClosing", new AppClosingEventProvider(_mainWindow));
-
             _mainWindow.Activate();
         }
     }

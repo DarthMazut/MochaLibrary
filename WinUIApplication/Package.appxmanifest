@@ -7,12 +7,12 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="b7cbbca0-c582-46b2-9797-aeadcdf26688"
+    Name="a4a149f9-0d81-492b-b02d-707bb33be27a"
     Publisher="CN=Ellie"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>WinUIApplication</DisplayName>
+    <DisplayName>WinUiApplication</DisplayName>
     <PublisherDisplayName>Ellie</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -31,8 +31,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="WinUIApplication"
-        Description="WinUIApplication"
+        DisplayName="WinUiApplication"
+        Description="WinUiApplication"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
