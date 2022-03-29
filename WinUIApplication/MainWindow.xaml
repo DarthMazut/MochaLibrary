@@ -31,6 +31,11 @@
             </NavigationView.MenuItemTemplate>
             <Frame x:Name="xe_Frame" Content="{Binding FrameContent}" ContentTransitions="{StaticResource NavigationTransition}"/>
         </NavigationView>
+
+        <StackPanel  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="50">
+            <ProgressRing IsActive="{Binding IsProgressActive}"/>
+            <TextBlock Text="{Binding SecRemain}" />
+        </StackPanel>
     </Grid>
     
 </Window>

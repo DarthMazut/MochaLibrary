@@ -15,6 +15,8 @@ public class MainWindowViewModel : BindableBase, INavigatable
 {
     private object? _frameContent;
     private AsyncProperty<Page?> _selectedPage;
+    private bool _isProgressActive;
+    private int _secRemain;
 
     public MainWindowViewModel()
     {
@@ -23,16 +25,24 @@ public class MainWindowViewModel : BindableBase, INavigatable
         _selectedPage = new(this, nameof(SelectedPage))
         {
             InitialValue = NavigationPages.FirstOrDefault(),
-            PropertyChangedCallback = SelectedPageChanged
+            PropertyChangedOperation = SelectedPageChanged
         };
     }
 
-    private async void SelectedPageChanged(AsyncPropertyChangedEventArgs<Page?> e)
+    private async Task SelectedPageChanged(CancellationToken token, AsyncPropertyChangedEventArgs<Page?> e)
     {
         if (SelectedPage is not null)
         {
+            //IsProgressActive = true;
+            //for (int i = 0; i < 12; i++)
+            //{
+            //    SecRemain = 5 - (i / 2);
+            //    await Task.Delay(500, token);
+            //}
+            //IsProgressActive = false;
+
             NavigationResultData navigationResult = await Navigator.NavigateAsync(NavigationManager.FetchModule(SelectedPage.Id));
-            if (navigationResult.Result != NavigationResult.Succeed)
+            if (navigationResult.Result == NavigationResult.RejectedByTarget)
             {
                 await Task.Yield();
                 SelectedPage = e.PreviousValue;
@@ -48,7 +58,7 @@ public class MainWindowViewModel : BindableBase, INavigatable
 
     public Navigator Navigator { get; }
 
-    public IList<Page> NavigationPages { get; } = new List<Page> { Pages.BlankPage1, Pages.BlankPage2 };
+    public IList<Page> NavigationPages { get; } = new List<Page> { Pages.BlankPage1, Pages.BlankPage2, Pages.BlankPage3 };
 
     public object? FrameContent
     {
@@ -60,6 +70,18 @@ public class MainWindowViewModel : BindableBase, INavigatable
     {
         get => _selectedPage.Get();
         set => _selectedPage.Set(value);
+    }
+
+    public bool IsProgressActive 
+    { 
+        get => _isProgressActive;
+        set => SetProperty(ref _isProgressActive, value);
+    }
+
+    public int SecRemain
+    {
+        get => _secRemain;
+        set => SetProperty(ref _secRemain, value);
     }
 
     private void SelectedPageChangedCallback(object result, AsyncPropertyChangedEventArgs<Page?> e)

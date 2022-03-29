@@ -12,6 +12,8 @@ public static class Pages
     public static Page BlankPage1 { get; } = new("BlankPage1", "Page 1 xD");
 
     public static Page BlankPage2 { get; } = new("BlankPage2", "Page 2 xD");
+
+    public static Page BlankPage3 { get; } = new("BlankPage3", "Page 3 xD");
 }
 
 public class Page

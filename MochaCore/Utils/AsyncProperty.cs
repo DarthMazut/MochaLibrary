@@ -20,13 +20,12 @@ namespace MochaCore.Utils
     /// This class is <see cref="INotifyPropertyChanged"/> compatible.
     /// </summary>
     /// <typeparam name="T">Type of corresponding property.</typeparam>
-    public class AsyncProperty<T>
+    public class AsyncProperty<T> : IDisposable
     {
         private delegate ref MulticastDelegate GetEventFieldValue(object obj);
 
         private readonly INotifyPropertyChanged _host;
         private readonly string _propertyName;
-        private readonly SemaphoreSlim _semaphore = new(1);
         
         private T _initialValue;
         private T _internalValue;
@@ -79,26 +78,11 @@ namespace MochaCore.Utils
         }
 
         /// <summary>
-        /// Provides a delegate which is invoked whenever value of this object changes.
+        /// Allows to define an operation that is executed whenever value of this object changes.
+        /// Provided <see cref="CancellationToken"/> will be cancelled when new value has been assigned
+        /// to this object, before currently running <see cref="PropertyChangedOperation"/> is completed.
         /// </summary>
-        public Action<AsyncPropertyChangedEventArgs<T>> PropertyChangedCallback { get; init; }
-
-        /// <summary>
-        /// Provides a definition of asynchronous operation initiated whenever value of this object changes.
-        /// </summary>
-        public Func<CancellationToken, AsyncPropertyChangedEventArgs<T>, Task<object>> AsyncOperation { get; init; }
-
-        /// <summary>
-        /// A delegate which is invoked after asynchronous operation is completed successfully.
-        /// </summary>
-        public Action<object, AsyncPropertyChangedEventArgs<T>> AsyncOperationCallback { get; init; }
-
-        /// <summary>
-        /// Gets or initializes <see cref="IDispatcher"/> associated with this <see cref="AsyncProperty{T}"/>.
-        /// If this property is set (not null) the <see cref="AsyncOperationCallback"/> delegate is invoked via provided
-        /// <see cref="IDispatcher"/> object.
-        /// </summary>
-        public IDispatcher Dispatcher { get; init; }
+        public Func<CancellationToken, AsyncPropertyChangedEventArgs<T>, Task> PropertyChangedOperation { get; init; }
 
         /// <summary>
         /// Provides names of properties which this <see cref="AsyncProperty{T}"/> is synchronized with.
@@ -116,19 +100,12 @@ namespace MochaCore.Utils
         }
 
         /// <summary>
-        /// Sets a new value for this object.<br/>
-        /// If <see cref="AsyncOperation"/> is defined (not null) it will be started after new value is set.<br/>
-        /// If <see cref="PropertyChangedCallback"/> is defined it will be invoked after value changed.<br/>
-        /// If <see cref="AsyncOperationCallback"/> is defined it will be executed after async operation is completed successfully.<br/>
-        /// If async operation is currently running it will be cancelled and async callback won't be executed (if still possible).<br/>
+        /// Sets a new value for this object. If <see cref="PropertyChangedOperation"/> is defined it will be 
+        /// executed after new value is set. If async operation is currently running it will be requested to cancel. 
         /// </summary>
-        /// <param name="caller">Host of this property. <para>Pass <see langword="this"/> here.</para></param>
-        /// <param name="value">New value fot this object.</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="value">New value for this object.</param>
         public bool Set(T value)
         {
-            _semaphore.Wait();
-
             if (EqualityComparer<T>.Default.Equals(value, _internalValue))
             {
                 return false;
@@ -137,23 +114,10 @@ namespace MochaCore.Utils
             T previousValue = _internalValue;
             _internalValue = value;
 
-            try
-            {
-                if (AsyncOperation is not null)
-                {
-                    CancelAsyncOperation();
-
-                    _cts = new CancellationTokenSource();
-                    _ = HandleAsyncOperation(_cts, new AsyncPropertyChangedEventArgs<T>(_host, previousValue, value));
-                }
-
-                NotifyPropertyChangeViaReflection();
-                PropertyChangedCallback?.Invoke(new AsyncPropertyChangedEventArgs<T>(_host, previousValue, value));
-            }
-            finally
-            {
-               _semaphore.Release();
-            }
+            CancelAsyncOperation();
+            _cts = new CancellationTokenSource();
+            NotifyPropertyChangeViaReflection();
+            _ = HandlePropertyChangedOperation(_cts, new AsyncPropertyChangedEventArgs<T>(_host, previousValue, value));
 
             return true;
         }
@@ -170,6 +134,32 @@ namespace MochaCore.Utils
             catch (ObjectDisposedException) { }
         }
 
+        /// <summary>
+        /// Most of the time <see cref="AsyncProperty{T}"/> object will reside inside your VM.
+        /// Whenever you no longer need this VM (eg. you navigating to other page, closing a dialog etc.)
+        /// you should call <see cref="Dispose"/> on all of your VM's <see cref="AsyncProperty{T}"/> objects.
+        /// </summary>
+        public void Dispose()
+        {
+            CancelAsyncOperation();
+            GC.SuppressFinalize(this);
+        }
+
+        private async Task HandlePropertyChangedOperation(CancellationTokenSource cts, AsyncPropertyChangedEventArgs<T> e)
+        {
+            try
+            {
+                cts.Token.Register(() => AsyncOperationCancelled?.Invoke(this, e));
+                await PropertyChangedOperation.Invoke(cts.Token, e);
+            }
+            finally
+            {
+                cts.Dispose();
+            }
+
+            throw new NotImplementedException();
+        }
+
         private void NotifyPropertyChangeViaReflection()
         {
             _multicastDelegateGetter ??= CreateMulticastDelegateGetter();
@@ -178,49 +168,6 @@ namespace MochaCore.Utils
             if (inpcDelegate is not null)
             {
                 (inpcDelegate as PropertyChangedEventHandler).Invoke(_host, new PropertyChangedEventArgs(_propertyName));
-            }
-        }
-
-        private async Task HandleAsyncOperation(CancellationTokenSource cts, AsyncPropertyChangedEventArgs<T> eventArgs)
-        {
-            try
-            {
-                object result = await AsyncOperation.Invoke(cts.Token, eventArgs);
-
-                if (cts.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                await _semaphore.WaitAsync();
-
-                if (cts.IsCancellationRequested)
-                {
-                    cts.Dispose();
-                    _semaphore.Release();
-                    return;
-                }
-
-                if (Dispatcher is not null)
-                {
-                    Dispatcher.EnqueueOnMainThread(() =>
-                    {
-                        AsyncOperationCallback!.Invoke(result, eventArgs);
-                    });
-                }
-                else
-                {
-                    AsyncOperationCallback!.Invoke(result, eventArgs);
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                AsyncOperationCancelled?.Invoke(this, eventArgs);
-            }
-            finally
-            {
-                cts.Dispose();
-                _semaphore.Release();
             }
         }
 
@@ -258,5 +205,7 @@ namespace MochaCore.Utils
 
             return fieldInfo;
         }
+
+
     }
 }

@@ -39,6 +39,7 @@ namespace WinUiApplication
 
             NavigationManager.AddModule(ViewModels.Pages.BlankPage1.Id, () => new NavigationModule(new BlankPage1(), new BlankPage1ViewModel()));
             NavigationManager.AddModule(ViewModels.Pages.BlankPage2.Id, () => new NavigationModule(new BlankPage2(), new BlankPage2ViewModel()));
+            NavigationManager.AddModule(ViewModels.Pages.BlankPage3.Id, () => new NavigationModule(new BlankPage3(), new BlankPage3ViewModel()));
         }
 
         /// <summary>
