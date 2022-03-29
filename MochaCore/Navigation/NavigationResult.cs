@@ -23,6 +23,11 @@
         /// <summary>
         /// Navigation process was aborted because currently active <see cref="NavigationModule"/> was requested.
         /// </summary>
-        SameModuleRequested
+        SameModuleRequested,
+
+        /// <summary>
+        /// Navigation process was aborted because new navigation request was made before current one could complete.
+        /// </summary>
+        RejectedByNewRequest
     }
 }

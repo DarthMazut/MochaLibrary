@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace ViewModels
 {
-    public class BlankPage1ViewModel : BindableBase, INavigatable, IOnNavigatingTo, IOnNavigatedToAsync
+    public class BlankPage1ViewModel : BindableBase, INavigatable, IOnNavigatingTo, IOnNavigatedToAsync, IOnNavigatingFrom
     {
         private bool _isActive;
+        private CancellationTokenSource _cts = new();
 
         public BlankPage1ViewModel()
         {
@@ -44,7 +45,19 @@ namespace ViewModels
             IsActive = true;
             await Task.Delay(5000);
             IsActive = false;
+
+            if (_cts.Token.IsCancellationRequested)
+            {
+                _cts.Dispose();
+                return;
+            }
+
             await Navigator.NavigateAsync(Pages.BlankPage3.Module);
+        }
+
+        public void OnNavigatingFrom(NavigationData navigationData, NavigationCancelEventArgs e)
+        {
+            _cts.Cancel();
         }
     }
 }

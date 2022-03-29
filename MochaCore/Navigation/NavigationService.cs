@@ -14,6 +14,7 @@ namespace MochaCore.Navigation
         private readonly NavigationModuleInternalComparer _moduleComparer = new();
 
         private INavigationModule? _currentView;
+        private NavigationFlowControl _flowControl = new();
 
         /// <inheritdoc/>
         public INavigationModule? CurrentView => _currentView;
@@ -24,6 +25,8 @@ namespace MochaCore.Navigation
         /// <inheritdoc/>
         public async Task<NavigationResultData> RequestNavigation(NavigationData navigationData)
         {
+            NavigationFlowControl localFlowControl = ResolveNavigationFlowControl();
+
             if (SameViewRequested(navigationData))
             {
                 return new NavigationResultData(NavigationResult.SameModuleRequested);
@@ -35,14 +38,14 @@ namespace MochaCore.Navigation
             bool cleanUp = HandleCache(navigationData);
             SetupRequestedModule(navigationData);
 
-            NavigationResultData resultTo = await HandleNavigatingTo(navigationData);
+            NavigationResultData resultTo = await HandleNavigatingTo(navigationData, localFlowControl);
             if (resultTo.Result != NavigationResult.Succeed)
             {
                 navigationData.RequestedModule.CleanUp();
                 return resultTo;
             }
 
-            NavigationResultData resultFrom = await HandleNavigatingFrom(navigationData);
+            NavigationResultData resultFrom = await HandleNavigatingFrom(navigationData, localFlowControl);
             if (resultFrom.Result != NavigationResult.Succeed)
             {
                 navigationData.RequestedModule.CleanUp();
@@ -163,7 +166,7 @@ namespace MochaCore.Navigation
             navigationData.RequestedModule.DataContext.Navigator.SetHostView(navigationData);
         }
 
-        private async Task<NavigationResultData> HandleNavigatingTo(NavigationData navigationData)
+        private async Task<NavigationResultData> HandleNavigatingTo(NavigationData navigationData, NavigationFlowControl flowControl)
         {
             NavigationCancelEventArgs e = new();
 
@@ -177,16 +180,21 @@ namespace MochaCore.Navigation
                 await onNavigatingToAsync.OnNavigatingToAsync(navigationData, e);
             }
 
+            if (flowControl.ShouldAbort)
+            {
+                return new NavigationResultData(NavigationResult.RejectedByNewRequest);
+            }
+
             if (e.Cancel)
             {
-                navigationData.RequestedModule.CleanUp();
+                //navigationData.RequestedModule.CleanUp();
                 return new NavigationResultData(NavigationResult.RejectedByTarget, e.Reason);
             }
 
             return new NavigationResultData(NavigationResult.Succeed);
         }
 
-        private async Task<NavigationResultData> HandleNavigatingFrom(NavigationData navigationData)
+        private async Task<NavigationResultData> HandleNavigatingFrom(NavigationData navigationData, NavigationFlowControl flowControl)
         {
             NavigationCancelEventArgs e = new();
 
@@ -200,9 +208,14 @@ namespace MochaCore.Navigation
                 await onNavigatingFromAsync.OnNavigatingFromAsync(navigationData, e);
             }
 
+            if (flowControl.ShouldAbort)
+            {
+                return new NavigationResultData(NavigationResult.RejectedByNewRequest);
+            }
+
             if (e.Cancel)
             {
-                navigationData.RequestedModule.CleanUp();
+                //navigationData.RequestedModule.CleanUp();
                 return new NavigationResultData(NavigationResult.RejectedByCurrent, e.Reason);
             }
 
@@ -238,6 +251,14 @@ namespace MochaCore.Navigation
             }
         }
 
+        private NavigationFlowControl ResolveNavigationFlowControl()
+        {
+            _flowControl.AbortNavigation();
+            NavigationFlowControl localFlowControl = new();
+            _flowControl = localFlowControl;
+            return localFlowControl;
+        }
+
         // We know that developers are lazy and so they won't implement properly Equals() on 
         // thier own implementation of INavigationModule, so we're providing a spereate one
         // just for NavigationService.
@@ -255,6 +276,15 @@ namespace MochaCore.Navigation
                 hashCode = hashCode * -1521134295 + EqualityComparer<INavigatable>.Default.GetHashCode(obj.DataContext);
                 return hashCode;
             }
+        }
+
+        private class NavigationFlowControl
+        {
+            private bool _shouldAbort;
+
+            public bool ShouldAbort => _shouldAbort;
+
+            public void AbortNavigation() => _shouldAbort = true;
         }
     }
 }
