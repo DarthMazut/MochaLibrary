@@ -17,25 +17,39 @@
             <vm:MainWindowViewModel />
         </Grid.DataContext>
         <Grid.Resources>
+            <converters:NavigationItemInvokedEventArgsConverter x:Key="NavigationItemEventArgsConverter"/>
             <TransitionCollection x:Key="NavigationTransition">
                 <PopupThemeTransition />
             </TransitionCollection>
-            <converters:NavigationItemInvokedEventArgsConverter x:Key="NavigationItemEventArgsConverter"/>
         </Grid.Resources>
+        <i:Interaction.Behaviors>
+            <core:EventTriggerBehavior EventName="Loaded">
+                <core:InvokeCommandAction Command="{Binding LoadedCommand}" />
+            </core:EventTriggerBehavior>
+        </i:Interaction.Behaviors>
 
-        <NavigationView MenuItemsSource="{Binding NavigationPages}" SelectedItem="{Binding SelectedPage, Mode=TwoWay}">
+        <NavigationView 
+            IsBackButtonVisible="Collapsed" 
+            MenuItemsSource="{Binding NavigationPages}"
+            SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
+            >
             <NavigationView.MenuItemTemplate>
                 <DataTemplate>
-                    <NavigationViewItem Content="{Binding MenuName}" Icon="Accept" />
+                    <NavigationViewItem Content="{Binding Name}">
+                        <NavigationViewItem.Icon>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="{Binding Glyph}" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
                 </DataTemplate>
             </NavigationView.MenuItemTemplate>
+            <i:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="ItemInvoked">
+                    <core:InvokeCommandAction Command="{Binding NavigationItemInvokedCommand}" InputConverter="{StaticResource NavigationItemEventArgsConverter}" />
+                </core:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
             <Frame x:Name="xe_Frame" Content="{Binding FrameContent}" ContentTransitions="{StaticResource NavigationTransition}"/>
         </NavigationView>
 
-        <StackPanel  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="50">
-            <ProgressRing IsActive="{Binding IsProgressActive}"/>
-            <TextBlock Text="{Binding SecRemain}" />
-        </StackPanel>
     </Grid>
     
 </Window>

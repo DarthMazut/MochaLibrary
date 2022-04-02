@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ViewModels;
+using ViewModels.Wrappers;
 
 namespace WinUiApplication.Converters
 {
@@ -14,7 +16,11 @@ namespace WinUiApplication.Converters
         {
             if (value is NavigationViewItemInvokedEventArgs args)
             {
-                return (args.InvokedItemContainer as NavigationViewItem)?.DataContext;
+                return new NavigationInvokedDetails()
+                {
+                    InvokedPage = (args.InvokedItemContainer as NavigationViewItem)?.DataContext as ApplicationPage,
+                    IsSettingsInvoked = args.IsSettingsInvoked
+                };
             }
 
             throw new ArgumentException($"Provided value must be of type {typeof(NavigationViewItemInvokedEventArgs)}");

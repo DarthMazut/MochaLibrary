@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ViewModels
 {
-    public class BlankPage1ViewModel : BindableBase, INavigatable, IOnNavigatingTo, IOnNavigatedToAsync, IOnNavigatingFrom
+    public class BlankPage1ViewModel : BindableBase, INavigatable
     {
         private bool _isActive;
         private CancellationTokenSource _cts = new();
@@ -33,31 +33,6 @@ namespace ViewModels
         private async void Navigate()
         {
             await Navigator.NavigateAsync(NavigationManager.FetchModule(Pages.BlankPage2.Id));
-        }
-
-        public void OnNavigatingTo(NavigationData navigationData, NavigationCancelEventArgs e)
-        {
-            //e.Cancel = true;
-        }
-
-        public async Task OnNavigatedToAsync(NavigationData navigationData)
-        {
-            IsActive = true;
-            await Task.Delay(5000);
-            IsActive = false;
-
-            if (_cts.Token.IsCancellationRequested)
-            {
-                _cts.Dispose();
-                return;
-            }
-
-            await Navigator.NavigateAsync(Pages.BlankPage3.Module);
-        }
-
-        public void OnNavigatingFrom(NavigationData navigationData, NavigationCancelEventArgs e)
-        {
-            _cts.Cancel();
         }
     }
 }

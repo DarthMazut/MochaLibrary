@@ -8,46 +8,84 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using ViewModels.Wrappers;
 
 namespace ViewModels;
 
 public class MainWindowViewModel : BindableBase, INavigatable
 {
     private object? _frameContent;
-    private AsyncProperty<Page?> _selectedPage;
-    private bool _isProgressActive;
-    private int _secRemain;
+    private ApplicationPage? _selectedPage;
+    private bool _isSettigsInvoked;
+
+    private DelegateCommand<NavigationInvokedDetails> _navigationItemInvokedCommand;
+    private DelegateCommand _loadedCommand;
 
     public MainWindowViewModel()
     {
         NavigationServices.MainNavigationService.NavigationRequested += HandleNavigationRequest;
         Navigator = new Navigator(this, NavigationServices.MainNavigationService);
-        _selectedPage = new(this, nameof(SelectedPage))
-        {
-            InitialValue = NavigationPages.FirstOrDefault(),
-            PropertyChangedOperation = SelectedPageChanged
-        };
     }
 
-    private async Task SelectedPageChanged(CancellationToken token, AsyncPropertyChangedEventArgs<Page?> e)
-    {
-        if (SelectedPage is not null)
-        {
-            //IsProgressActive = true;
-            //for (int i = 0; i < 12; i++)
-            //{
-            //    SecRemain = 5 - (i / 2);
-            //    await Task.Delay(500, token);
-            //}
-            //IsProgressActive = false;
+    public Navigator Navigator { get; }
 
-            NavigationResultData navigationResult = await Navigator.NavigateAsync(NavigationManager.FetchModule(SelectedPage.Id));
-            if (navigationResult.Result == NavigationResult.RejectedByTarget)
+    public IList<ApplicationPage> NavigationPages { get; } = new List<ApplicationPage> 
+    { 
+        Pages.BlankPage1, 
+        Pages.BlankPage2, 
+        Pages.BlankPage3 
+    };
+
+    public bool IsSettingsInvoked
+    {
+        get => _isSettigsInvoked;
+        set => SetProperty(ref _isSettigsInvoked, value);
+    }
+
+    public object? FrameContent
+    {
+        get => _frameContent;
+        set => SetProperty(ref _frameContent, value);
+    }
+
+    public ApplicationPage? SelectedPage
+    {
+        get => _selectedPage;
+        set => SetProperty(ref _selectedPage, value);
+    }
+
+    
+    public DelegateCommand<NavigationInvokedDetails> NavigationItemInvokedCommand => _navigationItemInvokedCommand ?? (_navigationItemInvokedCommand = new DelegateCommand<NavigationInvokedDetails>(NavigationItemInvoked));
+    public DelegateCommand LoadedCommand => _loadedCommand ?? (_loadedCommand = new DelegateCommand(Loaded));
+
+    private async void NavigationItemInvoked(NavigationInvokedDetails e)
+    {
+        if (e.InvokedPage is not null)
+        {
+            NavigationResultData navigationResult = await Navigator.NavigateAsync(e.InvokedPage.GetNavigationModule());
+            if (navigationResult.Result != NavigationResult.Succeed)
             {
                 await Task.Yield();
-                SelectedPage = e.PreviousValue;
+                SelectedPage = GetPageFromModule(NavigationServices.MainNavigationService.CurrentView);
+            }
+
+        }
+        else
+        {
+            if(e.IsSettingsInvoked)
+            {
+                await Navigator.NavigateAsync(Pages.SettingsPage.GetNavigationModule());
+            }
+            else
+            {
+                // some thing went wrong... ;(
             }
         }
+    }
+
+    private void Loaded()
+    {
+        Navigator.NavigateAsync(Pages.BlankPage1.GetNavigationModule());
     }
 
     private void HandleNavigationRequest(object? sender, NavigationData e)
@@ -56,45 +94,14 @@ public class MainWindowViewModel : BindableBase, INavigatable
         SelectedPage = GetPageFromModule(e.RequestedModule);
     }
 
-    public Navigator Navigator { get; }
-
-    public IList<Page> NavigationPages { get; } = new List<Page> { Pages.BlankPage1, Pages.BlankPage2, Pages.BlankPage3 };
-
-    public object? FrameContent
+    private ApplicationPage? GetPageFromModule(INavigationModule? requestedModule)
     {
-        get => _frameContent;
-        set => SetProperty(ref _frameContent, value);
-    }
-
-    public Page? SelectedPage
-    {
-        get => _selectedPage.Get();
-        set => _selectedPage.Set(value);
-    }
-
-    public bool IsProgressActive 
-    { 
-        get => _isProgressActive;
-        set => SetProperty(ref _isProgressActive, value);
-    }
-
-    public int SecRemain
-    {
-        get => _secRemain;
-        set => SetProperty(ref _secRemain, value);
-    }
-
-    private void SelectedPageChangedCallback(object result, AsyncPropertyChangedEventArgs<Page?> e)
-    {
-        if (result is not null)
+        if (requestedModule is null)
         {
-            SelectedPage = result as Page;
+            return null;
         }
-    }
 
-    private Page? GetPageFromModule(INavigationModule requestedModule)
-    {
-        foreach (Page page in NavigationPages)
+        foreach (ApplicationPage page in NavigationPages)
         {
             if (requestedModule.Equals(NavigationManager.FetchModule(page.Id)))
             {
