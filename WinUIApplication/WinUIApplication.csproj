@@ -13,9 +13,10 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Pages\BlankPage1.xaml" />
-    <None Remove="Pages\BlankPage2.xaml" />
     <None Remove="Pages\BlankPage3.xaml" />
+    <None Remove="Pages\PeoplePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Styles\PeopleListViewItem.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,12 +58,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Pages\BlankPage2.xaml">
+    <Page Update="Pages\PeoplePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\BlankPage1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\PeopleListViewItem.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

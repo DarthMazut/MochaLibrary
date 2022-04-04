@@ -32,7 +32,7 @@ public class MainWindowViewModel : BindableBase, INavigatable
     public IList<ApplicationPage> NavigationPages { get; } = new List<ApplicationPage> 
     { 
         Pages.BlankPage1, 
-        Pages.BlankPage2, 
+        Pages.PeoplePage, 
         Pages.BlankPage3 
     };
 

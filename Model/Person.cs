@@ -25,6 +25,8 @@ namespace Model
 
         public string LastName { get; set; } = "N/A";
 
+        public string Initials => GetInitials();
+
         public string City { get; set; } = "Unknown";
 
         public DateTime Birthday { get; set; } = new(1980, 1, 1);
@@ -32,6 +34,26 @@ namespace Model
         public int Age => (DateTime.Today - Birthday).Days / 365;
 
         public int DaysTillBirthday => CalculateDaysTillBirthday();
+
+        public string ImageID { get; set; }
+
+        private string GetInitials()
+        {
+            char firstInitial = '?';
+            char lastInitial = '?';
+
+            if (FirstName.Any())
+            {
+                firstInitial = FirstName[0];
+            }
+
+            if (LastName.Any() && LastName != "N/A")
+            {
+                lastInitial = LastName[0];
+            }
+
+            return $"{firstInitial}{lastInitial}";
+        }
 
         // Thank you StackOverflow! <3
         private int CalculateDaysTillBirthday()

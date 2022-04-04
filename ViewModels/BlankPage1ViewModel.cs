@@ -32,7 +32,7 @@ namespace ViewModels
 
         private async void Navigate()
         {
-            await Navigator.NavigateAsync(NavigationManager.FetchModule(Pages.BlankPage2.Id));
+            await Navigator.NavigateAsync(NavigationManager.FetchModule(Pages.PeoplePage.Id));
         }
     }
 }
