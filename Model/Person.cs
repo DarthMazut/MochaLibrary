@@ -13,19 +13,20 @@ namespace Model
             FirstName = firstName;
         }
 
-        public Person(string firstName, string lastName, string city, DateTime birthday)
+        public Person(string firstName, string lastName, string city, DateTime birthday, string imageId)
         {
             FirstName = firstName;
             LastName = lastName;
             City = city;
             Birthday = birthday;
+            ImageID = imageId;
         }
+
+        public string FullName => $"{FirstName} {LastName}";
 
         public string FirstName { get; set; }
 
         public string LastName { get; set; } = "N/A";
-
-        public string Initials => GetInitials();
 
         public string City { get; set; } = "Unknown";
 
@@ -33,11 +34,9 @@ namespace Model
 
         public int Age => (DateTime.Today - Birthday).Days / 365;
 
-        public int DaysTillBirthday => CalculateDaysTillBirthday();
+        public string? ImageID { get; set; }
 
-        public string ImageID { get; set; }
-
-        private string GetInitials()
+        public string GetInitials()
         {
             char firstInitial = '?';
             char lastInitial = '?';
@@ -56,7 +55,7 @@ namespace Model
         }
 
         // Thank you StackOverflow! <3
-        private int CalculateDaysTillBirthday()
+        public int CalculateDaysTillBirthday()
         {
             DateTime today = DateTime.Today;
             DateTime next = Birthday.AddYears(today.Year - Birthday.Year);

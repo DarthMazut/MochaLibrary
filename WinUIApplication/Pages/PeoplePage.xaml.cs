@@ -13,6 +13,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -27,67 +28,25 @@ namespace WinUiApplication.Pages
         public PeoplePage()
         {
             this.InitializeComponent();
-            ListBox lb = new();
         }
     }
 
-    public class ParentConverter : IValueConverter
+    /// <summary>
+    /// A markup extension that returns a collection of values of a specific <see langword="enum"/>
+    /// </summary>
+    [MarkupExtensionReturnType(ReturnType = typeof(Array))]
+    public sealed class EnumValuesExtension : MarkupExtension
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        /// <summary>
+        /// Gets or sets the <see cref="System.Type"/> of the target <see langword="enum"/>
+        /// </summary>
+        public Type Type { get; set; }
+
+        /// <inheritdoc/>
+        protected override object ProvideValue()
         {
-            if (value is DependencyObject dependencyObject && parameter is string type)
-            {
-                return FindParent(dependencyObject, Type.GetType(type));
-            }
-
-            return null;
+            var val = Enum.GetValues(Type);
+            return val;
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-
-        private object FindParent(DependencyObject dependencyObject, Type ancestorType)
-        {
-            DependencyObject parent = VisualTreeHelper.GetParent(dependencyObject);
-            if (parent == null)
-                return null;
-
-            if (ancestorType.IsAssignableFrom(parent.GetType()))
-                return parent;
-
-            return FindParent(parent, ancestorType);
-        }
-
     }
-
-    //[MarkupExtensionReturnType(ReturnType = typeof(TextBlock))]
-    //public class ParentExtension : MarkupExtension
-    //{
-
-    //    public Type OfType { get; set; }
-
-    //    public TextBlock CurrentObject { get; set; }
-
-    //    protected override object ProvideValue(IXamlServiceProvider serviceProvider)
-    //    {
-    //        var rootObjectProvider = (IProvideValueTarget)serviceProvider.GetService(typeof(IProvideValueTarget));
-    //        var targetObj = rootObjectProvider.TargetObject;
-    //        var targetProp = rootObjectProvider.TargetProperty;
-    //        return CurrentObject;// FindParent(CurrentObject as DependencyObject, OfType);
-    //    }
-
-    //    private object FindParent(DependencyObject dependencyObject, Type ancestorType)
-    //    {
-    //        DependencyObject parent = VisualTreeHelper.GetParent(dependencyObject);
-    //        if (parent == null)
-    //            return null;
-
-    //        if (ancestorType.IsAssignableFrom(parent.GetType()))
-    //            return parent;
-
-    //        return FindParent(parent, ancestorType);
-    //    }
-    //}
 }

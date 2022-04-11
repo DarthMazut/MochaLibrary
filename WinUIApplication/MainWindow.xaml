@@ -7,17 +7,20 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:converters="using:WinUiApplication.Converters"
+    xmlns:toolkitConverters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:vm="using:ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid x:Name="xe_rootGrid">
         <Grid.DataContext>
             <vm:MainWindowViewModel />
         </Grid.DataContext>
         <Grid.Resources>
             <converters:NavigationItemInvokedEventArgsConverter x:Key="NavigationItemEventArgsConverter"/>
+            <toolkitConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:NegationConverter x:Key="NegatationConverter" />
             <TransitionCollection x:Key="NavigationTransition">
                 <PopupThemeTransition />
             </TransitionCollection>
@@ -29,10 +32,11 @@
         </i:Interaction.Behaviors>
 
         <NavigationView 
+            x:Name="xe_NavigationView"
+            Visibility="{Binding IsFullScreen, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}"
             IsBackButtonVisible="Collapsed" 
             MenuItemsSource="{Binding NavigationPages}"
-            SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
-            >
+            SelectedItem="{Binding SelectedPage, Mode=TwoWay}">
             <NavigationView.MenuItemTemplate>
                 <DataTemplate>
                     <NavigationViewItem Content="{Binding Name}">
@@ -47,9 +51,17 @@
                     <core:InvokeCommandAction Command="{Binding NavigationItemInvokedCommand}" InputConverter="{StaticResource NavigationItemEventArgsConverter}" />
                 </core:EventTriggerBehavior>
             </i:Interaction.Behaviors>
-            <Frame x:Name="xe_Frame" Content="{Binding FrameContent}" ContentTransitions="{StaticResource NavigationTransition}"/>
+
+            <Frame 
+                x:Name="xe_Frame" 
+                Content="{Binding FrameContent}" 
+                ContentTransitions="{StaticResource NavigationTransition}"/>
+
         </NavigationView>
 
+        <Frame 
+            Content="{Binding FullScreenContent}" 
+            Visibility="{Binding IsFullScreen, Converter={StaticResource BoolToVisibilityConverter}}"
+            ContentTransitions="{StaticResource NavigationTransition}"/>
     </Grid>
-    
 </Window>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
@@ -10,8 +10,10 @@
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Controls\FilterTab.xaml" />
     <None Remove="Pages\BlankPage1.xaml" />
     <None Remove="Pages\BlankPage3.xaml" />
     <None Remove="Pages\PeoplePage.xaml" />
@@ -69,6 +71,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Styles\PeopleListViewItem.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\FilterTab.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

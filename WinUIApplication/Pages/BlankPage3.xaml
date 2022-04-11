@@ -9,6 +9,9 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <TextBlock Text="Blank Page 3" />
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Blank Page 3" FontSize="24" />
+            <Button Content="Back" Command="{Binding GoBackCommand}" Margin="10"/>
+        </StackPanel>
     </Grid>
 </Page>

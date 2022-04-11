@@ -15,8 +15,10 @@ namespace ViewModels;
 public class MainWindowViewModel : BindableBase, INavigatable
 {
     private object? _frameContent;
+    private object? _fullScreenContent;
     private ApplicationPage? _selectedPage;
     private bool _isSettigsInvoked;
+    private bool _isFullScreen;
 
     private DelegateCommand<NavigationInvokedDetails> _navigationItemInvokedCommand;
     private DelegateCommand _loadedCommand;
@@ -42,10 +44,22 @@ public class MainWindowViewModel : BindableBase, INavigatable
         set => SetProperty(ref _isSettigsInvoked, value);
     }
 
+    public bool IsFullScreen
+    {
+        get => _isFullScreen;
+        set => SetProperty(ref _isFullScreen, value);
+    }
+
     public object? FrameContent
     {
         get => _frameContent;
         set => SetProperty(ref _frameContent, value);
+    }
+
+    public object? FullScreenContent
+    {
+        get => _fullScreenContent;
+        set => SetProperty(ref _fullScreenContent, value);
     }
 
     public ApplicationPage? SelectedPage
@@ -90,8 +104,19 @@ public class MainWindowViewModel : BindableBase, INavigatable
 
     private void HandleNavigationRequest(object? sender, NavigationData e)
     {
-        FrameContent = e.RequestedModule.View;
         SelectedPage = GetPageFromModule(e.RequestedModule);
+        IsFullScreen = SelectedPage?.IsFullScreen ?? false;
+        if (IsFullScreen)
+        {
+            FrameContent = null;
+            FullScreenContent = e.RequestedModule.View;
+        }
+        else
+        {
+            FullScreenContent = null;
+            FrameContent = e.RequestedModule.View;
+        }
+        
     }
 
     private ApplicationPage? GetPageFromModule(INavigationModule? requestedModule)

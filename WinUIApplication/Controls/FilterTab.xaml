@@ -1,0 +1,31 @@
+﻿<UserControl
+    x:Class="WinUiApplication.Controls.FilterTab"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUiApplication.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:utils="using:MochaCoreWinUI.Utils"
+    mc:Ignorable="d">
+
+    <Grid DataContext="{x:Bind ViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <utils:DependencyPropertyNotifier Binding="{x:Bind ViewModel.Notifier.Binding, Mode=TwoWay}" NotifyRequested="PropertyNotifier_NotifyRequested" />
+        
+        <StackPanel Spacing="5" Padding="10">
+            <TextBlock Text="Filter by:" FontSize="16" />
+            <ComboBox/>
+            <TextBox Text="{x:Bind ViewModel.Expression, Mode=TwoWay}"/>
+            <ToggleSwitch IsOn="True" OnContent="Contains" OffContent="Not contain" />
+            <ToggleSwitch IsOn="False" OnContent="Match whole words" OffContent="Match everything" />
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Button Content="Apply filter" Margin="10" Command="{x:Bind ViewModel.ApplyFilterCommand}"/>
+            <Button Content="Remove filter" Margin="10" />
+        </StackPanel>
+    </Grid>
+</UserControl>

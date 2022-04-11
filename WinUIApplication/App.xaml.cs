@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using MochaCore.Behaviours;
 using MochaCore.Navigation;
 using MochaCoreWinUI.Navigation;
 using System;
@@ -18,6 +19,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using WinUiApplication.Pages;
 
 namespace WinUiApplication
@@ -41,6 +43,8 @@ namespace WinUiApplication
             NavigationManager.AddModule(ViewModels.Pages.PeoplePage.Id, () => new NavigationModule(new PeoplePage(), new PeoplePageViewModel()));
             NavigationManager.AddModule(ViewModels.Pages.BlankPage3.Id, () => new NavigationModule(new BlankPage3(), new BlankPage3ViewModel()));
             NavigationManager.AddModule(ViewModels.Pages.SettingsPage.Id, () => new NavigationModule(new SettingsPage(), new SettingsPageViewModel()));
+
+            BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
         }
 
         /// <summary>
