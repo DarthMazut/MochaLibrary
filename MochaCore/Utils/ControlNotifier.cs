@@ -15,6 +15,7 @@ namespace MochaCore.Utils
     {
         private ControlNotifierValue _value = new(string.Empty, null);
 
+        /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
@@ -33,11 +34,21 @@ namespace MochaCore.Utils
             }
         }
 
+        /// <summary>
+        /// Sends request for a specified dependency property to be changed.
+        /// </summary>
+        /// <param name="propertyName">Name of property to be changed.</param>
+        /// <param name="newValue">New value.</param>
         public void SetDependencyPropertyValue(string propertyName, object? newValue)
         {
             Binding = new ControlNotifierValue(propertyName, newValue);
         }
 
+        /// <summary>
+        /// Sends request for a specified command to be invoked.
+        /// </summary>
+        /// <param name="commandName">Name of command to be invoked.</param>
+        /// <param name="parameter">Parameter of execution.</param>
         public void InvokeCommand(string commandName, object? parameter)
         {
             Binding = new ControlNotifierValue(commandName, parameter);

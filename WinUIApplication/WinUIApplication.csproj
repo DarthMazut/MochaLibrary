@@ -14,8 +14,10 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Controls\FilterTab.xaml" />
+    <None Remove="Controls\PageHeader.xaml" />
     <None Remove="Pages\BlankPage1.xaml" />
     <None Remove="Pages\BlankPage3.xaml" />
+    <None Remove="Pages\EditPersonPage.xaml" />
     <None Remove="Pages\PeoplePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
     <None Remove="Styles\PeopleListViewItem.xaml" />
@@ -48,6 +50,16 @@
   <ItemGroup>
     <ProjectReference Include="..\MochaCoreWinUI\MochaCoreWinUI.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\PageHeader.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\EditPersonPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\SettingsPage.xaml">

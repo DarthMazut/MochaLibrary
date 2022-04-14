@@ -29,38 +29,61 @@ namespace WinUiApplication.Controls
             this.InitializeComponent();
         }
 
-        public static readonly DependencyProperty FilterProperty =
-            DependencyProperty.Register(nameof(Filter), typeof(PersonFilter), typeof(FilterTab), new PropertyMetadata(null));
+        #region DEPENDENCY PROPERTIES
 
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register(nameof(ViewModel), typeof(FilterTabViewModel), typeof(FilterTab), new PropertyMetadata(null));
 
+        public static readonly DependencyProperty FilterProperty =
+            DependencyProperty.Register(nameof(Filter), typeof(PersonFilter), typeof(FilterTab), new PropertyMetadata(null));
+
         public static readonly DependencyProperty FilterAppliedCommandProperty =
             DependencyProperty.Register(nameof(FilterAppliedCommand), typeof(ICommand), typeof(FilterTab), new PropertyMetadata(null));
 
-        public FilterTabViewModel ViewModel
+        public static readonly DependencyProperty FilterRemovedCommandProperty =
+            DependencyProperty.Register(nameof(FilterRemovedCommand), typeof(ICommand), typeof(FilterTab), new PropertyMetadata(null));
+
+        public FilterTabViewModel? ViewModel
         {
             get { return (FilterTabViewModel)GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
 
-        public PersonFilter Filter
+        public PersonFilter? Filter
         {
             get { return (PersonFilter)GetValue(FilterProperty); }
             set { SetValue(FilterProperty, value); }
         }
 
-        public ICommand FilterAppliedCommand
+        public ICommand? FilterAppliedCommand
         {
             get { return (ICommand)GetValue(FilterAppliedCommandProperty); }
             set { SetValue(FilterAppliedCommandProperty, value); }
         }
+
+        public ICommand? FilterRemovedCommand
+        {
+            get { return (ICommand?)GetValue(FilterRemovedCommandProperty); }
+            set { SetValue(FilterRemovedCommandProperty, value); }
+        }
+
+        #endregion
 
         private void PropertyNotifier_NotifyRequested(object sender, NotifyDependencyPropertyEventArgs e)
         {
             if (e.DependencyPropertyName == nameof(FilterAppliedCommand))
             {
                 FilterAppliedCommand?.Execute(e.Value);
+            }
+
+            if (e.DependencyPropertyName == nameof(Filter))
+            {
+                Filter = e.Value as PersonFilter;
+            }
+
+            if (e.DependencyPropertyName == nameof(FilterRemovedCommand))
+            {
+                FilterRemovedCommand?.Execute(null);
             }
         }
     }

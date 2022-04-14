@@ -20,29 +20,13 @@
     <Page.Resources>
         <toolkitConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:ImageIdToPathConverter x:Key="ImageConverter" />
-
-        <Style x:Key="HeaderStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="36" />
-            <Setter Property="Margin" Value="20" />
-        </Style>
-        <Style x:Key="HeaderIconStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="42" />
-            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
-            <Setter Property="Margin" Value="20" />
-        </Style>
-        <Style x:Key="HeaderUnderline" TargetType="Border">
-            <Setter Property="BorderBrush" Value="{ThemeResource TextBoxBorderThemeBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Height" Value="1" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Margin" Value="10" />
-        </Style>
+        <converters:PersonFilterToTextConverter x:Key="FilterToTextConverter" />
 
         <DataTemplate x:Key="ListViewItemTemplate">
-            <Grid x:Name="rootGrid" Background="Transparent">
+            <Grid Background="Transparent">
                 <Grid.ContextFlyout>
                     <MenuFlyout>
-                        <MenuFlyoutItem Text="Re-order" Icon="Filter" Command="{Binding DataContext.ArrangePeopleCommand, Source={mochaXaml:RootElement}}"/>
+                        <MenuFlyoutItem Text="More info" Icon="ContactInfo" Command="{Binding DataContext.MoreInfoCommand, Source={mochaXaml:RootElement}}" CommandParameter="{Binding}"/>
                     </MenuFlyout>
                 </Grid.ContextFlyout>
                 <Grid.ColumnDefinitions>
@@ -56,6 +40,17 @@
                         <TextBlock Text="{Binding FirstName}" FontSize="18" FontWeight="Bold"/>
                         <Border Width="5"/>
                         <TextBlock Text="{Binding LastName}" FontSize="18" FontWeight="Bold"/>
+                    </StackPanel>
+                    <Border Height="5"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="City:" FontSize="12" FontWeight="Bold" Foreground="DarkGray"/>
+                        <Border Width="5"/>
+                        <TextBlock Text="{Binding City}" FontSize="12" Foreground="DarkGray"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Age:" FontSize="12" FontWeight="Bold" Foreground="DarkGray"/>
+                        <Border Width="5"/>
+                        <TextBlock Text="{Binding Age}" FontSize="12" Foreground="DarkGray"/>
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="10" Visibility="{Binding ParentSource.IsSelected, Converter={StaticResource BoolToVisibilityConverter}}" mochaXaml:ParentService.ParentType="ListViewItem">
@@ -89,16 +84,8 @@
         </Grid.RowDefinitions>
         
         <!-- HEADER-->
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="People" Style="{StaticResource HeaderStyle}" />
-            <TextBlock Grid.Column="1" Text="&#xE716;" Style="{StaticResource HeaderIconStyle}" />
-        </Grid>
-        <Border VerticalAlignment="Bottom" Style="{StaticResource HeaderUnderline}" />
-        
+        <controls:PageHeader Title="People" Glyph="&#xE716;" Margin="25,25,25,15"/>
+
         <!-- FILTER BAR -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -108,21 +95,24 @@
             <Button Grid.Column="1" Command="{Binding OpenFilterCommand}" ToolTipService.ToolTip="Apply Filter" Margin="5" HorizontalAlignment="Right">
                 <FontIcon Foreground="SeaGreen" FontFamily="Segoe MDL2 Assets" Glyph="&#xE71C;"/>
             </Button>
-            <TextBlock Text="No filter applied" Margin="30,0,0,0" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding CurrentFilter, Converter={StaticResource FilterToTextConverter}}" Margin="30,0,0,0" VerticalAlignment="Center"/>
         </Grid>
 
         <!-- PEOPLE -->
         <SplitView Grid.Row="2" IsPaneOpen="{Binding IsFilterOpen, Mode=TwoWay}" DisplayMode="Overlay" PanePlacement="Right" OpenPaneLength="350">
             <SplitView.Pane>
                 <!-- FILTER TAB -->
-                <controls:FilterTab ViewModel="{Binding FilterTabViewModel}" FilterAppliedCommand="{Binding ApplyFilterCommand}" />
+                <controls:FilterTab 
+                    ViewModel="{Binding FilterTabViewModel}" 
+                    FilterAppliedCommand="{Binding ApplyFilterCommand}" 
+                    FilterRemovedCommand="{Binding FilterRemovedCommand}"/>
             </SplitView.Pane>
             <!-- LIST VIEW -->
             <ListView 
-            x:Name="xe_ListBox" 
-            ItemsSource="{Binding People}" 
-            Margin="20"
-            ItemTemplate="{StaticResource ListViewItemTemplate}">
+                    x:Name="xe_ListBox" 
+                    ItemsSource="{Binding People}" 
+                    Margin="20"
+                    ItemTemplate="{StaticResource ListViewItemTemplate}">
             </ListView>
         </SplitView>
 

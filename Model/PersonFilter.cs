@@ -31,5 +31,10 @@ namespace Model
                 returnValue : 
                 !returnValue;
         }
+
+        public override string ToString()
+        {
+            return $"[{FilterValue}={Expression}(MatchWholeWords={MatchWholeWords})(Contains={Contains})]";
+        }
     }
 }

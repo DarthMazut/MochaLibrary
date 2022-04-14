@@ -34,9 +34,13 @@ namespace Model
 
         public int Age => (DateTime.Today - Birthday).Days / 365;
 
+        public int DaysTillBirthday => CalculateDaysTillBirthday();
+
+        public string Initials => GetInitials();
+
         public string? ImageID { get; set; }
 
-        public string GetInitials()
+        private string GetInitials()
         {
             char firstInitial = '?';
             char lastInitial = '?';
@@ -55,7 +59,7 @@ namespace Model
         }
 
         // Thank you StackOverflow! <3
-        public int CalculateDaysTillBirthday()
+        private int CalculateDaysTillBirthday()
         {
             DateTime today = DateTime.Today;
             DateTime next = Birthday.AddYears(today.Year - Birthday.Year);

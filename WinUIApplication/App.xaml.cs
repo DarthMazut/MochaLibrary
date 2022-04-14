@@ -7,7 +7,9 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Behaviours;
+using MochaCore.DialogsEx;
 using MochaCore.Navigation;
+using MochaCoreWinUI.DialogsEx;
 using MochaCoreWinUI.Navigation;
 using System;
 using System.Collections.Generic;
@@ -43,6 +45,9 @@ namespace WinUiApplication
             NavigationManager.AddModule(ViewModels.Pages.PeoplePage.Id, () => new NavigationModule(new PeoplePage(), new PeoplePageViewModel()));
             NavigationManager.AddModule(ViewModels.Pages.BlankPage3.Id, () => new NavigationModule(new BlankPage3(), new BlankPage3ViewModel()));
             NavigationManager.AddModule(ViewModels.Pages.SettingsPage.Id, () => new NavigationModule(new SettingsPage(), new SettingsPageViewModel()));
+            NavigationManager.AddModule(ViewModels.Pages.EditPersonPage.Id, () => new NavigationModule(new EditPersonPage(), new EditPersonPageViewModel()));
+
+            DialogManager.DefineDialog("MoreInfoDialog", () => new StandardMessageDialogModule(_mainWindow));
 
             BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
         }

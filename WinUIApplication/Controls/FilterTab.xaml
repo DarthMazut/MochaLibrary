@@ -18,14 +18,15 @@
         
         <StackPanel Spacing="5" Padding="10">
             <TextBlock Text="Filter by:" FontSize="16" />
-            <ComboBox/>
+            <ComboBox ItemsSource="{x:Bind ViewModel.FilterValues}" SelectedItem="{x:Bind ViewModel.SelectedFilter, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
+            <TextBlock Text="Filter what:" FontSize="16" />
             <TextBox Text="{x:Bind ViewModel.Expression, Mode=TwoWay}"/>
-            <ToggleSwitch IsOn="True" OnContent="Contains" OffContent="Not contain" />
-            <ToggleSwitch IsOn="False" OnContent="Match whole words" OffContent="Match everything" />
+            <ToggleSwitch IsOn="{x:Bind ViewModel.ContainsExpression, Mode=TwoWay}" OnContent="Contains" OffContent="Not contain" />
+            <ToggleSwitch IsOn="{x:Bind ViewModel.MatchWholeWords, Mode=TwoWay}" OnContent="Match whole words" OffContent="Match everything" />
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Bottom">
             <Button Content="Apply filter" Margin="10" Command="{x:Bind ViewModel.ApplyFilterCommand}"/>
-            <Button Content="Remove filter" Margin="10" />
+            <Button Content="Remove filter" Margin="10" Command="{x:Bind ViewModel.RemoveFilterCommand}"/>
         </StackPanel>
     </Grid>
 </UserControl>

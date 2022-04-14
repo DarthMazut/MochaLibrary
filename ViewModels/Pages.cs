@@ -16,6 +16,8 @@ public static class Pages
     public static ApplicationPage BlankPage3 { get; } = new("BlankPage3", "Page 3 xD", "\xE703", true);
 
     public static ApplicationPage SettingsPage { get; } = new("SettingsPage", string.Empty, string.Empty);
+
+    public static ApplicationPage EditPersonPage { get; } = new("EditPersonPage", string.Empty, string.Empty, true);
 }
 
 public class ApplicationPage
