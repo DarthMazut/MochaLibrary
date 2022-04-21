@@ -37,7 +37,7 @@ namespace MochaCore.DialogsEx
         /// <param name="id">Identifier of registered dialog to be retrieved.</param>
         public static IDialogModule<T> GetDialog<T>(string id)
         {
-            return (IDialogModule<T>)GetDialogCore(id);
+            return (IDialogModule<T>)GetBaseDialog(id);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace MochaCore.DialogsEx
         /// <param name="id">Identifier of registered dialog to be retrieved.</param>
         public static IDataContextDialogModule<T> GetDataContextDialog<T>(string id)
         {
-            return (IDataContextDialogModule<T>)GetDialogCore(id);
+            return (IDataContextDialogModule<T>)GetBaseDialog(id);
         }
 
         /// <summary>
@@ -57,15 +57,14 @@ namespace MochaCore.DialogsEx
         /// <param name="id">Identifier of registered dialog to be retrieved.</param>
         public static ICustomDialogModule<T> GetCustomDialog<T>(string id)
         {
-            return (ICustomDialogModule<T>)GetDialogCore(id);
+            return (ICustomDialogModule<T>)GetBaseDialog(id);
         }
 
-        // <summary>
-        // Retrieves an instance of registered <see cref="IDialogModule"/> type by its identifier.
-        // It is not recommended to use this non-generic method. Use *, * or * instead.
-        // </summary>
-        // <param name="id">Identifier of registered dialog to be retrieved.</param>
-        private static IDialogModule GetDialogCore(string id)
+        /// <summary>
+        /// Retrieves an instance of registered <see cref="IDialogModule"/> type by its identifier.
+        /// </summary>
+        /// <param name="id">Identifier of registered dialog to be retrieved.</param>
+        public static IDialogModule GetBaseDialog(string id)
         {
             if (_dialogsDictionary.ContainsKey(id))
             {

@@ -30,7 +30,7 @@ namespace Model
 
         public string City { get; set; } = "Unknown";
 
-        public DateTime Birthday { get; set; } = new(1980, 1, 1);
+        public DateTimeOffset Birthday { get; set; } = new(new DateTime(1980, 1, 1));
 
         public int Age => (DateTime.Today - Birthday).Days / 365;
 
@@ -61,8 +61,8 @@ namespace Model
         // Thank you StackOverflow! <3
         private int CalculateDaysTillBirthday()
         {
-            DateTime today = DateTime.Today;
-            DateTime next = Birthday.AddYears(today.Year - Birthday.Year);
+            DateTimeOffset today = DateTime.Today;
+            DateTimeOffset next = Birthday.AddYears(today.Year - Birthday.Year);
 
             if (next < today)
             {

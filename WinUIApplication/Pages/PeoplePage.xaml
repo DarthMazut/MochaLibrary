@@ -66,7 +66,7 @@
                         <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="32" Text="&#xE74D;"/>
                     </Button>
                     <Border Width="5"/>
-                    <Button ToolTipService.ToolTip="Edit person's data">
+                    <Button Command="{Binding DataContext.EditPersonCommand, Source={mochaXaml:RootElement}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Mode=TemplatedParent}}" ToolTipService.ToolTip="Edit person's data">
                         <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="32" Text="&#xE70F;"/>
                     </Button>
                 </StackPanel>
@@ -84,7 +84,7 @@
         </Grid.RowDefinitions>
         
         <!-- HEADER-->
-        <controls:PageHeader Title="People" Glyph="&#xE716;" Margin="25,25,25,15"/>
+        <controls:PageHeader Title="People" Glyph="&#xE716;" />
 
         <!-- FILTER BAR -->
         <Grid Grid.Row="1">

@@ -15,6 +15,7 @@
   <ItemGroup>
     <None Remove="Controls\FilterTab.xaml" />
     <None Remove="Controls\PageHeader.xaml" />
+    <None Remove="Dialogs\EditPictureDialog.xaml" />
     <None Remove="Pages\BlankPage1.xaml" />
     <None Remove="Pages\BlankPage3.xaml" />
     <None Remove="Pages\EditPersonPage.xaml" />
@@ -88,6 +89,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\FilterTab.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Dialogs\EditPictureDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

@@ -8,20 +8,25 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Behaviours;
 using MochaCore.DialogsEx;
+using MochaCore.DialogsEx.Extensions;
 using MochaCore.Navigation;
+using MochaCore.Settings;
 using MochaCoreWinUI.DialogsEx;
 using MochaCoreWinUI.Navigation;
+using MochaCoreWinUI.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using ViewModels;
+using ViewModels.DialogsVMs;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using WinUiApplication.Dialogs;
 using WinUiApplication.Pages;
 
 namespace WinUiApplication
@@ -31,7 +36,7 @@ namespace WinUiApplication
     /// </summary>
     public partial class App : Application
     {
-        private Window _mainWindow;
+        private Window? _mainWindow;
 
         /// <summary>
         /// Initializes the singleton application object. This is the first line of authored code
@@ -40,16 +45,6 @@ namespace WinUiApplication
         public App()
         {
             InitializeComponent();
-
-            NavigationManager.AddModule(ViewModels.Pages.BlankPage1.Id, () => new NavigationModule(new BlankPage1(), new BlankPage1ViewModel()));
-            NavigationManager.AddModule(ViewModels.Pages.PeoplePage.Id, () => new NavigationModule(new PeoplePage(), new PeoplePageViewModel()));
-            NavigationManager.AddModule(ViewModels.Pages.BlankPage3.Id, () => new NavigationModule(new BlankPage3(), new BlankPage3ViewModel()));
-            NavigationManager.AddModule(ViewModels.Pages.SettingsPage.Id, () => new NavigationModule(new SettingsPage(), new SettingsPageViewModel()));
-            NavigationManager.AddModule(ViewModels.Pages.EditPersonPage.Id, () => new NavigationModule(new EditPersonPage(), new EditPersonPageViewModel()));
-
-            DialogManager.DefineDialog("MoreInfoDialog", () => new StandardMessageDialogModule(_mainWindow));
-
-            BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
         }
 
         /// <summary>
@@ -60,6 +55,21 @@ namespace WinUiApplication
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             _mainWindow = new MainWindow();
+
+            NavigationManager.AddModule(ViewModels.Pages.BlankPage1.Id, () => new NavigationModule(new BlankPage1(), new BlankPage1ViewModel()));
+            NavigationManager.AddModule(ViewModels.Pages.PeoplePage.Id, () => new NavigationModule(new PeoplePage(), new PeoplePageViewModel()));
+            NavigationManager.AddModule(ViewModels.Pages.BlankPage3.Id, () => new NavigationModule(new BlankPage3(), new BlankPage3ViewModel()));
+            NavigationManager.AddModule(ViewModels.Pages.SettingsPage.Id, () => new NavigationModule(new SettingsPage(), new SettingsPageViewModel()));
+            NavigationManager.AddModule(ViewModels.Pages.EditPersonPage.Id, () => new NavigationModule(new EditPersonPage(), new EditPersonPageViewModel()));
+
+            DialogManager.DefineDialog(ViewModels.Dialogs.MoreInfoDialog.ID, () => new StandardMessageDialogModule(_mainWindow));
+            DialogManager.DefineDialog(ViewModels.Dialogs.EditPictureDialog.ID, () => new ContentDialogModule<DialogProperties>(_mainWindow, new EditPictureDialog(), new EditPictureDialogViewModel()));
+            DialogManager.DefineDialog(ViewModels.Dialogs.SelectFileDialog.ID, () => new OpenFileDialogModule(_mainWindow));
+
+            SettingsManager.Register("mySettings", new ApplicationSettingsSection("mySettings",,))
+
+            BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
+
             _mainWindow.Activate();
         }
     }

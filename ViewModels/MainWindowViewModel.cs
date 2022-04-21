@@ -126,7 +126,7 @@ public class MainWindowViewModel : BindableBase, INavigatable
             return null;
         }
 
-        foreach (ApplicationPage page in NavigationPages)
+        foreach (ApplicationPage page in Pages.AsCollection())
         {
             if (requestedModule.Equals(NavigationManager.FetchModule(page.Id)))
             {

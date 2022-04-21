@@ -32,6 +32,7 @@ namespace ViewModels
         private DelegateCommand<Person> _removePersonCommand;
         private DelegateCommand<Person> _moreInfoCommand;
         private DelegateCommand _addPerson;
+        private DelegateCommand<Person> _editPersonCommand;
         private DelegateCommand _openFilterCommand;
         private DelegateCommand<PersonFilter> _applyFilterCommand;
         private DelegateCommand _filterRemovedCommand;
@@ -83,6 +84,8 @@ namespace ViewModels
 
         public DelegateCommand AddPersonCommand => _addPerson ?? (_addPerson = new DelegateCommand(AddPerson));
 
+        public DelegateCommand<Person> EditPersonCommand => _editPersonCommand ??= new DelegateCommand<Person>(EditPerson);
+
         public DelegateCommand OpenFilterCommand => _openFilterCommand ??= new DelegateCommand(() => IsFilterOpen = true);
 
         public DelegateCommand<PersonFilter> ApplyFilterCommand => _applyFilterCommand ??= new DelegateCommand<PersonFilter>(ApplyFilter);
@@ -103,7 +106,7 @@ namespace ViewModels
 
         private async void MoreInfo(Person person)
         {
-            IDialogModule<StandardMessageDialogProperties> dialog = DialogManager.GetDialog<StandardMessageDialogProperties>("MoreInfoDialog");
+            IDialogModule<StandardMessageDialogProperties> dialog = Dialogs.MoreInfoDialog.Module;
 
             dialog.Properties.Title = $"Here you will see details for {person.FullName} contact...";
             dialog.Properties.Message = "But currently this feature is under construction ;)";
@@ -119,6 +122,11 @@ namespace ViewModels
         private async void AddPerson()
         {
             await Navigator.NavigateAsync(Pages.EditPersonPage.GetNavigationModule());
+        }
+
+        private async void EditPerson(Person person)
+        {
+            await Navigator.NavigateAsync(Pages.EditPersonPage.GetNavigationModule(), person);
         }
 
         private async void ApplyFilter(PersonFilter filter)

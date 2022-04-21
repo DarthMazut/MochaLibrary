@@ -18,6 +18,18 @@ public static class Pages
     public static ApplicationPage SettingsPage { get; } = new("SettingsPage", string.Empty, string.Empty);
 
     public static ApplicationPage EditPersonPage { get; } = new("EditPersonPage", string.Empty, string.Empty, true);
+
+    public static IList<ApplicationPage> AsCollection()
+    {
+        return new List<ApplicationPage>()
+        {
+            BlankPage1,
+            PeoplePage,
+            BlankPage3,
+            SettingsPage,
+            EditPersonPage
+        };
+    }
 }
 
 public class ApplicationPage

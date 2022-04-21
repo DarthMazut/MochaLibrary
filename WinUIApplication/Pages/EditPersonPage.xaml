@@ -5,11 +5,92 @@
     xmlns:local="using:WinUiApplication.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:controls="using:WinUiApplication.Controls"
+    xmlns:controls="using:WinUiApplication.Controls" 
+    xmlns:converters="using:WinUiApplication.Converters"
+    xmlns:toolkitControls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <TextBlock Text="Hello there!" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="720"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="xe_DataGrid.(Grid.Column)" Value="1" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="xe_DataGrid.(Grid.Row)" Value="1" />
+                        <Setter Target="xe_ImageGrid.(Grid.ColumnSpan)" Value="2" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <controls:PageHeader Title="{Binding Title}" Glyph="&#xE77B;" />
+
+        <ScrollViewer Grid.Row="1">
+            <Grid Margin="20,0,20,0" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid x:Name="xe_ImageGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,20">
+                    <PersonPicture Width="256" Height="256" Initials="{Binding Initials}" ProfilePicture="{Binding ImageSource}"/>
+                    <Button Content="&#xE70F;" Command="{Binding EditPictureCommand}" FontSize="64" FontFamily="Segoe MDL2 Assets" Width="260" Height="260"  BorderThickness="0" CornerRadius="130">
+                        <Button.Resources>
+                            <ResourceDictionary>
+                                <ResourceDictionary.ThemeDictionaries>
+                                    <ResourceDictionary x:Key="Default">
+                                        <SolidColorBrush x:Key="ButtonForeground" Color="Transparent"/>
+                                        <SolidColorBrush x:Key="ButtonBackground" Color="Transparent"/>
+                                        <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="White"/>
+                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#DD333333"/>
+                                        <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#DD777777"/>
+                                    </ResourceDictionary>
+                                </ResourceDictionary.ThemeDictionaries>
+                            </ResourceDictionary>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
+                <Grid x:Name="xe_DataGrid" Grid.ColumnSpan="2" Margin="20,0,20,20">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="First name" FontSize="18"/>
+                        <TextBox Text="{Binding FirstName, Mode=TwoWay}" PlaceholderText="John" />
+                        <TextBlock Text="Last name" FontSize="18"/>
+                        <TextBox Text="{Binding LastName, Mode=TwoWay}" PlaceholderText="Doe" />
+                        <TextBlock Text="City:" FontSize="18"/>
+                        <TextBox Text="{Binding City, Mode=TwoWay}" PlaceholderText="New York" />
+                        <TextBlock Text="Birthday" FontSize="18"/>
+                        <DatePicker Date="{Binding Birthday, Mode=TwoWay}" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+        
+        <Grid Grid.Row="2" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Content="Go back" Command="{Binding GoBackCommand}" HorizontalAlignment="Left"/>
+            <Button Grid.Column="1" Content="Apply" HorizontalAlignment="Right"/>
+        </Grid>
     </Grid>
 </Page>

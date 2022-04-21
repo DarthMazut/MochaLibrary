@@ -19,9 +19,10 @@
             <Setter Property="BorderBrush" Value="{ThemeResource TextBoxBorderThemeBrush}" />
             <Setter Property="BorderThickness" Value="0,0,0,1" />
             <Setter Property="Padding" Value="0,0,0,10" />
+            <Setter Property="Margin" Value="25,25,25,15"/>
         </Style>
     </UserControl.Resources>
-    
+
     <Border Style="{StaticResource HeaderUnderline}">
         <Grid>
             <Grid.ColumnDefinitions>
