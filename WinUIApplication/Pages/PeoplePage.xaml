@@ -19,7 +19,7 @@
 
     <Page.Resources>
         <toolkitConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <converters:ImageIdToPathConverter x:Key="ImageConverter" />
+        <converters:ImageNameToPathConverter x:Key="ImageConverter" />
         <converters:PersonFilterToTextConverter x:Key="FilterToTextConverter" />
 
         <DataTemplate x:Key="ListViewItemTemplate">
@@ -34,7 +34,11 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <PersonPicture Initials="??" ProfilePicture="{Binding ImageID, Converter={StaticResource ImageConverter}}" Height="64"/>
+                <PersonPicture Initials="{Binding Initials}" Height="64">
+                    <PersonPicture.ProfilePicture>
+                        <BitmapImage UriSource="{Binding ImageName, Converter={StaticResource ImageConverter}}" CreateOptions="IgnoreImageCache" />
+                    </PersonPicture.ProfilePicture>
+                </PersonPicture>
                 <StackPanel Grid.Column="1" Margin="15,5,15,5">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding FirstName}" FontSize="18" FontWeight="Bold"/>

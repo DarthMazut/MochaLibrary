@@ -14,11 +14,14 @@ using MochaCore.Settings;
 using MochaCoreWinUI.DialogsEx;
 using MochaCoreWinUI.Navigation;
 using MochaCoreWinUI.Settings;
+using Model;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using ViewModels;
 using ViewModels.DialogsVMs;
 using Windows.ApplicationModel;
@@ -66,11 +69,26 @@ namespace WinUiApplication
             DialogManager.DefineDialog(ViewModels.Dialogs.EditPictureDialog.ID, () => new ContentDialogModule<DialogProperties>(_mainWindow, new EditPictureDialog(), new EditPictureDialogViewModel()));
             DialogManager.DefineDialog(ViewModels.Dialogs.SelectFileDialog.ID, () => new OpenFileDialogModule(_mainWindow));
 
-            SettingsManager.Register("mySettings", new ApplicationSettingsSection("mySettings",,))
+            SettingsManager.Register(
+                ApplicationSettings.SettingsName, 
+                new ApplicationSettingsSection<ApplicationSettings>(
+                    ApplicationSettings.SettingsName, 
+                    SerializeSettings, 
+                    DeserializeSettings));
 
             BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
 
             _mainWindow.Activate();
+        }
+
+        private Task<ApplicationSettings> DeserializeSettings(string json)
+        {
+            return Task.Run(() => JsonConvert.DeserializeObject<ApplicationSettings>(json));
+        }
+
+        private Task<string> SerializeSettings(ApplicationSettings settings)
+        {
+            return Task.Run(() => JsonConvert.SerializeObject(settings));
         }
     }
 }

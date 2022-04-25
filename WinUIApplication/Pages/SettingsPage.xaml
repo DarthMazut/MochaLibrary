@@ -10,6 +10,9 @@
 
     <Grid>
         <TextBlock Text="Settings Page" HorizontalAlignment="Center" Margin="20" FontSize="36" FontFamily="Lucida Console"/>
-        <ToggleSwitch HorizontalAlignment="Center" VerticalAlignment="Center" OnContent="It's working" OffContent="It's turned off"  />
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <ToggleSwitch OnContent="It's working" OffContent="It's turned off"  />
+            <Button Content="Open Settings Folder" Command="{Binding OpenSettingsFolderCommand}" Margin="5"/>
+        </StackPanel>
     </Grid>
 </Page>

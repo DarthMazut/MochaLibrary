@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Data;
+using Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,7 @@ using Windows.Storage;
 
 namespace WinUiApplication.Converters
 {
-    public class ImageIdToPathConverter : IValueConverter
+    public class ImageNameToPathConverter : IValueConverter
     {
         public object? Convert(object? value, Type targetType, object parameter, string language)
         {
@@ -18,10 +19,9 @@ namespace WinUiApplication.Converters
                 return null;
             }
 
-            if (value is string imgeId)
+            if (value is string imageName)
             {
-                string settingsPath = ApplicationData.Current.LocalFolder.Path;
-                return Path.Combine(settingsPath, imgeId) + ".png";
+                return Path.Combine(ApplicationSettings.SettingsFolder, imageName);
             }
 
             throw new ArgumentException();

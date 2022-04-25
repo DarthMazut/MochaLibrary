@@ -11,6 +11,10 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <converters:StringToBoolConverter x:Name="StringToBoolConverter" />
+    </Page.Resources>
+    
     <Grid>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
@@ -90,7 +94,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button Content="Go back" Command="{Binding GoBackCommand}" HorizontalAlignment="Left"/>
-            <Button Grid.Column="1" Content="Apply" HorizontalAlignment="Right"/>
+            <Button Grid.Column="1" Content="Apply" Command="{Binding ApplyCommand}" IsEnabled="{Binding FirstName, Converter={StaticResource StringToBoolConverter}}" HorizontalAlignment="Right"/>
         </Grid>
     </Grid>
 </Page>

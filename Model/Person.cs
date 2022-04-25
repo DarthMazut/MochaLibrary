@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,37 +9,69 @@ namespace Model
 {
     public class Person
     {
-        public Person(string firstName)
-        {
-            FirstName = firstName;
-        }
+        public Person(string firstName, string lastName) : this(firstName, lastName, Guid.NewGuid()) { }
 
-        public Person(string firstName, string lastName, string city, DateTime birthday, string imageId)
+        [JsonConstructor]
+        private Person(string firstName, string lastName, Guid guid)
         {
             FirstName = firstName;
             LastName = lastName;
-            City = city;
-            Birthday = birthday;
-            ImageID = imageId;
+            Guid = guid;
         }
 
-        public string FullName => $"{FirstName} {LastName}";
+        public Guid Guid { get; }
 
         public string FirstName { get; set; }
 
-        public string LastName { get; set; } = "N/A";
+        public string LastName { get; set; }
 
-        public string City { get; set; } = "Unknown";
+        public string? City { get; set; }
 
-        public DateTimeOffset Birthday { get; set; } = new(new DateTime(1980, 1, 1));
+        public DateTimeOffset? Birthday { get; set; }
 
-        public int Age => (DateTime.Today - Birthday).Days / 365;
+        public PersonImageType? ImageType { get; set; }
 
-        public int DaysTillBirthday => CalculateDaysTillBirthday();
+        [JsonIgnore]
+        public string FullName => $"{FirstName} {LastName}";
 
+        [JsonIgnore]
+        public int? Age => (DateTime.Today - Birthday)?.Days / 365;
+
+        [JsonIgnore]
+        public int? DaysTillBirthday => CalculateDaysTillBirthday();
+
+        [JsonIgnore]
         public string Initials => GetInitials();
 
-        public string? ImageID { get; set; }
+        [JsonIgnore]
+        public string? ImageName
+        {
+            get
+            {
+                if (ImageType is null)
+                {
+                    return null;
+                }
+                
+                return $"{Guid}.{ImageType.ToString().ToLower()}";
+            }
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is Person person &&
+                   Guid.Equals(person.Guid) &&
+                   FirstName == person.FirstName &&
+                   LastName == person.LastName &&
+                   City == person.City &&
+                   EqualityComparer<DateTimeOffset?>.Default.Equals(Birthday, person.Birthday) &&
+                   ImageType == person.ImageType;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Guid, FirstName, LastName, City, Birthday, ImageType);
+        }
 
         private string GetInitials()
         {
@@ -58,11 +91,16 @@ namespace Model
             return $"{firstInitial}{lastInitial}";
         }
 
-        // Thank you StackOverflow! <3
-        private int CalculateDaysTillBirthday()
+        private int? CalculateDaysTillBirthday()
         {
+            if (Birthday is null)
+            {
+                return null;
+            }
+            DateTimeOffset notNullBirthday = (DateTimeOffset)Birthday;
+
             DateTimeOffset today = DateTime.Today;
-            DateTimeOffset next = Birthday.AddYears(today.Year - Birthday.Year);
+            DateTimeOffset next = notNullBirthday.AddYears(today.Year - notNullBirthday.Year);
 
             if (next < today)
             {

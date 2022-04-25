@@ -1,6 +1,7 @@
 ﻿using MochaCore.DialogsEx;
 using MochaCore.DialogsEx.Extensions;
 using MochaCore.Navigation;
+using MochaCore.Settings;
 using Model;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -22,13 +23,6 @@ namespace ViewModels
         private ObservableCollection<Person> _people = new();
         private PersonFilter? _currentFilter;
 
-        private List<Person> _modelData = new()
-        {
-            new Person("John", "Doe", "Calafiornia", new DateTime(1999, 6, 6), "xxx"),
-            new Person("Jane", "Doe", "Santa Monica", new DateTime(2001, 2, 16), "yyy"),
-            new Person("Dupa", "Dupa", "Dupa", new DateTime(1995, 1, 17), "zzz")
-        };
-
         private DelegateCommand<Person> _removePersonCommand;
         private DelegateCommand<Person> _moreInfoCommand;
         private DelegateCommand _addPerson;
@@ -36,7 +30,6 @@ namespace ViewModels
         private DelegateCommand _openFilterCommand;
         private DelegateCommand<PersonFilter> _applyFilterCommand;
         private DelegateCommand _filterRemovedCommand;
-
 
         public PeoplePageViewModel()
         {
@@ -79,24 +72,22 @@ namespace ViewModels
         }
 
         public DelegateCommand<Person> RemovePersonCommand => _removePersonCommand ?? (_removePersonCommand = new DelegateCommand<Person>(RemovePerson));
-
         public DelegateCommand<Person> MoreInfoCommand => _moreInfoCommand ?? (_moreInfoCommand = new DelegateCommand<Person>(MoreInfo));
-
         public DelegateCommand AddPersonCommand => _addPerson ?? (_addPerson = new DelegateCommand(AddPerson));
-
         public DelegateCommand<Person> EditPersonCommand => _editPersonCommand ??= new DelegateCommand<Person>(EditPerson);
-
         public DelegateCommand OpenFilterCommand => _openFilterCommand ??= new DelegateCommand(() => IsFilterOpen = true);
-
-        public DelegateCommand<PersonFilter> ApplyFilterCommand => _applyFilterCommand ??= new DelegateCommand<PersonFilter>(ApplyFilter);
-        
+        public DelegateCommand<PersonFilter> ApplyFilterCommand => _applyFilterCommand ??= new DelegateCommand<PersonFilter>(ApplyFilter);    
         public DelegateCommand FilterRemovedCommand => _filterRemovedCommand ??= new DelegateCommand(RemoveFilter);
 
-        public void OnNavigatedTo(NavigationData navigationData)
+        public async void OnNavigatedTo(NavigationData navigationData)
         {
             IsLoadingPeople = true;
 
-            foreach (Person person in _modelData)
+            ISettingsSection<ApplicationSettings> settingsSection = ApplicationSettings.Section;
+            ApplicationSettings settings = await settingsSection.LoadAsync();
+            List<Person> loadedPeople = settings.People;
+
+            foreach (Person person in loadedPeople)
             {
                 People.Add(person);
             }
@@ -114,9 +105,24 @@ namespace ViewModels
             await dialog.ShowModalAsync(this);
         }
 
-        private void RemovePerson(Person person)
+        private async void RemovePerson(Person person)
         {
             People.Remove(person);
+            ISettingsSection<ApplicationSettings> settingsSection = ApplicationSettings.Section;
+            ApplicationSettings applicationSettings = await settingsSection.LoadAsync();
+            await settingsSection.UpdateAsync((settings) => 
+            {
+                settings.People.Remove(person);
+            });
+
+            if (person.ImageName is not null)
+            {
+                string imagePath = Path.Combine(applicationSettings.ImagesPath, person.ImageName);
+                if (File.Exists(imagePath))
+                {
+                    File.Delete(imagePath);
+                }
+            }
         }
 
         private async void AddPerson()
@@ -147,14 +153,13 @@ namespace ViewModels
 
         private Task<List<Person>> ResolveFilter()
         {
-            if (CurrentFilter is null)
-            {
-                return Task.FromResult(_modelData);
-            }
+            //if (CurrentFilter is null)
+            //{
+            //    return Task.FromResult(_modelData);
+            //}
 
             return Task.Run(async () => 
             {
-                await Task.Delay(1500);
                 return People.Where(p => CurrentFilter.CheckPerson(p)).ToList();
             });
         }

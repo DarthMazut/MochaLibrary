@@ -2,6 +2,7 @@
 using MochaCore.DialogsEx;
 using MochaCore.DialogsEx.Extensions;
 using MochaCore.Navigation;
+using MochaCore.Settings;
 using MochaCore.Utils;
 using Model;
 using Prism.Commands;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace ViewModels
 {
-    public class EditPersonPageViewModel : BindableBase, INavigatable, IOnNavigatedTo
+    public class EditPersonPageViewModel : BindableBase, INavigatable, IOnNavigatedToAsync
     {
         private string? _title;
         private string? _firstName;
@@ -25,8 +26,11 @@ namespace ViewModels
         private DateTimeOffset _birthday;
         private string? _imageSource;
 
+        private Person? _editingPerson;
+
         private DelegateCommand _goBackCommand;
         private DelegateCommand _editPictureCommand;
+        private DelegateCommand _applyCommand;
 
         public EditPersonPageViewModel()
         {
@@ -81,6 +85,43 @@ namespace ViewModels
 
         public DelegateCommand GoBackCommand => _goBackCommand ??= new DelegateCommand(GoBack);
         public DelegateCommand EditPictureCommand => _editPictureCommand ??= new DelegateCommand(EditPicture);
+        public DelegateCommand ApplyCommand => _applyCommand ??= new DelegateCommand(Apply);
+
+        private async void Apply()
+        {
+            Person person = _editingPerson is null ? new(FirstName, LastName) : _editingPerson;
+            person.City = City;
+            person.Birthday = Birthday;
+
+            ISettingsSection<ApplicationSettings> settingsSection = ApplicationSettings.Section;
+            ApplicationSettings applicationSettings = await settingsSection.LoadAsync();
+
+            if (ImageSource is not null)
+            {
+                PersonImageType? imageType = PersonImageTypeExtensions.ResolvePathExtension(ImageSource);
+                if (imageType is not null)
+                {
+                    person.ImageType = imageType;
+                    File.Copy(ImageSource, Path.Combine(applicationSettings.ImagesPath, person.ImageName), true);
+                }
+            }
+
+            if (_editingPerson is null)
+            {
+                await settingsSection.UpdateAsync(settings => settings.People.Add(person));
+            }
+            else
+            {
+                await settingsSection.UpdateAsync(settings =>
+                {
+                    int currentIndex = settings.People.FindIndex(p => p.Guid == person.Guid);
+                    settings.People.RemoveAt(currentIndex);
+                    settings.People.Insert(currentIndex, person);
+                });
+            }
+
+            _ = await Navigator.NavigateAsync(Pages.PeoplePage.GetNavigationModule());
+        }
 
         private async void GoBack()
         {
@@ -102,7 +143,7 @@ namespace ViewModels
             }
         }
 
-        public void OnNavigatedTo(NavigationData navigationData)
+        public async Task OnNavigatedToAsync(NavigationData navigationData)
         {
             if (navigationData.Data is Person person)
             {
@@ -110,8 +151,10 @@ namespace ViewModels
                 FirstName = person.FirstName;
                 LastName = person.LastName;
                 City = person.City;
-                Birthday = person.Birthday;
-                ImageSource = ResolveImageSource(person.ImageID);
+                Birthday = person.Birthday ?? new DateTimeOffset();
+                ImageSource = await ResolveImageSource(person.ImageName);
+                
+                _editingPerson = person;
             }
             else
             {
@@ -119,15 +162,17 @@ namespace ViewModels
             }
         }
 
-        private string? ResolveImageSource(string? imageID)
+        private async Task<string?> ResolveImageSource(string? imageName)
         {
-            if (imageID is null)
+            if (imageName is null)
             {
                 return null;
             }
 
-            string localFolderPath = BehaviourManager.Recall<object, string>("GetLocalAppFolderPath").Execute(new object());
-            return Path.Combine(localFolderPath, imageID) + ".png";
+            ISettingsSection<ApplicationSettings> settingsSection = ApplicationSettings.Section;
+            ApplicationSettings settings = await settingsSection.LoadAsync();
+
+            return Path.Combine(settings.ImagesPath, imageName);
         }
     }
 }
