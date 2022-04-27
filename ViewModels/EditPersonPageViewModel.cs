@@ -83,13 +83,28 @@ namespace ViewModels
             set => SetProperty(ref _imageSource, value);
         }
 
+        public Func<string, bool> ValidationFunction => (t) => 
+        {
+            return !string.IsNullOrWhiteSpace(t);
+        };
+
         public DelegateCommand GoBackCommand => _goBackCommand ??= new DelegateCommand(GoBack);
         public DelegateCommand EditPictureCommand => _editPictureCommand ??= new DelegateCommand(EditPicture);
         public DelegateCommand ApplyCommand => _applyCommand ??= new DelegateCommand(Apply);
 
         private async void Apply()
         {
-            Person person = _editingPerson is null ? new(FirstName, LastName) : _editingPerson;
+            Person? person = _editingPerson;
+            if (person is null)
+            {
+                person = new(FirstName, LastName);
+            }
+            else
+            {
+                person.FirstName = FirstName;
+                person.LastName = LastName;
+            }
+            
             person.City = City;
             person.Birthday = Birthday;
 
@@ -102,7 +117,11 @@ namespace ViewModels
                 if (imageType is not null)
                 {
                     person.ImageType = imageType;
-                    File.Copy(ImageSource, Path.Combine(applicationSettings.ImagesPath, person.ImageName), true);
+                    try
+                    {
+                        File.Copy(ImageSource, Path.Combine(applicationSettings.ImagesPath, person.ImageName), true);
+                    }
+                    catch (IOException ex) when (ex.HResult == -2147024864) { }
                 }
             }
 

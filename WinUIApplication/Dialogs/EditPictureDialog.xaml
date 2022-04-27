@@ -53,7 +53,8 @@
         </ScrollViewer>
 
         <TextBlock Grid.RowSpan="3" Text="No image selected" Visibility="{Binding IsSelectedPathLegit, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        
+        <ProgressRing Grid.RowSpan="3" IsActive="{Binding IsLoadingImage}" Foreground="LightGreen" Width="56" Height="56" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
             <Button Content="Apply" IsEnabled="{Binding IsSelectedPathLegit}" Command="{Binding CloseCommand}" CommandParameter="{Binding ImageSource}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Button Content="Close" Command="{Binding CloseCommand}" HorizontalAlignment="Center" VerticalAlignment="Center"/>

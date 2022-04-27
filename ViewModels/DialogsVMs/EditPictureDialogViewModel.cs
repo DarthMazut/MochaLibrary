@@ -17,6 +17,7 @@ namespace ViewModels.DialogsVMs
     {
         private string? _imageSource;
         private bool _isSelectedPathLegit;
+        private bool _isLoadingImage;
 
         private DelegateCommand<string?> _closeCommand;
         private DelegateCommand _searchFolderCommand;
@@ -45,7 +46,14 @@ namespace ViewModels.DialogsVMs
             set => SetProperty(ref _isSelectedPathLegit, value);
         }
 
+        public bool IsLoadingImage
+        {
+            get => _isLoadingImage;
+            set => SetProperty(ref _isLoadingImage, value);
+        }
+
         public DelegateCommand<string?> CloseCommand => _closeCommand;
+
         public DelegateCommand SearchFolderCommand => _searchFolderCommand;
 
         public DelegateCommand ImageOpenedCommand => _imageOpenedCommand;
@@ -78,6 +86,7 @@ namespace ViewModels.DialogsVMs
 
         private void OnImageSourceChanged()
         {
+            IsLoadingImage = true;
             IsSelectedPathLegit = false;
         }
 
@@ -85,6 +94,7 @@ namespace ViewModels.DialogsVMs
         {
             bool isExtensionSupported = PersonImageTypeExtensions.ResolvePathExtension(ImageSource) is not null;
             IsSelectedPathLegit = isExtensionSupported;
+            IsLoadingImage = false;
         }
 
         private void Close(string? newPath)

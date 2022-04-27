@@ -21,6 +21,7 @@
         <toolkitConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:ImageNameToPathConverter x:Key="ImageConverter" />
         <converters:PersonFilterToTextConverter x:Key="FilterToTextConverter" />
+        <converters:DaysTillBirthdayToPercentConverter x:Key="DaysTillBirthdayConverter" />
 
         <DataTemplate x:Key="ListViewItemTemplate">
             <Grid Background="Transparent">
@@ -30,6 +31,8 @@
                     </MenuFlyout>
                 </Grid.ContextFlyout>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="150"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -57,7 +60,14 @@
                         <TextBlock Text="{Binding Age}" FontSize="12" Foreground="DarkGray"/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="10" Visibility="{Binding ParentSource.IsSelected, Converter={StaticResource BoolToVisibilityConverter}}" mochaXaml:ParentService.ParentType="ListViewItem">
+                <StackPanel Grid.Column="2" Spacing="5" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <TextBlock Text="Days thill birthday:" />
+                        <TextBlock Text="{Binding DaysTillBirthday}" />
+                    </StackPanel>
+                    <ProgressBar Width="150" Value="{Binding DaysTillBirthday, Converter={StaticResource DaysTillBirthdayConverter}}" Maximum="100" />
+                </StackPanel>
+                <StackPanel Grid.Column="4" Orientation="Horizontal" Margin="10" Visibility="{Binding ParentSource.IsSelected, Converter={StaticResource BoolToVisibilityConverter}}" mochaXaml:ParentService.ParentType="ListViewItem">
                     <Button ToolTipService.ToolTip="Remove person's data">
                         <Button.Flyout>
                             <Flyout>

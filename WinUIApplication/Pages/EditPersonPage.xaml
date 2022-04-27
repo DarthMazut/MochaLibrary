@@ -76,7 +76,8 @@
                 <Grid x:Name="xe_DataGrid" Grid.ColumnSpan="2" Margin="20,0,20,20">
                     <StackPanel Spacing="10">
                         <TextBlock Text="First name" FontSize="18"/>
-                        <TextBox Text="{Binding FirstName, Mode=TwoWay}" PlaceholderText="John" />
+                        <!--<TextBox Text="{Binding FirstName, Mode=TwoWay}" PlaceholderText="John" />-->
+                        <controls:ValidationTextBox Text="{Binding FirstName, Mode=TwoWay}" ValidationFunction="{Binding ValidationFunction}" PlaceholderText="John" />
                         <TextBlock Text="Last name" FontSize="18"/>
                         <TextBox Text="{Binding LastName, Mode=TwoWay}" PlaceholderText="Doe" />
                         <TextBlock Text="City:" FontSize="18"/>
