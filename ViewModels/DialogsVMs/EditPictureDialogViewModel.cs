@@ -37,7 +37,7 @@ namespace ViewModels.DialogsVMs
         public string? ImageSource
         {
             get => _imageSource;
-            set => SetProperty(ref _imageSource, value, OnImageSourceChanged);
+            set => SetProperty(ref _imageSource, value);
         }
 
         public bool IsSelectedPathLegit 
@@ -77,17 +77,14 @@ namespace ViewModels.DialogsVMs
         {
             IDialogModule<OpenFileDialogProperties> selectFileDialog = Dialogs.SelectFileDialog.Module;
             selectFileDialog.Properties.Filters.Add(new ExtensionFilter("Images", new List<string> { "jpg", "jpeg", "png" }));
+
             if (await selectFileDialog.ShowModalAsync(this) is true)
             {
+                IsLoadingImage = true;
+                IsSelectedPathLegit = false;
+                await Task.Yield();
                 ImageSource = selectFileDialog.Properties.SelectedPaths.FirstOrDefault();
             }
-
-        }
-
-        private void OnImageSourceChanged()
-        {
-            IsLoadingImage = true;
-            IsSelectedPathLegit = false;
         }
 
         private void ImageOpened()

@@ -12,7 +12,7 @@ namespace ViewModels.Controls
 {
     public class FilterTabViewModel : BindableBase
     {
-        private string _selectedFilter;
+        private PersonFilterValue _selectedFilter;
         private string? _expression = "test";
         private bool _matchWholeWords;
         private bool _containsExpression;
@@ -26,7 +26,7 @@ namespace ViewModels.Controls
 
         public ControlNotifier Notifier { get; } = new ControlNotifier();
 
-        public string SelectedFilter
+        public PersonFilterValue SelectedFilter
         {
             get => _selectedFilter;
             set => SetProperty(ref _selectedFilter, value);
@@ -50,7 +50,7 @@ namespace ViewModels.Controls
             set => SetProperty(ref _containsExpression, value);
         }
 
-        public IList<string> FilterValues { get; } = Enum.GetNames(typeof(PersonFilterValue));
+        public IList<PersonFilterValue> FilterValues { get; } = ((PersonFilterValue[])Enum.GetValues(typeof(PersonFilterValue))).ToList();
 
         public DelegateCommand ApplyFilterCommand => _applyFilterCommand ??= new DelegateCommand(ApplyFilter);
 
@@ -73,7 +73,7 @@ namespace ViewModels.Controls
         {
             return new PersonFilter()
             {
-                FilterValue = Enum.Parse<PersonFilterValue>(SelectedFilter),
+                FilterValue = SelectedFilter,
                 Expression = Expression,
                 MatchWholeWords = MatchWholeWords,
                 Contains = ContainsExpression
