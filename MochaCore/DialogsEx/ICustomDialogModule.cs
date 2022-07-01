@@ -12,7 +12,7 @@ namespace MochaCore.DialogsEx
     /// and <see cref="IDialogClosing.Closing"/> events.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
-    public interface ICustomDialogModule<T> : IDataContextDialogModule<T>, IDialogClose, IDialogOpened, IDialogClosing
+    public interface ICustomDialogModule<T> : IDataContextDialogModule<T>, IDialogClose, IDialogOpened, IDialogClosing where T : DialogProperties, new()
     {
         /// <summary>
         /// Returns a reference to <see cref="IDialog"/> object which acts as a DataContext for dialog represented by this module. 

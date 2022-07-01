@@ -13,7 +13,7 @@ namespace MochCoreWPF.DialogsEx
     /// Provides standard implementation of <see cref="ICustomDialogModule{T}"/> for WPF <see cref="Window"/> object.
     /// </summary>
     /// <typeparam name="T">Type of statically typed properties object used for configuration of this module.</typeparam>
-    public class WindowDialogModule<T> : ICustomDialogModule<T>, IDialogClose
+    public class WindowDialogModule<T> : ICustomDialogModule<T>, IDialogClose where T : DialogProperties, new()
     {
         private readonly Window _dialogWindow;
         private ICustomDialog<T>? _dataContext;
@@ -28,18 +28,7 @@ namespace MochCoreWPF.DialogsEx
 
             _dialogWindow = dialogWindow;
             SetDataContext(dataContext);
-
-            if (properties is null)
-            {
-                if (typeof(T).GetConstructor(Array.Empty<Type>()) != null)
-                {
-                    Properties = (T)Activator.CreateInstance(typeof(T))!;
-                }
-            }
-            else
-            {
-                Properties = properties;
-            }
+            Properties = properties ?? new T();
 
             dialogWindow.Closing += (s, e) => this.Closing?.Invoke(this, e);
             dialogWindow.Loaded += (s, e) => this.Opened?.Invoke(this, EventArgs.Empty);

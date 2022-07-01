@@ -20,7 +20,7 @@ namespace MochCoreWPF.DialogsEx
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="host">Object which parent window is to be found.</param>
-        public static Window? FindParent<T>(object host)
+        public static Window? FindParent<T>(object host) where T : DialogProperties, new()
         {
             Window? foundWindow;
             if (host is FrameworkElement hostFrameworkElement)

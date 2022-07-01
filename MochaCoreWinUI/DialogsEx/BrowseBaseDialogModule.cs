@@ -15,7 +15,7 @@ namespace MochaCoreWinUI.DialogsEx
     /// <typeparam name="TView">Type of underlying dialog object.</typeparam>
     /// <typeparam name="TResult">Technology specific result type of underlying dialog object.</typeparam>
     /// <typeparam name="TProperties">Type of statically typed properties for represented dialog.</typeparam>
-    public abstract class BrowseBaseDialogModule<TView, TResult, TProperties> : IDialogModule<TProperties>
+    public abstract class BrowseBaseDialogModule<TView, TResult, TProperties> : IDialogModule<TProperties> where TProperties : DialogProperties, new()
     {
         private readonly Window _mainWindow;
         private readonly TView _view;

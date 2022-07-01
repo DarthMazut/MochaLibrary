@@ -1,5 +1,4 @@
-﻿using MochaCore.DialogsEx.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +10,7 @@ namespace MochaCore.DialogsEx
     /// Extends <see cref="IDialogModule{T}"/> with possibility to work with <see cref="IDataContextDialog{T}"/> as DataContext.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
-    public interface IDataContextDialogModule<T> : IDialogModule<T>
+    public interface IDataContextDialogModule<T> : IDialogModule<T> where T : DialogProperties, new()
     {
         /// <summary>
         /// Returns a reference to <see cref="IDialog"/> object which acts as a DataContext for dialog represented by this module. 

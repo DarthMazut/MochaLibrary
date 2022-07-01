@@ -8,7 +8,6 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Behaviours;
 using MochaCore.DialogsEx;
-using MochaCore.DialogsEx.Extensions;
 using MochaCore.Navigation;
 using MochaCore.Settings;
 using MochaCoreWinUI.DialogsEx;

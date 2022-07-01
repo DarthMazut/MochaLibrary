@@ -16,7 +16,7 @@ namespace MochaCoreWinUI.DialogsEx
     /// Provides base implementation for WinUI 3 <see cref="ContentDialog"/>-based modules.
     /// </summary>
     /// <typeparam name="T">Type of <see cref="Properties"/> object.</typeparam>
-    public class ContentDialogModule<T> : ICustomDialogModule<T>
+    public class ContentDialogModule<T> : ICustomDialogModule<T> where T : DialogProperties, new()
     {
         private bool _isOpen = false;
         private bool _wasClosed = false;
@@ -52,18 +52,7 @@ namespace MochaCoreWinUI.DialogsEx
             _view = view;
 
             SetDataContext(dataContext);
-
-            if (properties is null)
-            {
-                if (typeof(T).GetConstructor(Array.Empty<Type>()) != null)
-                {
-                    Properties = (T)Activator.CreateInstance(typeof(T))!;
-                }
-            }
-            else
-            {
-                Properties = properties;
-            }
+            Properties = properties ?? new T();
 
             view.Opened += (s, e) => Opened?.Invoke(this, EventArgs.Empty);
             view.Closing += (s, e) =>

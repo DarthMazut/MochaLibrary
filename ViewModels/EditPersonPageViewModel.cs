@@ -1,6 +1,5 @@
 ﻿using MochaCore.Behaviours;
 using MochaCore.DialogsEx;
-using MochaCore.DialogsEx.Extensions;
 using MochaCore.Navigation;
 using MochaCore.Settings;
 using MochaCore.Utils;

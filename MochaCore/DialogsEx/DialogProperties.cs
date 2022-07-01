@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.DialogsEx.Extensions
+namespace MochaCore.DialogsEx
 {
     /// <summary>
     /// Base class for dialog properties objects.

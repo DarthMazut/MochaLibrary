@@ -9,19 +9,19 @@ namespace MochaCore.DialogsEx.Extensions.DI
     public class DialogFactory : IDialogFactory
     {
         /// <inheritdoc/>
-        public IDialogModule<T> Create<T>(string id)
+        public IDialogModule<T> Create<T>(string id) where T : DialogProperties, new()
         {
             return DialogManager.GetDialog<T>(id);
         }
 
         /// <inheritdoc/>
-        public IDataContextDialogModule<T> CreateDataContextModule<T>(string id)
+        public IDataContextDialogModule<T> CreateDataContextModule<T>(string id) where T : DialogProperties, new()
         {
             return DialogManager.GetDataContextDialog<T>(id);
         }
 
         /// <inheritdoc/>
-        public ICustomDialogModule<T> CreateCustomModule<T>(string id)
+        public ICustomDialogModule<T> CreateCustomModule<T>(string id) where T : DialogProperties, new()
         {
             return DialogManager.GetCustomDialog<T>(id);
         }

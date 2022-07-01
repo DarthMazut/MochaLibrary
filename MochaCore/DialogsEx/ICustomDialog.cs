@@ -7,7 +7,7 @@ namespace MochaCore.DialogsEx
     /// <see cref="ICustomDialogModule{T}"/> implementations.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed parameters for the associated dialog.</typeparam>
-    public interface ICustomDialog<T> : IDataContextDialog<T>
+    public interface ICustomDialog<T> : IDataContextDialog<T> where T : DialogProperties, new()
     {
         /// <summary>
         /// A reference to the module whose DataContext is this instance. 

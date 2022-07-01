@@ -21,7 +21,7 @@ namespace MochaCoreWinUI.DialogsEx
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="host">Object whose parent <see cref="XamlRoot"/> is to be found.</param>
-        public static XamlRoot? FindParentXamlRoot<T>(object host)
+        public static XamlRoot? FindParentXamlRoot<T>(object host) where T : DialogProperties, new()
         {
             if (host is INavigatable navigatable)
             {
@@ -56,7 +56,7 @@ namespace MochaCoreWinUI.DialogsEx
         /// </summary>
         /// <typeparam name="T">Type of statically typed properties of dialog module which initiated search process.</typeparam>
         /// <param name="host">Object whose parent is to be found.</param>
-        public static Window? FindParentWindow<T>(object host)
+        public static Window? FindParentWindow<T>(object host) where T : DialogProperties, new()
         {
             if (host is INavigatable navigatable)
             {
