@@ -141,7 +141,14 @@ namespace MochaCoreWinUI.DialogsEx
         /// <inheritdoc/>
         public void Dispose()
         {
+            if (_dataContext is IDialogInitialize dialogInitialize)
+            {
+                dialogInitialize.Uninitialize();
+            }
+            _view.DataContext = null;
+
             DisposeDialogCore(this);
+
             GC.SuppressFinalize(this);
             Disposed?.Invoke(this, EventArgs.Empty);
         }
@@ -149,14 +156,17 @@ namespace MochaCoreWinUI.DialogsEx
         /// <inheritdoc/>
         public void SetDataContext(ICustomDialog<T>? dataContext)
         {
+            _dataContext = dataContext;
             _view.DataContext = dataContext;
 
             if(dataContext is not null)
             {
                 dataContext.DialogModule = this;
+                if (dataContext is IDialogInitialize dialogInitialize)
+                {
+                    dialogInitialize.Initialize();
+                }
             }
-
-            _dataContext = dataContext;
         }
 
         /// <inheritdoc/>
@@ -174,12 +184,11 @@ namespace MochaCoreWinUI.DialogsEx
         }
 
         /// <summary>
-        /// Sets *DataContex* of <see cref="View"/> object to <see langword="null"/>.
+        /// Allows for providing a custom code to be executed while this object is being disposed of.
+        /// Override this when there are disposable resources within your custom <see cref="Properties"/> object.
         /// </summary>
-        protected virtual void DisposeDialogCore(ContentDialogModule<T> module) 
-        {
-            _view.DataContext = null;
-        }
+        /// <param name="module">Module that's being disposed.</param>
+        protected virtual void DisposeDialogCore(ContentDialogModule<T> module) { }
 
         /// <summary>
         /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.

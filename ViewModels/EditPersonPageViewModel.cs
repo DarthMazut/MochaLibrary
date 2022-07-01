@@ -149,7 +149,7 @@ namespace ViewModels
 
         private async void EditPicture()
         {
-            ICustomDialogModule<DialogProperties> editPictureDialog = Dialogs.EditPictureDialog.Module;
+            using ICustomDialogModule<DialogProperties> editPictureDialog = Dialogs.EditPictureDialog.Module;
             if (ImageSource is not null)
             {
                 editPictureDialog.Properties.CustomProperties.Add("SelectedImage", ImageSource);

@@ -60,6 +60,9 @@ namespace MochCoreWPF.DialogsEx
 
         public Func<bool?, T, ICustomDialog<T>?, bool?> HandleResult { get; set; }
 
+        /// <summary>
+        /// Allows to define additional code to be invoked while this module is being disposed.
+        /// </summary>
         public Action<ICustomDialog<T>?>? DisposeDialog { get; set; }
 
         public Func<object, Window?> FindParent { get; set; }
@@ -81,8 +84,14 @@ namespace MochCoreWPF.DialogsEx
 
         public void Dispose()
         {
-            _dialogWindow.DataContext = null;
+            if (_dataContext is IDialogInitialize dialogInitialize)
+            {
+                dialogInitialize.Uninitialize();
+            }
+
             DisposeDialog?.Invoke(DataContext);
+            _dialogWindow.DataContext = null;
+            
             GC.SuppressFinalize(this);
             Disposed?.Invoke(this, EventArgs.Empty);
         }
@@ -90,13 +99,16 @@ namespace MochCoreWPF.DialogsEx
         public void SetDataContext(ICustomDialog<T>? dataContext)
         {
             _dataContext = dataContext;
+            _dialogWindow.DataContext = dataContext;
 
             if (dataContext is not null)
             {
                 dataContext.DialogModule = this;
+                if (dataContext is IDialogInitialize dialogInitialize)
+                {
+                    dialogInitialize.Initialize();
+                }
             }
-
-            _dialogWindow.DataContext = dataContext;
         }
 
         public Task<bool?> ShowModalAsync(object host)
@@ -117,6 +129,11 @@ namespace MochCoreWPF.DialogsEx
             return result;
         }
 
+        /// <summary>
+        /// Allows for providing a custom code to be executed while this object is being disposed of.
+        /// Override this when there are disposable resources within your custom <see cref="Properties"/> object.
+        /// </summary>
+        /// <param name="module">Module that's being disposed.</param>
         protected virtual void DisposeDialogCore(ICustomDialog<T>? module) { }
 
         protected virtual Window? FindParentCore(object host)

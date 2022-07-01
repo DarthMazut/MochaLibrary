@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ViewModels.DialogsVMs
 {
-    public class EditPictureDialogViewModel : BindableBase, ICustomDialog<DialogProperties>
+    public class EditPictureDialogViewModel : BindableBase, ICustomDialog<DialogProperties>, IDialogInitialize
     {
         private string? _imageSource;
         private bool _isSelectedPathLegit;
@@ -23,16 +23,7 @@ namespace ViewModels.DialogsVMs
         private DelegateCommand _searchFolderCommand;
         private DelegateCommand _imageOpenedCommand;
 
-        private ICustomDialogModule<DialogProperties> _dialogModule;
-        public ICustomDialogModule<DialogProperties> DialogModule 
-        {
-            get => _dialogModule;
-            set
-            {
-                _dialogModule = value;
-                DialogModule.Opened += Opened;
-            }
-        }
+        public ICustomDialogModule<DialogProperties> DialogModule { get; set; }
 
         public string? ImageSource
         {
@@ -63,6 +54,16 @@ namespace ViewModels.DialogsVMs
             _closeCommand = new DelegateCommand<string?>(Close);
             _searchFolderCommand = new DelegateCommand(FindImage);
             _imageOpenedCommand = new DelegateCommand(ImageOpened);
+        }
+
+        public void Initialize()
+        {
+            DialogModule.Opened += Opened;
+        }
+
+        public void Uninitialize()
+        {
+            DialogModule.Opened -= Opened;
         }
 
         private void Opened(object? sender, EventArgs e)
