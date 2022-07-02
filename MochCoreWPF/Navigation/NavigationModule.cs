@@ -20,6 +20,29 @@ namespace MochaCoreWPF.Navigation
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationModule"/> class.
+        /// <para>
+        /// Use this constructor if provided *view* object has already assigned adequate 
+        /// DataContext in XAML. Throws if DataContext is not assigned to provided view or its not *INavigatable*.
+        /// </para>
+        /// </summary>
+        /// <param name="view">Visual representation for this module. A <see langword="UserControl"/> is a good choice here.</param>
+        /// <exception cref="InvalidOperationException"/>
+        public NavigationModule(FrameworkElement view)
+        {
+            _view = view;
+
+            if (view.DataContext is not null && view.DataContext is INavigatable navigatable)
+            {
+                _dataContext = navigatable;
+            }
+            else
+            {
+                throw new InvalidOperationException("Data context was not assigned for provided *view* or wasn't *INavigatable*");
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NavigationModule"/> class.
         /// </summary>
         /// <param name="view">Visual representation for this module. A <see langword="UserControl"/> is a good choice here.</param>
         /// <param name="dataContext">
