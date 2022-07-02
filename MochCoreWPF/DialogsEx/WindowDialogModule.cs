@@ -130,4 +130,31 @@ namespace MochCoreWPF.DialogsEx
             return ParentResolver.FindParent<T>(host) ?? Application.Current.MainWindow;
         }
     }
+
+    /// <summary>
+    /// Provides standard implementation of <see cref="ICustomDialogModule{T}"/> for WPF <see cref="Window"/> object.
+    /// </summary>
+    public sealed class WindowDialogModule : WindowDialogModule<DialogProperties>, IDialogClose
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowDialogModule"/> class.
+        /// </summary>
+        /// <param name="dialogWindow">Technology-specific representation of this dialog module.</param>
+        public WindowDialogModule(Window dialogWindow) : base(dialogWindow) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowDialogModule"/> class.
+        /// </summary>
+        /// <param name="dialogWindow">Technology-specific representation of this dialog module.</param>
+        /// <param name="dataContext">A dialog logic bound to view object by DataBinding mechanism.</param>
+        public WindowDialogModule(Window dialogWindow, ICustomDialog<DialogProperties> dataContext) : base(dialogWindow, dataContext) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowDialogModule"/> class.
+        /// </summary>
+        /// <param name="dialogWindow">Technology-specific representation of this dialog module.</param>
+        /// <param name="dataContext">A dialog logic bound to view object by DataBinding mechanism.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
+        public WindowDialogModule(Window dialogWindow, ICustomDialog<DialogProperties> dataContext, DialogProperties properties) : base(dialogWindow, dataContext, properties) { }
+    }
 }

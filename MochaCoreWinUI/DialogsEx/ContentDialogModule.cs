@@ -27,25 +27,25 @@ namespace MochaCoreWinUI.DialogsEx
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
         /// </summary>
-        /// <param name="mainWindow">Main application window object.</param>
-        /// <param name="view">Instance of <see cref="ContentDialog"/> or its descendant.</param>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
         public ContentDialogModule(Window mainWindow, ContentDialog view) : this(mainWindow, view, null, default(T)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
         /// </summary>
-        /// <param name="mainWindow">Main application window object.</param>
-        /// <param name="view">Instance of <see cref="ContentDialog"/> or its descendant.</param>
-        /// <param name="dataContext">Datacontext for view object.</param>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        /// <param name="dataContext">A dialog logic bound to view object by DataBinding mechanism.</param>
         public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<T> dataContext) : this(mainWindow, view, dataContext, default(T)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
         /// </summary>
-        /// <param name="mainWindow">Main application window object.</param>
-        /// <param name="view">Instance of <see cref="ContentDialog"/> or its descendant.</param>
-        /// <param name="dataContext">Datacontext for view object.</param>
-        /// <param name="properties">Properties object associated with this instance.</param>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        /// <param name="dataContext">A dialog logic bound to view object by DataBinding mechanism.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<T> dataContext, T properties)
         {
             _mainWindow = mainWindow;
@@ -231,5 +231,35 @@ namespace MochaCoreWinUI.DialogsEx
                 Closed?.Invoke(this, EventArgs.Empty);
             }
         }
+    }
+
+    /// <summary>
+    /// Provides base implementation for WinUI 3 <see cref="ContentDialog"/>-based modules.
+    /// </summary>
+    public class ContentDialogModule : ContentDialogModule<DialogProperties>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        public ContentDialogModule(Window mainWindow, ContentDialog view) : base(mainWindow, view) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        /// <param name="dataContext">A dialog logic bound to view object by DataBinding mechanism.</param>
+        public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<DialogProperties> dataContext) : base(mainWindow, view, dataContext) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        /// <param name="dataContext">A dialog logic bound to view object by DataBinding mechanism.</param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
+        public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<DialogProperties> dataContext, DialogProperties properties) : base(mainWindow, view, dataContext, properties) { }
     }
 }
