@@ -149,15 +149,20 @@ namespace MochaCore.Utils
         {
             try
             {
-                cts.Token.Register(() => AsyncOperationCancelled?.Invoke(this, e));
-                await PropertyChangedOperation.Invoke(cts.Token, e);
+                if (AsyncOperationCancelled is not null)
+                {
+                    cts.Token.Register(() => AsyncOperationCancelled.Invoke(this, e));
+                }
+
+                if (PropertyChangedOperation is not null)
+                {
+                    await PropertyChangedOperation.Invoke(cts.Token, e);
+                }
             }
             finally
             {
                 cts.Dispose();
             }
-
-            throw new NotImplementedException();
         }
 
         private void NotifyPropertyChangeViaReflection()
