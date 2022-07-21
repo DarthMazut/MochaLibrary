@@ -26,10 +26,10 @@ namespace MochaCore.Utils
 
         private readonly INotifyPropertyChanged _host;
         private readonly string _propertyName;
-        
+
         private T _initialValue;
         private T _internalValue;
-        
+
         private GetEventFieldValue _multicastDelegateGetter;
         private CancellationTokenSource _cts;
 
@@ -37,7 +37,7 @@ namespace MochaCore.Utils
         /// Initializes a new instance of the <see cref="AsyncProperty{T}"/> class.
         /// </summary>
         /// <param name="host">Host of this property. Pass <see langword="this"/> here.</param>
-        /// <param name="propertyName">Name of linked property.</param>
+        /// <param name="propertyName">Name of corresponding property.</param>
         public AsyncProperty(INotifyPropertyChanged host, string propertyName)
         {
             _host = host;
@@ -60,6 +60,12 @@ namespace MochaCore.Utils
         }
 
         /// <summary>
+        /// Specifies how long it will take before <see cref="CancellationToken"/> within 
+        /// <see cref="PropertyChangedOperation"/> is automatically cancelled. 
+        /// </summary>
+        public TimeSpan PropertyChangedOperationTimeout { get; init; } = Timeout.InfiniteTimeSpan;
+
+        /// <summary>
         /// Fires whenever <see cref="AsyncOperation"/> is cancelled successfully.
         /// </summary>
         public event EventHandler<AsyncPropertyChangedEventArgs<T>> AsyncOperationCancelled;
@@ -67,9 +73,9 @@ namespace MochaCore.Utils
         /// <summary>
         /// Returns an initial value for represented property.
         /// </summary>
-        public T InitialValue 
+        public T InitialValue
         {
-            get => _initialValue; 
+            get => _initialValue;
             init
             {
                 _initialValue = value;
@@ -114,10 +120,14 @@ namespace MochaCore.Utils
             T previousValue = _internalValue;
             _internalValue = value;
 
-            CancelAsyncOperation();
-            _cts = new CancellationTokenSource();
             NotifyPropertyChangeViaReflection();
-            _ = HandlePropertyChangedOperation(_cts, new AsyncPropertyChangedEventArgs<T>(_host, previousValue, value));
+
+            if (PropertyChangedOperation is not null)
+            {
+                CancelAsyncOperation();
+                _cts = new CancellationTokenSource();
+                _ = HandlePropertyChangedOperation(_cts, new AsyncPropertyChangedEventArgs<T>(_host, previousValue, value));
+            }
 
             return true;
         }
@@ -154,10 +164,19 @@ namespace MochaCore.Utils
                     cts.Token.Register(() => AsyncOperationCancelled.Invoke(this, e));
                 }
 
-                if (PropertyChangedOperation is not null)
+                List<Task> tasks = new() { PropertyChangedOperation.Invoke(cts.Token, e) };
+                if (PropertyChangedOperationTimeout != Timeout.InfiniteTimeSpan)
                 {
-                    await PropertyChangedOperation.Invoke(cts.Token, e);
+                    tasks.Add(Task.Delay(PropertyChangedOperationTimeout));
                 }
+
+                Task firstCompleted = await Task.WhenAny(tasks);
+                if (firstCompleted != tasks.First())
+                {
+                    e.MarkTimedOut();
+                    cts.Cancel();
+                }
+                await tasks.First();
             }
             finally
             {
@@ -210,7 +229,6 @@ namespace MochaCore.Utils
 
             return fieldInfo;
         }
-
 
     }
 }
