@@ -83,7 +83,7 @@ namespace ViewModels
         {
             IsLoadingPeople = true;
 
-            ISettingsSection<ApplicationSettings> settingsSection = ApplicationSettings.Section;
+            ISettingsSectionProvider<ApplicationSettings> settingsSection = ApplicationSettings.Section;
             ApplicationSettings settings = await settingsSection.LoadAsync();
             List<Person> loadedPeople = settings.People;
 
@@ -108,7 +108,7 @@ namespace ViewModels
         private async void RemovePerson(Person person)
         {
             People.Remove(person);
-            ISettingsSection<ApplicationSettings> settingsSection = ApplicationSettings.Section;
+            ISettingsSectionProvider<ApplicationSettings> settingsSection = ApplicationSettings.Section;
             ApplicationSettings applicationSettings = await settingsSection.LoadAsync();
             await settingsSection.UpdateAsync((settings) => 
             {

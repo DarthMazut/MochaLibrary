@@ -4,89 +4,155 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
 namespace MochaCoreWinUI.Settings
 {
     /// <summary>
-    /// Provides implementation of persistent storage settings section for WinUI 3.
+    /// Provides implementation of persistent storage settings section provider for WinUI 3.
     /// </summary>
-    /// <typeparam name="T">Type of settings section.</typeparam>
-    public class ApplicationSettingsSection<T> : ISettingsSection<T> where T : class, new()
+    /// <typeparam name="T">Type of settings section provider.</typeparam>
+    public class ApplicationSettingsSectionProvider<T> : ISettingsSectionProvider<T> where T : ISettingsSection, new()
     {
-        private readonly StorageFolder _settingsFolder = ApplicationData.Current.LocalFolder;
-        private readonly string _sectionName;
-        private readonly Func<T, Task<string>> _serializationDelegate;
-        private readonly Func<string, Task<T>> _deserializationDelegate;
+        private readonly StorageFolder _settingsFolder;
+        private readonly string _settingsFileName;
+
+        private string? _cache;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationSettingsSection{T}"/> class.
+        /// Initializes a new instance of the <see cref="ApplicationSettingsSectionProvider{T}"/> class.
         /// </summary>
-        /// <param name="sectionName">Unique name for setting section. You can pass here same value as for registration key.</param>
-        /// <param name="serializationDelegate">An asynchronous delegate which translates settings section object into string.</param>
-        /// <param name="deserializationDelegate">An asynchronous delegate which creates settings section object from string.</param>
-        public ApplicationSettingsSection(string sectionName, Func<T, Task<string>> serializationDelegate, Func<string, Task<T>> deserializationDelegate)
+        public ApplicationSettingsSectionProvider() : this(typeof(T).Name) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationSettingsSectionProvider{T}"/> class.
+        /// </summary>
+        /// <param name="settingsName">The name of the file containing the settings.</param>
+        public ApplicationSettingsSectionProvider(string settingsName) : this(settingsName, ApplicationData.Current.LocalFolder) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationSettingsSectionProvider{T}"/> class.
+        /// </summary>
+        /// <param name="settingsName">The name of the file containing the settings.</param>
+        /// <param name="settingsFolder">Path to the folder where settings file will reside.</param>
+        public ApplicationSettingsSectionProvider(string settingsName, StorageFolder settingsFolder)
         {
-            _sectionName = sectionName;
-            _serializationDelegate = serializationDelegate;
-            _deserializationDelegate = deserializationDelegate;
+            _settingsFileName = settingsName;
+            _settingsFolder = settingsFolder;
+        }
+
+        /// <summary>
+        /// Determines default behaviour of <see cref="LoadAsync"/> method. Setting this to <see langword="true"/>
+        /// means that settings are by default loaded from file while ignoring cache.
+        /// </summary>
+        public bool IgnoreLoadCache { get; init; }
+
+        /// <summary>
+        /// Determines default behaviour of <see cref="SaveAsync(T)"/> method. Setting this to <see langword="true"/>
+        /// means that by default settings are not saved into file, but rather only cache is updated.
+        /// </summary>
+        public bool UseSaveCache { get; init; }
+
+        /// <inheritdoc/>
+        public Task<T> LoadAsync()
+        {
+            return LoadAsync(IgnoreLoadCache);
         }
 
         /// <inheritdoc/>
-        public async Task<T> LoadAsync()
+        public async Task<T> LoadAsync(bool ignoreCache)
         {
-            IStorageItem storageItem = await _settingsFolder.TryGetItemAsync(_sectionName);
+            if (ignoreCache is false && _cache is not null)
+            {
+                T cachedSettings = new();
+                await cachedSettings.FillValuesAsync(_cache);
+                return cachedSettings;
+            }
+
+            IStorageItem storageItem = await _settingsFolder.TryGetItemAsync(_settingsFileName);
             if (storageItem is StorageFile foundStorageFile)
             {
                 string fileContent = await FileIO.ReadTextAsync(foundStorageFile);
-                return await _deserializationDelegate.Invoke(fileContent);
+                T loadedSettings = new();
+                await loadedSettings.FillValuesAsync(fileContent);
+                return loadedSettings;
             }
 
-            StorageFile newStorageFile = await _settingsFolder.CreateFileAsync(_sectionName);
-            T settingObject = new();
-            string serializedObject = await _serializationDelegate.Invoke(settingObject);
+            StorageFile newStorageFile = await _settingsFolder.CreateFileAsync(_settingsFileName);
+            T newSettings = new();
+            string serializedObject = await newSettings.SerializeAsync();
             await FileIO.WriteTextAsync(newStorageFile, serializedObject);
-            return settingObject;
+            return newSettings;
         }
 
         /// <inheritdoc/>
-        public async Task RestoreDefaultsAsync()
+        public Task SaveAsync(T settings)
+        {
+            return SaveAsync(settings, !UseSaveCache);
+        }
+
+        /// <inheritdoc/>
+        public async Task SaveAsync(T settings, bool saveToOriginalSource)
+        {
+            string serializedObject = await settings.SerializeAsync();
+            _cache = serializedObject;
+
+            if (saveToOriginalSource)
+            {
+                StorageFile? storageFile = await _settingsFolder.TryGetItemAsync(_settingsFileName) as StorageFile;
+                if (storageFile is null)
+                {
+                    storageFile = await _settingsFolder.CreateFileAsync(_settingsFileName);
+                }
+
+                await FileIO.WriteTextAsync(storageFile, serializedObject);
+            }
+        }
+
+        /// <inheritdoc/>
+        public Task UpdateAsync(Action<T> updateAction)
+        {
+            return UpdateAsync(updateAction, !UseSaveCache, IgnoreLoadCache);
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdateAsync(Action<T> updateAction, bool saveToOriginalSource, bool ignoreCache)
+        {
+            T currentSettings = await LoadAsync(ignoreCache);
+            updateAction.Invoke(currentSettings);
+            await SaveAsync(currentSettings, saveToOriginalSource);
+        }
+
+        /// <inheritdoc/>
+        public Task<T> RestoreDefaultsAsync()
+        {
+            return RestoreDefaultsAsync(!UseSaveCache);
+        }
+
+        /// <inheritdoc/>
+        public async Task<T> RestoreDefaultsAsync(bool affectOriginalSource)
         {
             T newSetting = new();
-            string serializedObject = await _serializationDelegate.Invoke(newSetting);
+            string serializedObject = await newSetting.SerializeAsync();
+            _cache = serializedObject;
 
-            IStorageItem storageItem = await _settingsFolder.TryGetItemAsync(_sectionName);
-            if (storageItem is StorageFile foundStorageFile)
+            if (affectOriginalSource)
             {
-                await FileIO.WriteTextAsync(foundStorageFile, serializedObject);
-                return;
+                IStorageItem storageItem = await _settingsFolder.TryGetItemAsync(_settingsFileName);
+                if (storageItem is StorageFile foundStorageFile)
+                {
+                    await FileIO.WriteTextAsync(foundStorageFile, serializedObject);
+                }
+                else
+                {
+                    StorageFile newStorageFile = await _settingsFolder.CreateFileAsync(_settingsFileName);
+                    await FileIO.WriteTextAsync(newStorageFile, serializedObject);
+                }
             }
 
-            StorageFile newStorageFile = await _settingsFolder.CreateFileAsync(_sectionName);
-            await FileIO.WriteTextAsync(newStorageFile, serializedObject);
-        }
-
-        /// <inheritdoc/>
-        public async Task SaveAsync(T settings)
-        {
-            string serializedObject = await _serializationDelegate.Invoke(settings);
-
-            StorageFile? storageFile = await _settingsFolder.TryGetItemAsync(_sectionName) as StorageFile;
-            if (storageFile is null)
-            {
-                storageFile = await _settingsFolder.CreateFileAsync(_sectionName);
-            }
-
-            await FileIO.WriteTextAsync(storageFile, serializedObject);
-        }
-
-        /// <inheritdoc/>
-        public async Task UpdateAsync(Action<T> updateAction)
-        {
-            T currentSettings = await LoadAsync();
-            updateAction.Invoke(currentSettings);
-            await SaveAsync(currentSettings);
+            return newSetting;
         }
 
         public T Load()

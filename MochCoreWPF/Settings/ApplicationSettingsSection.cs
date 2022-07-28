@@ -10,7 +10,7 @@ namespace MochaCoreWPF.Settings
     /// <see cref="ApplicationSettingsBase"/> implementation.
     /// </summary>
     /// <typeparam name="T">Type of settings section.</typeparam>
-    public class ApplicationSettingsSection<T> : ISettingsSection<T> where T : class, new()
+    public class ApplicationSettingsSection<T> : ISettingsSectionProvider<T> where T : class, new()
     {
         private readonly object _syncLock = new();
         private readonly ApplicationSettingsBase _appSettings;

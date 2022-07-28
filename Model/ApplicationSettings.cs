@@ -21,7 +21,7 @@ namespace Model
 
         public static string SettingsName => "appSettings";
 
-        public static ISettingsSection<ApplicationSettings> Section => SettingsManager.Retrieve<ApplicationSettings>(SettingsName);
+        public static ISettingsSectionProvider<ApplicationSettings> Section => SettingsManager.Retrieve<ApplicationSettings>(SettingsName);
 
         public static string SettingsFolder => BehaviourManager.Recall<object, string>("GetLocalAppFolderPath").Execute(new object ());
 

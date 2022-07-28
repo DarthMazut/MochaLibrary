@@ -1,49 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MochaCore.Settings
 {
     /// <summary>
-    /// Represents a single section of settings which can be
-    /// stored between application lunches.
+    /// Allows implementing class to be provided by <see cref="ISettingsSectionProvider{T}"/> instance.
+    /// Represents a single section of settings which can be stored between application lunches.
     /// </summary>
-    /// <typeparam name="T">Type of this section settings.</typeparam>
-    public interface ISettingsSection<T> : ISettingsSectionBase where T : class, new()
+    public interface ISettingsSection
     {
         /// <summary>
-        /// Returns settings assocaited with this section saved in non-volatile memory. 
+        /// Returns a string representing the implementing instance.
         /// </summary>
-        T Load();
+        Task<string> SerializeAsync();
 
         /// <summary>
-        /// Asynchronously returns settings assocaited with this section saved in non-volatile memory. 
+        /// Modifies state of implementing instance to reflect provided serialized <see langword="string"/>
         /// </summary>
-        Task<T> LoadAsync();
-
-        /// <summary>
-        /// Saves settings to non-volatile memory.
-        /// </summary>
-        /// <param name="settings">Settings to be saved.</param>
-        void Save(T settings);
-
-        /// <summary>
-        /// Asynchronously saves settings to non-volatile memory.
-        /// </summary>
-        /// <param name="settings">Settings to be saved.</param>
-        Task SaveAsync(T settings);
-
-        /// <summary>
-        /// Changes the settings by invoking given delegate and then 
-        /// saves them to non-volatile memory.
-        /// </summary>
-        /// <param name="updateAction">Delegate which changes the settings.</param>
-        void Update(Action<T> updateAction);
-
-        /// <summary>
-        /// Asynchronously changes the settings by invoking given delegate and then 
-        /// saves them to non-volatile memory.
-        /// </summary>
-        /// <param name="updateAction">Delegate which changes the settings.</param>
-        Task UpdateAsync(Action<T> updateAction);
+        /// <param name="serializedData">Contains serialized data.</param>
+        Task FillValuesAsync(string serializedData);
     }
 }

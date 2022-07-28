@@ -8,16 +8,16 @@ namespace MochaCore.Settings
     /// </summary>
     public static class SettingsManager
     {
-        private static readonly Dictionary<string, ISettingsSectionBase> _sections = new();
+        private static readonly Dictionary<string, ISettingsSectionProviderBase> _sections = new();
 
         /// <summary>
-        /// Registers a settings section which can be later used by
+        /// Registers a settings section provider which can be later used by
         /// technology-independent code base.
         /// </summary>
-        /// <typeparam name="T">Type of settings section.</typeparam>
+        /// <typeparam name="T">Type of settings section provider.</typeparam>
         /// <param name="id">Identifier of registering section.</param>
         /// <param name="section">Section to be registerd.</param>
-        public static void Register<T>(string id, ISettingsSection<T> section) where T : class, new()
+        public static void Register<T>(string id, ISettingsSectionProvider<T> section) where T : ISettingsSection, new()
         {
             if(_sections.ContainsKey(id))
             {
@@ -28,15 +28,15 @@ namespace MochaCore.Settings
         }
 
         /// <summary>
-        /// Retrieves settings section registered with given id.
+        /// Retrieves settings section provider registered with given id.
         /// </summary>
-        /// <typeparam name="T">Type of settings section.</typeparam>
-        /// <param name="id">Identifier of settings section to be retrieved.</param>
-        public static ISettingsSection<T> Retrieve<T>(string id) where T : class, new()
+        /// <typeparam name="T">Type of settings section provider.</typeparam>
+        /// <param name="id">Identifier of settings section provider to be retrieved.</param>
+        public static ISettingsSectionProvider<T> Retrieve<T>(string id) where T : ISettingsSection, new()
         {
-            if(_sections.TryGetValue(id, out ISettingsSectionBase? baseSection))
+            if(_sections.TryGetValue(id, out ISettingsSectionProviderBase? baseSection))
             {
-                if(baseSection is ISettingsSection<T> section)
+                if(baseSection is ISettingsSectionProvider<T> section)
                 {
                     return section;
                 }

@@ -6,7 +6,7 @@
     public class SettingsService : ISettingsService
     {
         /// <inheritdoc/>
-        public ISettingsSection<T> Retrieve<T>(string id) where T : class, new()
+        public ISettingsSectionProvider<T> Retrieve<T>(string id) where T : ISettingsSection, new()
         {
             return SettingsManager.Retrieve<T>(id);
         }

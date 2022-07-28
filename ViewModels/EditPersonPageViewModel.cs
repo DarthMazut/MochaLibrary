@@ -107,7 +107,7 @@ namespace ViewModels
             person.City = City;
             person.Birthday = Birthday;
 
-            ISettingsSection<ApplicationSettings> settingsSection = ApplicationSettings.Section;
+            ISettingsSectionProvider<ApplicationSettings> settingsSection = ApplicationSettings.Section;
             ApplicationSettings applicationSettings = await settingsSection.LoadAsync();
 
             if (ImageSource is not null)
@@ -187,7 +187,7 @@ namespace ViewModels
                 return null;
             }
 
-            ISettingsSection<ApplicationSettings> settingsSection = ApplicationSettings.Section;
+            ISettingsSectionProvider<ApplicationSettings> settingsSection = ApplicationSettings.Section;
             ApplicationSettings settings = await settingsSection.LoadAsync();
 
             return Path.Combine(settings.ImagesPath, imageName);
