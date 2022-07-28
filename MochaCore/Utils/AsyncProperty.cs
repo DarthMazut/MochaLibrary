@@ -165,17 +165,21 @@ namespace MochaCore.Utils
                 }
 
                 List<Task> tasks = new() { PropertyChangedOperation.Invoke(cts.Token, e) };
+                CancellationTokenSource timeoutCts = new();
                 if (PropertyChangedOperationTimeout != Timeout.InfiniteTimeSpan)
                 {
-                    tasks.Add(Task.Delay(PropertyChangedOperationTimeout));
+                    tasks.Add(Task.Delay(PropertyChangedOperationTimeout, timeoutCts.Token));
                 }
 
                 Task firstCompleted = await Task.WhenAny(tasks);
                 if (firstCompleted != tasks.First())
                 {
                     e.MarkTimedOut();
-                    cts.Cancel();
                 }
+
+                cts.Cancel();
+                timeoutCts.Cancel();
+
                 await tasks.First();
             }
             finally
