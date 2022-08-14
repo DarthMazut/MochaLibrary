@@ -95,7 +95,7 @@ namespace MochaCoreWinUI.Settings
         public async Task SaveAsync(T settings, SavingMode mode)
         {
             string serializedObject = await settings.SerializeAsync();
-            bool isCacheDifferent = _cache == serializedObject;
+            bool isCacheDifferent = _cache != serializedObject;
 
             if (isCacheDifferent)
             {
