@@ -7,9 +7,6 @@ namespace MochaCore.Settings
     /// </summary>
     public interface ISettingsSectionProviderBase
     {
-        /// <summary>
-        /// Restores section to its default values.
-        /// </summary>
-        void RestoreDefaults();
+
     }
 }

@@ -10,54 +10,35 @@ namespace MochaCore.Settings
     public interface ISettingsSectionProvider<T> : ISettingsSectionProviderBase where T : ISettingsSection, new()
     {
         /// <summary>
-        /// Returns settings assocaited with this section saved in non-volatile memory. 
-        /// </summary>
-        [Obsolete("Use asynchronous versions of this method")]
-        T Load();
-
-        /// <summary>
         /// Asynchronously returns settings assocaited with this section provider saved in non-volatile memory.
+        /// This method uses default <see cref="LoadingMode"/> value specified within implementing type.
         /// </summary>
         Task<T> LoadAsync();
 
         /// <summary>
-        /// Asynchronously returns settings associated with this section provider saved in non-volatile memory.
+        /// Asynchronously returns settings assocaited with this section provider using specified strategy.
         /// </summary>
-        /// <param name="ignoreCache">Determines whether to ignore cached settings and fetch them directly from original source.</param>
-        Task<T> LoadAsync(bool ignoreCache);
-
-        /// <summary>
-        /// Saves provided settings to non-volatile memory.
-        /// </summary>
-        /// <param name="settings">Settings to be saved.</param>
-        [Obsolete("Use asynchronous versions of this method")]
-        void Save(T settings);
+        /// <param name="mode">Defines a loading strategy.</param>
+        Task<T> LoadAsync(LoadingMode mode);
 
         /// <summary>
         /// Asynchronously saves provided settings to non-volatile memory.
+        /// This method uses default <see cref="SavingMode"/> value specified within implementing type.
         /// </summary>
         /// <param name="settings">Settings to be saved.</param>
         Task SaveAsync(T settings);
 
         /// <summary>
-        /// Asynchronously saves provided settings to non-volatile memory.
+        /// Asynchronously saves provided settings to non-volatile memory using specified strategy.
         /// </summary>
         /// <param name="settings">Settings to be saved.</param>
-        /// <param name="saveToOriginalSource">Determines whether to save provided settings to original source.
-        /// <see langword="False"/> means that only cached settings are updated.</param>
-        Task SaveAsync(T settings, bool saveToOriginalSource);
-
-        /// <summary>
-        /// Changes the settings by invoking given delegate and then 
-        /// saves them to non-volatile memory.
-        /// </summary>
-        /// <param name="updateAction">Delegate which changes the settings.</param>
-        [Obsolete("Use asynchronous versions of this method")]
-        void Update(Action<T> updateAction);
+        /// <param name="mode">Defines a saving strategy.</param>
+        Task SaveAsync(T settings, SavingMode mode);
 
         /// <summary>
         /// Asynchronously changes the settings by invoking given delegate and then 
-        /// saves them to non-volatile memory.
+        /// saves them to non-volatile memory. This method uses default <see cref="SavingMode"/> and
+        /// <see cref="LoadingMode"/> values specified within implementing type.
         /// </summary>
         /// <param name="updateAction">Delegate which changes the settings.</param>
         Task UpdateAsync(Action<T> updateAction);
@@ -67,21 +48,14 @@ namespace MochaCore.Settings
         /// saves them to non-volatile memory.
         /// </summary>
         /// <param name="updateAction">Delegate which changes the settings.</param>
-        /// <param name="saveToOriginalSource">Determines whether to save provided settings to original source.
-        /// <see langword="False"/> means that only cached settings are updated.</param>
-        /// <param name="ignoreCache">Determines whether settings are fetched from cache or original source.</param>
-        Task UpdateAsync(Action<T> updateAction, bool saveToOriginalSource, bool ignoreCache);
+        /// <param name="loadingMode">Defines loading strategy.</param>
+        /// <param name="savingMode">Defines a saving strategy.</param>
+        Task UpdateAsync(Action<T> updateAction, LoadingMode loadingMode, SavingMode savingMode);
 
         /// <summary>
         /// Asynchronously restores section to its default values.
         /// </summary>
-        Task<T> RestoreDefaultsAsync();
-
-        /// <summary>
-        /// Asynchronously restores section to its default values.
-        /// </summary>
-        /// <param name="affectOriginalSource">Determines whether both cached settings and original source
-        /// should be set to theirs default values.</param>
-        Task<T> RestoreDefaultsAsync(bool affectOriginalSource);
+        /// <param name="mode">Defines a strategy of saving default values.</param>
+        Task<T> RestoreDefaultsAsync(SavingMode mode);
     }
 }

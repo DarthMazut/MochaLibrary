@@ -1,5 +1,6 @@
 ﻿using MochaCore.Behaviours;
 using MochaCore.Settings;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Model
 {
-    public class ApplicationSettings
+    public class ApplicationSettings : ISettingsSection
     {
         public ApplicationSettings()
         {
@@ -26,5 +27,20 @@ namespace Model
         public static string SettingsFolder => BehaviourManager.Recall<object, string>("GetLocalAppFolderPath").Execute(new object ());
 
         public static string SettingsPath => Path.Combine(SettingsFolder, SettingsName);
+
+        public Task<string> SerializeAsync()
+        {
+            return Task.Run(() => JsonConvert.SerializeObject(this));
+        }
+
+        public async Task FillValuesAsync(string serializedData)
+        {
+            ApplicationSettings? deserializedSettings = await Task.Run(() => JsonConvert.DeserializeObject<ApplicationSettings>(serializedData));
+            if (deserializedSettings is not null)
+            {
+                this.ImagesPath = deserializedSettings.ImagesPath;
+                this.People = deserializedSettings.People;
+            }
+        }
     }
 }

@@ -44,27 +44,25 @@ namespace MochaCoreWinUI.Settings
         }
 
         /// <summary>
-        /// Determines default behaviour of <see cref="LoadAsync"/> method. Setting this to <see langword="true"/>
-        /// means that settings are by default loaded from file while ignoring cache.
+        /// Determines default loading strategy for <see cref="LoadAsync()"/> method.
         /// </summary>
-        public bool IgnoreLoadCache { get; init; }
+        public LoadingMode DefaultLoadingMode { get; init; } = LoadingMode.FromCache;
 
         /// <summary>
-        /// Determines default behaviour of <see cref="SaveAsync(T)"/> method. Setting this to <see langword="true"/>
-        /// means that by default settings are not saved into file, but rather only cache is updated.
+        /// Determines default saving strategy for <see cref="SaveAsync(T)"/> method.
         /// </summary>
-        public bool UseSaveCache { get; init; }
+        public SavingMode DefaultSavingMode { get; init; } = SavingMode.ToOriginalSourceIfCacheChanged;
 
         /// <inheritdoc/>
         public Task<T> LoadAsync()
         {
-            return LoadAsync(IgnoreLoadCache);
+            return LoadAsync(DefaultLoadingMode);
         }
 
         /// <inheritdoc/>
-        public async Task<T> LoadAsync(bool ignoreCache)
+        public async Task<T> LoadAsync(LoadingMode mode)
         {
-            if (ignoreCache is false && _cache is not null)
+            if (mode == LoadingMode.FromCache && _cache is not null)
             {
                 T cachedSettings = new();
                 await cachedSettings.FillValuesAsync(_cache);
@@ -90,89 +88,67 @@ namespace MochaCoreWinUI.Settings
         /// <inheritdoc/>
         public Task SaveAsync(T settings)
         {
-            return SaveAsync(settings, !UseSaveCache);
+            return SaveAsync(settings, DefaultSavingMode);
         }
 
         /// <inheritdoc/>
-        public async Task SaveAsync(T settings, bool saveToOriginalSource)
+        public async Task SaveAsync(T settings, SavingMode mode)
         {
             string serializedObject = await settings.SerializeAsync();
-            _cache = serializedObject;
+            bool isCacheDifferent = _cache == serializedObject;
 
-            if (saveToOriginalSource)
+            if (isCacheDifferent)
             {
-                StorageFile? storageFile = await _settingsFolder.TryGetItemAsync(_settingsFileName) as StorageFile;
-                if (storageFile is null)
+                _cache = serializedObject;
+                if (mode == SavingMode.ToOriginalSourceIfCacheChanged)
                 {
-                    storageFile = await _settingsFolder.CreateFileAsync(_settingsFileName);
+                    await SaveToFile(serializedObject);
                 }
+            }
 
-                await FileIO.WriteTextAsync(storageFile, serializedObject);
+            if (mode == SavingMode.ToOriginalSource)
+            {
+                await SaveToFile(serializedObject);
             }
         }
 
         /// <inheritdoc/>
         public Task UpdateAsync(Action<T> updateAction)
         {
-            return UpdateAsync(updateAction, !UseSaveCache, IgnoreLoadCache);
+            return UpdateAsync(updateAction, DefaultLoadingMode, DefaultSavingMode);
         }
 
         /// <inheritdoc/>
-        public async Task UpdateAsync(Action<T> updateAction, bool saveToOriginalSource, bool ignoreCache)
+        public async Task UpdateAsync(Action<T> updateAction, LoadingMode loadingMode, SavingMode savingMode)
         {
-            T currentSettings = await LoadAsync(ignoreCache);
+            T currentSettings = await LoadAsync(loadingMode);
             updateAction.Invoke(currentSettings);
-            await SaveAsync(currentSettings, saveToOriginalSource);
+            await SaveAsync(currentSettings, savingMode);
         }
 
         /// <inheritdoc/>
         public Task<T> RestoreDefaultsAsync()
         {
-            return RestoreDefaultsAsync(!UseSaveCache);
+            return RestoreDefaultsAsync(DefaultSavingMode);
         }
 
         /// <inheritdoc/>
-        public async Task<T> RestoreDefaultsAsync(bool affectOriginalSource)
+        public async Task<T> RestoreDefaultsAsync(SavingMode mode)
         {
             T newSetting = new();
-            string serializedObject = await newSetting.SerializeAsync();
-            _cache = serializedObject;
-
-            if (affectOriginalSource)
-            {
-                IStorageItem storageItem = await _settingsFolder.TryGetItemAsync(_settingsFileName);
-                if (storageItem is StorageFile foundStorageFile)
-                {
-                    await FileIO.WriteTextAsync(foundStorageFile, serializedObject);
-                }
-                else
-                {
-                    StorageFile newStorageFile = await _settingsFolder.CreateFileAsync(_settingsFileName);
-                    await FileIO.WriteTextAsync(newStorageFile, serializedObject);
-                }
-            }
-
+            await SaveAsync(newSetting, mode);
             return newSetting;
         }
 
-        public T Load()
+        private async Task SaveToFile(string serializedObject)
         {
-            throw new NotSupportedException();
-        }
+            StorageFile? storageFile = await _settingsFolder.TryGetItemAsync(_settingsFileName) as StorageFile;
+            if (storageFile is null)
+            {
+                storageFile = await _settingsFolder.CreateFileAsync(_settingsFileName);
+            }
 
-        public void RestoreDefaults()
-        {
-            throw new NotSupportedException();
-        }
-
-        public void Save(T settings)
-        {
-            throw new NotSupportedException();
-        }
-
-        public void Update(Action<T> updateAction)
-        {
-            throw new NotSupportedException();
+            await FileIO.WriteTextAsync(storageFile, serializedObject);
         }
     }
 }

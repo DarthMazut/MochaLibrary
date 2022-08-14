@@ -68,26 +68,11 @@ namespace WinUiApplication
             DialogManager.DefineDialog(ViewModels.Dialogs.EditPictureDialog.ID, () => new ContentDialogModule(_mainWindow, new EditPictureDialog(), new EditPictureDialogViewModel()));
             DialogManager.DefineDialog(ViewModels.Dialogs.SelectFileDialog.ID, () => new OpenFileDialogModule(_mainWindow));
 
-            SettingsManager.Register(
-                ApplicationSettings.SettingsName, 
-                new ApplicationSettingsSection<ApplicationSettings>(
-                    ApplicationSettings.SettingsName, 
-                    SerializeSettings, 
-                    DeserializeSettings));
+            SettingsManager.Register(ApplicationSettings.SettingsName, new ApplicationSettingsSectionProvider<ApplicationSettings>("appSettings"));
 
             BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
 
             _mainWindow.Activate();
-        }
-
-        private Task<ApplicationSettings> DeserializeSettings(string json)
-        {
-            return Task.Run(() => JsonConvert.DeserializeObject<ApplicationSettings>(json));
-        }
-
-        private Task<string> SerializeSettings(ApplicationSettings settings)
-        {
-            return Task.Run(() => JsonConvert.SerializeObject(settings));
         }
     }
 }
