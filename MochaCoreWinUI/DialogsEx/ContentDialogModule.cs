@@ -51,8 +51,8 @@ namespace MochaCoreWinUI.DialogsEx
             _mainWindow = mainWindow;
             _view = view;
 
-            SetDataContext(dataContext);
             Properties = properties ?? new T();
+            SetDataContext(dataContext);
 
             view.Opened += (s, e) => Opened?.Invoke(this, EventArgs.Empty);
             view.Closing += (s, e) =>
