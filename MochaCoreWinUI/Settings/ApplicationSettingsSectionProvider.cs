@@ -70,19 +70,17 @@ namespace MochaCoreWinUI.Settings
             }
 
             IStorageItem storageItem = await _settingsFolder.TryGetItemAsync(_settingsFileName);
+            
             if (storageItem is StorageFile foundStorageFile)
             {
                 string fileContent = await FileIO.ReadTextAsync(foundStorageFile);
                 T loadedSettings = new();
+                _cache = fileContent;
                 await loadedSettings.FillValuesAsync(fileContent);
                 return loadedSettings;
             }
 
-            StorageFile newStorageFile = await _settingsFolder.CreateFileAsync(_settingsFileName);
-            T newSettings = new();
-            string serializedObject = await newSettings.SerializeAsync();
-            await FileIO.WriteTextAsync(newStorageFile, serializedObject);
-            return newSettings;
+            return await RestoreDefaultsAsync(SavingMode.ToOriginalSource);
         }
 
         /// <inheritdoc/>
