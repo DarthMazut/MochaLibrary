@@ -53,6 +53,11 @@ namespace MochaCore.Settings
         Task UpdateAsync(Action<T> updateAction, LoadingMode loadingMode, SavingMode savingMode);
 
         /// <summary>
+        /// Asynchronously restores section to its default values using default <see cref="SavingMode"/> strategy.
+        /// </summary>
+        Task<T> RestoreDefaultsAsync();
+
+        /// <summary>
         /// Asynchronously restores section to its default values.
         /// </summary>
         /// <param name="mode">Defines a strategy of saving default values.</param>

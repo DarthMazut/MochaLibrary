@@ -10,18 +10,19 @@ namespace MochaCoreWPF.Settings
     /// <see cref="ApplicationSettingsBase"/> implementation.
     /// </summary>
     /// <typeparam name="T">Type of settings section.</typeparam>
-    public class ApplicationSettingsSection<T> : ISettingsSectionProvider<T> where T : class, new()
+    public class ApplicationSettingsSectionProvider<T> : ISettingsSectionProvider<T> where T : ISettingsSection, new()
     {
-        private readonly object _syncLock = new();
         private readonly ApplicationSettingsBase _appSettings;
         private readonly string _settingName;
 
+        private T? _cache;
+
         /// <summary>
-        /// Returns new instance of <see cref="ApplicationSettingsSection{T}"/> class.
+        /// Returns new instance of <see cref="ApplicationSettingsSectionProvider{T}"/> class.
         /// </summary>
         /// <param name="appSettings"><see cref="ApplicationSettingsBase"/> object retrieved from [AppName].Properties.Settings.Default.</param>
         /// <param name="settingName">Settings name defined in Settings Designer.</param>
-        public ApplicationSettingsSection(ApplicationSettingsBase appSettings, string settingName)
+        public ApplicationSettingsSectionProvider(ApplicationSettingsBase appSettings, string settingName)
         {
             _ = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _ = settingName ?? throw new ArgumentNullException(nameof(settingName));
@@ -39,88 +40,101 @@ namespace MochaCoreWPF.Settings
             _settingName = settingName;
         }
 
-        /// <inheritdoc/>
-        public T Load()
-        {
-            if (_appSettings[_settingName] == null)
-            {
-                _appSettings[_settingName] = new T();
-            }
+        /// <summary>
+        /// Determines default loading strategy for <see cref="LoadAsync()"/> method.
+        /// </summary>
+        public LoadingMode DefaultLoadingMode { get; init; } = LoadingMode.FromCache;
 
-            return (T)_appSettings[_settingName];
-        }
-
-        /// <inheritdoc/>
-        public void Save(T settings)
-        {
-            _ = settings ?? throw new ArgumentNullException(nameof(settings));
-
-            _appSettings[_settingName] = settings;
-            _appSettings.Save();
-        }
-
-        /// <inheritdoc/>
-        public void Update(Action<T> updateAction)
-        {
-            _ = updateAction ?? throw new ArgumentNullException(nameof(updateAction));
-
-            T settings = Load();
-            updateAction.Invoke(settings);
-            Save(settings);
-        }
-
-        /// <inheritdoc/>
-        public void RestoreDefaults()
-        {
-            _appSettings.Reset();
-        }
-
-        /// <inheritdoc/>
-        public Task RestoreDefaultsAsync()
-        {
-            return Task.Run(() => 
-            {
-                lock (_syncLock)
-                {
-                    RestoreDefaults();
-                }
-            });
-        }
+        /// <summary>
+        /// Determines default saving strategy for <see cref="SaveAsync(T)"/> method.
+        /// </summary>
+        public SavingMode DefaultSavingMode { get; init; } = SavingMode.ToOriginalSourceIfCacheChanged;
 
         /// <inheritdoc/>
         public Task<T> LoadAsync()
         {
-            return Task.Run(() =>
+            return LoadAsync(DefaultLoadingMode);
+        }
+
+        /// <inheritdoc/>
+        public async Task<T> LoadAsync(LoadingMode mode)
+        {
+            if (mode == LoadingMode.FromCache && _cache is not null)
             {
-                lock (_syncLock)
-                {
-                    return Load();
-                }
-            });
+                return _cache;
+            }
+
+            if (_appSettings[_settingName] == null)
+            {
+                return await RestoreDefaultsAsync(SavingMode.ToOriginalSource);
+            }
+
+            _cache = (T)_appSettings[_settingName];
+            return (T)_appSettings[_settingName];
         }
 
         /// <inheritdoc/>
         public Task SaveAsync(T settings)
         {
-            return Task.Run(() => 
+            return SaveAsync(settings, DefaultSavingMode);
+        }
+
+        /// <inheritdoc/>
+        public async Task SaveAsync(T settings, SavingMode mode)
+        {
+            bool isCacheDifferent;
+            if (_cache is null)
             {
-                lock (_syncLock)
+                isCacheDifferent = true;
+            }
+            else
+            {
+                isCacheDifferent = await _cache.SerializeAsync() == await settings.SerializeAsync();
+            }
+
+            if (isCacheDifferent)
+            {
+                _cache = settings;
+                if (mode == SavingMode.ToOriginalSourceIfCacheChanged)
                 {
-                    Save(settings);
+                    _appSettings[_settingName] = settings;
+                    _appSettings.Save();
                 }
-            });
+            }
+
+            if (mode == SavingMode.ToOriginalSource)
+            {
+                _appSettings[_settingName] = settings;
+                _appSettings.Save();
+            }
         }
 
         /// <inheritdoc/>
         public Task UpdateAsync(Action<T> updateAction)
         {
-            return Task.Run(() =>
-            {
-                lock (_syncLock)
-                {
-                    Update(updateAction);
-                }
-            });
+            return UpdateAsync(updateAction, DefaultLoadingMode, DefaultSavingMode);
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdateAsync(Action<T> updateAction, LoadingMode loadingMode, SavingMode savingMode)
+        {
+            T currentSettings = await LoadAsync(loadingMode);
+            updateAction.Invoke(currentSettings);
+            await SaveAsync(currentSettings, savingMode);
+        }
+
+        /// <inheritdoc/>
+        public Task<T> RestoreDefaultsAsync()
+        {
+            return RestoreDefaultsAsync(DefaultSavingMode);
+        }
+
+        /// <inheritdoc/>
+        public async Task<T> RestoreDefaultsAsync(SavingMode mode)
+        {
+            T newSettings = new();
+            await SaveAsync(newSettings, mode);
+            return newSettings;
         }
     }
 }
