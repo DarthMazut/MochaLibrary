@@ -17,6 +17,8 @@ namespace MochaCoreWinUI.DialogsEx
     {
         public StandardMessageDialogModule(Window mainWindow) : base(mainWindow, new ContentDialog(), null, new StandardMessageDialogProperties()) { }
 
+        // How about ctor with StandardMessageDialogProperties ?
+
         protected override void ApplyPropertiesCore(StandardMessageDialogProperties? properties, ContentDialog view)
         {
             view.Title = properties.Title;

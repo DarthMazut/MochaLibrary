@@ -10,7 +10,10 @@
 
     <Grid>
         <TextBlock Text="Hello There!" />
-        <Button Content="Navigate" Command="{Binding NavigateCommand}" HorizontalAlignment="Center" />
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Content="Navigate" Command="{Binding NavigateCommand}" HorizontalAlignment="Center" />
+            <Button Content="Open Dialog" Command="{Binding OpenDialogCommand}" HorizontalAlignment="Center" />
+        </StackPanel>
         <ProgressRing FontSize="40" IsActive="{Binding IsActive}"/>
     </Grid>
 </Page>
