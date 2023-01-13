@@ -9,13 +9,13 @@ namespace MochaCore.DialogsEx
     /// <summary>
     /// Exposes API for dialog interaction.
     /// </summary>
-    /// <typeparam name="TProperties">The type of the dialog properties object associated with the dialog module.</typeparam>
+    /// <typeparam name="TProperties">The type of the dialog properties object associated with related dialog module.</typeparam>
     public class DataContextDialogControl<TProperties> : IDisposable where TProperties : DialogProperties, new()
     {
         private bool _isInitialized;
         private IDataContextDialogModule<TProperties>? _dialogModule;
-        private Func<Task>? _onDialogOpenedAsyncDelegate;
         private Action? _onDialogOpenedDelegate;
+        private Func<Task>? _onDialogOpenedAsyncDelegate;
         private Action? _onDialogClosingDelegate;
         private Func<Task>? _onDialogClosingAsyncDelegate;
 
@@ -26,7 +26,7 @@ namespace MochaCore.DialogsEx
         public bool IsInitialized => _isInitialized;
 
         /// <summary>
-        /// Returns the related <see cref="DataContextDialogControl{TProperties}"/> object.
+        /// Returns the related <see cref="IDataContextDialogModule{TProperties}"/> object.
         /// </summary>
         public IDataContextDialogModule<TProperties> Module
         {
@@ -50,8 +50,8 @@ namespace MochaCore.DialogsEx
         }
 
         /// <summary>
-        /// Returns statically typed properties as <see cref="DialogProperties"/> object or it's descendant
-        /// which allows for configuration of related <see cref="IDataContextDialogModule{T}"/> object.
+        /// Returns statically typed properties which allows for configuration of related 
+        /// <see cref="IDataContextDialogModule{T}"/> object.
         /// </summary>
         public TProperties Properties 
         {   
@@ -67,11 +67,12 @@ namespace MochaCore.DialogsEx
         /// Throws <see cref="InvalidOperationException"/> if this instance has been already initialized.
         /// </summary>
         /// <param name="dialogModule"><see cref="IDataContextDialogModule{T}"/> or it's descendant, which is related to this instance.</param>
+        /// <exception cref="InvalidOperationException"/>
         public void Initialize(IDataContextDialogModule<TProperties> dialogModule)
         {
             if (_isInitialized)
             {
-                throw new InvalidOperationException($"{nameof(Initialize)} can be called only once.");
+                throw new InvalidOperationException($"{nameof(Initialize)} has been called but DialogControl is already initialized.");
             }
 
             _dialogModule = dialogModule;
