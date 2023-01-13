@@ -14,10 +14,10 @@ namespace MochaCore.DialogsEx
     {
         private bool _isInitialized;
         private IDataContextDialogModule<TProperties>? _dialogModule;
-        private Action? _onDialogOpenedDelegate;
-        private Func<Task>? _onDialogOpenedAsyncDelegate;
-        private Action? _onDialogClosingDelegate;
-        private Func<Task>? _onDialogClosingAsyncDelegate;
+        protected Action? _onDialogOpenedDelegate;
+        protected Func<Task>? _onDialogOpenedAsyncDelegate;
+        protected Action? _onDialogClosingDelegate;
+        protected Func<Task>? _onDialogClosingAsyncDelegate;
 
         /// <summary>
         /// Determines whether the <see cref="DataContextDialogControl{TProperties}"/> instance has
@@ -67,8 +67,7 @@ namespace MochaCore.DialogsEx
         /// Throws <see cref="InvalidOperationException"/> if this instance has been already initialized.
         /// </summary>
         /// <param name="dialogModule"><see cref="IDataContextDialogModule{T}"/> or it's descendant, which is related to this instance.</param>
-        /// <exception cref="InvalidOperationException"/>
-        public void Initialize(IDataContextDialogModule<TProperties> dialogModule)
+        public virtual void Initialize(IDataContextDialogModule<TProperties> dialogModule)
         {
             if (_isInitialized)
             {
