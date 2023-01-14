@@ -15,6 +15,18 @@ namespace MochaCore.DialogsEx
         private ICustomDialogModule<TProperties> _typedModule;
 
         /// <summary>
+        /// Returns the related <see cref="ICustomDialogModule{TProperties}"/> object.
+        /// </summary>
+        new public ICustomDialogModule<TProperties> Module
+        {
+            get
+            {
+                InitializationGuard();
+                return _typedModule;
+            }
+        }
+
+        /// <summary>
         /// Should be called only once by <see cref="ICustomDialogModule{T}"/> related to this instance.
         /// Throws <see cref="InvalidOperationException"/> if this instance has been already initialized.
         /// Throws <see cref="ArgumentException"/> if provided module is not <see cref="ICustomDialogModule{T}"/>.

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ViewModels.DialogsVMs
 {
-    public class EditPictureDialogViewModel : BindableBase, ICustomDialog<DialogProperties>, IDialogInitialize
+    public class EditPictureDialogViewModel : BindableBase, ICustomDialog<DialogProperties>
     {
         private string? _imageSource;
         private bool _isSelectedPathLegit;
@@ -22,6 +22,8 @@ namespace ViewModels.DialogsVMs
         private DelegateCommand<string?> _closeCommand;
         private DelegateCommand _searchFolderCommand;
         private DelegateCommand _imageOpenedCommand;
+
+        public CustomDialogControl<DialogProperties> DialogControl { get; } = new();
 
         public ICustomDialogModule<DialogProperties> DialogModule { get; set; }
 
@@ -54,19 +56,11 @@ namespace ViewModels.DialogsVMs
             _closeCommand = new DelegateCommand<string?>(Close);
             _searchFolderCommand = new DelegateCommand(FindImage);
             _imageOpenedCommand = new DelegateCommand(ImageOpened);
+
+            DialogControl.SubscribeOnDialogOpened(Opened);
         }
 
-        public void Initialize()
-        {
-            DialogModule.Opened += Opened;
-        }
-
-        public void Uninitialize()
-        {
-            DialogModule.Opened -= Opened;
-        }
-
-        private void Opened(object? sender, EventArgs e)
+        private void Opened()
         {
             if (DialogModule.Properties.CustomProperties.ContainsKey("SelectedImage"))
             {
@@ -102,7 +96,7 @@ namespace ViewModels.DialogsVMs
                 DialogModule.Properties.CustomProperties["SelectedImage"] = newPath;
             }
 
-            DialogModule.Close();
+            DialogControl.Close(true);
         }
     }
 }

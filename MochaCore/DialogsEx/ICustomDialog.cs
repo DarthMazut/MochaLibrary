@@ -30,5 +30,9 @@ namespace MochaCore.DialogsEx
                 }
             }
         }
+
+        new CustomDialogControl<T> DialogControl { get; }
+
+        DataContextDialogControl<T> IDataContextDialog<T>.DialogControl => DialogControl;
     }
 }
