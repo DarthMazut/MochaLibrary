@@ -10,27 +10,8 @@ namespace MochaCore.DialogsEx
     public interface ICustomDialog<T> : IDataContextDialog<T> where T : DialogProperties, new()
     {
         /// <summary>
-        /// A reference to the module whose DataContext is this instance. 
+        /// Exposes API for interaction with <see cref="ICustomDialogModule{T}"/>.
         /// </summary>
-        new ICustomDialogModule<T> DialogModule { get; set; }
-
-        IDataContextDialogModule<T> IDataContextDialog<T>.DialogModule
-        {
-            get => DialogModule;
-            set
-            {
-                if (value is ICustomDialogModule<T> typedModule)
-                {
-                    DialogModule = typedModule;
-                }
-                else
-                {
-                    throw new InvalidCastException($"Cannot assign module of different type than {typeof(ICustomDialogModule<T>)}" +
-                        $"because this dialog backend is {typeof(ICustomDialog<T>)}.");
-                }
-            }
-        }
-
         new CustomDialogControl<T> DialogControl { get; }
 
         DataContextDialogControl<T> IDataContextDialog<T>.DialogControl => DialogControl;

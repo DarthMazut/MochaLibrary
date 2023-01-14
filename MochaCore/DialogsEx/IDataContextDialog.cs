@@ -8,11 +8,6 @@
     public interface IDataContextDialog<T> where T : DialogProperties, new()
     {
         /// <summary>
-        /// A reference to the module whose DataContext is this instance. 
-        /// </summary>
-        IDataContextDialogModule<T> DialogModule { get; set; }
-
-        /// <summary>
         /// Exposes API for dialog interaction.
         /// </summary>
         DataContextDialogControl<T> DialogControl { get; }

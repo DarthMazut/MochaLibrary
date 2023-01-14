@@ -36,7 +36,7 @@ namespace MochaCoreWinUI.DialogsEx
 
             if (host is IDataContextDialog<T> dialogBackend)
             {
-                if (dialogBackend.DialogModule.View is UIElement element)
+                if (dialogBackend.DialogControl.View is UIElement element)
                 {
                     return element.XamlRoot;
                 }
@@ -70,7 +70,7 @@ namespace MochaCoreWinUI.DialogsEx
 
             if (host is IDataContextDialog<T> dialogBackend)
             {
-                return dialogBackend.DialogModule?.View as Window;
+                return dialogBackend.DialogControl?.View as Window;
             }
 
             return host as Window;

@@ -89,15 +89,7 @@ namespace MochCoreWPF.DialogsEx
         {
             _dataContext = dataContext;
             _dialogWindow.DataContext = dataContext;
-
-            if (dataContext is not null)
-            {
-                dataContext.DialogModule = this;
-                if (dataContext is IDialogInitialize dialogInitialize)
-                {
-                    dialogInitialize.Initialize();
-                }
-            }
+            dataContext?.DialogControl.Initialize(this);
         }
 
         public Task<bool?> ShowModalAsync(object host)

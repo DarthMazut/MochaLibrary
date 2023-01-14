@@ -32,7 +32,7 @@ namespace MochCoreWPF.DialogsEx
                 }
             }
 
-            if (host is IDataContextDialog<T> dialog && dialog.DialogModule.View is FrameworkElement viewFrameworkElement)
+            if (host is IDataContextDialog<T> dialog && dialog.DialogControl.View is FrameworkElement viewFrameworkElement)
             {
                 foundWindow = TraverseVisualTreeToFindWindow(viewFrameworkElement);
                 if (foundWindow is not null)

@@ -147,17 +147,7 @@ namespace MochaCoreWinUI.DialogsEx
         {
             _dataContext = dataContext;
             _view.DataContext = dataContext;
-
-            dataContext.DialogControl.Initialize(this);
-
-            if(dataContext is not null)
-            {
-                dataContext.DialogModule = this;
-                if (dataContext is IDialogInitialize dialogInitialize)
-                {
-                    dialogInitialize.Initialize();
-                }
-            }
+            dataContext?.DialogControl.Initialize(this);
         }
 
         /// <inheritdoc/>

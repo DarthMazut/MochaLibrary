@@ -25,8 +25,6 @@ namespace ViewModels.DialogsVMs
 
         public CustomDialogControl<DialogProperties> DialogControl { get; } = new();
 
-        public ICustomDialogModule<DialogProperties> DialogModule { get; set; }
-
         public string? ImageSource
         {
             get => _imageSource;
@@ -62,9 +60,9 @@ namespace ViewModels.DialogsVMs
 
         private void Opened()
         {
-            if (DialogModule.Properties.CustomProperties.ContainsKey("SelectedImage"))
+            if (DialogControl.Properties.CustomProperties.ContainsKey("SelectedImage"))
             {
-                ImageSource = (string)DialogModule.Properties.CustomProperties["SelectedImage"];
+                ImageSource = (string)DialogControl.Properties.CustomProperties["SelectedImage"];
             }
         }
 
@@ -93,7 +91,7 @@ namespace ViewModels.DialogsVMs
         {
             if (newPath is not null)
             {
-                DialogModule.Properties.CustomProperties["SelectedImage"] = newPath;
+                DialogControl.Properties.CustomProperties["SelectedImage"] = newPath;
             }
 
             DialogControl.Close(true);
