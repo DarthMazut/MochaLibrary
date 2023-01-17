@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
+using Application = System.Windows.Application;
 
 namespace MochCoreWPF.DialogsEx
 {
@@ -52,7 +54,7 @@ namespace MochCoreWPF.DialogsEx
         /// <summary>
         /// Allows to define additional code to be invoked while this module is being disposed.
         /// </summary>
-        public Action<ICustomDialog<T>?>? DisposeDialog { get; set; }
+        public Action<ICustomDialogModule<T>>? DisposeDialog { get; set; }
 
         public Func<object, Window?> FindParent { get; set; }
 
@@ -73,18 +75,17 @@ namespace MochCoreWPF.DialogsEx
 
         public void Dispose()
         {
-            // Is sequence ok?
+            _dataContext?.DialogControl?.Dispose();
 
             if (_dataContext is IDisposable disposable)
             {
                 disposable.Dispose();
             }
 
-            _dataContext?.DialogControl.Dispose();
-
-            DisposeDialog?.Invoke(DataContext);
+            DisposeDialog?.Invoke(this);
             _dialogWindow.DataContext = null;
-            
+            _dataContext = null;
+
             GC.SuppressFinalize(this);
             Disposed?.Invoke(this, EventArgs.Empty);
         }
@@ -119,7 +120,7 @@ namespace MochCoreWPF.DialogsEx
         /// Override this when there are disposable resources within your custom <see cref="Properties"/> object.
         /// </summary>
         /// <param name="module">Module that's being disposed.</param>
-        protected virtual void DisposeDialogCore(ICustomDialog<T>? module) { }
+        protected virtual void DisposeDialogCore(ICustomDialogModule<T>? module) { }
 
         protected virtual Window? FindParentCore(object host)
         {

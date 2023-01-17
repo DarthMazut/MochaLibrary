@@ -130,17 +130,16 @@ namespace MochaCoreWinUI.DialogsEx
         /// <inheritdoc/>
         public void Dispose()
         {
-            // Is sequence ok?
+            _dataContext?.DialogControl?.Dispose();
 
             if (_dataContext is IDisposable disposable)
             {
                 disposable.Dispose();
             }
-
-            _dataContext?.DialogControl.Dispose();
             
             DisposeDialog?.Invoke(this);
             _view.DataContext = null;
+            _dataContext = null;
 
             GC.SuppressFinalize(this);
             Disposed?.Invoke(this, EventArgs.Empty);
