@@ -73,10 +73,14 @@ namespace MochCoreWPF.DialogsEx
 
         public void Dispose()
         {
-            if (_dataContext is IDialogInitialize dialogInitialize)
+            // Is sequence ok?
+
+            if (_dataContext is IDisposable disposable)
             {
-                dialogInitialize.Uninitialize();
+                disposable.Dispose();
             }
+
+            _dataContext?.DialogControl.Dispose();
 
             DisposeDialog?.Invoke(DataContext);
             _dialogWindow.DataContext = null;
