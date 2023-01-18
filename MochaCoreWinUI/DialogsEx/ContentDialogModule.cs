@@ -118,7 +118,7 @@ namespace MochaCoreWinUI.DialogsEx
         public event EventHandler<CancelEventArgs>? Closing;
 
         /// <inheritdoc/>
-        public void Close()
+        public void Close(bool? result)
         {
             if (_isOpen)
             {

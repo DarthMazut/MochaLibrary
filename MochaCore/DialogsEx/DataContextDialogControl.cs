@@ -169,7 +169,7 @@ namespace MochaCore.DialogsEx
             InitializationGuard();
             if (_dialogModule is IDialogClose closable)
             {
-                closable.Close(); // Need to add Close() with param ;)
+                closable.Close(result);
                 return true;
             }
 

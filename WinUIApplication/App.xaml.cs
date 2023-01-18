@@ -8,9 +8,11 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Behaviours;
 using MochaCore.DialogsEx;
+using MochaCore.Dispatching;
 using MochaCore.Navigation;
 using MochaCore.Settings;
 using MochaCoreWinUI.DialogsEx;
+using MochaCoreWinUI.Dispatching;
 using MochaCoreWinUI.Navigation;
 using MochaCoreWinUI.Settings;
 using Model;
@@ -71,6 +73,8 @@ namespace WinUiApplication
             SettingsManager.Register(ApplicationSettings.SettingsName, new ApplicationSettingsSectionProvider<ApplicationSettings>("appSettings"));
 
             BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
+
+            DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(_mainWindow));
 
             _mainWindow.Activate();
         }

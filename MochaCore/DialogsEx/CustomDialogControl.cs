@@ -88,7 +88,7 @@ namespace MochaCore.DialogsEx
         public void Close(bool? result)
         {
             InitializationGuard();
-            _typedModule.Close();
+            _typedModule.Close(result);
         }
     }
 }

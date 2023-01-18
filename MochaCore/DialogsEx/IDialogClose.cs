@@ -14,6 +14,6 @@ namespace MochaCore.DialogsEx
         /// <summary>
         /// Closes the dialog if open.
         /// </summary>
-        void Close();
+        void Close(bool? result);
     }
 }

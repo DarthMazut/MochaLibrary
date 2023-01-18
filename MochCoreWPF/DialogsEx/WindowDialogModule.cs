@@ -67,8 +67,9 @@ namespace MochCoreWPF.DialogsEx
         public event EventHandler<CancelEventArgs>? Closing;
 
         /// <inheritdoc/>
-        public void Close()
+        public void Close(bool? result)
         {
+            _dialogWindow.DialogResult = result;
             _dialogWindow.Close();
             Closed?.Invoke(this, EventArgs.Empty);
         }

@@ -1,5 +1,6 @@
 ﻿using MochaCore.DialogsEx;
 using MochaCore.DialogsEx.Extensions;
+using MochaCore.Dispatching;
 using MochaCore.Navigation;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -49,6 +50,10 @@ namespace ViewModels
             dialog.Properties.ConfirmationButtonText = "OK";
             dialog.Properties.DeclineButtonText= "Not OK";
             dialog.Properties.Icon = StandardMessageDialogIcons.Error;
+            if (dialog is ICustomDialogModule<StandardMessageDialogProperties> customDialog)
+            {
+                _ = Task.Delay(3000).ContinueWith(t => DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() => customDialog.Close(false)));
+            }
             bool? result = await dialog.ShowModalAsync(this);
             Debug.WriteLine(result);
         }
