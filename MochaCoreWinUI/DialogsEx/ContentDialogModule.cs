@@ -18,8 +18,8 @@ namespace MochaCoreWinUI.DialogsEx
     /// <typeparam name="T">Type of <see cref="Properties"/> object.</typeparam>
     public class ContentDialogModule<T> : ICustomDialogModule<T> where T : DialogProperties, new()
     {
-        private bool _isOpen = false;
-        private bool _wasClosed = false;
+        private bool _wasClosed;
+        private bool? _manualCloseResult;
         protected Window _mainWindow;
         protected ContentDialog _view;
         protected ICustomDialog<T>? _dataContext;
@@ -120,11 +120,9 @@ namespace MochaCoreWinUI.DialogsEx
         /// <inheritdoc/>
         public void Close(bool? result)
         {
-            if (_isOpen)
-            {
-                _view.Hide();
-                OnClose();
-            }
+            _view.Hide();
+            _wasClosed = true;
+            _manualCloseResult = result;
         }
 
         /// <inheritdoc/>
@@ -159,11 +157,14 @@ namespace MochaCoreWinUI.DialogsEx
             ApplyProperties.Invoke(Properties, _view);
             Opening?.Invoke(this, EventArgs.Empty);
             _view.XamlRoot = FindParentCore(host);
-            _isOpen = true;
-            _wasClosed = false;
+            
             bool? result = HandleResult.Invoke(await _view.ShowAsync(), _view, Properties);
-            _isOpen = false;
-            OnClose();
+            if (_wasClosed)
+            {
+                result = _manualCloseResult;
+            }
+
+            Closed?.Invoke(this, EventArgs.Empty);
             return result;
         }
 
@@ -176,7 +177,6 @@ namespace MochaCoreWinUI.DialogsEx
 
         /// <summary>
         /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
-        /// Sets the dialog results within <see cref="Properties"/> object.
         /// </summary>
         /// <param name="contentDialogResult">Technology-specific <see cref="ContentDialog"/> result object.</param>
         /// <param name="view">Technology-specific dialog object.</param>
@@ -216,15 +216,6 @@ namespace MochaCoreWinUI.DialogsEx
             }
 
             return parentRoot;
-        }
-
-        private void OnClose()
-        {
-            if (!_wasClosed)
-            {
-                _wasClosed = true;
-                Closed?.Invoke(this, EventArgs.Empty);
-            }
         }
     }
 
