@@ -98,7 +98,6 @@ namespace MochaCoreWinUI.DialogsEx
 
         /// <summary>
         /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
-        /// Sets the dialog results within <see cref="Properties"/> object.
         /// Use this delagate to avoiding subcalssing only for overriding <see cref="HandleResultCore(ContentDialogResult, ContentDialog, T?)"/>.
         /// <para>Setting this delegate overrides default <c>HandleResultCore()</c> implementation.</para>
         /// </summary>
@@ -262,7 +261,11 @@ namespace MochaCoreWinUI.DialogsEx
         /// </summary>
         /// <param name="mainWindow">Application main window object.</param>
         /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
-        /// <param name="dataContext">A dialog logic bound to view object by DataBinding mechanism.</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by DataBinding mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="ICustomDialog{T}"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
         public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<DialogProperties>? dataContext) : base(mainWindow, view, dataContext) { }
 
         /// <summary>
@@ -270,7 +273,11 @@ namespace MochaCoreWinUI.DialogsEx
         /// </summary>
         /// <param name="mainWindow">Application main window object.</param>
         /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
-        /// <param name="dataContext">A dialog logic bound to view object by DataBinding mechanism.</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by DataBinding mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="ICustomDialog{T}"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
         /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<DialogProperties>? dataContext, DialogProperties properties) : base(mainWindow, view, dataContext, properties) { }
     }

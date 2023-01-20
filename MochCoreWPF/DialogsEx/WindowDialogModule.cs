@@ -20,20 +20,55 @@ namespace MochCoreWPF.DialogsEx
         private readonly Window _dialogWindow;
         private ICustomDialog<T>? _dataContext;
 
-        public WindowDialogModule(Window dialogWindow) : this(dialogWindow, null, default(T)) { }
+        private readonly CancelEventHandler _onClosing;
+        private readonly RoutedEventHandler _onOpened;
 
-        public WindowDialogModule(Window dialogWindow, ICustomDialog<T> dataContext) : this(dialogWindow, dataContext, default(T)) { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="dialogWindow">Technology-specific representation of this dialog module.</param>
+        public WindowDialogModule(Window dialogWindow) : this(dialogWindow, null, new T()) { }
 
-        public WindowDialogModule(Window dialogWindow, ICustomDialog<T> dataContext, T properties)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="dialogWindow">Technology-specific representation of this dialog module.</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by DataBinding mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="ICustomDialog{T}"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
+        public WindowDialogModule(Window dialogWindow, ICustomDialog<T>? dataContext) : this(dialogWindow, dataContext, new T()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="dialogWindow">Technology-specific representation of this dialog module.</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by DataBinding mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="ICustomDialog{T}"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
+        public WindowDialogModule(Window dialogWindow, ICustomDialog<T>? dataContext, T properties)
         {
             _ = dialogWindow ?? throw new ArgumentNullException(nameof(dialogWindow));
 
             _dialogWindow = dialogWindow;
-            SetDataContext(dataContext);
-            Properties = properties ?? new T();
+            Properties = properties;
 
-            dialogWindow.Closing += (s, e) => this.Closing?.Invoke(this, e);
-            dialogWindow.Loaded += (s, e) => this.Opened?.Invoke(this, EventArgs.Empty);
+            if (dataContext is null && dialogWindow.DataContext is ICustomDialog<T> dialogDataContext)
+            {
+                _dataContext = dialogDataContext;
+                dialogDataContext.DialogControl.Initialize(this);
+            }
+            else
+            {
+                SetDataContext(dataContext);
+            }
+
+            dialogWindow.Closing += _onClosing = (s, e) => Closing?.Invoke(this, e);
+            dialogWindow.Loaded += _onOpened = (s, e) => Opened?.Invoke(this, EventArgs.Empty);
 
             FindParent = FindParentCore;
             ApplyProperties = ApplyPropertiesCore;
@@ -47,8 +82,18 @@ namespace MochCoreWPF.DialogsEx
         /// <inheritdoc/>
         public T Properties { get; set; }
 
+        /// <summary>
+        /// Customizes view object based on properties within <see cref="Properties"/>.
+        /// Use this delagate to avoiding subcalssing only for overriding <see cref="ApplyPropertiesCore(T?, ContentDialog)"/>.
+        /// <para>Setting this delegate overrides default <c>ApplyPropertiesCore()</c> implementation.</para>
+        /// </summary>
         public Action<Window, T> ApplyProperties { get; set; }
 
+        /// <summary>
+        /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
+        /// Use this delagate to avoiding subcalssing only for overriding <see cref="HandleResultCore(ContentDialogResult, ContentDialog, T?)"/>.
+        /// <para>Setting this delegate overrides default <c>HandleResultCore()</c> implementation.</para>
+        /// </summary>
         public Func<bool?, T, ICustomDialog<T>?, bool?> HandleResult { get; set; }
 
         /// <summary>
@@ -58,6 +103,7 @@ namespace MochCoreWPF.DialogsEx
 
         public Func<object, Window?> FindParent { get; set; }
 
+        /// <inheritdoc/>
         public ICustomDialog<T> DataContext => _dataContext!;
 
         public event EventHandler? Opening;
@@ -74,6 +120,7 @@ namespace MochCoreWPF.DialogsEx
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _dataContext?.DialogControl?.Dispose();
@@ -86,11 +133,14 @@ namespace MochCoreWPF.DialogsEx
             DisposeDialog?.Invoke(this);
             _dialogWindow.DataContext = null;
             _dataContext = null;
+            _dialogWindow.Closing -= _onClosing;
+            _dialogWindow.Loaded -= _onOpened;
 
             GC.SuppressFinalize(this);
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <inheritdoc/>
         public void SetDataContext(ICustomDialog<T>? dataContext)
         {
             _dataContext = dataContext;
@@ -98,6 +148,7 @@ namespace MochCoreWPF.DialogsEx
             dataContext?.DialogControl.Initialize(this);
         }
 
+        /// <inheritdoc/>
         public Task<bool?> ShowModalAsync(object host)
         {
             ApplyProperties?.Invoke(_dialogWindow, Properties);
@@ -109,12 +160,20 @@ namespace MochCoreWPF.DialogsEx
             return Task.FromResult(result);
         }
 
+        /// <summary>
+        /// Customizes dialog window object based on <see cref="Properties"/>.
+        /// </summary>
+        /// <param name="dialogWindow">View object to be customized.</param>
+        /// <param name="properties">Properties object which serves as a source for customization.</param>
         protected virtual void ApplyPropertiesCore(Window dialogWindow, T properties) { }
 
-        protected virtual bool? HandleResultCore(bool? result, T properties, ICustomDialog<T>? dataContext)
-        {
-            return result;
-        }
+        /// <summary>
+        /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
+        /// </summary>
+        /// <param name="result">Technology-specific result object.</param>
+        /// <param name="view">Technology-specific dialog object.</param>
+        /// <param name="properties">Reference to <see cref="Properties"/> object.</param>
+        protected virtual bool? HandleResultCore(bool? result, T properties, ICustomDialog<T>? dataContext) => result;
 
         /// <summary>
         /// Allows for providing a custom code to be executed while this object is being disposed of.
@@ -123,6 +182,10 @@ namespace MochCoreWPF.DialogsEx
         /// <param name="module">Module that's being disposed.</param>
         protected virtual void DisposeDialogCore(ICustomDialogModule<T>? module) { }
 
+        /// <summary>
+        /// Searches for technology-specific parent of host object.
+        /// </summary>
+        /// <param name="host">Object which technology-specific parent is to be found.</param>
         protected virtual Window? FindParentCore(object host)
         {
             return ParentResolver.FindParent<T>(host) ?? Application.Current.MainWindow;
