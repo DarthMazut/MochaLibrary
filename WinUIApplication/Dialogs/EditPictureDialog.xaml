@@ -7,11 +7,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:vm="using:ViewModels.DialogsVMs"
     xmlns:mochaControls="using:MochaCoreWinUI.Utils"
     xmlns:toolkitControls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:toolkitConverters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:converters="using:WinUiApplication.Converters"
     mc:Ignorable="d" Width="350">
+    <ContentDialog.DataContext>
+        <vm:EditPictureDialogViewModel />
+    </ContentDialog.DataContext>
 
     <ContentDialog.Resources>
         <toolkitConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
