@@ -41,6 +41,11 @@ namespace MochaCoreWinUI.DialogsEx
         protected override void ApplyPropertiesCore(FolderPicker dialog, BrowseFolderDialogProperties properties)
         {
             dialog.FileTypeFilter.Add("*");
+            dialog.SuggestedStartLocation = MapSpecialFolderToLocationId(properties.TryGetInitialDirectoryAsSpecialFolder());
+            if (DialogIdentifier is not null)
+            {
+                dialog.SettingsIdentifier = DialogIdentifier;
+            }
         }
 
         /// <inheritdoc/>

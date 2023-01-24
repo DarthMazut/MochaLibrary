@@ -108,6 +108,11 @@ namespace MochaCoreWinUI.DialogsEx
         /// </summary>
         public Action<OpenFileDialogModule> DisposeDialog { get; set; }
 
+        /// <summary>
+        /// Diffrientiates between diffrent pickers.
+        /// </summary>
+        public string? DialogIdentifier { get; init; }
+
         /// <inheritdoc/>
         public void Dispose()
         {
@@ -156,6 +161,12 @@ namespace MochaCoreWinUI.DialogsEx
                 {
                     dialog.FileTypeFilter.Add($".{ext}");
                 }
+            }
+
+            dialog.SuggestedStartLocation = MapSpecialFolderToLocationId(properties.TryGetInitialDirectoryAsSpecialFolder());
+            if (DialogIdentifier is not null)
+            {
+                dialog.SettingsIdentifier = DialogIdentifier;
             }
         }
 
@@ -236,6 +247,26 @@ namespace MochaCoreWinUI.DialogsEx
         {
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(parent);
             WinRT.Interop.InitializeWithWindow.Initialize(_view, hwnd);
+        }
+
+        private static PickerLocationId MapSpecialFolderToLocationId(Environment.SpecialFolder? folder)
+        {
+            Dictionary<Environment.SpecialFolder, PickerLocationId> locationMap = new()
+            {
+                {Environment.SpecialFolder.MyDocuments, PickerLocationId.DocumentsLibrary},
+                {Environment.SpecialFolder.MyComputer, PickerLocationId.ComputerFolder},
+                {Environment.SpecialFolder.Desktop, PickerLocationId.Desktop},
+                {Environment.SpecialFolder.MyMusic, PickerLocationId.MusicLibrary},
+                {Environment.SpecialFolder.MyPictures, PickerLocationId.PicturesLibrary},
+                {Environment.SpecialFolder.MyVideos, PickerLocationId.VideosLibrary}
+            };
+
+            if (folder.HasValue && locationMap.TryGetValue(folder.Value, out PickerLocationId locationId))
+            {
+                return locationId;
+            }
+
+            return PickerLocationId.Unspecified;
         }
     }
 }

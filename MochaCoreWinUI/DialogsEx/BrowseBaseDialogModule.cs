@@ -3,9 +3,12 @@ using MochaCore.DialogsEx;
 using MochaCore.Navigation;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Email;
+using Windows.Storage.Pickers;
 
 namespace MochaCoreWinUI.DialogsEx
 {
@@ -81,6 +84,11 @@ namespace MochaCoreWinUI.DialogsEx
         /// </summary>
         public Action<BrowseBaseDialogModule<TView, TResult, TProperties>> DisposeDialog { get; set; }
 
+        /// <summary>
+        /// Diffrientiates between diffrent pickers.
+        /// </summary>
+        public string? DialogIdentifier { get; init; }
+
         /// <inheritdoc/>
         public void Dispose()
         {
@@ -139,6 +147,26 @@ namespace MochaCoreWinUI.DialogsEx
         /// </summary>
         /// <param name="module">Module that's being disposed.</param>
         protected virtual void DisposeDialogCore(BrowseBaseDialogModule<TView, TResult, TProperties> module) { }
+
+        protected static PickerLocationId MapSpecialFolderToLocationId(Environment.SpecialFolder? folder)
+        {
+            Dictionary<Environment.SpecialFolder, PickerLocationId> locationMap = new()
+            {
+                {Environment.SpecialFolder.MyDocuments, PickerLocationId.DocumentsLibrary},
+                {Environment.SpecialFolder.MyComputer, PickerLocationId.ComputerFolder},
+                {Environment.SpecialFolder.Desktop, PickerLocationId.Desktop},
+                {Environment.SpecialFolder.MyMusic, PickerLocationId.MusicLibrary},
+                {Environment.SpecialFolder.MyPictures, PickerLocationId.PicturesLibrary},
+                {Environment.SpecialFolder.MyVideos, PickerLocationId.VideosLibrary}
+            };
+
+            if (folder.HasValue && locationMap.TryGetValue(folder.Value, out PickerLocationId locationId))
+            {
+                return locationId;
+            }
+
+            return PickerLocationId.Unspecified;
+        }
 
         // Workaround for bug https://github.com/microsoft/WindowsAppSDK/issues/466
         private void WorkaroundForBug466(object parent)

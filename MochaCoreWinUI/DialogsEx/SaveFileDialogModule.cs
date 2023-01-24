@@ -50,6 +50,12 @@ namespace MochaCoreWinUI.DialogsEx
             {
                 dialog.FileTypeChoices.Add(filter.Name, filter.Extensions.Select(e => $".{e}").ToList());
             }
+
+            dialog.SuggestedStartLocation = MapSpecialFolderToLocationId(properties.TryGetInitialDirectoryAsSpecialFolder());
+            if (DialogIdentifier is not null)
+            {
+                dialog.SettingsIdentifier = DialogIdentifier;
+            }
         }
 
         /// <inheritdoc/>

@@ -69,6 +69,7 @@ namespace ViewModels.DialogsVMs
         private async void FindImage()
         {
             IDialogModule<OpenFileDialogProperties> selectFileDialog = Dialogs.SelectFileDialog.Module;
+            selectFileDialog.Properties.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
             selectFileDialog.Properties.Filters.Add(new ExtensionFilter("Images", new List<string> { "jpg", "jpeg", "png" }));
 
             if (await selectFileDialog.ShowModalAsync(this) is true)
