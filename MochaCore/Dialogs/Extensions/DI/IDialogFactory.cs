@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs.Extensions.DI
 {
@@ -8,27 +12,36 @@ namespace MochaCore.Dialogs.Extensions.DI
     public interface IDialogFactory
     {
         /// <summary>
-        /// Returns new instance of <see cref="IDialogModule"/> corresponding to given identifier.
-        /// </summary>
-        /// <param name="id">Specifies the dialog identifier.</param>
-        IDialogModule Create(string id);
-
-        /// <summary>
         /// Returns new instance of <see cref="IDialogModule{T}"/> corresponding to given indetifier.
         /// </summary>
-        /// <typeparam name="T">Type of <see cref="DialogControl"/> object used by created dialog.</typeparam>
+        /// <typeparam name="T">Type of properties object used by created dialog.</typeparam>
         /// <param name="id">Specifies the dialog identifier.</param>
-        IDialogModule<T> Create<T>(string id) where T : DialogControl;
+        IDialogModule<T> Create<T>(string id) where T : DialogProperties, new();
 
         /// <summary>
-        /// Returns a collection of instantiated <see cref="IDialogModule"/> with given ID which haven't been disposed yet.
+        /// Returns new instacne of <see cref="IDataContextDialogModule{T}"/> corresponding to given identifier.
         /// </summary>
-        /// <param name="id">Specifies the dialog identifier.</param>
-        List<IDialogModule> GetActiveDialogs(string id);
+        /// <typeparam name="T">Type of properties object used by created dialog.</typeparam>
+        /// <param name="id">Dialog identifier.</param>
+        IDataContextDialogModule<T> CreateDataContextModule<T>(string id) where T : DialogProperties, new();
 
         /// <summary>
-        /// Returns a collection of all instantiated <see cref="IDialogModule"/>, which haven't been disposed yet.
+        /// Returns new instacne of <see cref="ICustomDialogModule{T}"/> corresponding to given identifier.
         /// </summary>
-        List<IDialogModule> GetActiveDialogs();
+        /// <typeparam name="T">Type of properties object used by created dialog.</typeparam>
+        /// <param name="id">Dialog identifier.</param>
+        ICustomDialogModule<T> CreateCustomModule<T>(string id) where T : DialogProperties, new();
+
+        /// <summary>
+        /// Returns a collection of currently open <see cref="IDialogModule"/> with given ID.
+        /// </summary>
+        /// <param name="id">Specifies the dialog identifier.</param>
+        List<IDialogModule> GetOpenedDialogs(string id);
+
+        /// <summary>
+        /// Returns a collection of all currently open <see cref="IDialogModule"/>.
+        /// </summary>
+        List<IDialogModule> GetOpenedDialogs();
+
     }
 }

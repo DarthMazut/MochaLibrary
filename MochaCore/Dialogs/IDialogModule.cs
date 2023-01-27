@@ -1,105 +1,57 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs
 {
     /// <summary>
-    /// Exposes methods and properties for interaction with technology-independent dialog representation.
+    /// Provides base type for <see cref="IDialogModule{T}"/> and its descendants.
     /// </summary>
     public interface IDialogModule : IDisposable
     {
         /// <summary>
-        /// Reference to technology-specific view object.
+        /// Technology-specific dialog object which is represented by this module.
         /// </summary>
         object? View { get; }
-
-        /// <summary>
-        /// An <see cref="IDialog"/> object bounded to <see cref="View"/>
-        /// instance by DataBinding mechanism.
-        /// </summary>
-        IDialog DataContext { get; }
-
-        /// <summary>
-        /// Specifies whether this dialog is currently open.
-        /// </summary>
-        bool IsOpen { get; }
-
-        ///// <summary>
-        ///// Determines whether this instance should be automatically disposed after closing.
-        ///// </summary>
-        //bool DisposeOnClose { get; set; }
-
-        /// <summary>
-        /// Fires when dialog is about to be displayed.
-        /// </summary>
-        event EventHandler? Opening;
-
-        /// <summary>
-        /// Fires right after the dialog opens.
-        /// </summary>
-        event EventHandler? Opened;
-
-        /// <summary>
-        /// Fires when dialog is about to close.
-        /// </summary>
-        event EventHandler<CancelEventArgs>? Closing;
-
-        /// <summary>
-        /// Fires when dialog closes.
-        /// </summary>
-        event EventHandler? Closed;
-
-        /// <summary>
-        /// Fires when dialog is done.
-        /// <para><c>"Comrade soldier, you're done!"</c></para>
-        /// </summary>
-        event EventHandler? Disposed;
-
-        /// <summary>
-        /// Opens a dialog represented by this instance.
-        /// </summary>
-        void Show();
-
-        /// <summary>
-        /// Opens a dialog represented by this instance in modal mode. 
-        /// Returns result of dialog interaction.
-        /// </summary>
-        bool? ShowModal();
-
-        /// <summary>
-        /// Opens a dialog represented by this instance in asynchronous manner.
-        /// </summary>
-        Task ShowAsync();
 
         /// <summary>
         /// Asynchronously opens a dialog represented by this instance in modal mode. 
         /// Returns result of dialog interaction.
         /// </summary>
-        Task<bool?> ShowModalAsync();
+        /// <param name="host">
+        /// The object which hosts this dialog while being shown.
+        /// <para>You should pass '<see langword="this"/>' here.</para>
+        /// </param>
+        Task<bool?> ShowModalAsync(object host);
 
         /// <summary>
-        /// Sets a DataContext for <see cref="View"/> object.
+        /// Fires whenever dialog is about to be opened.
         /// </summary>
-        /// <param name="dialog">Dialog logic to be set by DataContext mechanism.</param>
-        void SetDataContext(IDialog dialog);
+        event EventHandler Opening;
 
         /// <summary>
-        /// Closes the dialog if open.
+        /// Fires whenever dialog closes.
         /// </summary>
-        void Close();
+        event EventHandler Closed;
+
+        /// <summary>
+        /// Fires when dialog is done.
+        /// <para><c>"Comrade soldier, you're done!"</c></para>
+        /// </summary>
+        event EventHandler Disposed;
     }
 
     /// <summary>
     /// Exposes methods and properties for interaction with technology-independent dialog representation.
     /// </summary>
-    /// <typeparam name="T">Specifies statically typed parameters for the associated dialog logic.</typeparam>
-    public interface IDialogModule<T> : IDialogModule where T : DialogControl
+    /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
+    public interface IDialogModule<T> : IDialogModule where T : DialogProperties, new()
     {
         /// <summary>
-        /// An <see cref="IDialog"/> object bounded to <see cref="IDialogModule.View"/>
-        /// instance by DataBinding mechanism.
+        /// Statically typed properties object which serves for configuration of this module.
         /// </summary>
-        new IDialog<T> DataContext { get; }
+        T Properties { get; set; }
     }
 }

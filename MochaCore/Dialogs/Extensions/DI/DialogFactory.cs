@@ -1,35 +1,41 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs.Extensions.DI
 {
-    /// <summary>
-    /// Provides an implementation of <see cref="IDialogFactory"/> interface.
-    /// </summary>
     public class DialogFactory : IDialogFactory
     {
         /// <inheritdoc/>
-        public IDialogModule Create(string id)
+        public IDialogModule<T> Create<T>(string id) where T : DialogProperties, new()
         {
-            return DialogManager.GetDialog(id);
+            return DialogManager.GetDialog<T>(id);
         }
 
         /// <inheritdoc/>
-        public IDialogModule<T> Create<T>(string id) where T : DialogControl
+        public IDataContextDialogModule<T> CreateDataContextModule<T>(string id) where T : DialogProperties, new()
         {
-            return (IDialogModule<T>)DialogManager.GetDialog(id);
+            return DialogManager.GetDataContextDialog<T>(id);
         }
 
         /// <inheritdoc/>
-        public List<IDialogModule> GetActiveDialogs(string id)
+        public ICustomDialogModule<T> CreateCustomModule<T>(string id) where T : DialogProperties, new()
         {
-            return DialogManager.GetActiveDialogs(id);
+            return DialogManager.GetCustomDialog<T>(id);
         }
 
         /// <inheritdoc/>
-        public List<IDialogModule> GetActiveDialogs()
+        public List<IDialogModule> GetOpenedDialogs(string id)
         {
-            return DialogManager.GetActiveDialogs();
+            return DialogManager.GetOpenedDialogs(id);
         }
 
+        /// <inheritdoc/>
+        public List<IDialogModule> GetOpenedDialogs()
+        {
+            return DialogManager.GetOpenedDialogs();
+        }
     }
 }

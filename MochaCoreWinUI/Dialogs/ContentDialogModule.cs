@@ -1,64 +1,120 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using MochaCore.Dialogs;
-using MochaCore.Dialogs.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using MochaCore.Dialogs;
+using MochaCore.Navigation;
+using Windows.UI.Core;
 
 namespace MochaCoreWinUI.Dialogs
 {
     /// <summary>
-    /// Provides implementation of <see cref="IDialogModule"/> for WinUI <see cref="ContentDialog"/> and it's descendants.
+    /// Provides base implementation for WinUI 3 <see cref="ContentDialog"/>-based modules.
     /// </summary>
-    /// <typeparam name="TView">WinUI <see cref="ContentDialog"/> or descendant.</typeparam>
-    /// <typeparam name="TControl">Type of <see cref="DialogControl"/>.</typeparam>
-    public class ContentDialogModule<TView, TControl> : IDialogModule<TControl> where TView : ContentDialog where TControl : DialogControl
+    /// <typeparam name="T">Type of <see cref="Properties"/> object.</typeparam>
+    public class ContentDialogModule<T> : ICustomDialogModule<T> where T : DialogProperties, new()
     {
-        private Window _parentWindow;
-        private TView _view;
-        private IDialog<TControl> _dataContext;
-
-        private bool _isOpen = false;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContentDialogModule{TView, TControl}"/> class.
-        /// </summary>
-        /// <param name="parentWindow">Parent window for representing dialog.</param>
-        /// <param name="contentDialog">Technology-specific view object.</param>
-        public ContentDialogModule(Window parentWindow, TView contentDialog) : this(parentWindow, contentDialog, new SimpleDialogData<TControl>()) { }
+        private bool _wasClosed;
+        private bool? _manualCloseResult;
+        protected Window _mainWindow;
+        protected ContentDialog _view;
+        protected ICustomDialog<T>? _dataContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContentDialogModule{TView, TControl}"/> class.
+        /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
         /// </summary>
-        /// <param name="parentWindow">Parent window for representing dialog.</param>
-        /// <param name="contentDialog">Technology-specific view object.</param>
-        /// <param name="dataContext">An <see cref="IDialog{T}"/> object bounded to <see cref="View"/> instance by *DataBinding* mechanism.</param>
-        public ContentDialogModule(Window parentWindow, TView contentDialog, IDialog<TControl> dataContext)
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        public ContentDialogModule(Window mainWindow, ContentDialog view) : this(mainWindow, view, null, new T()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by DataBinding mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="ICustomDialog{T}"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
+        public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<T>? dataContext) : this(mainWindow, view, dataContext, new T()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by DataBinding mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="ICustomDialog{T}"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
+        public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<T>? dataContext, T properties)
         {
-            _view = contentDialog;
-            SetDataContext(dataContext);
-            
-            // Workaround for bug https://github.com/microsoft/microsoft-ui-xaml/issues/2504
-            _view.XamlRoot = parentWindow.Content.XamlRoot;
-            _parentWindow = parentWindow;
+            _mainWindow = mainWindow;
+            _view = view;
 
-            _view.Opened += (s, e) => OnOpened();
-            _view.Closing += (s, e) => OnClosing(e);
-            _view.Closed += (s, e) => OnClosed();
+            Properties = properties;
+
+            if (dataContext is null && view.DataContext is ICustomDialog<T> dialogDataContext)
+            {
+                _dataContext = dialogDataContext;
+                dialogDataContext.DialogControl.Initialize(this);
+            }
+            else
+            {
+                SetDataContext(dataContext);
+            }
+
+            view.Opened += DialogOpened;
+            view.Closing += DialogClosing;
+
+            ApplyProperties = ApplyPropertiesCore;
+            HandleResult = HandleResultCore;
+            FindParent = FindParentCore;
+            DisposeDialog = DisposeDialogCore;
         }
 
         /// <inheritdoc/>
+        public object? View => _view;
+
+        /// <inheritdoc/>
+        public ICustomDialog<T>? DataContext => _dataContext;
+
+        /// <inheritdoc/>
+        public T Properties { get; set; }
+
+        /// <summary>
+        /// Customizes view object based on properties within <see cref="Properties"/>.
+        /// Use this delagate to avoiding subcalssing only for overriding <see cref="ApplyPropertiesCore(T?, ContentDialog)"/>.
+        /// <para>Setting this delegate overrides default <c>ApplyPropertiesCore()</c> implementation.</para>
+        /// </summary>
+        public Action<T, ContentDialog> ApplyProperties { get; set; }
+
+        /// <summary>
+        /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
+        /// Use this delagate to avoiding subcalssing only for overriding <see cref="HandleResultCore(ContentDialogResult, ContentDialog, T?)"/>.
+        /// <para>Setting this delegate overrides default <c>HandleResultCore()</c> implementation.</para>
+        /// </summary>
+        public Func<ContentDialogResult, ContentDialog, T, bool?> HandleResult { get; set; }
+
+        /// <summary>
+        /// Resolves parent <see cref="XamlRoot"/> of provided object.
+        /// </summary>
+        public Func<object, XamlRoot> FindParent { get; set; }
+
+        /// <summary>
+        /// Allows to define additional code to be invoked while this module is being disposed.
+        /// </summary>
+        public Action<ContentDialogModule<T>> DisposeDialog { get; set; }
+
+        /// <inheritdoc/>
         public event EventHandler? Opening;
-
-        /// <inheritdoc/>
-        public event EventHandler? Opened;
-
-        /// <inheritdoc/>
-        public event EventHandler<CancelEventArgs>? Closing;
 
         /// <inheritdoc/>
         public event EventHandler? Closed;
@@ -67,206 +123,162 @@ namespace MochaCoreWinUI.Dialogs
         public event EventHandler? Disposed;
 
         /// <inheritdoc/>
-        public object View => _view;
+        public event EventHandler? Opened;
 
         /// <inheritdoc/>
-        public IDialog<TControl> DataContext => _dataContext;
+        public event EventHandler<CancelEventArgs>? Closing;
 
         /// <inheritdoc/>
-        IDialog IDialogModule.DataContext => _dataContext;
-
-        /// <inheritdoc/>
-        public bool IsOpen => _isOpen;
-
-        /// <summary>
-        /// A delegate which traverse visual tree in order to place a dialog as a child of specific visual object.
-        /// </summary>
-        public Action<Window, ContentDialog>? DialogPlacementDelegate { get; set; }
-
-        /// <summary>
-        /// Customizes view object based on properties within <see cref="DialogControl"/>.
-        /// Use this delagate to avoiding subcalssing only for overriding <see cref="Customize(TView, TControl)"/>.
-        /// <para>Setting this delegate overrides default <c>CustomizeCore()</c> implementation.</para>
-        /// </summary>
-        public Action<TView, TControl>? CustomizeDelegate { get; set; }
-
-        /// <summary>
-        /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
-        /// Sets the dialog results within <see cref="DialogControl"/> object.
-        /// Use this delagate to avoiding subcalssing only for overriding <see cref="HandleResult(ContentDialogResult, TControl)(TView, TControl)"/>.
-        /// <para>Setting this delegate overrides default <c>HandleResultCore()</c> implementation.</para>
-        /// </summary>
-        public Func<ContentDialogResult, ContentDialogModule<TView, TControl>, TControl, bool?>? HandleResultDelegate { get; set; }
-
-        /// <inheritdoc/>
-        public void Close()
+        public void Close(bool? result)
         {
             _view.Hide();
+            _wasClosed = true;
+            _manualCloseResult = result;
         }
 
-        /// <summary>
-        /// Perform cleaning operations allowing this object to be garbage collected.
-        /// It's important to set *DataContext* for view object to <see langword="null"/> here.
-        /// </summary>
-        public virtual void Dispose()
+        /// <inheritdoc/>
+        public void Dispose()
         {
+            _dataContext?.DialogControl?.Dispose();
+
+            if (_dataContext is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+            
+            DisposeDialog?.Invoke(this);
             _view.DataContext = null;
-            _dataContext.DialogControl.Dispose();
-            OnDisposeCore();
+            _dataContext = null;
+            _view.Opened += DialogOpened;
+            _view.Closing += DialogClosing;
+
+            GC.SuppressFinalize(this);
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         /// <inheritdoc/>
-        public void SetDataContext(IDialog dialog)
+        public void SetDataContext(ICustomDialog<T>? dataContext)
         {
-            if (dialog is not IDialog<TControl>)
-            {
-                throw new ArgumentException($"Data context for {GetType().Name} can only be of type {typeof(IDialog<TControl>)}");
-            }
-
-            _dataContext = (IDialog<TControl>)dialog;
-            _view.DataContext = dialog;
-            dialog.DialogControl.Activate(this);
+            _dataContext = dataContext;
+            _view.DataContext = dataContext;
+            dataContext?.DialogControl.Initialize(this);
         }
 
         /// <inheritdoc/>
-        public async Task ShowAsync()
+        public async Task<bool?> ShowModalAsync(object host)
         {
-            OnOpeningCore();
-            Customize(_view, _dataContext.DialogControl);
-            DialogPlacementDelegate?.Invoke(_parentWindow, _view);
-            _isOpen = true;
-            ContentDialogResult dialogResult = await _view.ShowAsync(ContentDialogPlacement.InPlace);
-            _ = HandleResult(dialogResult, _dataContext.DialogControl);
-        }
-
-        /// <inheritdoc/>
-        public async Task<bool?> ShowModalAsync()
-        {
-            OnOpeningCore();
-            Customize(_view, _dataContext.DialogControl);
-            _isOpen = true;
-            ContentDialogResult dialogResult = await _view.ShowAsync();
-            return HandleResult(dialogResult, _dataContext.DialogControl);
-        }
-
-        /// <summary>
-        /// Content Dialog does not support synchronous Show() method.
-        /// </summary>
-        public void Show()
-        {
-            throw new InvalidOperationException("Content Dialog does not support synchronous Show() method.");
-        }
-
-        /// <summary>
-        /// Content Dialog does not support synchronous ShowModal() method.
-        /// </summary>
-        public bool? ShowModal()
-        {
-            throw new InvalidOperationException("Content Dialog does not support synchronous ShowModal() method.");
-        }
-
-        /// <summary>
-        /// Invokes an <see cref="Opening"/> event.
-        /// </summary>
-        protected virtual void OnOpeningCore() => Opening?.Invoke(this, EventArgs.Empty);
-
-        /// <summary>
-        /// Invokes an <see cref="Opened"/> event.
-        /// </summary>
-        protected virtual void OnOpenedCore() => Opened?.Invoke(this, EventArgs.Empty);
-
-        /// <summary>
-        /// Invokes an <see cref="Closing"/> event.
-        /// </summary>
-        protected virtual void OnClosingCore(CancelEventArgs e) => Closing?.Invoke(this, e);
-
-        /// <summary>
-        /// Invokes an <see cref="Closed"/> event.
-        /// </summary>
-        protected virtual void OnClosedCore() => Closed?.Invoke(this, EventArgs.Empty);
-
-        /// <summary>
-        /// Invokes an <see cref="Disposed"/> event.
-        /// </summary>
-        protected virtual void OnDisposeCore() => Disposed?.Invoke(this, EventArgs.Empty);
-
-        private void OnOpened()
-        {
-            _isOpen = true;
-            OnOpenedCore();
-        }
-
-        private void OnClosing(ContentDialogClosingEventArgs e)
-        {
-            CancelEventArgs args = new();
-            OnClosingCore(args);
-            if (args.Cancel)
+            ApplyProperties.Invoke(Properties, _view);
+            Opening?.Invoke(this, EventArgs.Empty);
+            _view.XamlRoot = FindParentCore(host);
+            
+            bool? result = HandleResult.Invoke(await _view.ShowAsync(), _view, Properties);
+            if (_wasClosed)
             {
-                e.Cancel = true;
+                result = _manualCloseResult;
             }
-        }
 
-        private void OnClosed()
-        {
-            _isOpen = false;
-            OnClosedCore();
+            Closed?.Invoke(this, EventArgs.Empty);
+            return result;
         }
 
         /// <summary>
-        /// Customizes view object based on properties within <see cref="DialogControl"/>.
+        /// Allows for providing a custom code to be executed while this object is being disposed of.
+        /// Override this when there are disposable resources within your custom <see cref="Properties"/> object.
         /// </summary>
-        /// <param name="view">View object to be customized.</param>
-        /// <param name="dialogControl">A <see cref="DialogControl"/> object which serves as a source for customization.</param>
-        protected virtual void CustomizeCore(TView view, TControl dialogControl)
-        {
-            string? title = dialogControl.Title;
-            if (title is not null)
-            {
-                view.Title = title;
-            }
-        }
+        /// <param name="module">Module that's being disposed.</param>
+        protected virtual void DisposeDialogCore(ContentDialogModule<T> module) { }
 
         /// <summary>
         /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
-        /// Sets the dialog results within <see cref="DialogControl"/> object.
         /// </summary>
-        /// <param name="result">Result to be translated.</param>
-        /// <param name="dialogControl">Results should be set on this object.</param>
-        protected virtual bool? HandleResultCore(ContentDialogResult result, TControl dialogControl)
+        /// <param name="contentDialogResult">Technology-specific <see cref="ContentDialog"/> result object.</param>
+        /// <param name="view">Technology-specific dialog object.</param>
+        /// <param name="properties">Reference to <see cref="Properties"/> object.</param>
+        protected virtual bool? HandleResultCore(ContentDialogResult contentDialogResult, ContentDialog view, T? properties)
         {
-            dialogControl.DialogResult = result switch
+            switch (contentDialogResult)
             {
-                ContentDialogResult.None => null,
-                ContentDialogResult.Primary => true,
-                ContentDialogResult.Secondary => false,
-                _ => null,
-            };
-
-            return dialogControl.DialogResult;
-        }
-
-        private void Customize(TView view, TControl dialogControl)
-        {
-            if (CustomizeDelegate is not null)
-            {
-                CustomizeDelegate.Invoke(view, dialogControl);
-            }
-            else
-            {
-                CustomizeCore(view, dialogControl);
+                case ContentDialogResult.None:
+                    return null;
+                case ContentDialogResult.Primary:
+                    return true;
+                case ContentDialogResult.Secondary:
+                    return false;
+                default:
+                    return null;
             }
         }
 
-        private bool? HandleResult(ContentDialogResult result, TControl dialogControl)
+        /// <summary>
+        /// Customizes view object based on <see cref="Properties"/>.
+        /// </summary>
+        /// <param name="properties">Properties object which serves as a source for customization.</param>
+        /// <param name="view">View object to be customized.</param>
+        protected virtual void ApplyPropertiesCore(T? properties, ContentDialog view) { }
+
+        /// <summary>
+        /// Searches for technology-specific parent of host object.
+        /// </summary>
+        /// <param name="host">Object which technology-specific parent is to be found.</param>
+        protected virtual XamlRoot FindParentCore(object host)
         {
-            if (HandleResultDelegate is not null)
+            XamlRoot? parentRoot = ParentResolver.FindParentXamlRoot<T>(host);
+            if (parentRoot is null)
             {
-                return HandleResultDelegate.Invoke(result, this, dialogControl);
+                parentRoot = _mainWindow.Content.XamlRoot;
             }
-            else
-            {
-                return HandleResultCore(result, dialogControl);
-            }
+
+            return parentRoot;
         }
+
+        private void DialogOpened(ContentDialog sender, ContentDialogOpenedEventArgs e)
+        {
+            Opened?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void DialogClosing(ContentDialog sender, ContentDialogClosingEventArgs e)
+        {
+            CancelEventArgs cancelEventArgs = new();
+            Closing?.Invoke(this, cancelEventArgs);
+            e.Cancel = cancelEventArgs.Cancel;
+        }
+    }
+
+    /// <summary>
+    /// Provides base implementation for WinUI 3 <see cref="ContentDialog"/>-based modules.
+    /// </summary>
+    public class ContentDialogModule : ContentDialogModule<DialogProperties>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        public ContentDialogModule(Window mainWindow, ContentDialog view) : base(mainWindow, view) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by DataBinding mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="ICustomDialog{T}"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
+        public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<DialogProperties>? dataContext) : base(mainWindow, view, dataContext) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule{T}"/> class.
+        /// </summary>
+        /// <param name="mainWindow">Application main window object.</param>
+        /// <param name="view">Technology-specific representation of this dialog module (<see cref="ContentDialog"/> or its descendant).</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by DataBinding mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="ICustomDialog{T}"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
+        /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
+        public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<DialogProperties>? dataContext, DialogProperties properties) : base(mainWindow, view, dataContext, properties) { }
     }
 }
