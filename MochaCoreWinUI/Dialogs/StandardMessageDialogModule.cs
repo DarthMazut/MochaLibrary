@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCoreWinUI.Dialogs
+namespace MochaWinUI.Dialogs
 {
     public class StandardMessageDialogModule : ContentDialogModule<StandardMessageDialogProperties>
     {

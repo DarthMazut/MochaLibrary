@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WinRT;
 
-namespace MochaCoreWinUI.Utils
+namespace MochaWinUI.Utils
 {
     public class DependencyPropertyNotifier : FrameworkElement
     {

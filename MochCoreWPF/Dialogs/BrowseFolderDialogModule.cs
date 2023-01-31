@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using System.Windows.Interop;
 using Application = System.Windows.Application;
 
-namespace MochCoreWPF.Dialogs
+namespace MochWPF.Dialogs
 {
     /// <summary>
     /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WPF <see cref="FolderBrowserDialog"/> class.

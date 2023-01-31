@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace MochaCoreWinUI.Settings
+namespace MochaWinUI.Settings
 {
     /// <summary>
     /// Provides implementation of persistent storage settings section provider for WinUI 3.

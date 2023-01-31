@@ -3,7 +3,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using MochaCore.Settings;
 
-namespace MochaCoreWPF.Settings
+namespace MochaWPF.Settings
 {
     /// <summary>
     /// Provides WPF implementation for settings persistance storage using

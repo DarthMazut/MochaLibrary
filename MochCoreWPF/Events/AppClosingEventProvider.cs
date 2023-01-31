@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace MochaCoreWPF.Events
+namespace MochaWPF.Events
 {
     /// <summary>
     /// Provides WPF implementation for main window <c>OnClosing</c> event.

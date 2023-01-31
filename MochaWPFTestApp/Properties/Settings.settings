@@ -1,9 +1,0 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MochaWPFTestApp.Properties" GeneratedClassName="Settings">
-  <Profiles />
-  <Settings>
-    <Setting Name="general" Type="MochaWPFTestApp.Settings.GeneralSettings" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-  </Settings>
-</SettingsFile>

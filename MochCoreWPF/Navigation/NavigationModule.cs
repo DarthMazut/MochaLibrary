@@ -2,7 +2,7 @@
 using System;
 using System.Windows;
 
-namespace MochaCoreWPF.Navigation
+namespace MochaWPF.Navigation
 {
     /// <summary>
     /// Provides a typical implementation of <see cref="INavigationModule"/> for WPF apps.

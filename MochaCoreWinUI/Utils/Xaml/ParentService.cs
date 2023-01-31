@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCoreWinUI.Utils.Xaml
+namespace MochaWinUI.Utils.Xaml
 {
     /// <summary>
     /// Allows to retrieve parent of selected element of given type.

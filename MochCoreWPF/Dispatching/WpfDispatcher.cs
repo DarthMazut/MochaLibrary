@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace MochaCoreWPF.Dispatching
+namespace MochaWPF.Dispatching
 {
     /// <summary>
     /// Provides an implementation of <see cref="IDispatcher"/> interface for WPF applications.

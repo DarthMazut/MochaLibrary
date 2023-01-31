@@ -10,7 +10,7 @@ using MochaCore.Dialogs;
 using MochaCore.Navigation;
 using Windows.UI.Core;
 
-namespace MochaCoreWinUI.Dialogs
+namespace MochaWinUI.Dialogs
 {
     /// <summary>
     /// Provides base implementation for WinUI 3 <see cref="ContentDialog"/>-based modules.

@@ -8,7 +8,7 @@
     xmlns:model="using:Model"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:utils="using:MochaCoreWinUI.Utils"
+    xmlns:utils="using:MochaWinUI.Utils"
     mc:Ignorable="d">
 
     <UserControl.Resources>

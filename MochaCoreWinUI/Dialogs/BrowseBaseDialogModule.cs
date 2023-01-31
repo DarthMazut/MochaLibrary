@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Email;
 using Windows.Storage.Pickers;
 
-namespace MochaCoreWinUI.Dialogs
+namespace MochaWinUI.Dialogs
 {
     /// <summary>
     /// Provides a base class for <see cref="OpenFileDialogModule"/>, <see cref="SaveFileDialogModule"/> and <see cref="BrowseFolderDialogModule"/>.

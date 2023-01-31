@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
-namespace MochaCoreWinUI.Dialogs
+namespace MochaWinUI.Dialogs
 {
     /// <summary>
     /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FileSavePicker"/> class.

@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Forms;
 using Application = System.Windows.Application;
 
-namespace MochCoreWPF.Dialogs
+namespace MochWPF.Dialogs
 {
     /// <summary>
     /// Provides standard implementation of <see cref="ICustomDialogModule{T}"/> for WPF <see cref="Window"/> object.

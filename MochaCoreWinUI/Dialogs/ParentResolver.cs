@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCoreWinUI.Dialogs
+namespace MochaWinUI.Dialogs
 {
     /// <summary>
     /// Provides a default algorithms for searching parent <see cref="XamlRoot"/> 

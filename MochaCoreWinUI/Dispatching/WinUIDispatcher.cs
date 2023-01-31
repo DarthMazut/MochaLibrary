@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MochaCoreWinUI.Dispatching
+namespace MochaWinUI.Dispatching
 {
     /// <summary>
     /// Provides an implementation of <see cref="IDispatcher"/> interface for WinUI 3 applications.

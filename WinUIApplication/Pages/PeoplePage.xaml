@@ -9,7 +9,7 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:converters="using:WinUiApplication.Converters"
-    xmlns:mochaXaml="using:MochaCoreWinUI.Utils.Xaml"
+    xmlns:mochaXaml="using:MochaWinUI.Utils.Xaml"
     xmlns:controls="using:WinUiApplication.Controls"
     xmlns:toolkitControls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:toolkitUi="using:CommunityToolkit.WinUI.UI"

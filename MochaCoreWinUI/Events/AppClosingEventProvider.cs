@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Core;
 
-namespace MochaCoreWinUI.Events
+namespace MochaWinUI.Events
 {
     public class AppClosingEventProvider : BaseEventProvider<AppClosingEventArgs>
     {

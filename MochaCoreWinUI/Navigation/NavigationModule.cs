@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCoreWinUI.Navigation
+namespace MochaWinUI.Navigation
 {
     /// <summary>
     /// Provides implementation of <see cref="INavigationModule"/> for WinUI 3 applications. 

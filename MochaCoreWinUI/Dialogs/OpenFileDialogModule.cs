@@ -11,7 +11,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT;
 
-namespace MochaCoreWinUI.Dialogs
+namespace MochaWinUI.Dialogs
 {
     /// <summary>
     /// Provides a standard implementation of <see cref="IDialogModule{T}"/> for WinUI 3 <see cref="FileOpenPicker"/> class.

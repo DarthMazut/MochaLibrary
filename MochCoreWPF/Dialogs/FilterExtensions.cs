@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochCoreWPF.Dialogs
+namespace MochWPF.Dialogs
 {
     /// <summary>
     /// Provides extension methods for translating <see cref="ExtensionFilter"/> collections

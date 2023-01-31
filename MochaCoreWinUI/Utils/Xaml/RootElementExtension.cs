@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCoreWinUI.Utils.Xaml
+namespace MochaWinUI.Utils.Xaml
 {
     /// <summary>
     /// Provides a root element of current XAML.
