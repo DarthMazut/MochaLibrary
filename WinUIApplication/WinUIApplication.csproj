@@ -49,7 +49,7 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MochaCoreWinUI\MochaWinUI.csproj" />
+    <ProjectReference Include="..\MochaWinUI\MochaWinUI.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
   <ItemGroup>
