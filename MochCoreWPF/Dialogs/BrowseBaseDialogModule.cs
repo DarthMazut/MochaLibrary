@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace MochWPF.Dialogs
+namespace MochaWPF.Dialogs
 {
     /// <summary>
     /// Provides base class for *OpenFile*, *SaveFile* and *BrowseFolder* dialog modules.

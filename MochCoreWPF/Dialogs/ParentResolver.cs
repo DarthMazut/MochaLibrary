@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace MochWPF.Dialogs
+namespace MochaWPF.Dialogs
 {
     /// <summary>
     /// Provides a default algorithm for searching parent window for given object.

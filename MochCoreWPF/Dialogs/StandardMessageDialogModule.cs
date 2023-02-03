@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace MochWPF.Dialogs
+namespace MochaWPF.Dialogs
 {
     /// <summary>
     /// Provides standard implementation of <see cref="IDialogModule{T}"/> for WPF MessageBox.
