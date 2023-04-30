@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Behaviours;
 using MochaCore.Dialogs;
 using MochaCore.Dispatching;
+using MochaCore.Events;
 using MochaCore.Navigation;
 using MochaCore.Settings;
 using MochaWinUI.Dialogs;
