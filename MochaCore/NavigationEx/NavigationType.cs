@@ -11,5 +11,7 @@ namespace MochaCore.NavigationEx
         Push,
         Back,
         Forward,
+        PushModal,
+        Pop
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MochaCore.NavigationEx
@@ -52,11 +53,32 @@ namespace MochaCore.NavigationEx
         /// </summary>
         public bool? SaveCurrent { get; }
 
+        /// <summary>
+        /// Allows for defining custom navigation events behaviour.
+        /// </summary>
+        public NavigationEventsOptions? NavigationEventsOptions { get; }
+
+        /// <summary>
+        /// Contains <see cref="TaskCompletionSource{TResult}"/> object when <see cref="NavigationType.PushModal"/>
+        /// navigation is requested.
+        /// </summary>
+        public TaskCompletionSource<object>? ModalNavigationCompletionSource { get; }
+
         public NavigationRequestData(string targetId, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached)
-            : this(targetId, callingModule, parameter, NavigationType.Push, 0, saveCurrent, ignoreCached) { }
+            : this(targetId, callingModule, parameter, NavigationType.Push, 0, saveCurrent, ignoreCached, null, null) { }
 
         public NavigationRequestData(NavigationType navigationType, int step, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached)
-            : this(null, callingModule, parameter, navigationType, step, saveCurrent, ignoreCached) { }
+            : this(null, callingModule, parameter, navigationType, step, saveCurrent, ignoreCached, null, null) { }
+
+        public static NavigationRequestData CreateModalRequest(string targetId, INavigationModule callingModule, object? parameter, TaskCompletionSource<object> tsc)
+        {
+            return new NavigationRequestData(targetId, callingModule, parameter, NavigationType.PushModal, 0, true, false, tsc, null);
+        }
+
+        public static NavigationRequestData CreatePopRequest(ModalNavigationData modalData, INavigationModule callingModule, NavigationEventsOptions navigationEventsOptions)
+        {
+            return new NavigationRequestData(modalData.OriginId, callingModule, null, NavigationType.Pop, 0, false, false, null, navigationEventsOptions);
+        }
 
         private NavigationRequestData
             (string? targetId,
@@ -65,13 +87,23 @@ namespace MochaCore.NavigationEx
             NavigationType navigationType,
             int step,
             bool? saveCurrent,
-            bool ignoreCached)
+            bool ignoreCached,
+            TaskCompletionSource<object>? tsc,
+            NavigationEventsOptions? navigationEventsOptions)
         {
-            if (navigationType != NavigationType.Push)
+            if (navigationType == NavigationType.Back || navigationType == NavigationType.Forward)
             {
                 if (step <= 0)
                 {
                     throw new ArgumentException("Step value must be greater than 0", nameof(step));
+                }
+            }
+
+            if (navigationType == NavigationType.PushModal)
+            {
+                if (tsc is null)
+                {
+                    throw new ArgumentException("Tsc must be provided when navigating modal");
                 }
             }
 
@@ -82,6 +114,7 @@ namespace MochaCore.NavigationEx
             Step = step;
             IgnoreCached = ignoreCached;
             SaveCurrent = saveCurrent;
+            NavigationEventsOptions = navigationEventsOptions;
         }
     }
 }

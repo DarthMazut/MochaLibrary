@@ -14,6 +14,7 @@ namespace MochaCore.NavigationEx.Extensions
         private INavigationLifecycleModule? _rootModule;
         private readonly Dictionary<string, INavigationLifecycleModule> _modules = new();
         private NavigationStack<INavigationLifecycleModule> _navigationStack = null!;
+        private Stack<ModalNavigationData>? _modalNavigationStack;
         private NavigationFlowControl? _flowControl;
 
         /// <inheritdoc/>
@@ -50,6 +51,15 @@ namespace MochaCore.NavigationEx.Extensions
                     modules.Add(_rootModule.Id, _rootModule);
                 }
                 return new ReadOnlyDictionary<string, INavigationModule>(modules);
+            }
+        }
+
+        public Stack<ModalNavigationData> ModalNavigationStack
+        {
+            get
+            {
+                InitializationGurad();
+                return _modalNavigationStack!;
             }
         }
 
@@ -90,6 +100,8 @@ namespace MochaCore.NavigationEx.Extensions
                 throw new InvalidOperationException($"Cannot call {nameof(Initialize)} because no modules have been registered.");
             }
 
+            _modalNavigationStack = new Stack<ModalNavigationData>();
+
             if (_navigationStack is null)
             {
                 _navigationStack = new NavigationStack<INavigationLifecycleModule>(ResolveInitialModule());
@@ -114,6 +126,8 @@ namespace MochaCore.NavigationEx.Extensions
         /// <inheritdoc/>
         public void Uninitialize(bool clearStack)
         {
+            _modalNavigationStack = null;
+
             if (clearStack)
             {
                 _navigationStack = null!;
@@ -200,10 +214,15 @@ namespace MochaCore.NavigationEx.Extensions
 
         private void ValidateRequestData(NavigationRequestData requestData)
         {
-            if (requestData.NavigationType == NavigationType.Push && !_modules.ContainsKey(requestData.TargetId!))
+            if (requestData.NavigationType == NavigationType.Push || requestData.NavigationType == NavigationType.PushModal)
             {
-                throw new ArgumentException($"Destination with ID={requestData.TargetId} was never registered!", nameof(requestData));
+                if (!_modules.ContainsKey(requestData.TargetId!))
+                {
+                    throw new ArgumentException($"Destination with ID={requestData.TargetId} was never registered!", nameof(requestData));
+                }
             }
+
+            //TODO: validate NavigationType.Pop
 
             if (requestData.NavigationType == NavigationType.Back)
             {

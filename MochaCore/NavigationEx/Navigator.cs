@@ -46,6 +46,15 @@ namespace MochaCore.NavigationEx
             }
         }
 
+        public bool CanReturnModal
+        {
+            get
+            {
+                InitializationGuard();
+                return _navigationService.ModalNavigationStack.Any();
+            }
+        }
+
         public bool? SaveCurrent { get; set; }
 
         public Task<NavigationResult> NavigateAsync(Func<INavigationDestinationBuilder, INavigationRequestDetailsBuilder> buildingDelegate)
@@ -122,6 +131,43 @@ namespace MochaCore.NavigationEx
         {
             INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
             return targetService.RequestNavigation(new NavigationRequestData(NavigationType.Forward, step, _module, parameter, SaveCurrent, false));
+        }
+
+        public Task NavigateModalAsync(string targetId) => NavigateModalAsync(targetId, null);
+
+        public async Task<object> NavigateModalAsync(string targetId, object? parameter)
+        {
+            TaskCompletionSource<object> tsc = new();
+            await _navigationService.RequestNavigation(NavigationRequestData.CreateModalRequest(targetId, _module, parameter, tsc));
+            return tsc.Task;
+        }
+
+        public Task ReturnModal() => ReturnModal(null, null);
+
+        public Task ReturnModal(object returnData) => ReturnModal(returnData, null);
+
+        public Task ReturnModal(object returnData, bool supressOnNavigatedToEvent)
+            => ReturnModal(returnData, new NavigationEventsOptions()
+            {
+                SupressNavigatedToEvents = supressOnNavigatedToEvent
+            });
+
+        public async Task ReturnModal(object? returnData, NavigationEventsOptions? navigationEventsOptions)
+        {
+            if (!_navigationService.ModalNavigationStack.Any())
+            {
+                throw new InvalidOperationException("No modal navigation can be popped from modal navigation stack at this time.");
+            }
+
+            ModalNavigationData navigationData = _navigationService.ModalNavigationStack.Pop();
+            await _navigationService.RequestNavigation(NavigationRequestData.CreatePopRequest(
+                navigationData,
+                _module,
+                navigationEventsOptions ?? new NavigationEventsOptions()
+                {
+                    SupressNavigatedToEvents = true
+                }));
+            navigationData.ModalNavigationCompletionSource.SetResult(returnData ?? new object());
         }
 
         void INavigatorInitialize.Initialize(INavigationModule module, INavigationService navigationService)

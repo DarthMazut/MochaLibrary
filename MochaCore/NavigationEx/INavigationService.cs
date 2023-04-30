@@ -72,5 +72,7 @@ namespace MochaCore.NavigationEx
         /// <see cref="Navigator.SaveCurrent"/> properties are ignored.
         /// </param>
         public void Uninitialize(bool clearStack);
+
+        public Stack<ModalNavigationData> ModalNavigationStack { get; }
     }
 }
