@@ -48,7 +48,7 @@ namespace MochaCore.NavigationEx
 
         public bool? SaveCurrent { get; set; }
 
-        public Task NavigateAsync(Func<INavigationDestinationBuilder, INavigationRequestDetailsBuilder> buildingDelegate)
+        public Task<NavigationResult> NavigateAsync(Func<INavigationDestinationBuilder, INavigationRequestDetailsBuilder> buildingDelegate)
         {
             NavigationRequestBuilder? builder 
                 = buildingDelegate.Invoke(new NavigationRequestBuilder(_module)) as NavigationRequestBuilder ?? 
@@ -58,32 +58,71 @@ namespace MochaCore.NavigationEx
             return service.RequestNavigation(builder.Build());
         }
 
-        public Task NavigateAsync(string targetId)
+        public Task<NavigationResult> NavigateAsync(string targetId)
              => NavigateAsync(targetId, null);
 
-        public Task NavigateAsync(string targetId, object? parameter)
+        public Task<NavigationResult> NavigateAsync(string targetId, object? parameter)
             => _navigationService.RequestNavigation(new NavigationRequestData(targetId, _module, parameter, SaveCurrent, false));
 
-        public Task NavigateAsync(NavigationRequestData navigationRequestData)
+        public Task<NavigationResult> NavigateAsync(NavigationRequestData navigationRequestData)
             => _navigationService.RequestNavigation(navigationRequestData);
 
-        public Task NavigateBackAsync()
+        public Task<NavigationResult> NavigateBackAsync()
             => NavigateBackAsync(null);
 
-        public Task NavigateBackAsync(object? parameter)
+        public Task<NavigationResult> NavigateBackAsync(object? parameter)
             => NavigateBackAsync(parameter, 1);
 
-        public Task NavigateBackAsync(object? parameter, int step)
+        public Task<NavigationResult> NavigateBackAsync(object? parameter, int step)
             => _navigationService.RequestNavigation(new NavigationRequestData(NavigationType.Back, step, _module, parameter, SaveCurrent, false));
 
-        public Task NavigateForwardAsync()
+        public Task<NavigationResult> NavigateForwardAsync()
             => NavigateForwardAsync(null);
 
-        public Task NavigateForwardAsync(object? parameter)
+        public Task<NavigationResult> NavigateForwardAsync(object? parameter)
             => NavigateForwardAsync(parameter, 1);
 
-        public Task NavigateForwardAsync(object? parameter, int step)
+        public Task<NavigationResult> NavigateForwardAsync(object? parameter, int step)
             => _navigationService.RequestNavigation(new NavigationRequestData(NavigationType.Forward, step, _module, parameter, SaveCurrent, false));
+
+        public Task<NavigationResult> NavigateAsyncForService(string targetServiceId, string targetId)
+            => NavigateAsyncForService(targetServiceId, targetId, null);
+
+        public Task<NavigationResult> NavigateAsyncForService(string targetServiceId, string targetId, object? parameter)
+        {
+            INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
+            return targetService.RequestNavigation(new NavigationRequestData(targetId, _module, parameter, SaveCurrent, false));
+        }
+
+        public Task<NavigationResult> NavigateAsyncForService(string targetServiceId, NavigationRequestData navigationRequestData)
+        {
+            INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
+            return targetService.RequestNavigation(navigationRequestData);
+        }
+
+        public Task<NavigationResult> NavigateBackAsyncForService(string targetServiceId)
+            => NavigateBackAsyncForService(targetServiceId, null);
+
+        public Task<NavigationResult> NavigateBackAsyncForService(string targetServiceId, object? parameter)
+            => NavigateBackAsyncForService(targetServiceId, parameter, 1);
+
+        public Task<NavigationResult> NavigateBackAsyncForService(string targetServiceId, object? parameter, int step)
+        {
+            INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
+            return targetService.RequestNavigation(new NavigationRequestData(NavigationType.Back, step, _module, parameter, SaveCurrent, false));
+        }
+
+        public Task<NavigationResult> NavigateForwardAsyncForService(string targetServiceId)
+            => NavigateForwardAsyncForService(targetServiceId, null);
+
+        public Task<NavigationResult> NavigateForwardAsyncForService(string targetServiceId, object? parameter)
+            => NavigateForwardAsyncForService(targetServiceId, parameter, 1);
+
+        public Task<NavigationResult> NavigateForwardAsyncForService(string targetServiceId, object? parameter, int step)
+        {
+            INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
+            return targetService.RequestNavigation(new NavigationRequestData(NavigationType.Forward, step, _module, parameter, SaveCurrent, false));
+        }
 
         void INavigatorInitialize.Initialize(INavigationModule module, INavigationService navigationService)
         {
