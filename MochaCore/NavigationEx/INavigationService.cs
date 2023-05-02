@@ -38,7 +38,7 @@ namespace MochaCore.NavigationEx
         /// Handles a navigation requests.
         /// </summary>
         /// <param name="requestData">Essential data for navigation process.</param>
-        public Task<NavigationResult> RequestNavigation(NavigationRequestData requestData);
+        public Task<NavigationResultData> RequestNavigation(NavigationRequestData requestData);
 
         /// <summary>
         /// Initializes an <see cref="INavigationService"/> by setting initialized initial module as <see cref="CurrentModule"/>.
@@ -72,7 +72,5 @@ namespace MochaCore.NavigationEx
         /// <see cref="Navigator.SaveCurrent"/> properties are ignored.
         /// </param>
         public void Uninitialize(bool clearStack);
-
-        public Stack<ModalNavigationData> ModalNavigationStack { get; }
     }
 }

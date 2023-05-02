@@ -14,7 +14,7 @@ namespace MochaCore.NavigationEx.Extensions
         private INavigationLifecycleModule? _rootModule;
         private readonly Dictionary<string, INavigationLifecycleModule> _modules = new();
         private NavigationStack<INavigationLifecycleModule> _navigationStack = null!;
-        private Stack<ModalNavigationData>? _modalNavigationStack;
+        private Stack<ModalNavigationData> _modalNavigationStack = new();
         private NavigationFlowControl? _flowControl;
 
         /// <inheritdoc/>
@@ -51,15 +51,6 @@ namespace MochaCore.NavigationEx.Extensions
                     modules.Add(_rootModule.Id, _rootModule);
                 }
                 return new ReadOnlyDictionary<string, INavigationModule>(modules);
-            }
-        }
-
-        public Stack<ModalNavigationData> ModalNavigationStack
-        {
-            get
-            {
-                InitializationGurad();
-                return _modalNavigationStack!;
             }
         }
 
@@ -100,8 +91,6 @@ namespace MochaCore.NavigationEx.Extensions
                 throw new InvalidOperationException($"Cannot call {nameof(Initialize)} because no modules have been registered.");
             }
 
-            _modalNavigationStack = new Stack<ModalNavigationData>();
-
             if (_navigationStack is null)
             {
                 _navigationStack = new NavigationStack<INavigationLifecycleModule>(ResolveInitialModule());
@@ -126,7 +115,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// <inheritdoc/>
         public void Uninitialize(bool clearStack)
         {
-            _modalNavigationStack = null;
+            _modalNavigationStack.Clear();
 
             if (clearStack)
             {
@@ -160,7 +149,7 @@ namespace MochaCore.NavigationEx.Extensions
         }
 
         /// <inheritdoc/>
-        public async Task<NavigationResult> RequestNavigation(NavigationRequestData requestData)
+        public async Task<NavigationResultData> RequestNavigation(NavigationRequestData requestData)
         {
             InitializationGurad();
             ValidateRequestData(requestData);
@@ -168,18 +157,18 @@ namespace MochaCore.NavigationEx.Extensions
 
             if (IsSameModuleRequested(requestData))
             {
-                return NavigationResult.SameModuleRequested;
+                return new NavigationResultData(NavigationResult.SameModuleRequested);
             }
 
             bool canceled = await HandleOnNavigatingFrom(requestData);
             if (flowControl.ShouldAbort)
             {
-                return NavigationResult.RejectedByNewRequest;
+                return new NavigationResultData(NavigationResult.RejectedByNewRequest);
             }
 
             if (canceled)
             {
-                return NavigationResult.RejectedByCurrent;
+                return new NavigationResultData(NavigationResult.RejectedByCurrent);
             }
 
             INavigationLifecycleModule previousModule = HandleNavigationRequest(requestData);
@@ -190,14 +179,14 @@ namespace MochaCore.NavigationEx.Extensions
                 {
                     previousModule.Uninitialize();
                 }
-                return NavigationResult.RejectedByNewRequest;
+                return new NavigationResultData(NavigationResult.RejectedByNewRequest);
             }
 
             flowControl.CanAbort = false;
             await HandleOnNavigatedFrom(previousModule, requestData);
             flowControl.CanAbort = true;
 
-            return NavigationResult.Succeed;
+            return new NavigationResultData(NavigationResult.Succeed);
         }
 
         private NavigationFlowControl ResolveNavigationFlowControl()
