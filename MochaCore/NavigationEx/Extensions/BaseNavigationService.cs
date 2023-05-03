@@ -186,6 +186,11 @@ namespace MochaCore.NavigationEx.Extensions
             await HandleOnNavigatedFrom(previousModule, requestData);
             flowControl.CanAbort = true;
 
+            if (requestData.NavigationType == NavigationType.PushModal)
+            {
+                return new NavigationResultData(NavigationResult.Succeed, await _modalNavigationStack.Peek().CompletionSource.Task);
+            }
+
             return new NavigationResultData(NavigationResult.Succeed);
         }
 
@@ -203,6 +208,36 @@ namespace MochaCore.NavigationEx.Extensions
 
         private void ValidateRequestData(NavigationRequestData requestData)
         {
+            if (requestData.NavigationType == NavigationType.Pop)
+            {
+                if (_modalNavigationStack.Count == 0)
+                {
+                    throw new ArgumentException("Cannot pop because modal stack is empty.", nameof(requestData));
+                }
+            }
+
+            if (requestData.NavigationType == NavigationType.Push || requestData.NavigationType == NavigationType.PushModal)
+            {
+                if (_modalNavigationStack.Any(m => m.OriginId == requestData.TargetId))
+                {
+                    throw new ArgumentException("Cannot navigate to destination which originates modal request.", nameof(requestData));
+                }
+            }
+
+            //TODO: refactor when NavigationStack receive custom object instead of INavigationLifecycleModule
+            if (requestData.NavigationType == NavigationType.Back)
+            {
+                int lastModalRequestIndex = GetLastModalRequestIndex();
+                if (lastModalRequestIndex >= 0)
+                {
+                    int maxBackStep = _navigationStack.CurrentIndex - lastModalRequestIndex - 1;
+                    if (requestData.Step > maxBackStep)
+                    {
+                        throw new ArgumentException("Cannot navigate back to destination which originates modal request or before it.", nameof(requestData));
+                    }
+                }
+            }
+            
             if (requestData.NavigationType == NavigationType.Push || requestData.NavigationType == NavigationType.PushModal)
             {
                 if (!_modules.ContainsKey(requestData.TargetId!))
@@ -211,13 +246,11 @@ namespace MochaCore.NavigationEx.Extensions
                 }
             }
 
-            //TODO: validate NavigationType.Pop
-
             if (requestData.NavigationType == NavigationType.Back)
             {
                 if (_navigationStack!.PeekBack(requestData.Step) is null)
                 {
-                    throw new ArgumentException("Navigation request data was invalid.");
+                    throw new ArgumentException("Cannot navigate before the first item.", nameof(requestData));
                 }
             }
 
@@ -225,7 +258,7 @@ namespace MochaCore.NavigationEx.Extensions
             {
                 if (_navigationStack!.PeekForward(requestData.Step) is null)
                 {
-                    throw new ArgumentException("Navigation request data was invalid.");
+                    throw new ArgumentException("Cannot navigate forward beyond the last available item.", nameof(requestData));
                 }
             }
         }
@@ -235,8 +268,10 @@ namespace MochaCore.NavigationEx.Extensions
             return requestData.NavigationType switch
             {
                 NavigationType.Push => _modules[requestData.TargetId!],
+                NavigationType.PushModal => _modules[requestData.TargetId!],
                 NavigationType.Back => _navigationStack!.PeekBack(requestData.Step)!,
                 NavigationType.Forward => _navigationStack!.PeekForward(requestData.Step)!,
+                NavigationType.Pop => _navigationStack.InternalCollection.Last(m => m.Id == _modalNavigationStack.Peek().OriginId),
                 _ => throw new NotImplementedException()
             };
         }
@@ -246,6 +281,11 @@ namespace MochaCore.NavigationEx.Extensions
 
         private async Task<bool> HandleOnNavigatingFrom(NavigationRequestData requestData)
         {
+            if (requestData.NavigationEventsOptions?.SupressNavigatingFromEvents == true)
+            {
+                return false;
+            }
+
             OnNavigatingFromEventArgs eventArgs = new(
                     requestData.CallingModule,
                     ResolveTargetModuleFromRequestData(requestData)!,
@@ -265,17 +305,27 @@ namespace MochaCore.NavigationEx.Extensions
             {
                 _navigationStack.Push(ResolveTargetModuleFromRequestData(requestData));
             }
-            else
-            {
-                if (requestData.NavigationType == NavigationType.Back)
-                {
-                    _navigationStack.MoveBack(requestData.Step);
-                }
 
-                if (requestData.NavigationType == NavigationType.Forward)
-                {
-                    _navigationStack.MoveForward(requestData.Step);
-                }
+            if (requestData.NavigationType == NavigationType.PushModal)
+            {
+                _modalNavigationStack.Push(new ModalNavigationData(previousModule.Id, new TaskCompletionSource<object?>()));
+                _navigationStack.Push(ResolveTargetModuleFromRequestData(requestData));
+            }
+
+            if (requestData.NavigationType == NavigationType.Pop)
+            {
+                _modalNavigationStack.Pop().CompletionSource.SetResult(requestData.Parameter);
+                _ = _navigationStack.Pop(_navigationStack.CurrentIndex - GetLastModalRequestIndex());
+            }
+
+            if (requestData.NavigationType == NavigationType.Back)
+            {
+                _navigationStack.MoveBack(requestData.Step);
+            }
+            
+            if (requestData.NavigationType == NavigationType.Forward)
+            {
+                _navigationStack.MoveForward(requestData.Step);
             }
 
             if (requestData.IgnoreCached)
@@ -291,7 +341,29 @@ namespace MochaCore.NavigationEx.Extensions
             return previousModule;
         }
 
-        private Task HandleOnNavigatedTo(INavigationLifecycleModule previousModule, NavigationRequestData requestData)
+        private int GetLastModalRequestIndex()
+        {
+            INavigationLifecycleModule? lastModalModule = _navigationStack.InternalCollection.LastOrDefault(m => m.Id == _modalNavigationStack.Peek().OriginId);
+            if (lastModalModule is null)
+            {
+                return -1;
+            }
+
+            int lastModalRequestIndex = -1;
+            IReadOnlyList<INavigationLifecycleModule> internalCollection = _navigationStack.InternalCollection;
+            // TODO: should iterate backwards
+            for (int i = 0; i < internalCollection.Count; i++)
+            {
+                if (internalCollection[i] == lastModalModule)
+                {
+                    lastModalRequestIndex = i;
+                }
+            }
+
+            return lastModalRequestIndex;
+        }
+
+        private async Task HandleOnNavigatedTo(INavigationLifecycleModule previousModule, NavigationRequestData requestData)
         {
             OnNavigatedToEventArgs eventArgs = new OnNavigatedToEventArgs(
                     requestData.CallingModule,
@@ -303,17 +375,24 @@ namespace MochaCore.NavigationEx.Extensions
             CurrentModuleChanged?.Invoke(this, new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
             ISetNavigationContext? contextSetter = _navigationStack.CurrentItem.DataContext?.Navigator;
             contextSetter?.SetNavigationContext(eventArgs);
-            return CallOnNavigatedTo(_navigationStack.CurrentItem.DataContext, eventArgs);
+
+            if (requestData.NavigationEventsOptions?.SupressNavigatedToEvents != true)
+            {
+                await CallOnNavigatedTo(_navigationStack.CurrentItem.DataContext, eventArgs);
+            }
         }
 
         private async Task HandleOnNavigatedFrom(INavigationLifecycleModule previousModule, NavigationRequestData requestData)
         {
-            await CallOnNavigatedFrom(previousModule.DataContext, new OnNavigatedFromEventArgs(
+            if (requestData.NavigationEventsOptions?.SupressNavigatedFromEvents != true)
+            {
+                await CallOnNavigatedFrom(previousModule.DataContext, new OnNavigatedFromEventArgs(
                     requestData.CallingModule,
                     _navigationStack.CurrentItem,
                     requestData.Parameter,
                     requestData.NavigationType,
                     requestData.Step));
+            }
 
             if ((requestData.SaveCurrent ?? previousModule.LifecycleOptions.PreferCache) is false)
             {

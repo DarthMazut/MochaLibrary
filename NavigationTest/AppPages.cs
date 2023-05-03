@@ -43,12 +43,20 @@ namespace NavigationTest
             Glyph = "\uF259"
         };
 
+        public static AppPage ModalPage { get; } = new AppPage()
+        {
+            Id = nameof(ModalPage),
+            Name = "Modal Page",
+            Glyph = "\uE8E1"
+        };
+
         public static AppPage[] Collection => new AppPage[] 
         {
             HomePage, 
             Page1,
             Page2,
-            Page3
+            Page3,
+            ModalPage
         };
 
         public static AppPage? GetById(string id)

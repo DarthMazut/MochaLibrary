@@ -14,6 +14,8 @@ using MochaCore.NavigationEx;
 using MochaCore.NavigationEx.Extensions;
 using MochaWinUI.NavigationEx;
 using NavigationTest.Pages.HomePage;
+using NavigationTest.Pages.InnerModalPage;
+using NavigationTest.Pages.ModalPage;
 using NavigationTest.Pages.Page1;
 using NavigationTest.Pages.Page2;
 using NavigationTest.Pages.Page3;
@@ -70,6 +72,8 @@ namespace NavigationTest
                         PreferCache = true
                     })
                     .WithModule<Page3, Page3ViewModel>(AppPages.Page3.Id)
+                    .WithModule<ModalPage, ModalPageViewModel>(AppPages.ModalPage.Id)
+                    .WithModule<InnerModalPage, InnerModalPageViewModel>("InnerModalPage")
                     .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                     .WithRoot(_window)
                     .WithInitialId(AppPages.HomePage.Id)

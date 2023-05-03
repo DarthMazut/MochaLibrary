@@ -14,6 +14,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Pages\HomePage\HomePage.xaml" />
+    <None Remove="Pages\InnerModalPage\InnerModalPage.xaml" />
+    <None Remove="Pages\ModalPage\ModalPage.xaml" />
     <None Remove="Pages\Page1\Page1.xaml" />
     <None Remove="Pages\Page2\Page2.xaml" />
     <None Remove="Pages\Page3\Page3.xaml" />
@@ -73,6 +75,16 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\SettingsPage\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\ModalPage\ModalPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\InnerModalPage\InnerModalPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

@@ -8,14 +8,14 @@ namespace MochaCore.NavigationEx
 {
     public class ModalNavigationData
     {
-        public ModalNavigationData(string originId, TaskCompletionSource<object> modalNavigationCompletionSource)
+        public ModalNavigationData(string originId, TaskCompletionSource<object?> modalNavigationCompletionSource)
         {
             OriginId = originId ?? throw new ArgumentNullException(nameof(originId));
-            ModalNavigationCompletionSource = modalNavigationCompletionSource ?? throw new ArgumentNullException(nameof(modalNavigationCompletionSource));
+            CompletionSource = modalNavigationCompletionSource ?? throw new ArgumentNullException(nameof(modalNavigationCompletionSource));
         }
 
         public string OriginId { get; }
 
-        public TaskCompletionSource<object> ModalNavigationCompletionSource { get; }
+        public TaskCompletionSource<object?> CompletionSource { get; }
     }
 }

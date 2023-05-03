@@ -96,6 +96,46 @@ namespace MochaCore.NavigationEx
             _currentIndex = _internalCollection.Count - 1;
         }
 
+        public T Pop() => Pop(1)[0];
+
+        /// <summary>
+        /// Removes the specified number of items from the stack starting from the current item and returns the 
+        /// removed items as an <see cref="IReadOnlyList{T}"/>. If the current index does not point to the top 
+        /// of the stack, the elements above the current index are also removed and not included in the returned 
+        /// list. If removed items are <see cref="IDisposable"/> and the <see cref="DisposeOnRemove"/> is set to 
+        /// <see langword="true"/> these items will receive a call to theirs <see cref="IDisposable"/> implementation. 
+        /// If the specified number of items cannot be removed from the stack, an <see cref="InvalidOperationException"/> is thrown.
+        /// </summary>
+        /// <param name="itemsCount">Number of items to be popped from the stack.</param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public IReadOnlyList<T> Pop(int itemsCount)
+        {
+            if (itemsCount >= Count)
+            {
+                throw new InvalidOperationException($"Cannot remove base item from {nameof(NavigationStack<T>)}.");
+            }
+
+            List<T> removedItems = new();
+            for (int i = _internalCollection.Count - 1; i > _currentIndex - itemsCount; i--)
+            {
+                removedItems.Add(_internalCollection[i]);
+                HandleItemDisposal(_internalCollection[i]);
+                _internalCollection.RemoveAt(i);
+            }
+
+            return removedItems.TakeLast(itemsCount).ToList().AsReadOnly();
+        }
+
+        public bool TryPop(out T poppedItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryPop(int itemsCount, out IReadOnlyList<T> poppedItems)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Overwrites the current item in the stack with a new item. If the 
         /// <see cref="DisposeOnRemove"/> property is <see langword="true"/>, this method

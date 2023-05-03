@@ -134,10 +134,11 @@ namespace MochaCore.NavigationEx
             return targetService.RequestNavigation(new NavigationRequestData(NavigationType.Forward, step, _module, parameter, SaveCurrent, false));
         }
 
-        public Task NavigateModalAsync(string targetId) => NavigateModalAsync(targetId, null);
+        public Task<NavigationResultData> NavigateModalAsync(string targetId) => NavigateModalAsync(targetId, null);
 
         public Task<NavigationResultData> NavigateModalAsync(string targetId, object? parameter)
         {
+            //TODO: Jeżeli robisz PushModal to nie powinieneś robić OnNavigatedFrom()
             return _navigationService.RequestNavigation(NavigationRequestData.CreateModalRequest(targetId, _module, parameter, null));
         }
 
