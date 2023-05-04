@@ -13,8 +13,7 @@ namespace MochaCore.NavigationEx.Extensions
         private string? _initialId;
         private INavigationLifecycleModule? _rootModule;
         private readonly Dictionary<string, INavigationLifecycleModule> _modules = new();
-        private NavigationStack<INavigationLifecycleModule> _navigationStack = null!;
-        private Stack<ModalNavigationData> _modalNavigationStack = new();
+        private NavigationStack<NavigationStackItem> _navigationStack = null!;
         private NavigationFlowControl? _flowControl;
 
         /// <inheritdoc/>
@@ -26,17 +25,17 @@ namespace MochaCore.NavigationEx.Extensions
             get
             {
                 InitializationGurad();
-                return _navigationStack.CurrentItem;
+                return _navigationStack.CurrentItem.Module;
             }
         }
 
         /// <inheritdoc/>
-        public IReadOnlyNavigationStack<INavigationModule> NavigationHistory
+        public IReadOnlyNavigationStack<INavigationStackItem> NavigationHistory
         {
             get
             {
                 InitializationGurad();
-                return _navigationStack.ToReadOnlyStack<INavigationModule>(m => m);
+                return _navigationStack.ToReadOnlyStack<INavigationStackItem>(m => m);
             }
         }
 
@@ -93,17 +92,17 @@ namespace MochaCore.NavigationEx.Extensions
 
             if (_navigationStack is null)
             {
-                _navigationStack = new NavigationStack<INavigationLifecycleModule>(ResolveInitialModule());
+                _navigationStack = new NavigationStack<NavigationStackItem>(new NavigationStackItem(ResolveInitialModule()));
             }
 
-            InitializeModule(_navigationStack.CurrentItem);
+            InitializeModule(_navigationStack.CurrentItem.Module);
             _isInitialized = true;
             
             if (callSubscribersOnInit)
             {
                 OnNavigatedToEventArgs eventArgs = new(null, null, null);
                 CurrentModuleChanged?.Invoke(this, new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
-                return CallOnNavigatedTo(_navigationStack.CurrentItem.DataContext, eventArgs);
+                return CallOnNavigatedTo(_navigationStack.CurrentItem.Module.DataContext, eventArgs);
             }
 
             return Task.CompletedTask;

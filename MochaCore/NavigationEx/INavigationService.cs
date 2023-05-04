@@ -27,7 +27,7 @@ namespace MochaCore.NavigationEx
         /// <summary>
         /// Returns current navigation stack as a readonly collection.
         /// </summary>
-        public IReadOnlyNavigationStack<INavigationModule> NavigationHistory { get; }
+        public IReadOnlyNavigationStack<INavigationStackItem> NavigationHistory { get; }
 
         /// <summary>
         /// Occurs when <see cref="CurrentModule"/> changes its value.
