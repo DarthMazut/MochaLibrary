@@ -123,6 +123,7 @@ namespace MochaCore.NavigationEx
                 _internalCollection.RemoveAt(i);
             }
 
+            _currentIndex -= itemsCount;
             return removedItems.TakeLast(itemsCount).ToList().AsReadOnly();
         }
 

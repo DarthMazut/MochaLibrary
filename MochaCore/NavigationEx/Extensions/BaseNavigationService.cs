@@ -188,7 +188,8 @@ namespace MochaCore.NavigationEx.Extensions
 
             if (requestData.NavigationType == NavigationType.PushModal)
             {
-                return new NavigationResultData(NavigationResult.Succeed, await _modalNavigationStack.Peek().CompletionSource.Task);
+                object? modalValue = await _modalNavigationStack.Peek().CompletionSource.Task;
+                return new NavigationResultData(NavigationResult.Succeed, modalValue);
             }
 
             return new NavigationResultData(NavigationResult.Succeed);
@@ -314,7 +315,6 @@ namespace MochaCore.NavigationEx.Extensions
 
             if (requestData.NavigationType == NavigationType.Pop)
             {
-                _modalNavigationStack.Pop().CompletionSource.SetResult(requestData.Parameter);
                 _ = _navigationStack.Pop(_navigationStack.CurrentIndex - GetLastModalRequestIndex());
             }
 
@@ -373,8 +373,16 @@ namespace MochaCore.NavigationEx.Extensions
                     requestData.Step);
 
             CurrentModuleChanged?.Invoke(this, new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
-            ISetNavigationContext? contextSetter = _navigationStack.CurrentItem.DataContext?.Navigator;
-            contextSetter?.SetNavigationContext(eventArgs);
+            
+            if (requestData.NavigationType == NavigationType.Pop)
+            {
+                _modalNavigationStack.Pop().CompletionSource.SetResult(requestData.Parameter);
+            }
+            else
+            {
+                ISetNavigationContext? contextSetter = _navigationStack.CurrentItem.DataContext?.Navigator;
+                contextSetter?.SetNavigationContext(eventArgs);
+            }
 
             if (requestData.NavigationEventsOptions?.SupressNavigatedToEvents != true)
             {
