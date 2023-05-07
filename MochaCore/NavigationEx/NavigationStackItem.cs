@@ -20,7 +20,7 @@ namespace MochaCore.NavigationEx
 
         public INavigationLifecycleModule Module { get; }
 
-        public TaskCompletionSource<object?>? ModalCompletionSource { get; }
+        public TaskCompletionSource<object?>? ModalCompletionSource { get; set; }
 
         public bool IsModalOrigin => ModalCompletionSource is not null;     
     }
