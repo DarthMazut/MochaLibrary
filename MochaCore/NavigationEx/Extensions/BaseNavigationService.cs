@@ -176,9 +176,7 @@ namespace MochaCore.NavigationEx.Extensions
             if (requestData.NavigationType == NavigationType.PushModal)
             {
                 NavigationStackItem lastModalItem = _navigationStack.InternalCollection.Last(i => i.IsModalOrigin);
-                object? modalValue = await lastModalItem.ModalCompletionSource.Task;
-                lastModalItem.ModalCompletionSource = null;
-                return new NavigationResultData(NavigationResult.Succeed, modalValue);
+                return new NavigationResultData(NavigationResult.Succeed, await lastModalItem.PopResultAsync());
             }
 
             return new NavigationResultData(NavigationResult.Succeed);
@@ -297,7 +295,7 @@ namespace MochaCore.NavigationEx.Extensions
 
             if (requestData.NavigationType == NavigationType.PushModal)
             {
-                _navigationStack.CurrentItem.ModalCompletionSource = new TaskCompletionSource<object?>();
+                _navigationStack.CurrentItem.SetModal();
                 _navigationStack.Push(new NavigationStackItem(ResolveTargetModuleFromRequestData(requestData)));
             }
 
@@ -342,7 +340,7 @@ namespace MochaCore.NavigationEx.Extensions
             
             if (requestData.NavigationType == NavigationType.Pop)
             {
-                _navigationStack.CurrentItem.ModalCompletionSource.SetResult(requestData.Parameter);
+                _navigationStack.CurrentItem.SetResult(requestData.Parameter);
             }
             else
             {
