@@ -19,6 +19,11 @@ namespace MochaCore.NavigationEx
         public INavigationModule CurrentModule { get; }
 
         /// <summary>
+        /// Returns currently active <see cref="INavigationStackItem"/>.
+        /// </summary>
+        public INavigationStackItem CurrentItem { get; }
+
+        /// <summary>
         /// Returns a dictionary of all registered <see cref="INavigationModule"/> with its identifier
         /// as a key.
         /// </summary>

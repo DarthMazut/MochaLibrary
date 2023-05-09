@@ -30,6 +30,16 @@ namespace MochaCore.NavigationEx.Extensions
         }
 
         /// <inheritdoc/>
+        public INavigationStackItem CurrentItem
+        {
+            get
+            {
+                InitializationGurad();
+                return _navigationStack.CurrentItem;
+            }
+        }
+
+        /// <inheritdoc/>
         public IReadOnlyNavigationStack<INavigationStackItem> NavigationHistory
         {
             get
@@ -102,7 +112,7 @@ namespace MochaCore.NavigationEx.Extensions
             {
                 OnNavigatedToEventArgs eventArgs = new(null, null, null);
                 CurrentModuleChanged?.Invoke(this, new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
-                return CallOnNavigatedTo(_navigationStack.CurrentItem.Module.DataContext, eventArgs);
+                return CallOnNavigatedTo(CurrentModule.DataContext, eventArgs);
             }
 
             return Task.CompletedTask;
@@ -122,9 +132,9 @@ namespace MochaCore.NavigationEx.Extensions
             }
 
             bool preferCache = _navigationStack.CurrentItem.Module.LifecycleOptions.PreferCache;
-            bool? saveCurrent = _navigationStack.CurrentItem.Module.DataContext?.Navigator.SaveCurrent;
+            bool? saveCurrent = CurrentModule.DataContext?.Navigator.SaveCurrent;
             
-            if (_navigationStack.CurrentItem.Module.IsInitialized)
+            if (CurrentModule.IsInitialized)
             {
                 if ((saveCurrent ?? preferCache) is false)
                 {
@@ -264,7 +274,7 @@ namespace MochaCore.NavigationEx.Extensions
         }
 
         private bool IsSameModuleRequested(NavigationRequestData requestData)
-            => _navigationStack.CurrentItem == ResolveTargetModuleFromRequestData(requestData);
+            => CurrentModule == ResolveTargetModuleFromRequestData(requestData);
 
         private async Task<bool> HandleOnNavigatingFrom(NavigationRequestData requestData)
         {
@@ -280,7 +290,7 @@ namespace MochaCore.NavigationEx.Extensions
                     requestData.NavigationType,
                     requestData.Step);
 
-            await CallOnNavigatingFrom(_navigationStack.CurrentItem.Module.DataContext, eventArgs);
+            await CallOnNavigatingFrom(CurrentModule.DataContext, eventArgs);
             return eventArgs.Cancel;
         }
 
@@ -319,7 +329,7 @@ namespace MochaCore.NavigationEx.Extensions
                 _navigationStack.CurrentItem.Module.Uninitialize();
             }
 
-            if (!_navigationStack.CurrentItem.Module.IsInitialized)
+            if (!CurrentModule.IsInitialized)
             {
                 InitializeModule(_navigationStack.CurrentItem.Module);
             }
@@ -344,13 +354,13 @@ namespace MochaCore.NavigationEx.Extensions
             }
             else
             {
-                ISetNavigationContext? contextSetter = _navigationStack.CurrentItem.Module.DataContext?.Navigator;
+                ISetNavigationContext? contextSetter = CurrentModule.DataContext?.Navigator;
                 contextSetter?.SetNavigationContext(eventArgs);
             }
 
             if (requestData.NavigationEventsOptions?.SupressNavigatedToEvents != true)
             {
-                await CallOnNavigatedTo(_navigationStack.CurrentItem.Module.DataContext, eventArgs);
+                await CallOnNavigatedTo(CurrentModule.DataContext, eventArgs);
             }
         }
 
@@ -360,7 +370,7 @@ namespace MochaCore.NavigationEx.Extensions
             {
                 await CallOnNavigatedFrom(previousModule.DataContext, new OnNavigatedFromEventArgs(
                     requestData.CallingModule,
-                    _navigationStack.CurrentItem.Module,
+                    CurrentModule,
                     requestData.Parameter,
                     requestData.NavigationType,
                     requestData.Step));
