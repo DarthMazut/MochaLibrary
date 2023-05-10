@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.NavigationEx.Extensions
 {
     public class ReadOnlyNavigationStack<T> : IReadOnlyNavigationStack<T>
     {
