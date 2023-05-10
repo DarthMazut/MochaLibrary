@@ -58,11 +58,13 @@ namespace MochaCore.NavigationEx
         /// </summary>
         public NavigationEventsOptions? NavigationEventsOptions { get; }
 
-        public NavigationRequestData(string targetId, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached)
-            : this(targetId, callingModule, parameter, NavigationType.Push, 0, saveCurrent, ignoreCached, null) { }
+        public static NavigationRequestData CreatePushRequest(string targetId, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
+            => new NavigationRequestData(targetId, callingModule, parameter, NavigationType.Push, 0, saveCurrent, ignoreCached, eventOptions);
 
-        public NavigationRequestData(NavigationType navigationType, int step, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached)
-            : this(null, callingModule, parameter, navigationType, step, saveCurrent, ignoreCached, null) { }
+        public static NavigationRequestData CreateBackRequest(int step, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
+            => new NavigationRequestData(null, callingModule, parameter, NavigationType.Back, step, saveCurrent, ignoreCached, null);
+
+        // TODO: add forward
 
         public static NavigationRequestData CreateModalRequest(string targetId, INavigationModule callingModule, object? parameter, NavigationEventsOptions? eventsOptions)
             => new NavigationRequestData(targetId, callingModule, parameter, NavigationType.PushModal, 0, true, false, eventsOptions);
