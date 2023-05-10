@@ -185,7 +185,7 @@ namespace MochaCore.NavigationEx.Extensions
 
             if (requestData.NavigationType == NavigationType.PushModal)
             {
-                NavigationStackItem lastModalItem = _navigationStack.InternalCollection.Last(i => i.IsModalOrigin);
+                NavigationStackItem lastModalItem = _navigationStack.Last(i => i.IsModalOrigin);
                 return new NavigationResultData(NavigationResult.Succeed, await lastModalItem.PopResultAsync());
             }
 
@@ -208,7 +208,7 @@ namespace MochaCore.NavigationEx.Extensions
         {
             if (requestData.NavigationType == NavigationType.Pop)
             {
-                if (!_navigationStack.InternalCollection.Any(i => i.IsModalOrigin))
+                if (!_navigationStack.Any(i => i.IsModalOrigin))
                 {
                     throw new ArgumentException("Cannot pop because modal stack is empty.", nameof(requestData));
                 }
@@ -216,7 +216,7 @@ namespace MochaCore.NavigationEx.Extensions
 
             if (requestData.NavigationType == NavigationType.Push || requestData.NavigationType == NavigationType.PushModal)
             {
-                if (_navigationStack.InternalCollection.Where(i => i.IsModalOrigin).Any(i => i.Module.Id == requestData.TargetId))
+                if (_navigationStack.Where(i => i.IsModalOrigin).Any(i => i.Module.Id == requestData.TargetId))
                 {
                     throw new ArgumentException("Cannot navigate to destination which originates modal request.", nameof(requestData));
                 }
@@ -268,7 +268,7 @@ namespace MochaCore.NavigationEx.Extensions
                 NavigationType.PushModal => _modules[requestData.TargetId!],
                 NavigationType.Back => _navigationStack!.PeekBack(requestData.Step)!.Module,
                 NavigationType.Forward => _navigationStack!.PeekForward(requestData.Step)!.Module,
-                NavigationType.Pop => _navigationStack.InternalCollection.Last(i => i.IsModalOrigin).Module,
+                NavigationType.Pop => _navigationStack.Last(i => i.IsModalOrigin).Module,
                 _ => throw new NotImplementedException()
             };
         }

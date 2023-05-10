@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MochaCore.NavigationEx
 {
-    public interface IReadOnlyNavigationStack<T>
+    public interface IReadOnlyNavigationStack<T> : IEnumerable<T>
     {
         /// <summary>
         /// Returns number of items currently contained in this stack.

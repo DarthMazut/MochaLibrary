@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,5 +40,11 @@ namespace MochaCore.NavigationEx
 
         /// <inheritdoc/>
         public IReadOnlyList<T> InternalCollection => new List<T>(_source).AsReadOnly();
+
+        /// <inheritdoc/>
+        public IEnumerator<T> GetEnumerator() => _source.GetEnumerator();
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => _source.GetEnumerator();
     }
 }

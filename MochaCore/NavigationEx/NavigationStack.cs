@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -74,6 +75,12 @@ namespace MochaCore.NavigationEx
         /// </summary>
         public IReadOnlyList<T> InternalCollection => _internalCollection.AsReadOnly();
 
+        /// <inheritdoc/>
+        public IEnumerator<T> GetEnumerator() => _internalCollection.GetEnumerator();
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => _internalCollection.GetEnumerator();
+
         /// <summary>
         /// Adds a new item onto the stack. If the current index is not the top index, 
         /// all items above the current index will be removed. If removed items are <see cref="IDisposable"/>
@@ -96,6 +103,14 @@ namespace MochaCore.NavigationEx
             _currentIndex = _internalCollection.Count - 1;
         }
 
+        /// <summary>
+        /// Removes current item from the stack and returns it. If the current index does not point to the top 
+        /// of the stack, the elements above the current index are also removed. If removed items are <see cref="IDisposable"/> 
+        /// and the <see cref="DisposeOnRemove"/> is set to <see langword="true"/> these items will receive a call to theirs 
+        /// <see cref="IDisposable"/> implementation. If the current item is a base item and cannot be removed from the stack, 
+        /// an <see cref="InvalidOperationException"/> is thrown.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
         public T Pop() => Pop(1)[0];
 
         /// <summary>
@@ -110,7 +125,7 @@ namespace MochaCore.NavigationEx
         /// <exception cref="InvalidOperationException"></exception>
         public IReadOnlyList<T> Pop(int itemsCount)
         {
-            if (itemsCount >= Count)
+            if (itemsCount >= CurrentIndex)
             {
                 throw new InvalidOperationException($"Cannot remove base item from {nameof(NavigationStack<T>)}.");
             }
@@ -127,14 +142,29 @@ namespace MochaCore.NavigationEx
             return removedItems.TakeLast(itemsCount).ToList().AsReadOnly();
         }
 
-        public bool TryPop(out T poppedItem)
+        public bool TryPop(out T? poppedItem)
         {
-            throw new NotImplementedException();
+            if (Count < 2)
+            {
+                poppedItem = default;
+                return false;
+            }
+
+            poppedItem = Pop();
+            return true;
         }
 
         public bool TryPop(int itemsCount, out IReadOnlyList<T> poppedItems)
         {
-            throw new NotImplementedException();
+            if (itemsCount >= CurrentIndex)
+            {
+                poppedItems = new List<T>();
+                return false;
+            }
+
+            poppedItems = Pop(itemsCount);
+            return true;
+
         }
 
         /// <summary>
