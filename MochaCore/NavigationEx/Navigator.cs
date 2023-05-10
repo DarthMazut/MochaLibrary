@@ -46,15 +46,14 @@ namespace MochaCore.NavigationEx
             }
         }
 
-        // TODO:
-        //public bool CanReturnModal
-        //{
-        //    get
-        //    {
-        //        InitializationGuard();
-        //        return _navigationService.ModalNavigationStack.Any();
-        //    }
-        //}
+        public bool CanReturnModal
+        {
+            get
+            {
+                InitializationGuard();
+                return _navigationService.NavigationHistory.Any(i => i.IsModalOrigin);
+            }
+        }
 
         public bool? SaveCurrent { get; set; }
 
@@ -138,17 +137,24 @@ namespace MochaCore.NavigationEx
 
         public Task<NavigationResultData> NavigateModalAsync(string targetId, object? parameter)
         {
-            //TODO: Jeżeli robisz PushModal to nie powinieneś robić OnNavigatedFrom()
-            return _navigationService.RequestNavigation(NavigationRequestData.CreateModalRequest(targetId, _module, parameter, null));
+            return _navigationService.RequestNavigation(
+                NavigationRequestData.CreateModalRequest(
+                    targetId,
+                    _module,
+                    parameter,
+                    new NavigationEventsOptions()
+                    { 
+                        SupressNavigatedFromEvents = true
+                    }));
         }
 
         public Task ReturnModal() => ReturnModal(null, null);
 
         public Task ReturnModal(object returnData) => ReturnModal(returnData, null);
 
-        public async Task ReturnModal(object? returnData, NavigationEventsOptions? eventsOptions)
+        public Task ReturnModal(object? returnData, NavigationEventsOptions? eventsOptions)
         {
-            await _navigationService.RequestNavigation(NavigationRequestData.CreatePopRequest(
+            return _navigationService.RequestNavigation(NavigationRequestData.CreatePopRequest(
                 _module,
                 returnData,
                 eventsOptions ?? new NavigationEventsOptions()
