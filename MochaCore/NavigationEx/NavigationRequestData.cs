@@ -47,8 +47,8 @@ namespace MochaCore.NavigationEx
 
         /// <summary>
         /// Determines whether module which is active during navigation request should be cached.
-        /// This property overwrite <see cref="INavigationLifecycleModule.PreferCache"/> value.
-        /// If this value is set to <see langword="null"/> only <see cref="INavigationLifecycleModule.PreferCache"/>
+        /// This property overwrite <see cref="NavigationModuleLifecycleOptions.PreferCache"/> value.
+        /// If this value is set to <see langword="null"/> only <see cref="NavigationModuleLifecycleOptions.PreferCache"/>
         /// will be considered.
         /// </summary>
         public bool? SaveCurrent { get; }
@@ -59,18 +59,19 @@ namespace MochaCore.NavigationEx
         public NavigationEventsOptions? NavigationEventsOptions { get; }
 
         public static NavigationRequestData CreatePushRequest(string targetId, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
-            => new NavigationRequestData(targetId, callingModule, parameter, NavigationType.Push, 0, saveCurrent, ignoreCached, eventOptions);
+            => new(targetId, callingModule, parameter, NavigationType.Push, 0, saveCurrent, ignoreCached, eventOptions);
 
         public static NavigationRequestData CreateBackRequest(int step, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
-            => new NavigationRequestData(null, callingModule, parameter, NavigationType.Back, step, saveCurrent, ignoreCached, null);
+            => new(null, callingModule, parameter, NavigationType.Back, step, saveCurrent, ignoreCached, eventOptions);
 
-        // TODO: add forward
+        public static NavigationRequestData CreateForwardRequest(int step, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
+            => new(null, callingModule, parameter, NavigationType.Forward, step, saveCurrent, ignoreCached, eventOptions);
 
-        public static NavigationRequestData CreateModalRequest(string targetId, INavigationModule callingModule, object? parameter, NavigationEventsOptions? eventsOptions)
-            => new NavigationRequestData(targetId, callingModule, parameter, NavigationType.PushModal, 0, true, false, eventsOptions);
+        public static NavigationRequestData CreateModalRequest(string targetId, INavigationModule callingModule, object? parameter, bool ignoreCached, NavigationEventsOptions? eventsOptions)
+            => new(targetId, callingModule, parameter, NavigationType.PushModal, 0, true, ignoreCached, eventsOptions);
 
-        public static NavigationRequestData CreatePopRequest(INavigationModule callingModule, object? returnValue, NavigationEventsOptions eventsOptions)
-            => new NavigationRequestData(null, callingModule, returnValue, NavigationType.Pop, 0, false, false, eventsOptions);
+        public static NavigationRequestData CreatePopRequest(INavigationModule callingModule, object? returnValue, NavigationEventsOptions? eventsOptions)
+            => new(null, callingModule, returnValue, NavigationType.Pop, 0, false, false, eventsOptions);
 
         private NavigationRequestData
             (string? targetId,

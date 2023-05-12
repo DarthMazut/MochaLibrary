@@ -57,6 +57,8 @@ namespace MochaCore.NavigationEx
 
         public bool? SaveCurrent { get; set; }
 
+        // Fluent API
+
         public Task<NavigationResultData> NavigateAsync(Func<INavigationDestinationBuilder, INavigationRequestDetailsBuilder> buildingDelegate)
         {
             NavigationRequestBuilder? builder 
@@ -67,14 +69,20 @@ namespace MochaCore.NavigationEx
             return service.RequestNavigation(builder.Build());
         }
 
+        // Default
+
+        public Task<NavigationResultData> NavigateAsync(NavigationRequestData navigationRequestData)
+            => _navigationService.RequestNavigation(navigationRequestData);
+
+        // To
+
         public Task<NavigationResultData> NavigateAsync(string targetId)
              => NavigateAsync(targetId, null);
 
         public Task<NavigationResultData> NavigateAsync(string targetId, object? parameter)
-            => _navigationService.RequestNavigation(new NavigationRequestData(targetId, _module, parameter, SaveCurrent, false));
+            => _navigationService.RequestNavigation(NavigationRequestData.CreatePushRequest(targetId, _module, parameter, SaveCurrent, false, null));
 
-        public Task<NavigationResultData> NavigateAsync(NavigationRequestData navigationRequestData)
-            => _navigationService.RequestNavigation(navigationRequestData);
+        // Back
 
         public Task<NavigationResultData> NavigateBackAsync()
             => NavigateBackAsync(null);
@@ -83,7 +91,9 @@ namespace MochaCore.NavigationEx
             => NavigateBackAsync(parameter, 1);
 
         public Task<NavigationResultData> NavigateBackAsync(object? parameter, int step)
-            => _navigationService.RequestNavigation(new NavigationRequestData(NavigationType.Back, step, _module, parameter, SaveCurrent, false));
+            => _navigationService.RequestNavigation(NavigationRequestData.CreateBackRequest(step, _module, parameter, SaveCurrent, false, null));
+
+        // Forward
 
         public Task<NavigationResultData> NavigateForwardAsync()
             => NavigateForwardAsync(null);
@@ -92,7 +102,15 @@ namespace MochaCore.NavigationEx
             => NavigateForwardAsync(parameter, 1);
 
         public Task<NavigationResultData> NavigateForwardAsync(object? parameter, int step)
-            => _navigationService.RequestNavigation(new NavigationRequestData(NavigationType.Forward, step, _module, parameter, SaveCurrent, false));
+            => _navigationService.RequestNavigation(NavigationRequestData.CreateForwardRequest(step, _module, parameter, SaveCurrent, false, null));
+
+        // For Services
+
+        public Task<NavigationResultData> NavigateAsyncForService(string targetServiceId, NavigationRequestData navigationRequestData)
+        {
+            INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
+            return targetService.RequestNavigation(navigationRequestData);
+        }
 
         public Task<NavigationResultData> NavigateAsyncForService(string targetServiceId, string targetId)
             => NavigateAsyncForService(targetServiceId, targetId, null);
@@ -100,13 +118,7 @@ namespace MochaCore.NavigationEx
         public Task<NavigationResultData> NavigateAsyncForService(string targetServiceId, string targetId, object? parameter)
         {
             INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
-            return targetService.RequestNavigation(new NavigationRequestData(targetId, _module, parameter, SaveCurrent, false));
-        }
-
-        public Task<NavigationResultData> NavigateAsyncForService(string targetServiceId, NavigationRequestData navigationRequestData)
-        {
-            INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
-            return targetService.RequestNavigation(navigationRequestData);
+            return targetService.RequestNavigation(NavigationRequestData.CreatePushRequest(targetId, _module, parameter, SaveCurrent, false, null));
         }
 
         public Task<NavigationResultData> NavigateBackAsyncForService(string targetServiceId)
@@ -118,7 +130,7 @@ namespace MochaCore.NavigationEx
         public Task<NavigationResultData> NavigateBackAsyncForService(string targetServiceId, object? parameter, int step)
         {
             INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
-            return targetService.RequestNavigation(new NavigationRequestData(NavigationType.Back, step, _module, parameter, SaveCurrent, false));
+            return targetService.RequestNavigation(NavigationRequestData.CreateBackRequest(step, _module, parameter, SaveCurrent, false, null));
         }
 
         public Task<NavigationResultData> NavigateForwardAsyncForService(string targetServiceId)
@@ -130,8 +142,10 @@ namespace MochaCore.NavigationEx
         public Task<NavigationResultData> NavigateForwardAsyncForService(string targetServiceId, object? parameter, int step)
         {
             INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
-            return targetService.RequestNavigation(new NavigationRequestData(NavigationType.Forward, step, _module, parameter, SaveCurrent, false));
+            return targetService.RequestNavigation(NavigationRequestData.CreateForwardRequest(step, _module, parameter, SaveCurrent, false, null));
         }
+
+        // Modal
 
         public Task<NavigationResultData> NavigateModalAsync(string targetId) => NavigateModalAsync(targetId, null);
 
@@ -142,11 +156,14 @@ namespace MochaCore.NavigationEx
                     targetId,
                     _module,
                     parameter,
+                    false,
                     new NavigationEventsOptions()
                     { 
                         SupressNavigatedFromEvents = true
                     }));
         }
+
+        // Return Modal
 
         public Task ReturnModal() => ReturnModal(null, null);
 
