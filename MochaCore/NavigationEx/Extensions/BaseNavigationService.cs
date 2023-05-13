@@ -17,6 +17,9 @@ namespace MochaCore.NavigationEx.Extensions
         private NavigationFlowControl? _flowControl;
 
         /// <inheritdoc/>
+        public event EventHandler<CurrentNavigationModuleChangedEventArgs>? CurrentModuleChanged;
+
+        /// <inheritdoc/>
         public bool IsInitialized => _isInitialized;
 
         /// <inheritdoc/>
@@ -63,9 +66,6 @@ namespace MochaCore.NavigationEx.Extensions
             }
         }
 
-        /// <inheritdoc/>
-        public event EventHandler<CurrentNavigationModuleChangedEventArgs>? CurrentModuleChanged;
-
         public void AddModule(INavigationLifecycleModule module)
         {
             if (_modules.ContainsKey(module.Id))
@@ -93,7 +93,7 @@ namespace MochaCore.NavigationEx.Extensions
         public Task Initialize() => Initialize(true);
 
         /// <inheritdoc/>
-        public Task Initialize(bool callSubscribersOnInit)
+        public virtual Task Initialize(bool callSubscribersOnInit)
         {
             if (!_modules.Any())
             {
@@ -111,7 +111,7 @@ namespace MochaCore.NavigationEx.Extensions
             if (callSubscribersOnInit)
             {
                 OnNavigatedToEventArgs eventArgs = new(null, null, null);
-                CurrentModuleChanged?.Invoke(this, new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
+                OnCurrentModuleChanged(new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
                 return CallOnNavigatedTo(CurrentModule.DataContext, eventArgs);
             }
 
@@ -119,10 +119,10 @@ namespace MochaCore.NavigationEx.Extensions
         }
 
         /// <inheritdoc/>
-        public void Uninitialize() => Uninitialize(false);
+        public virtual void Uninitialize() => Uninitialize(false);
 
         /// <inheritdoc/>
-        public void Uninitialize(bool clearStack)
+        public virtual void Uninitialize(bool clearStack)
         {
             if (clearStack)
             {
@@ -146,7 +146,7 @@ namespace MochaCore.NavigationEx.Extensions
         }
 
         /// <inheritdoc/>
-        public async Task<NavigationResultData> RequestNavigation(NavigationRequestData requestData)
+        public virtual async Task<NavigationResultData> RequestNavigation(NavigationRequestData requestData)
         {
             InitializationGurad();
             ValidateRequestData(requestData);
@@ -204,7 +204,7 @@ namespace MochaCore.NavigationEx.Extensions
             return _flowControl;
         }
 
-        private void ValidateRequestData(NavigationRequestData requestData)
+        protected virtual void ValidateRequestData(NavigationRequestData requestData)
         {
             if (requestData.NavigationType == NavigationType.Pop)
             {
@@ -273,10 +273,10 @@ namespace MochaCore.NavigationEx.Extensions
             };
         }
 
-        private bool IsSameModuleRequested(NavigationRequestData requestData)
+        protected virtual bool IsSameModuleRequested(NavigationRequestData requestData)
             => CurrentModule == ResolveTargetModuleFromRequestData(requestData);
 
-        private async Task<bool> HandleOnNavigatingFrom(NavigationRequestData requestData)
+        protected virtual async Task<bool> HandleOnNavigatingFrom(NavigationRequestData requestData)
         {
             if (requestData.NavigationEventsOptions?.SupressNavigatingFromEvents == true)
             {
@@ -294,7 +294,7 @@ namespace MochaCore.NavigationEx.Extensions
             return eventArgs.Cancel;
         }
 
-        private INavigationLifecycleModule HandleNavigationRequest(NavigationRequestData requestData)
+        protected virtual INavigationLifecycleModule HandleNavigationRequest(NavigationRequestData requestData)
         {
             INavigationLifecycleModule previousModule = _navigationStack.CurrentItem.Module;
 
@@ -337,7 +337,7 @@ namespace MochaCore.NavigationEx.Extensions
             return previousModule;
         }
 
-        private async Task HandleOnNavigatedTo(INavigationLifecycleModule previousModule, NavigationRequestData requestData)
+        protected virtual async Task HandleOnNavigatedTo(INavigationLifecycleModule previousModule, NavigationRequestData requestData)
         {
             OnNavigatedToEventArgs eventArgs = new OnNavigatedToEventArgs(
                     requestData.CallingModule,
@@ -346,7 +346,7 @@ namespace MochaCore.NavigationEx.Extensions
                     requestData.NavigationType,
                     requestData.Step);
 
-            CurrentModuleChanged?.Invoke(this, new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
+            OnCurrentModuleChanged(new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
             
             if (requestData.NavigationType == NavigationType.Pop)
             {
@@ -364,7 +364,7 @@ namespace MochaCore.NavigationEx.Extensions
             }
         }
 
-        private async Task HandleOnNavigatedFrom(INavigationLifecycleModule previousModule, NavigationRequestData requestData)
+        protected virtual async Task HandleOnNavigatedFrom(INavigationLifecycleModule previousModule, NavigationRequestData requestData)
         {
             if (requestData.NavigationEventsOptions?.SupressNavigatedFromEvents != true)
             {
@@ -382,16 +382,16 @@ namespace MochaCore.NavigationEx.Extensions
             }
         }
 
-        private void InitializeModule(INavigationLifecycleModule? module)
+        protected virtual void InitializeModule(INavigationLifecycleModule module)
         {
-            if (module?.IsInitialized == false)
+            if (!module.IsInitialized)
             {
                 module.Initialize();
                 (module.DataContext?.Navigator as INavigatorInitialize)?.Initialize(module, this);
             }
         }
 
-        private INavigationLifecycleModule ResolveInitialModule()
+        protected virtual INavigationLifecycleModule ResolveInitialModule()
         {
             if (_initialId is null)
             {
@@ -423,22 +423,27 @@ namespace MochaCore.NavigationEx.Extensions
             return lastModalIndex;
         }
 
-        private Task CallOnNavigatingFrom(INavigatable? dataContext, OnNavigatingFromEventArgs e)
+        protected virtual Task CallOnNavigatingFrom(INavigatable? dataContext, OnNavigatingFromEventArgs e)
         {
             (dataContext as IOnNavigatingFrom)?.OnNavigatingFrom(e);
             return (dataContext as IOnNavigatingFromAsync)?.OnNavigatingFromAsync(e) ?? Task.CompletedTask;
         }
 
-        private Task CallOnNavigatedTo(INavigatable? dataContext, OnNavigatedToEventArgs e)
+        protected virtual Task CallOnNavigatedTo(INavigatable? dataContext, OnNavigatedToEventArgs e)
         {
             (dataContext as IOnNavigatedTo)?.OnNavigatedTo(e);
             return (dataContext as IOnNavigatedToAsync)?.OnNavigatedToAsync(e) ?? Task.CompletedTask;
         }
 
-        private Task CallOnNavigatedFrom(INavigatable? dataContext, OnNavigatedFromEventArgs e)
+        protected virtual Task CallOnNavigatedFrom(INavigatable? dataContext, OnNavigatedFromEventArgs e)
         {
             (dataContext as IOnNavigatedFrom)?.OnNavigatedFrom(e);
             return (dataContext as IOnNavigatedFromAsync)?.OnNavigatedFromAsync(e) ?? Task.CompletedTask;
+        }
+
+        protected virtual void OnCurrentModuleChanged(CurrentNavigationModuleChangedEventArgs args)
+        {
+            CurrentModuleChanged?.Invoke(this, args);
         }
 
         private void InitializationGurad()
