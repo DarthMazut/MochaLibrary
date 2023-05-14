@@ -33,7 +33,7 @@ namespace MochaWinUI.NavigationEx
                     $"by this overload of {nameof(WithModule)} method.");
             }
 
-            AddModule(new NavigationModule(id, () => Activator.CreateInstance<TView>(), typeof(TView), () => Activator.CreateInstance<TDataContext>(), typeof(TDataContext), lifecycleOptions));
+            AddModule(new WinUiNavigationModule(id, () => Activator.CreateInstance<TView>(), typeof(TView), () => Activator.CreateInstance<TDataContext>(), typeof(TDataContext), lifecycleOptions));
             return this;
         }
 
@@ -52,7 +52,7 @@ namespace MochaWinUI.NavigationEx
                     $"by this overload of {nameof(WithModule)} method.");
             }
 
-            AddModule(new NavigationModule(id, () => Activator.CreateInstance<TView>(), typeof(TView), dataContextBuilder, typeof(TDataContext), lifecycleOptions));
+            AddModule(new WinUiNavigationModule(id, () => Activator.CreateInstance<TView>(), typeof(TView), dataContextBuilder, typeof(TDataContext), lifecycleOptions));
             return this;
         }
 
@@ -65,7 +65,7 @@ namespace MochaWinUI.NavigationEx
             where TView : FrameworkElement
             where TDataContext : class, INavigatable
         {
-            AddModule(new NavigationModule(id, viewBuilder, typeof(TView), dataContextBuilder, typeof(TDataContext), lifecycleOptions));
+            AddModule(new WinUiNavigationModule(id, viewBuilder, typeof(TView), dataContextBuilder, typeof(TDataContext), lifecycleOptions));
             return this;
         }
 
@@ -81,7 +81,7 @@ namespace MochaWinUI.NavigationEx
 
         public WinUiNavigationService WithRoot(Window window, INavigatable dataContext)
         {
-            AddModule(new NavigationModule(window, dataContext));
+            AddModule(new WinUiNavigationModule(window, dataContext));
             return this;
         }
 
@@ -95,35 +95,6 @@ namespace MochaWinUI.NavigationEx
         {
             await base.Initialize();
             return this;
-        }
-
-        private class NavigationModule : BaseNavigationModule
-        {
-            public NavigationModule(string id, Func<object> viewBuilder, Type viewType, Func<INavigatable>? dataContextBuilder, Type dataContextType, NavigationModuleLifecycleOptions lifecycleOptions)
-                : base(id, viewBuilder, viewType, dataContextBuilder, dataContextType, lifecycleOptions) { }
-
-            public NavigationModule(object view, INavigatable dataContext) : base(view, dataContext) { }
-
-            public override INavigatable? GetDataContext(object view)
-            {
-                if (view is FrameworkElement typedView)
-                {
-                    return (INavigatable?)typedView.DataContext;
-                }
-
-                throw new ArgumentException("Data context can only be retrieved from *FrameworkElement* or its descendant.");
-            }
-
-            public override void SetDataContext(object view, INavigatable? dataContext)
-            {
-                if (view is FrameworkElement typedView)
-                {
-                    typedView.DataContext = dataContext;
-                    return;
-                }
-
-                throw new ArgumentException("Data context can only be set on *FrameworkElement* or its descendant.");
-            }
         }
     }
 }

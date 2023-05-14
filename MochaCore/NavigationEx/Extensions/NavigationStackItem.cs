@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MochaCore.NavigationEx.Extensions
 {
-    internal class NavigationStackItem : INavigationStackItem
+    public class NavigationStackItem : INavigationStackItem
     {
         private TaskCompletionSource<object?>? _tsc;
 

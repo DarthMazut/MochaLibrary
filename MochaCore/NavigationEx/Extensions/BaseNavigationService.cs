@@ -13,8 +13,9 @@ namespace MochaCore.NavigationEx.Extensions
         private string? _initialId;
         private INavigationLifecycleModule? _rootModule;
         private readonly Dictionary<string, INavigationLifecycleModule> _modules = new();
-        private NavigationStack<NavigationStackItem> _navigationStack = null!;
         private NavigationFlowControl? _flowControl;
+        
+        protected NavigationStack<NavigationStackItem> _navigationStack = null!;
 
         /// <inheritdoc/>
         public event EventHandler<CurrentNavigationModuleChangedEventArgs>? CurrentModuleChanged;
@@ -260,7 +261,7 @@ namespace MochaCore.NavigationEx.Extensions
             }
         }
 
-        private INavigationLifecycleModule ResolveTargetModuleFromRequestData(NavigationRequestData requestData)
+        protected virtual INavigationLifecycleModule ResolveTargetModuleFromRequestData(NavigationRequestData requestData)
         {
             return requestData.NavigationType switch
             {
