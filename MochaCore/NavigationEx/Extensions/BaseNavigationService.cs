@@ -408,7 +408,7 @@ namespace MochaCore.NavigationEx.Extensions
             }
         }
 
-        private int GetLastModalItemIndex()
+        protected int GetLastModalItemIndex()
         {
             int lastModalIndex = -1;
             for (int i = _navigationStack.CurrentIndex; i >= 0; i--)

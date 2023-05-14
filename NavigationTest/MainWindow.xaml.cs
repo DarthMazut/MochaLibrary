@@ -8,6 +8,8 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using MochaCore.NavigationEx;
+using MochaWinUI.NavigationEx;
 using NavigationTest.Pages.Page1;
 using System;
 using System.Collections.Generic;
@@ -31,5 +33,7 @@ namespace NavigationTest
         {
             this.InitializeComponent();
         }
+
+        public Frame Frame => xe_Frame;
     }
 }

@@ -33,6 +33,6 @@
                 <core:InvokeCommandAction Command="{Binding NavigationItemInvokedCommand}" InputConverter="{StaticResource NavigationItemInvokedConverter}" />
             </core:EventTriggerBehavior>
         </i:Interaction.Behaviors>
-        <Frame Content="{Binding NavigationContent}"/>
+        <Frame x:Name="xe_Frame" />
     </NavigationView>
 </Window>

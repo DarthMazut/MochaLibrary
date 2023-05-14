@@ -96,7 +96,7 @@ namespace MochaCore.NavigationEx.Extensions
 
             if (_dataContextBuilder is not null)
             {
-                SetDataContext(_view, _dataContextBuilder.Invoke());
+                SetDataContext(_view, _dataContext);
             }
 
             _isInitialized = true;

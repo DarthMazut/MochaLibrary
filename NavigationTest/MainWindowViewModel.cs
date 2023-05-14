@@ -17,8 +17,8 @@ namespace NavigationTest
         {
             Navigator.Initialized += (s, e) => Navigator.Service.CurrentModuleChanged += (s, e) =>
             {
-                NavigationContent = e.CurrentModule.View;
-                SelectedItem = AppPages.GetById(e.CurrentModule.Id);
+                //NavigationContent = e.CurrentModule.View;
+                //SelectedItem = AppPages.GetById(e.CurrentModule.Id);
             };
         }
 

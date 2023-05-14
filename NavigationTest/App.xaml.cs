@@ -64,7 +64,7 @@ namespace NavigationTest
 
             NavigationManager.AddNavigationService(
                 "MainNavigationService",
-                await new WinUiNavigationService()
+                await (new WinUiFrameNavigationService()
                     .WithModule<HomePage, HomePageViewModel>(AppPages.HomePage.Id)
                     .WithModule<Page1, Page1ViewModel>(AppPages.Page1.Id)
                     .WithModule<Page2, Page2ViewModel>(AppPages.Page2.Id, new NavigationModuleLifecycleOptions()
@@ -76,9 +76,10 @@ namespace NavigationTest
                     .WithModule<InnerModalPage, InnerModalPageViewModel>("InnerModalPage")
                     .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                     .WithRoot(_window)
-                    .WithInitialId(AppPages.HomePage.Id)
+                    .WithInitialId(AppPages.HomePage.Id) as WinUiFrameNavigationService)
+                    .WithFrame((_window as MainWindow).Frame)
                     .Initialize()
-                ); ;
+                );
 
             // Listen to notification activation
             ToastNotificationManagerCompat.OnActivated += toastArgs =>
