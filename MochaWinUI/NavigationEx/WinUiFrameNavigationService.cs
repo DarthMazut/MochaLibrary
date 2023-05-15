@@ -19,6 +19,7 @@ namespace MochaWinUI.NavigationEx
     public class WinUiFrameNavigationService : BaseNavigationService
     {
         private Func<Frame>? _frameDelegate;
+        private NavigationRequestData? _requestData;
 
         public WinUiFrameNavigationService WithModule<TView, TDataContext>(string id)
            where TView : FrameworkElement
@@ -111,91 +112,79 @@ namespace MochaWinUI.NavigationEx
             return this;
         }
 
-        protected override INavigationLifecycleModule HandleNavigationRequest(NavigationRequestData requestData)
+        protected override void InitializeModule(INavigationLifecycleModule module)
         {
             if (_frameDelegate is null)
             {
                 throw new InvalidOperationException($"Frame delegate must be specified to perform this action. Use {nameof(WithFrame)}() method first.");
             }
 
-            INavigationLifecycleModule previousModule = _navigationStack.CurrentItem.Module;
-            int previousIndex = NavigationHistory.CurrentIndex;
+            Frame frame = _frameDelegate.Invoke();
 
-            if (requestData.NavigationType == NavigationType.Push)
+            if (_requestData is null)
             {
-                _navigationStack.Push(new NavigationStackItem(ResolveTargetModuleFromRequestData(requestData)));
-            }
-
-            if (requestData.NavigationType == NavigationType.PushModal)
-            {
-                _navigationStack.CurrentItem.SetModal();
-                _navigationStack.Push(new NavigationStackItem(ResolveTargetModuleFromRequestData(requestData)));
-            }
-
-            if (requestData.NavigationType == NavigationType.Pop)
-            {
-                _ = _navigationStack.Pop(_navigationStack.CurrentIndex - GetLastModalItemIndex());
-            }
-
-            if (requestData.NavigationType == NavigationType.Back)
-            {
-                _navigationStack.MoveBack(requestData.Step);
-            }
-
-            if (requestData.NavigationType == NavigationType.Forward)
-            {
-                _navigationStack.MoveForward(requestData.Step);
-            }
-
-            if (requestData.IgnoreCached)
-            {
-                _navigationStack.CurrentItem.Module.Uninitialize();
-            }
-
-            INavigationLifecycleModule module = _navigationStack.CurrentItem.Module;
-
-            if (requestData.NavigationType == NavigationType.Push)
-            {
-                _frameDelegate.Invoke().Navigate(module.ViewType);
-            }
-
-            if (requestData.NavigationType == NavigationType.Back)
-            {
-                for (int i = 0; i < requestData.Step; i++)
-                {
-                    _frameDelegate.Invoke().GoBack();
-                }
-            }
-
-            if (requestData.NavigationType == NavigationType.Forward)
-            {
-                for (int i = 0; i < requestData.Step; i++)
-                {
-                    _frameDelegate.Invoke().GoForward();
-                }
-            }
-
-            if (requestData.NavigationType == NavigationType.PushModal)
-            {
-                _frameDelegate.Invoke().Navigate(module.ViewType);
-            }
-
-            if (requestData.NavigationType == NavigationType.Pop)
-            {
-                int stepNumber = previousIndex - GetLastModalItemIndex();
-                for (int i = 0; i < stepNumber; i++)
-                {
-                    _frameDelegate.Invoke().GoBack();
-                }
-            }
-            
-            if (!CurrentModule.IsInitialized)
-            {
-                module.Initialize(_frameDelegate.Invoke().Content);
+                frame.Navigate(module.ViewType);
+                module.Initialize(frame.Content);
                 (module.DataContext?.Navigator as INavigatorInitialize)?.Initialize(module, this);
             }
+            else
+            {
+                if (_requestData.NavigationType == NavigationType.Push)
+                {
+                    frame.Navigate(module.ViewType);
+                }
 
-            return previousModule;
+                if (_requestData.NavigationType == NavigationType.Back)
+                {
+                    for (int i = 0; i < _requestData.Step; i++)
+                    {
+                        frame.GoBack();
+                    }
+                }
+
+                if (_requestData.NavigationType == NavigationType.Forward)
+                {
+                    for (int i = 0; i < _requestData.Step; i++)
+                    {
+                        frame.GoForward();
+                    }
+                }
+
+                if (_requestData.NavigationType == NavigationType.PushModal)
+                {
+                    frame.Navigate(module.ViewType);
+                }
+
+                if (_requestData.NavigationType == NavigationType.Pop)
+                {
+                    int stepNumber = 1; //previousIndex - GetLastModalItemIndex();
+                    for (int i = 0; i < stepNumber; i++)
+                    {
+                        frame.GoBack();
+                    }
+                }
+
+                if (CurrentModule.IsInitialized)
+                {
+                    if (CurrentModule.View == frame.Content)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        _navigationStack.CurrentItem.Module.Uninitialize();
+                    }
+                }
+
+                module.Initialize(frame.Content);
+                (module.DataContext?.Navigator as INavigatorInitialize)?.Initialize(module, this);
+            }  
+        }
+
+        protected override INavigationLifecycleModule HandleNavigationRequest(NavigationRequestData requestData)
+        {
+            _requestData = requestData;
+            return base.HandleNavigationRequest(requestData);
         }
     }
 }

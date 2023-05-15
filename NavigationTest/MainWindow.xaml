@@ -33,6 +33,12 @@
                 <core:InvokeCommandAction Command="{Binding NavigationItemInvokedCommand}" InputConverter="{StaticResource NavigationItemInvokedConverter}" />
             </core:EventTriggerBehavior>
         </i:Interaction.Behaviors>
-        <Frame x:Name="xe_Frame" />
+        <Frame x:Name="xe_Frame">
+            <Frame.ContentTransitions>
+                <NavigationThemeTransition>
+                    <SlideNavigationTransitionInfo Effect="FromLeft" />
+                </NavigationThemeTransition>
+            </Frame.ContentTransitions>
+        </Frame>
     </NavigationView>
 </Window>

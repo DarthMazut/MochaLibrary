@@ -330,10 +330,7 @@ namespace MochaCore.NavigationEx.Extensions
                 _navigationStack.CurrentItem.Module.Uninitialize();
             }
 
-            if (!CurrentModule.IsInitialized)
-            {
-                InitializeModule(_navigationStack.CurrentItem.Module);
-            }
+            InitializeModule(_navigationStack.CurrentItem.Module);
 
             return previousModule;
         }
