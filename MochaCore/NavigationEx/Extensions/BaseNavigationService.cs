@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace MochaCore.NavigationEx.Extensions
 {
+    /// <summary>
+    /// Provides base implementation for <see cref="INavigationService"/>.
+    /// </summary>
     public abstract class BaseNavigationService : INavigationService
     {
         private bool _isInitialized;
@@ -66,6 +69,11 @@ namespace MochaCore.NavigationEx.Extensions
         /// <inheritdoc/>
         public event EventHandler<CurrentNavigationModuleChangedEventArgs>? CurrentModuleChanged;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="module"></param>
+        /// <exception cref="ArgumentException"></exception>
         public void AddModule(INavigationLifecycleModule module)
         {
             if (_modules.ContainsKey(module.Id))
@@ -84,6 +92,11 @@ namespace MochaCore.NavigationEx.Extensions
             }
         }
 
+        /// <summary>
+        /// Allows to specify which of the registered <see cref="INavigationModule"/> objects
+        /// is to be treated as initial one.
+        /// </summary>
+        /// <param name="id">Id of <see cref="INavigationModule"/> object to be treated as initial one.</param>
         public void SelectInitialtId(string id)
         {
             _initialId = id;

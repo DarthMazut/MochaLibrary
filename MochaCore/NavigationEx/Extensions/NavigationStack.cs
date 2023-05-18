@@ -312,9 +312,18 @@ namespace MochaCore.NavigationEx.Extensions
             _currentIndex = 0;
         }
 
+        /// <summary>
+        /// Returns current instance as <see cref="IReadOnlyNavigationStack{T}"/>.
+        /// </summary>
         public IReadOnlyNavigationStack<T> ToReadOnlyStack()
             => new ReadOnlyNavigationStack<T>(InternalCollection.ToArray(), CurrentIndex);
 
+        /// <summary>
+        /// Returns current instance as <see cref="IReadOnlyNavigationStack{T}"/> of specified type.
+        /// </summary>
+        /// <typeparam name="TOutput">Type of output <see cref="IReadOnlyNavigationStack{T}"/></typeparam>
+        /// <param name="translationFunc">A delegate that translates each item of current instance to
+        /// specified type.</param>
         public IReadOnlyNavigationStack<TOutput> ToReadOnlyStack<TOutput>(Func<T, TOutput> translationFunc)
             => new ReadOnlyNavigationStack<TOutput>(InternalCollection
                 .Select(i => translationFunc(i)).ToArray(),
