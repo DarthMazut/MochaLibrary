@@ -62,9 +62,9 @@ namespace NavigationTest
             _window = new MainWindow();
             _window.Activate();
 
-            NavigationManager.AddNavigationService(
+            WinUiNavigationService? mainNavigationService = NavigationManager.AddNavigationService(
                 "MainNavigationService",
-                await new WinUiNavigationService()
+                new WinUiNavigationService()
                     .WithModule<HomePage, HomePageViewModel>(AppPages.HomePage.Id)
                     .WithModule<Page1, Page1ViewModel>(AppPages.Page1.Id)
                     .WithModule<Page2, Page2ViewModel>(AppPages.Page2.Id, new NavigationModuleLifecycleOptions()
@@ -75,32 +75,11 @@ namespace NavigationTest
                     .WithModule<ModalPage, ModalPageViewModel>(AppPages.ModalPage.Id)
                     .WithModule<InnerModalPage, InnerModalPageViewModel>("InnerModalPage")
                     .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
-                    .WithRoot(_window)
                     .WithInitialId(AppPages.HomePage.Id)
-                    .Initialize()
-                ); ;
+                ) as WinUiNavigationService;
 
-            // Listen to notification activation
-            ToastNotificationManagerCompat.OnActivated += toastArgs =>
-            {
-                // Obtain the arguments from the notification
-                ToastArguments args = ToastArguments.Parse(toastArgs.Argument);
-
-                // Obtain any user input (text boxes, menu selections) from the notification
-                ValueSet userInput = toastArgs.UserInput;
-
-                // Need to dispatch to UI thread if performing UI operations
-                _window.DispatcherQueue.TryEnqueue(() =>
-                {
-                    ContentDialog dialog = new()
-                    {
-                        Content = "Toast activated. Args: " + toastArgs.Argument,
-                        XamlRoot = _window.Content.XamlRoot,
-                        PrimaryButtonText = "Cool 😎"
-                    };
-                    _ = dialog.ShowAsync();
-                });
-            };
+            _ = mainNavigationService?.Initialize();
+            
         }
     }
 }

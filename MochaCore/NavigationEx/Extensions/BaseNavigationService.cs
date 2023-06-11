@@ -14,7 +14,6 @@ namespace MochaCore.NavigationEx.Extensions
     {
         private bool _isInitialized;
         private string? _initialId;
-        private INavigationLifecycleModule? _rootModule;
         private readonly Dictionary<string, INavigationLifecycleModule> _modules = new();
         private NavigationStack<NavigationStackItem> _navigationStack = null!;
         private NavigationFlowControl? _flowControl;
@@ -54,25 +53,15 @@ namespace MochaCore.NavigationEx.Extensions
 
         /// <inheritdoc/>
         public IReadOnlyDictionary<string, INavigationModule> AvailableModules
-        {
-            get 
-            {
-                Dictionary<string, INavigationModule> modules = _modules.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as INavigationModule);
-                if (_rootModule is not null)
-                {
-                    modules.Add(_rootModule.Id, _rootModule);
-                }
-                return new ReadOnlyDictionary<string, INavigationModule>(modules);
-            }
-        }
+            => new ReadOnlyDictionary<string, INavigationModule>(_modules.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as INavigationModule));
 
         /// <inheritdoc/>
         public event EventHandler<CurrentNavigationModuleChangedEventArgs>? CurrentModuleChanged;
 
         /// <summary>
-        /// 
+        /// Adds provided module to be handled by service.
         /// </summary>
-        /// <param name="module"></param>
+        /// <param name="module">Module to be handled by service.</param>
         /// <exception cref="ArgumentException"></exception>
         public void AddModule(INavigationLifecycleModule module)
         {
@@ -81,15 +70,7 @@ namespace MochaCore.NavigationEx.Extensions
                 throw new ArgumentException($"Provided ID was already registered.");
             }
 
-            if (module.Id == INavigationModule.RootId)
-            {
-                _rootModule = module;
-                (_rootModule.DataContext?.Navigator as INavigatorInitialize)?.Initialize(module, this);
-            }
-            else
-            {
-                _modules.Add(module.Id, module);
-            }
+            _modules.Add(module.Id, module);
         }
 
         /// <summary>

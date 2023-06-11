@@ -6,115 +6,81 @@ using System.Threading.Tasks;
 
 namespace MochaCore.NavigationEx.Extensions
 {
-    public abstract class BaseNavigationModule : INavigationLifecycleModule
+    /// <summary>
+    /// Provides core features for technology specific implementations of <see cref="INavigationModule"/>.
+    /// </summary>
+    /// <typeparam name="TView">Type of technology-specific view object.</typeparam>
+    /// <typeparam name="TDataContext">Type of object which serves as data context for view object.</typeparam>
+    public abstract class BaseNavigationModule<TView, TDataContext> : INavigationLifecycleModule 
+        where TView : class
+        where TDataContext : class, INavigatable
     {
-        private readonly Func<object> _viewBuilder;
-        private readonly Func<INavigatable>? _dataContextBuilder;
+        private readonly Func<TView> _viewBuilder;
+        private readonly Func<TDataContext>? _dataContextBuilder;
+        
         private bool _isInitialized = false;
-        private object? _view;
-        private INavigatable? _dataContext;
+        private TView? _view;
+        private TDataContext? _dataContext;
 
-        public BaseNavigationModule(
+        protected BaseNavigationModule(
             string id,
-            Func<object> viewBuilder,
-            Type viewType,
-            Func<INavigatable>? dataContextBuilder,
-            Type dataContextType,
-            NavigationModuleLifecycleOptions lifecycleOptions)
+            Func<TView> viewBuilder,
+            Func<TDataContext>? dataContextBuilder,
+            NavigationModuleLifecycleOptions? lifecycleOptions)
         {
-            Id = id;
-            ViewType = viewType;
-            DataContextType = dataContextType;
-            _viewBuilder = viewBuilder;
+            Id = id ?? throw new ArgumentNullException(nameof(id)); ;
+            _viewBuilder = viewBuilder ?? throw new ArgumentNullException(nameof(viewBuilder));
             _dataContextBuilder = dataContextBuilder;
-            LifecycleOptions = lifecycleOptions;
-        }
-
-        public BaseNavigationModule(object view, INavigatable dataContext)
-        {
-            Id = INavigationModule.RootId;
-            _isInitialized = true;
-            _viewBuilder = () => view;
-            _view = view;
-            ViewType = view.GetType();
-            _dataContextBuilder = () => dataContext;
-            _dataContext = dataContext;
-            DataContextType = dataContext.GetType();
-            LifecycleOptions = new NavigationModuleLifecycleOptions
-            {
-                PreferCache = true,
-                DisposeDataContextOnUninitialize = false
-            };
-
+            LifecycleOptions = lifecycleOptions ?? new NavigationModuleLifecycleOptions();
         }
 
         /// <inheritdoc/>
-        public event EventHandler? Initialized;
-
-        /// <inheritdoc/>
-        public event EventHandler? Uninitialized;
-
         public string Id { get; }
 
-        public Type ViewType { get; }
-
-        public Type DataContextType { get; }
-
+        /// <inheritdoc/>
         public object? View => _view;
 
+        /// <inheritdoc/>
         public INavigatable? DataContext => _dataContext;
 
+        /// <inheritdoc/>
         public bool IsInitialized => _isInitialized;
 
+        /// <inheritdoc/>
         public NavigationModuleLifecycleOptions LifecycleOptions { get; }
 
-        public abstract INavigatable? GetDataContext(object view);
+        /// <summary>
+        /// Retrieves <i>DataContext</i> from provided object.
+        /// Throws if retrieved object is different than <see langword="null"/>
+        /// or expected <see cref="INavigatable"/> implementation.
+        /// </summary>
+        /// <param name="view">The view from which the data context is retrieved.</param>
+        public abstract TDataContext? GetDataContext(TView view);
 
-        public abstract void SetDataContext(object view, INavigatable? dataContext);
+        /// <summary>
+        /// Sets the DataContext on provided view object.
+        /// </summary>
+        /// <param name="view">Object which data context is to be set.</param>
+        /// <param name="dataContext">Data context to be set.</param>
+        public abstract void SetDataContext(TView view, TDataContext? dataContext);
 
+        /// <inheritdoc/>
         public void Initialize()
         {
             InitializationGuard();
 
             _view = _viewBuilder.Invoke();
-            _dataContext = _dataContextBuilder?.Invoke() ?? GetDataContext(_view);
-            if (_dataContextBuilder is not null)
+            _dataContext = _dataContextBuilder?.Invoke() ?? GetDataContext(_view) ?? Activator.CreateInstance<TDataContext>();
+            
+            if (GetDataContext(_view) is null)
             {
                 SetDataContext(_view, _dataContext);
             }
 
             _isInitialized = true;
-            Initialized?.Invoke(this, EventArgs.Empty);
         }
 
-        public void Initialize(object view)
-        {
-            InitializationGuard();
-
-            _view = view;
-            _dataContext = _dataContextBuilder?.Invoke() ?? GetDataContext(_view);
-
-            if (_dataContextBuilder is not null)
-            {
-                SetDataContext(_view, _dataContext);
-            }
-
-            _isInitialized = true;
-            Initialized?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void Initialize(object view, INavigatable dataContext)
-        {
-            InitializationGuard();
-
-            _view = view;
-            _dataContext = dataContext;
-            SetDataContext(view, dataContext);
-
-            _isInitialized = true;
-            Initialized?.Invoke(this, EventArgs.Empty);
-        }
-
+        /// <inheritdoc/>
         public void Uninitialize()
         {
             _dataContext?.Navigator.Dispose();
@@ -125,9 +91,14 @@ namespace MochaCore.NavigationEx.Extensions
             }
 
             _view = null;
+
+            if (LifecycleOptions.DisposeDataContextOnUninitialize && _dataContext is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+
             _dataContext = null;
             _isInitialized = false;
-            Uninitialized?.Invoke(this, EventArgs.Empty);
         }
 
         private void InitializationGuard()
@@ -137,7 +108,5 @@ namespace MochaCore.NavigationEx.Extensions
                 throw new InvalidOperationException($"{nameof(Initialize)} has been called on already initialized {nameof(INavigationLifecycleModule)} instance.");
             }
         }
-
-
     }
 }

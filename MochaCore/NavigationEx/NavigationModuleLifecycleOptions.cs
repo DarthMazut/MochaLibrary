@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace MochaCore.NavigationEx
 {
+    /// <summary>
+    /// Provides additional settings for managing lifecycle of <see cref="INavigationLifecycleModule"/>.
+    /// </summary>
     public class NavigationModuleLifecycleOptions
     {
         /// <summary>
@@ -17,7 +20,7 @@ namespace MochaCore.NavigationEx
 
         /// <summary>
         /// Determines whether the associated <see cref="INavigationModule.DataContext"/> should be disposed
-        /// when its module is uninitialized.
+        /// when its module is being uninitialized.
         /// </summary>
         public bool DisposeDataContextOnUninitialize { get; init; }
     }

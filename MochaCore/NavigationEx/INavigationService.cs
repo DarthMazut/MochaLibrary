@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace MochaCore.NavigationEx
 {
+    /// <summary>
+    /// Provides state and logic for single navigatable area. Each implementation of <see cref="INavigationService"/>
+    /// manages its own navigation stack and handles lifecycle of registered <see cref="INavigationModule"/>
+    /// objects. Using the service you're defining custom navigation behaviour (what navigation means to your 
+    /// application; how should be handled) specific to your application needs by subscribing to 
+    /// <see cref="INavigationService.CurrentModuleChanged"/>. Navigation process is invoked by calling 
+    /// <see cref="INavigationService.RequestNavigation(NavigationRequestData)"/> method.
+    /// </summary>
     public interface INavigationService
     {
         /// <summary>
