@@ -4,23 +4,22 @@ using System.ComponentModel;
 namespace MochaCore.NavigationEx
 {
     /// <summary>
-    /// Provides arguments for handlers registered by 
-    /// <see cref="Navigator.SubscribeOnNavigatingFrom(Action{OnNavigatingFromEventArgs})"/> and 
-    /// <see cref="Navigator.SubscribeOnNavigatingFrom(Func{OnNavigatingFromEventArgs, System.Threading.Tasks.Task})"/>. 
+    /// Provides arguments for implementations of <see cref="IOnNavigatingFromAsync"/> and <see cref="IOnNavigatingFromAsync"/>
+    /// interfaces.
     /// </summary>
     public class OnNavigatingFromEventArgs : CancelEventArgs
     {
-        public OnNavigatingFromEventArgs(INavigationModule callingModule, INavigationModule requestedModule, object? parameter)
+        public OnNavigatingFromEventArgs(object? callingModule, INavigationModule requestedModule, object? parameter)
             : this(callingModule, requestedModule, parameter, NavigationType.Push, 0) { }
 
         public OnNavigatingFromEventArgs(
-            INavigationModule callingModule,
+            object? callingModule,
             INavigationModule requestedModule,
             object? parameter,
             NavigationType navigationType,
             int step)
         {
-            CallingModule = callingModule ?? throw new ArgumentNullException(nameof(callingModule));
+            Caller = callingModule;
             RequestedModule = requestedModule ?? throw new ArgumentNullException(nameof(requestedModule));
             Parameter = parameter;
             NavigationType = navigationType;
@@ -28,9 +27,14 @@ namespace MochaCore.NavigationEx
         }
 
         /// <summary>
+        /// An object which is initiating a navigation process.
+        /// </summary>
+        public object? Caller { get; }
+
+        /// <summary>
         /// An <see cref="INavigationModule"/> object which is initiating a navigation process.
         /// </summary>
-        public INavigationModule CallingModule { get; }
+        public INavigationModule? CallingModule => Caller as INavigationModule;
 
         /// <summary>
         /// An <see cref="INavigationModule"/> object representing navigation target.

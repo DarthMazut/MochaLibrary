@@ -18,9 +18,9 @@ namespace MochaCore.NavigationEx
         public string? TargetId { get; }
 
         /// <summary>
-        /// An <see cref="INavigationModule"/> object which is initiating a navigation process.
+        /// An object which is initiating a navigation process.
         /// </summary>
-        public INavigationModule CallingModule { get; }
+        public object? Caller { get; }
 
         /// <summary>
         /// An extra data object used to pass information between <see cref="INavigatable"/>
@@ -58,24 +58,24 @@ namespace MochaCore.NavigationEx
         /// </summary>
         public NavigationEventsOptions? NavigationEventsOptions { get; }
 
-        public static NavigationRequestData CreatePushRequest(string targetId, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
+        public static NavigationRequestData CreatePushRequest(string targetId, object? callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
             => new(targetId, callingModule, parameter, NavigationType.Push, 0, saveCurrent, ignoreCached, eventOptions);
 
-        public static NavigationRequestData CreateBackRequest(int step, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
+        public static NavigationRequestData CreateBackRequest(int step, object? callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
             => new(null, callingModule, parameter, NavigationType.Back, step, saveCurrent, ignoreCached, eventOptions);
 
-        public static NavigationRequestData CreateForwardRequest(int step, INavigationModule callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
+        public static NavigationRequestData CreateForwardRequest(int step, object? callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
             => new(null, callingModule, parameter, NavigationType.Forward, step, saveCurrent, ignoreCached, eventOptions);
 
-        public static NavigationRequestData CreateModalRequest(string targetId, INavigationModule callingModule, object? parameter, bool ignoreCached, NavigationEventsOptions? eventsOptions)
+        public static NavigationRequestData CreateModalRequest(string targetId, object? callingModule, object? parameter, bool ignoreCached, NavigationEventsOptions? eventsOptions)
             => new(targetId, callingModule, parameter, NavigationType.PushModal, 0, true, ignoreCached, eventsOptions);
 
-        public static NavigationRequestData CreatePopRequest(INavigationModule callingModule, object? returnValue, NavigationEventsOptions? eventsOptions)
+        public static NavigationRequestData CreatePopRequest(object? callingModule, object? returnValue, NavigationEventsOptions? eventsOptions)
             => new(null, callingModule, returnValue, NavigationType.Pop, 0, false, false, eventsOptions);
 
         private NavigationRequestData
             (string? targetId,
-            INavigationModule callingModule,
+            object? callingModule,
             object? parameter,
             NavigationType navigationType,
             int step,
@@ -92,7 +92,7 @@ namespace MochaCore.NavigationEx
             }
 
             TargetId = targetId;
-            CallingModule = callingModule;
+            Caller = callingModule;
             Parameter = parameter;
             NavigationType = navigationType;
             Step = step;
