@@ -278,7 +278,7 @@ namespace MochaCore.NavigationEx.Extensions
             }
 
             OnNavigatingFromEventArgs eventArgs = new(
-                    requestData.CallingModule,
+                    requestData.Caller,
                     ResolveTargetModuleFromRequestData(requestData)!,
                     requestData.Parameter,
                     requestData.NavigationType,
@@ -334,7 +334,7 @@ namespace MochaCore.NavigationEx.Extensions
         private async Task HandleOnNavigatedTo(INavigationLifecycleModule previousModule, NavigationRequestData requestData)
         {
             OnNavigatedToEventArgs eventArgs = new OnNavigatedToEventArgs(
-                    requestData.CallingModule,
+                    requestData.Caller,
                     previousModule,
                     requestData.Parameter,
                     requestData.NavigationType,
@@ -363,7 +363,7 @@ namespace MochaCore.NavigationEx.Extensions
             if (requestData.NavigationEventsOptions?.SupressNavigatedFromEvents != true)
             {
                 await CallOnNavigatedFrom(previousModule.DataContext, new OnNavigatedFromEventArgs(
-                    requestData.CallingModule,
+                    requestData.Caller,
                     CurrentModule,
                     requestData.Parameter,
                     requestData.NavigationType,

@@ -4,22 +4,22 @@ using System.ComponentModel;
 namespace MochaCore.NavigationEx
 {
     /// <summary>
-    /// Provides arguments for implementations of <see cref="IOnNavigatingFromAsync"/> and <see cref="IOnNavigatingFromAsync"/>
+    /// Provides arguments for implementations of <see cref="IOnNavigatingFrom"/> and <see cref="IOnNavigatingFromAsync"/>
     /// interfaces.
     /// </summary>
     public class OnNavigatingFromEventArgs : CancelEventArgs
     {
-        public OnNavigatingFromEventArgs(object? callingModule, INavigationModule requestedModule, object? parameter)
-            : this(callingModule, requestedModule, parameter, NavigationType.Push, 0) { }
+        public OnNavigatingFromEventArgs(object? caller, INavigationModule requestedModule, object? parameter)
+            : this(caller, requestedModule, parameter, NavigationType.Push, 0) { }
 
         public OnNavigatingFromEventArgs(
-            object? callingModule,
+            object? caller,
             INavigationModule requestedModule,
             object? parameter,
             NavigationType navigationType,
             int step)
         {
-            Caller = callingModule;
+            Caller = caller;
             RequestedModule = requestedModule ?? throw new ArgumentNullException(nameof(requestedModule));
             Parameter = parameter;
             NavigationType = navigationType;
