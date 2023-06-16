@@ -17,12 +17,22 @@ namespace MochaCore.NavigationEx
         protected INavigationModule _module = null!;
         protected INavigationService _navigationService = null!;
         private OnNavigatedToEventArgs? _context;
+        private readonly object? _owner;
+
+        public Navigator() : this(null) { }
+
+        public Navigator(object? owner)
+        {
+            _owner = owner;
+        }
 
         public event EventHandler<NavigatorInitializedEventArgs>? Initialized;
 
         public bool IsInitialized => _isInitialized;
 
         public OnNavigatedToEventArgs? Context => _context;
+
+        public object? Owner => _owner;
 
         public INavigationModule Module => _module;
 
@@ -32,7 +42,7 @@ namespace MochaCore.NavigationEx
         { 
             get
             {
-                InitializationGuard();
+                ThrowIfNavigationServiceIsNull();
                 return !_navigationService.NavigationHistory.IsBottomIndex;
             }
         }
@@ -41,7 +51,7 @@ namespace MochaCore.NavigationEx
         { 
             get
             {
-                InitializationGuard();
+                ThrowIfNavigationServiceIsNull();
                 return !_navigationService.NavigationHistory.IsTopIndex;
             }
         }
@@ -50,7 +60,7 @@ namespace MochaCore.NavigationEx
         {
             get
             {
-                InitializationGuard();
+                ThrowIfNavigationServiceIsNull();
                 return _navigationService.NavigationHistory.Any(i => i.IsModalOrigin);
             }
         }
@@ -61,18 +71,18 @@ namespace MochaCore.NavigationEx
 
         public Task<NavigationResultData> NavigateAsync(Func<INavigationDestinationBuilder, INavigationRequestDetailsBuilder> buildingDelegate)
         {
-            NavigationRequestBuilder? builder 
-                = buildingDelegate.Invoke(new NavigationRequestBuilder(_module)) as NavigationRequestBuilder ?? 
-                throw new Exception();
-
-            INavigationService service = builder.ResolveService() ?? _navigationService;
-            return service.RequestNavigation(builder.Build());
+            ThrowIfNavigationServiceIsNull();
+            NavigationRequestBuilder builder = (buildingDelegate.Invoke(new NavigationRequestBuilder(GetModuleOrOwner())) as NavigationRequestBuilder)!;
+            return _navigationService.RequestNavigation(builder.Build());
         }
 
         // Default
 
         public Task<NavigationResultData> NavigateAsync(NavigationRequestData navigationRequestData)
-            => _navigationService.RequestNavigation(navigationRequestData);
+        {
+            ThrowIfNavigationServiceIsNull();
+            return _navigationService.RequestNavigation(navigationRequestData);
+        }
 
         // To
 
@@ -80,7 +90,10 @@ namespace MochaCore.NavigationEx
              => NavigateAsync(targetId, null);
 
         public Task<NavigationResultData> NavigateAsync(string targetId, object? parameter)
-            => _navigationService.RequestNavigation(NavigationRequestData.CreatePushRequest(targetId, _module, parameter, SaveCurrent, false, null));
+        {
+            ThrowIfNavigationServiceIsNull();
+            return _navigationService.RequestNavigation(NavigationRequestData.CreatePushRequest(targetId, GetModuleOrOwner(), parameter, SaveCurrent, false, null));
+        }
 
         // Back
 
@@ -91,7 +104,10 @@ namespace MochaCore.NavigationEx
             => NavigateBackAsync(parameter, 1);
 
         public Task<NavigationResultData> NavigateBackAsync(object? parameter, int step)
-            => _navigationService.RequestNavigation(NavigationRequestData.CreateBackRequest(step, _module, parameter, SaveCurrent, false, null));
+        {
+            ThrowIfNavigationServiceIsNull();
+            return _navigationService.RequestNavigation(NavigationRequestData.CreateBackRequest(step, GetModuleOrOwner(), parameter, SaveCurrent, false, null));
+        }
 
         // Forward
 
@@ -102,47 +118,9 @@ namespace MochaCore.NavigationEx
             => NavigateForwardAsync(parameter, 1);
 
         public Task<NavigationResultData> NavigateForwardAsync(object? parameter, int step)
-            => _navigationService.RequestNavigation(NavigationRequestData.CreateForwardRequest(step, _module, parameter, SaveCurrent, false, null));
-
-        // For Services
-
-        public Task<NavigationResultData> NavigateAsyncForService(string targetServiceId, NavigationRequestData navigationRequestData)
         {
-            INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
-            return targetService.RequestNavigation(navigationRequestData);
-        }
-
-        public Task<NavigationResultData> NavigateAsyncForService(string targetServiceId, string targetId)
-            => NavigateAsyncForService(targetServiceId, targetId, null);
-
-        public Task<NavigationResultData> NavigateAsyncForService(string targetServiceId, string targetId, object? parameter)
-        {
-            INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
-            return targetService.RequestNavigation(NavigationRequestData.CreatePushRequest(targetId, _module, parameter, SaveCurrent, false, null));
-        }
-
-        public Task<NavigationResultData> NavigateBackAsyncForService(string targetServiceId)
-            => NavigateBackAsyncForService(targetServiceId, null);
-
-        public Task<NavigationResultData> NavigateBackAsyncForService(string targetServiceId, object? parameter)
-            => NavigateBackAsyncForService(targetServiceId, parameter, 1);
-
-        public Task<NavigationResultData> NavigateBackAsyncForService(string targetServiceId, object? parameter, int step)
-        {
-            INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
-            return targetService.RequestNavigation(NavigationRequestData.CreateBackRequest(step, _module, parameter, SaveCurrent, false, null));
-        }
-
-        public Task<NavigationResultData> NavigateForwardAsyncForService(string targetServiceId)
-            => NavigateForwardAsyncForService(targetServiceId, null);
-
-        public Task<NavigationResultData> NavigateForwardAsyncForService(string targetServiceId, object? parameter)
-            => NavigateForwardAsyncForService(targetServiceId, parameter, 1);
-
-        public Task<NavigationResultData> NavigateForwardAsyncForService(string targetServiceId, object? parameter, int step)
-        {
-            INavigationService targetService = NavigationManager.FetchNavigationService(targetServiceId);
-            return targetService.RequestNavigation(NavigationRequestData.CreateForwardRequest(step, _module, parameter, SaveCurrent, false, null));
+            ThrowIfNavigationServiceIsNull();
+            return _navigationService.RequestNavigation(NavigationRequestData.CreateForwardRequest(step, GetModuleOrOwner(), parameter, SaveCurrent, false, null));
         }
 
         // Modal
@@ -151,10 +129,11 @@ namespace MochaCore.NavigationEx
 
         public Task<NavigationResultData> NavigateModalAsync(string targetId, object? parameter)
         {
+            ThrowIfNavigationServiceIsNull();
             return _navigationService.RequestNavigation(
                 NavigationRequestData.CreateModalRequest(
                     targetId,
-                    _module,
+                    GetModuleOrOwner(),
                     parameter,
                     false,
                     new NavigationEventsOptions()
@@ -171,8 +150,9 @@ namespace MochaCore.NavigationEx
 
         public Task ReturnModal(object? returnData, NavigationEventsOptions? eventsOptions)
         {
+            ThrowIfNavigationServiceIsNull();
             return _navigationService.RequestNavigation(NavigationRequestData.CreatePopRequest(
-                _module,
+                GetModuleOrOwner(),
                 returnData,
                 eventsOptions ?? new NavigationEventsOptions()
                 {
@@ -204,9 +184,11 @@ namespace MochaCore.NavigationEx
             GC.SuppressFinalize(this);
         }
 
-        private void InitializationGuard()
+        private object? GetModuleOrOwner() => _module ?? _owner;
+
+        private void ThrowIfNavigationServiceIsNull()
         {
-            if (!IsInitialized)
+            if (_navigationService is null)
             {
                 throw new InvalidOperationException($"Cannot perform this action while {nameof(Navigator)} is not initialized.");
             }

@@ -8,9 +8,8 @@ namespace MochaCore.NavigationEx
 {
     public class NavigationRequestBuilder : INavigationDestinationBuilder, INavigationRequestDetailsBuilder
     {
-        private readonly INavigationModule _module;
+        private readonly object? _owner;
         private string? _targetId;
-        private string? _targetService;
         private NavigationType _navigationType = NavigationType.Push;
         private int _step;
         private bool _ignoreCached;
@@ -18,9 +17,9 @@ namespace MochaCore.NavigationEx
         private object? _parameter;
         private NavigationEventsOptions? _navigationEventsOptions;
 
-        public NavigationRequestBuilder(INavigationModule module)
+        public NavigationRequestBuilder(object? owner)
         {
-            _module = module;
+            _owner = owner;
         }
 
         public INavigationRequestDetailsBuilder To(string targetId)
@@ -85,24 +84,15 @@ namespace MochaCore.NavigationEx
             return this;
         }
 
-        public INavigationRequestDetailsBuilder ForService(string targetServiceId)
-        {
-            _targetService = targetServiceId;
-            return this;
-        }
-
-        public INavigationService? ResolveService()
-            => _targetService is null ? null : NavigationManager.FetchNavigationService(_targetService);
-
         public NavigationRequestData Build()
         {
             return _navigationType switch
             {
-                NavigationType.Push => NavigationRequestData.CreatePushRequest(_targetId!, _module, _parameter, _saveCurrent, _ignoreCached, _navigationEventsOptions),
-                NavigationType.Back => NavigationRequestData.CreateBackRequest(_step, _module, _parameter, _saveCurrent, _ignoreCached, _navigationEventsOptions),
-                NavigationType.Forward => NavigationRequestData.CreateForwardRequest(_step, _module, _parameter, _saveCurrent, _ignoreCached, _navigationEventsOptions),
-                NavigationType.PushModal => NavigationRequestData.CreateModalRequest(_targetId!, _module, _parameter, _ignoreCached, _navigationEventsOptions),
-                NavigationType.Pop => NavigationRequestData.CreatePopRequest(_module, _parameter, _navigationEventsOptions),
+                NavigationType.Push => NavigationRequestData.CreatePushRequest(_targetId!, _owner, _parameter, _saveCurrent, _ignoreCached, _navigationEventsOptions),
+                NavigationType.Back => NavigationRequestData.CreateBackRequest(_step, _owner, _parameter, _saveCurrent, _ignoreCached, _navigationEventsOptions),
+                NavigationType.Forward => NavigationRequestData.CreateForwardRequest(_step, _owner, _parameter, _saveCurrent, _ignoreCached, _navigationEventsOptions),
+                NavigationType.PushModal => NavigationRequestData.CreateModalRequest(_targetId!, _owner, _parameter, _ignoreCached, _navigationEventsOptions),
+                NavigationType.Pop => NavigationRequestData.CreatePopRequest(_owner, _parameter, _navigationEventsOptions),
                 _ => throw new NotImplementedException(),
             };
         }
@@ -134,7 +124,5 @@ namespace MochaCore.NavigationEx
         public INavigationRequestDetailsBuilder SaveCurrent();
 
         public INavigationRequestDetailsBuilder ClearCurrent();
-
-        public INavigationRequestDetailsBuilder ForService(string targetServiceId);
     }
 }
