@@ -11,7 +11,7 @@ namespace MochaCore.NavigationEx
     /// <summary>
     /// Exposes API for navigation.
     /// </summary>
-    public class Navigator : IDisposable, INavigatorInitialize, ISetNavigationContext
+    public class Navigator : INavigator, IDisposable, INavigatorInitialize, ISetNavigationContext
     {
         private bool _isInitialized;
         protected INavigationModule _module = null!;
@@ -38,8 +38,8 @@ namespace MochaCore.NavigationEx
 
         public INavigationService Service => _navigationService;
 
-        public bool CanNavigateBack 
-        { 
+        public bool CanNavigateBack
+        {
             get
             {
                 ThrowIfNavigationServiceIsNull();
@@ -48,7 +48,7 @@ namespace MochaCore.NavigationEx
         }
 
         public bool CanNavigateForward
-        { 
+        {
             get
             {
                 ThrowIfNavigationServiceIsNull();
@@ -137,7 +137,7 @@ namespace MochaCore.NavigationEx
                     parameter,
                     false,
                     new NavigationEventsOptions()
-                    { 
+                    {
                         SupressNavigatedFromEvents = true
                     }));
         }
