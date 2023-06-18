@@ -8,7 +8,9 @@ namespace MochaCore.NavigationEx
     /// </summary>
     public interface INavigator : INavigatorProxy
     {
-
+        /// <summary>
+        /// Determines whether it is currently possible to return to the module that initiated the last modal request.
+        /// </summary>
         bool CanReturnModal { get; }
 
         /// <summary>
@@ -26,6 +28,9 @@ namespace MochaCore.NavigationEx
         /// </summary>
         INavigationModule Module { get; }
 
+        /// <summary>
+        /// Occurs when ...
+        /// </summary>
         event EventHandler<NavigatorInitializedEventArgs>? Initialized;
 
         Task ReturnModal();
