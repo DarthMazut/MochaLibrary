@@ -78,10 +78,7 @@ namespace NavigationTest
                     .WithInitialId(AppPages.HomePage.Id)
                 ) as WinUiNavigationService;
 
-            _ = mainNavigationService?.Initialize();
-
-            mainNavigationService.AddModule(WinUiModule2.Create())
-            
+            _ = mainNavigationService?.Initialize(); 
         }
     }
 }

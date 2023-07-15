@@ -30,9 +30,19 @@ namespace MochaCore.NavigationEx
         public object? View { get; }
 
         /// <summary>
+        /// Type of <see cref="View"/> object associated with this <see cref="INavigationModule"/>.
+        /// </summary>
+        public Type ViewType { get; }
+
+        /// <summary>
         /// An <see cref="INavigatable"/> object bounded to <see cref="View"/>
         /// instance by <i>DataBinding</i> mechanism.
         /// </summary>
         public INavigatable? DataContext { get; }
+
+        /// <summary>
+        /// Type of <see cref="DataContext"/> object associated with this <see cref="INavigationModule"/>.
+        /// </summary>
+        public Type? DataContextType { get; }
     }
 }
