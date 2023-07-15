@@ -10,6 +10,6 @@
         /// <summary>
         /// Exposes API for navigation.
         /// </summary>
-        public Navigator Navigator { get; }
+        public INavigator Navigator { get; }
     }
 }

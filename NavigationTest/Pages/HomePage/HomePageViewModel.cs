@@ -10,6 +10,19 @@ namespace NavigationTest.Pages.HomePage
 {
     public partial class HomePageViewModel : ObservableObject, INavigatable
     {
-        public Navigator Navigator { get; } = new Navigator();
+        /*
+            INavigatable --> INavigationParticipant
+            INavigator --> IParticipantNavigator
+            IProxyNavigator
+        */
+
+        //public INavigator Navigator { get; } = Navigator.Create();
+
+        //public INavigator CurrentNavigator 
+
+        public HomePageViewModel()
+        {
+
+        }
     }
 }

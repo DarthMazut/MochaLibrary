@@ -348,7 +348,7 @@ namespace MochaCore.NavigationEx.Extensions
             }
             else
             {
-                ISetNavigationContext? contextSetter = CurrentModule.DataContext?.Navigator;
+                ISetNavigationContext? contextSetter = CurrentModule.DataContext?.Navigator as ISetNavigationContext;
                 contextSetter?.SetNavigationContext(eventArgs);
             }
 

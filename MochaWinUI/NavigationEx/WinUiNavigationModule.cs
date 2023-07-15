@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using MochaCore.NavigationEx;
 using MochaCore.NavigationEx.Extensions;
 using System;
@@ -9,6 +10,38 @@ using System.Threading.Tasks;
 
 namespace MochaWinUI.NavigationEx
 {
+
+    public class WinUiModule2 : BaseNavigationModule<FrameworkElement, INavigatable>
+    {
+        public WinUiModule2(
+            string id,
+            Func<FrameworkElement> viewBuilder,
+            Func<INavigatable>? dataContextBuilder,
+            NavigationModuleLifecycleOptions? lifecycleOptions) :
+                base(id, viewBuilder, dataContextBuilder, lifecycleOptions)
+        {
+            INavigatable x = null;
+            WinUiModule2 module = WinUiModule2.Create("", () => new UserControl(), () => x);
+        }
+
+        public static WinUiModule2 Create<TView, TDataContext>(string id, Func<TView> viewBuilder, Func<TDataContext> contextBuilder)
+            where TView : FrameworkElement
+            where TDataContext : class, INavigatable
+        {
+            return new WinUiModule2(id, viewBuilder, contextBuilder, null);
+        }
+
+        public override INavigatable? GetDataContext(FrameworkElement view)
+        {
+            return view.DataContext as INavigatable;
+        }
+
+        public override void SetDataContext(FrameworkElement view, INavigatable? dataContext)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     /// <summary>
     /// Provides implementation of <see cref="INavigationModule"/> for WinUI.
     /// </summary>

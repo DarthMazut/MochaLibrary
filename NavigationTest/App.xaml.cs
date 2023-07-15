@@ -79,6 +79,8 @@ namespace NavigationTest
                 ) as WinUiNavigationService;
 
             _ = mainNavigationService?.Initialize();
+
+            mainNavigationService.AddModule(WinUiModule2.Create())
             
         }
     }

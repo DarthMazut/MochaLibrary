@@ -83,7 +83,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// <inheritdoc/>
         public void Uninitialize()
         {
-            _dataContext?.Navigator.Dispose();
+            (_dataContext?.Navigator as IDisposable)?.Dispose();
 
             if (_view is not null)
             {

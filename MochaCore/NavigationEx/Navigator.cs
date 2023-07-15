@@ -11,7 +11,7 @@ namespace MochaCore.NavigationEx
     /// <summary>
     /// Exposes API for navigation.
     /// </summary>
-    public class Navigator : INavigator, IDisposable, INavigatorInitialize, ISetNavigationContext
+    public class Navigator : INavigator, INavigatorInitialize, ISetNavigationContext, IDisposable
     {
         private bool _isInitialized;
         protected INavigationModule _module = null!;
@@ -19,25 +19,44 @@ namespace MochaCore.NavigationEx
         private OnNavigatedToEventArgs? _context;
         private readonly object? _owner;
 
-        public Navigator() : this(null) { }
-
-        public Navigator(object? owner)
+        protected Navigator(object? owner, INavigationService? service)
         {
             _owner = owner;
+            _navigationService = service!;
         }
 
+        /// <summary>
+        /// Returns implementation of <see cref="INavigator"/> dedicated for <see cref="INavigatable"/> implementations.
+        /// </summary>
+        public static INavigator Create() => new Navigator(null, null);
+
+        /// <summary>
+        /// Returns implementation of <see cref="INavigatorProxy"/> dedicated for proxy navigation clients.
+        /// </summary>
+        /// <param name="serviceId">Identifier of <see cref="INavigationService"/> which handles proxy navigation requests.</param>
+        /// <param name="owner">An object that initiates navigation using the created instance.</param>
+        public static INavigatorProxy CreateProxy(string serviceId, object? owner)
+            => new Navigator(owner, NavigationManager.FetchNavigationService(serviceId));
+
+        /// <inheritdoc/>
         public event EventHandler<NavigatorInitializedEventArgs>? Initialized;
 
+        /// <inheritdoc/>
         public bool IsInitialized => _isInitialized;
 
+        /// <inheritdoc/>
         public OnNavigatedToEventArgs? Context => _context;
 
+        /// <inheritdoc/>
         public object? Owner => _owner;
 
+        /// <inheritdoc/>
         public INavigationModule Module => _module;
 
+        /// <inheritdoc/>
         public INavigationService Service => _navigationService;
 
+        /// <inheritdoc/>
         public bool CanNavigateBack
         {
             get
@@ -47,6 +66,7 @@ namespace MochaCore.NavigationEx
             }
         }
 
+        /// <inheritdoc/>
         public bool CanNavigateForward
         {
             get
@@ -56,6 +76,7 @@ namespace MochaCore.NavigationEx
             }
         }
 
+        /// <inheritdoc/>
         public bool CanReturnModal
         {
             get
@@ -65,10 +86,12 @@ namespace MochaCore.NavigationEx
             }
         }
 
+        /// <inheritdoc/>
         public bool? SaveCurrent { get; set; }
 
         // Fluent API
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateAsync(Func<INavigationDestinationBuilder, INavigationRequestDetailsBuilder> buildingDelegate)
         {
             ThrowIfNavigationServiceIsNull();
@@ -78,6 +101,7 @@ namespace MochaCore.NavigationEx
 
         // Default
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateAsync(NavigationRequestData navigationRequestData)
         {
             ThrowIfNavigationServiceIsNull();
@@ -86,9 +110,11 @@ namespace MochaCore.NavigationEx
 
         // To
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateAsync(string targetId)
              => NavigateAsync(targetId, null);
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateAsync(string targetId, object? parameter)
         {
             ThrowIfNavigationServiceIsNull();
@@ -97,12 +123,15 @@ namespace MochaCore.NavigationEx
 
         // Back
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateBackAsync()
             => NavigateBackAsync(null);
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateBackAsync(object? parameter)
             => NavigateBackAsync(parameter, 1);
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateBackAsync(object? parameter, int step)
         {
             ThrowIfNavigationServiceIsNull();
@@ -111,12 +140,15 @@ namespace MochaCore.NavigationEx
 
         // Forward
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateForwardAsync()
             => NavigateForwardAsync(null);
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateForwardAsync(object? parameter)
             => NavigateForwardAsync(parameter, 1);
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateForwardAsync(object? parameter, int step)
         {
             ThrowIfNavigationServiceIsNull();
@@ -125,8 +157,10 @@ namespace MochaCore.NavigationEx
 
         // Modal
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateModalAsync(string targetId) => NavigateModalAsync(targetId, null);
 
+        /// <inheritdoc/>
         public Task<NavigationResultData> NavigateModalAsync(string targetId, object? parameter)
         {
             ThrowIfNavigationServiceIsNull();
@@ -144,10 +178,13 @@ namespace MochaCore.NavigationEx
 
         // Return Modal
 
+        /// <inheritdoc/>
         public Task ReturnModal() => ReturnModal(null, null);
 
+        /// <inheritdoc/>
         public Task ReturnModal(object returnData) => ReturnModal(returnData, null);
 
+        /// <inheritdoc/>
         public Task ReturnModal(object? returnData, NavigationEventsOptions? eventsOptions)
         {
             ThrowIfNavigationServiceIsNull();
