@@ -11,21 +11,20 @@ using System.Threading.Tasks;
 
 namespace NavigationTest
 {
-    public partial class MainWindowViewModel : ObservableObject, INavigatable
+    public partial class MainWindowViewModel : ObservableObject
     {
         public MainWindowViewModel()
         {
-            Navigator.Initialized += (s, e) => Navigator.Service.CurrentModuleChanged += (s, e) =>
+            INavigationService mainNavigationService = NavigationManager.FetchNavigationService("MainNavigationService");
+            mainNavigationService.CurrentModuleChanged += (s, e) =>
             {
                 NavigationContent = e.CurrentModule.View;
                 SelectedItem = AppPages.GetById(e.CurrentModule.Id);
             };
         }
 
-        public Navigator Navigator { get; } = new();
-
         [ObservableProperty]
-        object _navigationContent;
+        object? _navigationContent;
 
         [ObservableProperty]
         AppPage? _selectedItem;
@@ -33,13 +32,15 @@ namespace NavigationTest
         [RelayCommand]
         private Task NavigationItemInvoked(NavigationInvokedDetails e)
         {
+            INavigatorProxy navigator = Navigator.CreateProxy("MainNavigationService", this);
+
             if (e.InvokedPage is not null)
             {
-                return Navigator.NavigateAsync(navigate => navigate.To(e.InvokedPage.Id));
+                return navigator.NavigateAsync(navigate => navigate.To(e.InvokedPage.Id));
             }
             else
             {
-                return Navigator.NavigateAsync(AppPages.SettingsPage.Id);
+                return navigator.NavigateAsync(AppPages.SettingsPage.Id);
             }
         }
     }

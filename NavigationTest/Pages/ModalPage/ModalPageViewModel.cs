@@ -11,7 +11,7 @@ namespace NavigationTest.Pages.ModalPage
 {
     public partial class ModalPageViewModel : ObservableObject, INavigatable
     {
-        public Navigator Navigator { get; } = new();
+        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 
         [RelayCommand]
         private async Task NavigateModal()

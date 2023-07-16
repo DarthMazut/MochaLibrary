@@ -11,7 +11,7 @@ namespace NavigationTest.Pages.Page3
 {
     public partial class Page3ViewModel : ObservableObject, INavigatable, IOnNavigatedToAsync
     {
-        public Navigator Navigator { get; } = new();
+        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 
         [ObservableProperty]
         private string _inputText;

@@ -1,4 +1,4 @@
-using MochaCore.NavigationEx.Extensions;
+using MochaCore.NavigationEx;
 using Moq;
 using Xunit.Abstractions;
 

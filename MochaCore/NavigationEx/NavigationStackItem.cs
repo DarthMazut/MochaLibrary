@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx.Extensions
+namespace MochaCore.NavigationEx
 {
     internal class NavigationStackItem : INavigationStackItem
     {

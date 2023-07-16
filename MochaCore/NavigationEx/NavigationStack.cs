@@ -5,8 +5,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MochaCore.NavigationEx.Extensions;
 
-namespace MochaCore.NavigationEx.Extensions
+namespace MochaCore.NavigationEx
 {
     /// <summary>
     /// Represents a navigation stack that allows for forward and backward navigation through a collection of items.

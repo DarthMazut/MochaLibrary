@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx.Extensions
+namespace MochaCore.NavigationEx
 {
     /// <summary>
     /// Provides base implementation for <see cref="INavigationService"/>.
     /// </summary>
-    public abstract class BaseNavigationService : INavigationService
+    public class NavigationService : INavigationService
     {
         private bool _isInitialized;
         private string? _initialId;
@@ -63,7 +63,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// </summary>
         /// <param name="module">Module to be handled by service.</param>
         /// <exception cref="ArgumentException"></exception>
-        public void AddModule(INavigationLifecycleModule module)
+        public NavigationService AddModule(INavigationLifecycleModule module)
         {
             if (_modules.ContainsKey(module.Id))
             {
@@ -71,6 +71,7 @@ namespace MochaCore.NavigationEx.Extensions
             }
 
             _modules.Add(module.Id, module);
+            return this;
         }
 
         /// <summary>
@@ -78,9 +79,10 @@ namespace MochaCore.NavigationEx.Extensions
         /// is to be treated as initial one.
         /// </summary>
         /// <param name="id">Id of <see cref="INavigationModule"/> object to be treated as initial one.</param>
-        public void SelectInitialtId(string id)
+        public NavigationService SelectInitialtId(string id)
         {
             _initialId = id;
+            return this;
         }
 
         /// <inheritdoc/>
@@ -101,7 +103,7 @@ namespace MochaCore.NavigationEx.Extensions
 
             InitializeModule(_navigationStack.CurrentItem.Module);
             _isInitialized = true;
-            
+
             if (callSubscribersOnInit)
             {
                 OnNavigatedToEventArgs eventArgs = new(null, null, null);
@@ -127,7 +129,7 @@ namespace MochaCore.NavigationEx.Extensions
 
             bool preferCache = _navigationStack.CurrentItem.Module.LifecycleOptions.PreferCache;
             bool? saveCurrent = CurrentModule.DataContext?.Navigator.SaveCurrent;
-            
+
             if (CurrentModule.IsInitialized)
             {
                 if ((saveCurrent ?? preferCache) is false)
@@ -312,7 +314,7 @@ namespace MochaCore.NavigationEx.Extensions
             {
                 _navigationStack.MoveBack(requestData.Step);
             }
-            
+
             if (requestData.NavigationType == NavigationType.Forward)
             {
                 _navigationStack.MoveForward(requestData.Step);
@@ -341,7 +343,7 @@ namespace MochaCore.NavigationEx.Extensions
                     requestData.Step);
 
             CurrentModuleChanged?.Invoke(this, new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
-            
+
             if (requestData.NavigationType == NavigationType.Pop)
             {
                 _navigationStack.CurrentItem.SetResult(requestData.Parameter);

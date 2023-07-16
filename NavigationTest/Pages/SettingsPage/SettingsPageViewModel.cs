@@ -9,6 +9,6 @@ namespace NavigationTest.Pages.SettingsPage
 {
     public class SettingsPageViewModel : INavigatable
     {
-        public Navigator Navigator { get; } = new Navigator();
+        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
     }
 }

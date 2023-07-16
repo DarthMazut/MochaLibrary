@@ -11,7 +11,7 @@ namespace NavigationTest.Pages.InnerModalPage
 {
     public partial class InnerModalPageViewModel : ObservableObject, INavigatable
     {
-        public Navigator Navigator { get; } = new();
+        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 
         [RelayCommand]
         private Task ReturnModal()

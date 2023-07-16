@@ -13,7 +13,7 @@ namespace NavigationTest.Pages.Page1
     {
         public string PageName => "My Page 1";
 
-        public Navigator Navigator { get; } = new();
+        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 
         [ObservableProperty]
         private string _inputText;
