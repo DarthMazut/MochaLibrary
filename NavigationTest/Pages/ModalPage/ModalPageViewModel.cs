@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NavigationTest.Pages.ModalPage
 {
-    public partial class ModalPageViewModel : ObservableObject, INavigatable
+    public partial class ModalPageViewModel : ObservableObject, INavigationParticipant
     {
         public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 

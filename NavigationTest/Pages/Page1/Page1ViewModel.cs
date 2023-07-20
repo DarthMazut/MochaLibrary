@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NavigationTest.Pages.Page1
 {
-    public partial class Page1ViewModel : ObservableObject, INavigatable
+    public partial class Page1ViewModel : ObservableObject, INavigationParticipant
     {
         public string PageName => "My Page 1";
 

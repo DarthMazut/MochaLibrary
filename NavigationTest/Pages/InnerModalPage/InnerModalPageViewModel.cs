@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NavigationTest.Pages.InnerModalPage
 {
-    public partial class InnerModalPageViewModel : ObservableObject, INavigatable
+    public partial class InnerModalPageViewModel : ObservableObject, INavigationParticipant
     {
         public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 

@@ -20,7 +20,7 @@ namespace MochaCore.NavigationEx
         /// <param name="caller">An object which is initiating a navigation process.</param>
         /// <param name="previousModule">Active <see cref="INavigationModule"/> at the time navigation was requested.</param>
         /// <param name="parameter">
-        /// An extra data object used to pass information between <see cref="INavigatable"/>
+        /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
         /// objects that take part in navigation transition.
         /// </param>
         /// <param name="navigationType">Defines type of navigation process.</param>
@@ -70,7 +70,7 @@ namespace MochaCore.NavigationEx
         public INavigationModule? PreviousModule { get; }
 
         /// <summary>
-        /// An extra data object used to pass information between <see cref="INavigatable"/>
+        /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
         /// objects that take part in navigation transition.
         /// </summary>
         public object? Parameter { get; }

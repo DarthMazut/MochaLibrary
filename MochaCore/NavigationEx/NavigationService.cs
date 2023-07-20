@@ -417,19 +417,19 @@ namespace MochaCore.NavigationEx
             return lastModalIndex;
         }
 
-        private Task CallOnNavigatingFrom(INavigatable? dataContext, OnNavigatingFromEventArgs e)
+        private Task CallOnNavigatingFrom(INavigationParticipant? dataContext, OnNavigatingFromEventArgs e)
         {
             (dataContext as IOnNavigatingFrom)?.OnNavigatingFrom(e);
             return (dataContext as IOnNavigatingFromAsync)?.OnNavigatingFromAsync(e) ?? Task.CompletedTask;
         }
 
-        private Task CallOnNavigatedTo(INavigatable? dataContext, OnNavigatedToEventArgs e)
+        private Task CallOnNavigatedTo(INavigationParticipant? dataContext, OnNavigatedToEventArgs e)
         {
             (dataContext as IOnNavigatedTo)?.OnNavigatedTo(e);
             return (dataContext as IOnNavigatedToAsync)?.OnNavigatedToAsync(e) ?? Task.CompletedTask;
         }
 
-        private Task CallOnNavigatedFrom(INavigatable? dataContext, OnNavigatedFromEventArgs e)
+        private Task CallOnNavigatedFrom(INavigationParticipant? dataContext, OnNavigatedFromEventArgs e)
         {
             (dataContext as IOnNavigatedFrom)?.OnNavigatedFrom(e);
             return (dataContext as IOnNavigatedFromAsync)?.OnNavigatedFromAsync(e) ?? Task.CompletedTask;

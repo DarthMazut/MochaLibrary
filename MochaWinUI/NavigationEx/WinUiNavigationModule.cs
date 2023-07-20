@@ -17,7 +17,7 @@ namespace MochaWinUI.NavigationEx
     /// <typeparam name="TDataContext">Type of object which serves as data context for view object.</typeparam>
     public sealed class WinUiNavigationModule<TView, TDataContext> : BaseNavigationModule<TView, TDataContext>
         where TView : FrameworkElement
-        where TDataContext : class, INavigatable
+        where TDataContext : class, INavigationParticipant
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="WinUiNavigationModule{TView, TDataContext}"/> class.
@@ -41,9 +41,9 @@ namespace MochaWinUI.NavigationEx
         /// <inheritdoc/>
         protected override TDataContext? GetDataContext(TView view)
         {
-            if (view.DataContext is not null && view.DataContext is not INavigatable)
+            if (view.DataContext is not null && view.DataContext is not INavigationParticipant)
             {
-                throw new ArgumentException($"Data context of provided parameter must be of type {typeof(INavigatable)}", nameof(view));
+                throw new ArgumentException($"Data context of provided parameter must be of type {typeof(INavigationParticipant)}", nameof(view));
             }
 
             return view.DataContext as TDataContext;

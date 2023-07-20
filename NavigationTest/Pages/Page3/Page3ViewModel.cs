@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NavigationTest.Pages.Page3
 {
-    public partial class Page3ViewModel : ObservableObject, INavigatable, IOnNavigatedToAsync
+    public partial class Page3ViewModel : ObservableObject, INavigationParticipant, IOnNavigatedToAsync
     {
         public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 

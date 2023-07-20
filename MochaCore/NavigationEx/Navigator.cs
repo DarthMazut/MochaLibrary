@@ -26,7 +26,7 @@ namespace MochaCore.NavigationEx
         }
 
         /// <summary>
-        /// Returns implementation of <see cref="INavigator"/> dedicated for <see cref="INavigatable"/> implementations.
+        /// Returns implementation of <see cref="INavigator"/> dedicated for <see cref="INavigationParticipant"/> implementations.
         /// </summary>
         public static INavigator Create() => new Navigator(null, null);
 

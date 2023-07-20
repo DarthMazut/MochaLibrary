@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NavigationTest.Pages.SettingsPage
 {
-    public class SettingsPageViewModel : INavigatable
+    public class SettingsPageViewModel : INavigationParticipant
     {
         public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
     }

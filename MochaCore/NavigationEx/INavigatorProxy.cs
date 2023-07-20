@@ -60,7 +60,7 @@ namespace MochaCore.NavigationEx
         /// </summary>
         /// <param name="targetId">Identifier of target <see cref="INavigationModule"/>.</param>
         /// <param name="parameter">
-        /// An extra data object used to pass information between <see cref="INavigatable"/>
+        /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
         /// objects that take part in navigation transition.
         /// </param>
         Task<NavigationResultData> NavigateAsync(string targetId, object? parameter);
@@ -82,7 +82,7 @@ namespace MochaCore.NavigationEx
         /// it only moves the pointer of the current element to the preceding element.
         /// </remarks>
         /// <param name="parameter">
-        /// An extra data object used to pass information between <see cref="INavigatable"/>
+        /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
         /// objects that take part in navigation transition.
         /// </param>
         Task<NavigationResultData> NavigateBackAsync(object? parameter);
@@ -95,7 +95,7 @@ namespace MochaCore.NavigationEx
         /// it only moves the pointer of the current element to the preceding element.
         /// </remarks>
         /// <param name="parameter">
-        /// An extra data object used to pass information between <see cref="INavigatable"/>
+        /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
         /// objects that take part in navigation transition.
         /// </param>
         /// <param name="step">

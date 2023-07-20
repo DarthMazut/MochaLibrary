@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NavigationTest.Pages.HomePage
 {
-    public partial class HomePageViewModel : ObservableObject, INavigatable
+    public partial class HomePageViewModel : ObservableObject, INavigationParticipant
     {
         public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 

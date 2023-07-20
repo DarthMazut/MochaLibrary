@@ -2,10 +2,10 @@
 {
     /// <summary>
     /// Allows implementing class to participate in the navigation process.
-    /// Only <see cref="INavigatable"/> implementations can serve as data 
+    /// Only <see cref="INavigationParticipant"/> implementations can serve as data 
     /// context for <see cref="INavigationModule"/>.
     /// </summary>
-    public interface INavigatable
+    public interface INavigationParticipant
     {
         /// <summary>
         /// Exposes API for navigation.

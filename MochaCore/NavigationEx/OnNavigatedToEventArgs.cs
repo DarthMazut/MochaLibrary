@@ -41,7 +41,7 @@ namespace MochaCore.NavigationEx
         public INavigationModule? PreviousModule { get; }
 
         /// <summary>
-        /// An extra data object used to pass information between <see cref="INavigatable"/>
+        /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
         /// objects that take part in navigation transition.
         /// </summary>
         public object? Parameter { get; }

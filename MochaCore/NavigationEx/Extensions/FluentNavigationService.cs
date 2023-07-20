@@ -25,7 +25,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// <typeparam name="TDataContext">Data context type of registering module.</typeparam>
         public FluentNavigationService<T> WithModule<TView, TDataContext>()
             where TView : T
-            where TDataContext : class, INavigatable
+            where TDataContext : class, INavigationParticipant
         {
             AddModule(CreateModule<TView, TDataContext>(nameof(TView), () => Activator.CreateInstance<TView>(), null, null));
             return this;
@@ -43,7 +43,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// <param name="id">Identifier of registering module.</param>
         public FluentNavigationService<T> WithModule<TView, TDataContext>(string id)
             where TView : T
-            where TDataContext : class, INavigatable
+            where TDataContext : class, INavigationParticipant
         {
             AddModule(CreateModule<TView, TDataContext>(id, () => Activator.CreateInstance<TView>(), null, null));
             return this;
@@ -65,7 +65,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// </param>
         public FluentNavigationService<T> WithModule<TView, TDataContext>(NavigationModuleLifecycleOptions lifecycleOptions)
             where TView : T
-            where TDataContext : class, INavigatable
+            where TDataContext : class, INavigationParticipant
         {
             AddModule(CreateModule<TView, TDataContext>(nameof(TView), () => Activator.CreateInstance<TView>(), null, lifecycleOptions));
             return this;
@@ -86,7 +86,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// </param>
         public FluentNavigationService<T> WithModule<TView, TDataContext>(string id, NavigationModuleLifecycleOptions lifecycleOptions)
             where TView : T
-            where TDataContext : class, INavigatable
+            where TDataContext : class, INavigationParticipant
         {
             AddModule(CreateModule<TView, TDataContext>(id, () => Activator.CreateInstance<TView>(), null, lifecycleOptions));
             return this;
@@ -107,7 +107,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// </param>
         public FluentNavigationService<T> WithModule<TView, TDataContext>(Func<TView> viewBuilder, Func<TDataContext> dataContextBuilder)
             where TView : T
-            where TDataContext : class, INavigatable
+            where TDataContext : class, INavigationParticipant
         {
             AddModule(CreateModule(nameof(TView), viewBuilder, dataContextBuilder, null));
             return this;
@@ -125,7 +125,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// <param name="id">Identifier of registering module.</param>
         public FluentNavigationService<T> WithModule<TView, TDataContext>(string id, Func<TView> viewBuilder, Func<TDataContext> dataContextBuilder)
             where TView : T
-            where TDataContext : class, INavigatable
+            where TDataContext : class, INavigationParticipant
         {
             AddModule(CreateModule(id, viewBuilder, dataContextBuilder, null));
             return this;
@@ -146,7 +146,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// </param>
         public FluentNavigationService<T> WithModule<TView, TDataContext>(string id, Func<TView> viewBuilder, Func<TDataContext> dataContextBuilder, NavigationModuleLifecycleOptions lifecycleOptions)
             where TView : T
-            where TDataContext : class, INavigatable
+            where TDataContext : class, INavigationParticipant
         {
             AddModule(CreateModule(id, viewBuilder, dataContextBuilder, lifecycleOptions));
             return this;
@@ -181,6 +181,6 @@ namespace MochaCore.NavigationEx.Extensions
             Func<TDataContext>? dataContextBuilder,
             NavigationModuleLifecycleOptions? lifecycleOptions)
         where TView : T
-        where TDataContext : class, INavigatable;
+        where TDataContext : class, INavigationParticipant;
     }
 }

@@ -13,7 +13,7 @@ namespace MochaCore.NavigationEx.Extensions
     /// <typeparam name="TDataContext">Type of object which serves as data context for view object.</typeparam>
     public abstract class BaseNavigationModule<TView, TDataContext> : INavigationLifecycleModule
         where TView : class
-        where TDataContext : class, INavigatable
+        where TDataContext : class, INavigationParticipant
     {
         private readonly Func<TView> _viewBuilder;
         private readonly Func<TDataContext>? _dataContextBuilder;
@@ -44,7 +44,7 @@ namespace MochaCore.NavigationEx.Extensions
         public Type ViewType => typeof(TView);
 
         /// <inheritdoc/>
-        public INavigatable? DataContext => _dataContext;
+        public INavigationParticipant? DataContext => _dataContext;
 
         /// <inheritdoc/>
         public Type? DataContextType => typeof(TDataContext);
@@ -58,7 +58,7 @@ namespace MochaCore.NavigationEx.Extensions
         /// <summary>
         /// Retrieves <i>DataContext</i> from provided object.
         /// Throws if retrieved object is different than <see langword="null"/>
-        /// or expected <see cref="INavigatable"/> implementation.
+        /// or expected <see cref="INavigationParticipant"/> implementation.
         /// </summary>
         /// <param name="view">The view from which the data context is retrieved.</param>
         protected abstract TDataContext? GetDataContext(TView view);
