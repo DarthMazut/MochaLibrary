@@ -7,31 +7,30 @@ using System.Threading.Tasks;
 namespace MochaCore.NavigationEx.Extensions
 {
     /// <summary>
-    /// Provides core features for technology specific implementations of <see cref="INavigationModule"/>.
+    /// Provides base class for technology specific implementations of <see cref="INavigationModule"/>.
     /// </summary>
     /// <typeparam name="TView">Type of technology-specific view object.</typeparam>
-    public abstract class BaseNavigationModule<TView> : INavigationLifecycleModule where TView : class
+    /// <typeparam name="TDataContext">Type of object which serves as data context for view object.</typeparam>
+    public abstract class BaseNavigationModule<TView, TDataContext> : INavigationLifecycleModule
+        where TView : class
+        where TDataContext : class, INavigatable
     {
         private readonly Func<TView> _viewBuilder;
-        private readonly Func<INavigatable>? _dataContextBuilder;
+        private readonly Func<TDataContext>? _dataContextBuilder;
 
         private bool _isInitialized = false;
         private TView? _view;
-        private INavigatable? _dataContext;
+        private TDataContext? _dataContext;
 
         protected BaseNavigationModule(
             string id,
             Func<TView> viewBuilder,
-            Type viewType,
-            Func<INavigatable>? dataContextBuilder,
-            Type dataContextType,
+            Func<TDataContext>? dataContextBuilder,
             NavigationModuleLifecycleOptions? lifecycleOptions)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id)); ;
             _viewBuilder = viewBuilder ?? throw new ArgumentNullException(nameof(viewBuilder));
             _dataContextBuilder = dataContextBuilder;
-            ViewType = viewType ?? throw new ArgumentNullException(nameof(viewType));
-            DataContextType = dataContextType ?? throw new ArgumentNullException(nameof(viewType));
             LifecycleOptions = lifecycleOptions ?? new NavigationModuleLifecycleOptions();
         }
 
@@ -42,13 +41,13 @@ namespace MochaCore.NavigationEx.Extensions
         public object? View => _view;
 
         /// <inheritdoc/>
-        public Type ViewType { get; }
+        public Type ViewType => typeof(TView);
 
         /// <inheritdoc/>
         public INavigatable? DataContext => _dataContext;
 
         /// <inheritdoc/>
-        public Type DataContextType { get; }
+        public Type? DataContextType => typeof(TDataContext);
 
         /// <inheritdoc/>
         public bool IsInitialized => _isInitialized;
@@ -62,14 +61,14 @@ namespace MochaCore.NavigationEx.Extensions
         /// or expected <see cref="INavigatable"/> implementation.
         /// </summary>
         /// <param name="view">The view from which the data context is retrieved.</param>
-        protected abstract INavigatable? GetDataContext(TView view);
+        protected abstract TDataContext? GetDataContext(TView view);
 
         /// <summary>
         /// Sets the DataContext on provided view object.
         /// </summary>
         /// <param name="view">Object which data context is to be set.</param>
         /// <param name="dataContext">Data context to be set.</param>
-        protected abstract void SetDataContext(TView view, INavigatable? dataContext);
+        protected abstract void SetDataContext(TView view, TDataContext? dataContext);
 
         /// <inheritdoc/>
         public void Initialize()
@@ -77,8 +76,8 @@ namespace MochaCore.NavigationEx.Extensions
             InitializationGuard();
 
             _view = _viewBuilder.Invoke();
-            _dataContext = _dataContextBuilder?.Invoke() ?? GetDataContext(_view) ?? Activator.CreateInstance(DataContextType) as INavigatable;
-            
+            _dataContext = _dataContextBuilder?.Invoke() ?? GetDataContext(_view) ?? Activator.CreateInstance<TDataContext>();
+
             if (GetDataContext(_view) is null)
             {
                 SetDataContext(_view, _dataContext);

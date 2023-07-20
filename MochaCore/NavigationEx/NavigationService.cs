@@ -63,7 +63,7 @@ namespace MochaCore.NavigationEx
         /// </summary>
         /// <param name="module">Module to be handled by service.</param>
         /// <exception cref="ArgumentException"></exception>
-        public NavigationService AddModule(INavigationLifecycleModule module)
+        public void AddModule(INavigationLifecycleModule module)
         {
             if (_modules.ContainsKey(module.Id))
             {
@@ -71,7 +71,6 @@ namespace MochaCore.NavigationEx
             }
 
             _modules.Add(module.Id, module);
-            return this;
         }
 
         /// <summary>
@@ -79,10 +78,9 @@ namespace MochaCore.NavigationEx
         /// is to be treated as initial one.
         /// </summary>
         /// <param name="id">Id of <see cref="INavigationModule"/> object to be treated as initial one.</param>
-        public NavigationService SelectInitialtId(string id)
+        public void SelectInitialtId(string id)
         {
             _initialId = id;
-            return this;
         }
 
         /// <inheritdoc/>

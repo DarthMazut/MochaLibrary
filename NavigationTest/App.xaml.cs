@@ -61,20 +61,19 @@ namespace NavigationTest
         {
             INavigationService mainNavigationService = NavigationManager.AddNavigationService(
                 "MainNavigationService",
-                new NavigationService()
-                    .AddModule(WinUiNavigationModule.Create<HomePage, HomePageViewModel>(AppPages.HomePage.Id))
-                    .AddModule(WinUiNavigationModule.Create<Page1, Page1ViewModel>(AppPages.Page1.Id))
-                    .AddModule(WinUiNavigationModule.Create<Page2, Page2ViewModel>(AppPages.Page2.Id,
-                        new NavigationModuleLifecycleOptions()
-                        {
-                            PreferCache = true
-                        }))
-                    .AddModule(WinUiNavigationModule.Create<Page3, Page3ViewModel>(AppPages.Page3.Id))
-                    .AddModule(WinUiNavigationModule.Create<ModalPage, ModalPageViewModel>(AppPages.ModalPage.Id))
-                    .AddModule(WinUiNavigationModule.Create<InnerModalPage, InnerModalPageViewModel>("InnerModalPage"))
-                    .AddModule(WinUiNavigationModule.Create<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id))
-                    .SelectInitialtId(AppPages.HomePage.Id)
-                    );
+                new WinUiNavigationService()
+                    .WithModule<HomePage, HomePageViewModel>(AppPages.HomePage.Id)
+                    .WithModule<Page1, Page1ViewModel>(AppPages.Page1.Id)
+                    .WithModule<Page2, Page2ViewModel>(AppPages.Page2.Id, new NavigationModuleLifecycleOptions()
+                    {
+                        PreferCache = true
+                    })
+                    .WithModule<Page3, Page3ViewModel>(AppPages.Page3.Id)
+                    .WithModule<ModalPage, ModalPageViewModel>(AppPages.ModalPage.Id)
+                    .WithModule<InnerModalPage, InnerModalPageViewModel>("InnerModalPage")
+                    .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
+                    .WithInitialId(AppPages.HomePage.Id)
+                );
 
             _window = new MainWindow();
             _window.Activate();
