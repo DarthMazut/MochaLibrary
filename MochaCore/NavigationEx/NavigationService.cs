@@ -105,7 +105,7 @@ namespace MochaCore.NavigationEx
             if (callSubscribersOnInit)
             {
                 OnNavigatedToEventArgs eventArgs = new(null, null, null);
-                CurrentModuleChanged?.Invoke(this, new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
+                CurrentModuleChanged?.Invoke(this, CurrentNavigationModuleChangedEventArgs.FromNavigatedToEventArgs(eventArgs, CurrentModule));
                 return CallOnNavigatedTo(CurrentModule.DataContext, eventArgs);
             }
 
@@ -340,7 +340,7 @@ namespace MochaCore.NavigationEx
                     requestData.NavigationType,
                     requestData.Step);
 
-            CurrentModuleChanged?.Invoke(this, new CurrentNavigationModuleChangedEventArgs(CurrentModule, eventArgs));
+            CurrentModuleChanged?.Invoke(this, CurrentNavigationModuleChangedEventArgs.FromNavigatedToEventArgs(eventArgs, CurrentModule));
 
             if (requestData.NavigationType == NavigationType.Pop)
             {

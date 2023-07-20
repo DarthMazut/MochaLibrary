@@ -54,7 +54,8 @@ namespace MochaCore.NavigationEx
         /// <summary>
         /// If <see cref="NavigationType"/> is <see cref="NavigationType.Back"/> or <see cref="NavigationType.Forward"/>
         /// it describes how many layers of navigation should be traversed in the indicated direction. 
-        /// This property is ignored in case  <see cref="NavigationType"/> is set to <see cref="NavigationType.Push"/>.
+        /// This property can be ignored in case <see cref="NavigationType"/> is set to <see cref="NavigationType.Push"/>, 
+        /// <see cref="NavigationType.PushModal"/> or <see cref="NavigationType.Pop"/>.
         /// </summary>
         public int Step { get; }
     }
