@@ -1,7 +1,7 @@
 ﻿namespace MochaCore.NavigationEx
 {
     /// <summary>
-    /// Allows implementing class to participate in the navigation process.
+    /// Allows the implementing class to actively participate in the navigation process.
     /// Only <see cref="INavigationParticipant"/> implementations can serve as data 
     /// context for <see cref="INavigationModule"/>.
     /// </summary>

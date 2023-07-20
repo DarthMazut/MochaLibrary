@@ -11,13 +11,15 @@ namespace MochaCore.NavigationEx
     /// manages its own navigation stack and handles lifecycle of registered <see cref="INavigationModule"/>
     /// objects. Using the service you're defining custom navigation behaviour (what navigation means to your 
     /// application; how should be handled) specific to your application needs by subscribing to 
-    /// <see cref="INavigationService.CurrentModuleChanged"/>. Navigation process is invoked by calling 
-    /// <see cref="INavigationService.RequestNavigation(NavigationRequestData)"/> method.
+    /// <see cref="CurrentModuleChanged"/>. Navigation process is invoked by calling 
+    /// <see cref="RequestNavigation(NavigationRequestData)"/> method.
     /// </summary>
     public interface INavigationService
     {
         /// <summary>
         /// Determines whether this <see cref="INavigationService"/> is initialized.
+        /// <see cref="INavigationService"/> is initialized when current <see cref="INavigationModule"/>
+        /// is initialized.
         /// </summary>
         public bool IsInitialized { get; }
 
@@ -54,12 +56,14 @@ namespace MochaCore.NavigationEx
         public Task<NavigationResultData> RequestNavigation(NavigationRequestData requestData);
 
         /// <summary>
-        /// Initializes an <see cref="INavigationService"/> by setting initialized initial module as <see cref="CurrentModule"/>.
+        /// Initializes an <see cref="INavigationService"/> by initializing the current <see cref="INavigationModule"/>.
+        /// If the <see cref="CurrentModule"/> is not determined at the time of calling, it will be set to the initial module.
         /// </summary>
         public Task Initialize();
 
         /// <summary>
-        /// Initializes an <see cref="INavigationService"/> by setting initialized initial module as <see cref="CurrentModule"/>.
+        /// Initializes an <see cref="INavigationService"/> by initializing the current <see cref="INavigationModule"/>.
+        /// If the <see cref="CurrentModule"/> is not determined at the time of calling, it will be set to the initial module.
         /// </summary>
         /// <param name="callSubscribersOnInit">
         /// If set to <see langword="true"/> the <see cref="IOnNavigatedTo"/> and
@@ -71,6 +75,9 @@ namespace MochaCore.NavigationEx
         /// Uninitializes <see cref="INavigationService"/> by uninitializing <see cref="INavigationModule"/>
         /// which is on top of navigation stack. This method considers 
         /// <see cref="NavigationModuleLifecycleOptions.PreferCache"/> and <see cref="Navigator.SaveCurrent"/> properties.
+        /// <br/>
+        /// You should call this method to uninitialize <see cref="INavigationService"/> instances that are currently unreachable 
+        /// (e.g., within a closed window or a page that is not currently displayed).
         /// </summary>
         public void Uninitialize();
 
@@ -78,6 +85,8 @@ namespace MochaCore.NavigationEx
         /// Uninitializes <see cref="INavigationService"/> by uninitializing <see cref="INavigationModule"/>
         /// which is on top of navigation stack. This method considers 
         /// <see cref="NavigationModuleLifecycleOptions.PreferCache"/> and <see cref="Navigator.SaveCurrent"/> properties.
+        /// You should call this method to uninitialize <see cref="INavigationService"/> instances that are currently unreachable 
+        /// (e.g., within a closed window or a page that is not currently displayed).
         /// </summary>
         /// <param name="clearStack">
         /// Determines whether entire navigation stack should be cleared. If this value is set to
