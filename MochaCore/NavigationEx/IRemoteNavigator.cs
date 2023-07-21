@@ -6,7 +6,7 @@ namespace MochaCore.NavigationEx
     /// <summary>
     /// Exposes API for proxy navigation.
     /// </summary>
-    public interface INavigatorProxy
+    public interface IRemoteNavigator
     {
         /// <summary>
         /// Determines whether backward navigation is available.
@@ -32,7 +32,7 @@ namespace MochaCore.NavigationEx
         bool? SaveCurrent { get; set; }
 
         /// <summary>
-        /// An <see cref="INavigationService"/> associated with curren <see cref="INavigatorProxy"/> instance.
+        /// An <see cref="INavigationService"/> associated with curren <see cref="IRemoteNavigator"/> instance.
         /// All <c>Navigate*Async</c> methods are called for that particular instance.
         /// </summary>
         INavigationService Service { get; }

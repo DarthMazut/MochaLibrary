@@ -31,11 +31,11 @@ namespace MochaCore.NavigationEx
         public static INavigator Create() => new Navigator(null, null);
 
         /// <summary>
-        /// Returns implementation of <see cref="INavigatorProxy"/> dedicated for proxy navigation clients.
+        /// Returns implementation of <see cref="IRemoteNavigator"/> dedicated for proxy navigation clients.
         /// </summary>
         /// <param name="serviceId">Identifier of <see cref="INavigationService"/> which handles proxy navigation requests.</param>
         /// <param name="owner">An object that initiates navigation using the created instance.</param>
-        public static INavigatorProxy CreateProxy(string serviceId, object? owner)
+        public static IRemoteNavigator CreateProxy(string serviceId, object? owner)
             => new Navigator(owner, NavigationManager.FetchNavigationService(serviceId));
 
         /// <inheritdoc/>

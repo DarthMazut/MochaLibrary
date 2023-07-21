@@ -32,7 +32,7 @@ namespace NavigationTest
         [RelayCommand]
         private Task NavigationItemInvoked(NavigationInvokedDetails e)
         {
-            INavigatorProxy navigator = Navigator.CreateProxy("MainNavigationService", this);
+            IRemoteNavigator navigator = Navigator.CreateProxy("MainNavigationService", this);
 
             if (e.InvokedPage is not null)
             {

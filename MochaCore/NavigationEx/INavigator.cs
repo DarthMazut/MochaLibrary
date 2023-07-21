@@ -6,7 +6,7 @@ namespace MochaCore.NavigationEx
     /// <summary>
     /// Exposes API for navigation.
     /// </summary>
-    public interface INavigator : INavigatorProxy
+    public interface INavigator : IRemoteNavigator
     {
         /// <summary>
         /// Determines whether it is currently possible to return to the <see cref="INavigationModule"/> 
