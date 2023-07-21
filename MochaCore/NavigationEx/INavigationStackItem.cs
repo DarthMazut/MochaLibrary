@@ -17,8 +17,7 @@ namespace MochaCore.NavigationEx
         public INavigationModule Module { get; }
 
         /// <summary>
-        /// Indicates whether the <see cref="NavigationType.PushModal"/> navigation was requested
-        /// while this item was active.
+        /// Indicates whether the current item is a source of ongoing <see cref="NavigationType.PushModal"/> navigation request.
         /// </summary>
         public bool IsModalOrigin { get; }
     }

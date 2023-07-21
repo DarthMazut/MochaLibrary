@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace MochaCore.NavigationEx
 {
+    /// <summary>
+    /// Provides an abstraction for initializing <see cref="INavigator"/> instances.
+    /// By implementing this interface explicitly, you can hide the <see cref="Initialize(INavigationModule, INavigationService)"/>
+    /// method from the client who is not supposed to call it manually.
+    /// </summary>
     public interface INavigatorInitialize
     {
         /// <summary>
