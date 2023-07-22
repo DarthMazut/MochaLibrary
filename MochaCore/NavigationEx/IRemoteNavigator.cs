@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace MochaCore.NavigationEx
 {
     /// <summary>
-    /// Exposes API for proxy navigation.
+    /// Exposes API for remote navigation.
     /// </summary>
     public interface IRemoteNavigator
     {
@@ -32,7 +32,7 @@ namespace MochaCore.NavigationEx
         bool? SaveCurrent { get; set; }
 
         /// <summary>
-        /// An <see cref="INavigationService"/> associated with curren <see cref="IRemoteNavigator"/> instance.
+        /// An <see cref="INavigationService"/> associated with current <see cref="IRemoteNavigator"/> instance.
         /// All <c>Navigate*Async</c> methods are called for that particular instance.
         /// </summary>
         INavigationService Service { get; }
@@ -66,21 +66,23 @@ namespace MochaCore.NavigationEx
         Task<NavigationResultData> NavigateAsync(string targetId, object? parameter);
 
         /// <summary>
-        /// Navigates back to the preceding element on the navigation stack.
+        /// Navigates back to the preceding element in the navigation stack.
+        /// Throws if this operation is invalid for current state.
+        /// <para>
+        /// This method doesn't remove any element from the navigation stack;
+        /// it only moves the pointer from the current element to the preceding element.
+        /// </para>
         /// </summary>
-        /// <remarks>
-        /// This method doesn't pop any element from the navigation stack; 
-        /// it only moves the pointer of the current element to the preceding element.
-        /// </remarks>
         Task<NavigationResultData> NavigateBackAsync();
 
         /// <summary>
         /// Navigates back to the preceding element on the navigation stack.
-        /// </summary>
-        /// <remarks>
+        /// Throws if this operation is invalid for current state.
+        /// <para>
         /// This method doesn't pop any element from the navigation stack; 
         /// it only moves the pointer of the current element to the preceding element.
-        /// </remarks>
+        /// </para>
+        /// </summary>
         /// <param name="parameter">
         /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
         /// objects that take part in navigation transition.
@@ -89,11 +91,12 @@ namespace MochaCore.NavigationEx
 
         /// <summary>
         /// Navigates back to the preceding element on the navigation stack.
-        /// </summary>
-        /// <remarks>
+        /// Throws if this operation is invalid for current state.
+        /// <para>
         /// This method doesn't pop any element from the navigation stack; 
         /// it only moves the pointer of the current element to the preceding element.
-        /// </remarks>
+        /// </para>
+        /// </summary>
         /// <param name="parameter">
         /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
         /// objects that take part in navigation transition.
@@ -103,10 +106,65 @@ namespace MochaCore.NavigationEx
         /// </param>
         Task<NavigationResultData> NavigateBackAsync(object? parameter, int step);
 
+        /// <summary>
+        /// Navigates forward to the subsequent element in the navigation stack.
+        /// Throws if navigating forward is impossible at the time.
+        /// <para>
+        /// This method doesn't add any element to the navigation stack;
+        /// it only moves the pointer from the current element to the subsequent element.
+        /// </para>
+        /// </summary>
         Task<NavigationResultData> NavigateForwardAsync();
+
+        /// <summary>
+        /// Navigates forward to the subsequent element in the navigation stack.
+        /// Throws if navigating forward is impossible at the time.
+        /// <para>
+        /// This method doesn't add any element to the navigation stack;
+        /// it only moves the pointer from the current element to the subsequent element.
+        /// </para>
+        /// </summary>
+        /// <param name="parameter">
+        /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
+        /// objects that take part in navigation transition.
+        /// </param>
         Task<NavigationResultData> NavigateForwardAsync(object? parameter);
+
+        /// <summary>
+        /// Navigates forward to the subsequent element in the navigation stack.
+        /// Throws if navigating forward is impossible at the time.
+        /// <para>
+        /// This method doesn't add any element to the navigation stack;
+        /// it only moves the pointer from the current element to the subsequent element.
+        /// </para>
+        /// </summary>
+        /// <param name="parameter">
+        /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
+        /// objects that take part in navigation transition.
+        /// </param>
+        /// <param name="step">
+        /// Determines by how many elements the pointer of the current navigation element will be shifted forward.
+        /// </param>
         Task<NavigationResultData> NavigateForwardAsync(object? parameter, int step);
+        
+        /// <summary>
+        /// Performs <see cref="NavigationType.PushModal"/> navigation to the specified <see cref="INavigationModule"/>.
+        /// This type of navigation esures that the current module will not be disposed before returning
+        /// from modal navigation.
+        /// </summary>
+        /// <param name="targetId">Identifier of target <see cref="INavigationModule"/>.</param>
         Task<NavigationResultData> NavigateModalAsync(string targetId);
+
+        /// <summary>
+        /// Performs <see cref="NavigationType.PushModal"/> navigation to the specified <see cref="INavigationModule"/>.
+        /// This type of navigation esures that the current module will not be disposed before returning
+        /// from modal navigation.
+        /// </summary>
+        /// <param name="targetId">Identifier of target <see cref="INavigationModule"/>.</param>
+        /// <param name="parameter">
+        /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
+        /// objects that take part in navigation transition.
+        /// </param>
         Task<NavigationResultData> NavigateModalAsync(string targetId, object? parameter);
     }
 }

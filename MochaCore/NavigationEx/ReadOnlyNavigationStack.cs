@@ -7,11 +7,19 @@ using System.Threading.Tasks;
 
 namespace MochaCore.NavigationEx
 {
+    /// <inheritdoc/>
     public class ReadOnlyNavigationStack<T> : IReadOnlyNavigationStack<T>
     {
         private readonly ICollection<T> _source;
         private readonly int _index;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReadOnlyNavigationStack{T}"/> class.
+        /// </summary>
+        /// <param name="source">The source collection used to create the stack.</param>
+        /// <param name="currentIndex">The index of the item that will serve as the current element upon creating this stack.</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
         public ReadOnlyNavigationStack(ICollection<T> source, int currentIndex)
         {
             if (currentIndex < 0 || currentIndex > source.Count - 1)

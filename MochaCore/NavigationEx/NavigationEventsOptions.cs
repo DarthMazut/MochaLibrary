@@ -11,6 +11,12 @@ namespace MochaCore.NavigationEx
     /// </summary>
     public class NavigationEventsOptions
     {
+        /// <summary>
+        /// If set to <see langword="true"/> prevents <see cref="INavigationService"/>
+        /// from calling <see cref="IOnNavigatingFrom.OnNavigatingFrom(OnNavigatingFromEventArgs)"/>
+        /// and <see cref="IOnNavigatingFromAsync.OnNavigatingFromAsync(OnNavigatingFromEventArgs)"/>
+        /// methods.
+        /// </summary>
         public bool SupressNavigatingFromEvents { get; init; }
 
         /// <summary>
@@ -21,6 +27,12 @@ namespace MochaCore.NavigationEx
         /// </summary>
         public bool SupressNavigatedToEvents { get; init; }
 
+        /// <summary>
+        /// If set to <see langword="true"/> prevents <see cref="INavigationService"/>
+        /// from calling <see cref="IOnNavigatedFrom.OnNavigatedFrom(OnNavigatedFromEventArgs)"/>
+        /// and <see cref="IOnNavigatedFromAsync.OnNavigatedFromAsync(OnNavigatedFromEventArgs)"/>
+        /// methods.
+        /// </summary>
         public bool SupressNavigatedFromEvents { get; init; }
     }
 }

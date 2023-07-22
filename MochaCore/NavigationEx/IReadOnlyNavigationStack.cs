@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace MochaCore.NavigationEx
 {
+    /// <summary>
+    /// Represents a readonly stack that provides the ability to select the current item.
+    /// </summary>
+    /// <typeparam name="T">The type of stack item.</typeparam>
     public interface IReadOnlyNavigationStack<T> : IEnumerable<T>
+
     {
         /// <summary>
         /// Returns number of items currently contained in this stack.
