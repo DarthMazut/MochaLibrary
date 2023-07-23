@@ -124,13 +124,30 @@ namespace MochaCore.NavigationEx
         public static NavigationRequestData CreateForwardRequest(int step, object? callingModule, object? parameter, bool? saveCurrent, bool ignoreCached, NavigationEventsOptions? eventOptions)
             => new(null, callingModule, parameter, NavigationType.Forward, step, saveCurrent, ignoreCached, eventOptions);
 
+        /// <summary>
+        /// Creates a <see cref="NavigationType.PushModal"/> request with the provided parameters.
+        /// </summary>
+        /// <param name="targetId">The identifier of the target <see cref="INavigationModule"/>.</param>
+        /// <param name="callingModule">An object that initiates the navigation transition.</param>
+        /// <param name="parameter">
+        /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
+        /// objects that take part in the navigation transition.
+        /// </param>
+        /// <param name="ignoreCached">
+        /// Determines whether the cached module should be ignored while resolving the navigation target.
+        /// </param>
+        /// <param name="eventOptions">Allows for defining custom navigation events behavior.</param>
+        public static NavigationRequestData CreateModalRequest(string targetId, object? callingModule, object? parameter, bool ignoreCached, NavigationEventsOptions? eventOptions)
+            => new(targetId, callingModule, parameter, NavigationType.PushModal, 0, true, ignoreCached, eventOptions);
 
-        public static NavigationRequestData CreateModalRequest(string targetId, object? callingModule, object? parameter, bool ignoreCached, NavigationEventsOptions? eventsOptions)
-            => new(targetId, callingModule, parameter, NavigationType.PushModal, 0, true, ignoreCached, eventsOptions);
-
-
-        public static NavigationRequestData CreatePopRequest(object? callingModule, object? returnValue, NavigationEventsOptions? eventsOptions)
-            => new(null, callingModule, returnValue, NavigationType.Pop, 0, false, false, eventsOptions);
+        /// <summary>
+        /// Creates a <see cref="NavigationType.Pop"/> request with the provided parameters.
+        /// </summary>
+        /// <param name="callingModule">An object that initiates the navigation transition.</param>
+        /// <param name="returnValue">A Value to be returned from the modal request.</param>
+        /// <param name="eventOptions">Allows for defining custom navigation events behavior.</param>
+        public static NavigationRequestData CreatePopRequest(object? callingModule, object? returnValue, NavigationEventsOptions? eventOptions)
+            => new(null, callingModule, returnValue, NavigationType.Pop, 0, false, false, eventOptions);
 
         private NavigationRequestData
             (string? targetId,

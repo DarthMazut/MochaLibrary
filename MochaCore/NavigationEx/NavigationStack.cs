@@ -143,6 +143,15 @@ namespace MochaCore.NavigationEx
             return removedItems.TakeLast(itemsCount).ToList().AsReadOnly();
         }
 
+        /// <summary>
+        /// Tries to remove the current item from the stack. If the current index does not point to the top 
+        /// of the stack, the elements above the current index are also removed. If removed items are <see cref="IDisposable"/> 
+        /// and the <see cref="DisposeOnRemove"/> property is set to <see langword="true"/>, these items will have their 
+        /// <see cref="IDisposable"/> implementation called. If the current item is a base item and cannot be removed from the stack, 
+        /// an <see cref="InvalidOperationException"/> is thrown.
+        /// </summary>
+        /// <param name="poppedItem">The popped item or <see langword="null"/>.</param>
+        /// <returns><see langword="true"/> if the operation was successful; otherwise, <see langword="false"/>.</returns>
         public bool TryPop(out T? poppedItem)
         {
             if (Count < 2)
@@ -155,6 +164,17 @@ namespace MochaCore.NavigationEx
             return true;
         }
 
+        /// <summary>
+        /// Tries to remove a specified number of items from the stack.
+        /// If the current index does not point to the top of the stack,
+        /// the elements above the current index are also removed.
+        /// If removed items are <see cref="IDisposable"/> and the <see cref="DisposeOnRemove"/> property is set to <see langword="true"/>,
+        /// these items will have their <see cref="IDisposable"/> implementation called.
+        /// If the specified number of items cannot be removed from the stack, an <see cref="InvalidOperationException"/> is thrown.
+        /// </summary>
+        /// <param name="itemsCount">The number of items to remove from the stack.</param>
+        /// <param name="poppedItems">The removed items as a read-only list, or <see langword="null"/> if no items were removed.</param>
+        /// <returns><see langword="true"/> if the operation was successful; otherwise, <see langword="false"/>.</returns>
         public bool TryPop(int itemsCount, out IReadOnlyList<T> poppedItems)
         {
             if (itemsCount >= CurrentIndex)
@@ -165,7 +185,6 @@ namespace MochaCore.NavigationEx
 
             poppedItems = Pop(itemsCount);
             return true;
-
         }
 
         /// <summary>
@@ -180,6 +199,11 @@ namespace MochaCore.NavigationEx
             _internalCollection[_currentIndex] = newItem;
         }
 
+        /// <summary>
+        /// Moves the pointer to the previous element in the stack.
+        /// Throws if the current state of the object does not allow performing this operation.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
         public void MoveBack()
         {
             if (IsBottomIndex)
@@ -190,6 +214,10 @@ namespace MochaCore.NavigationEx
             _currentIndex--;
         }
 
+        /// <summary>
+        /// Tries to move the pointer to the previous element in the stack.
+        /// Returns <see langword="true"/> if the operation was successful; otherwise, <see langword="false"/>.
+        /// </summary>
         public bool TryMoveBack()
         {
             if (IsBottomIndex)
@@ -201,6 +229,12 @@ namespace MochaCore.NavigationEx
             return true;
         }
 
+        /// <summary>
+        /// Moves the pointer back by the specified number of elements in the stack.
+        /// Throws an <see cref="InvalidOperationException"/> if the current state does not allow performing this operation.
+        /// </summary>
+        /// <param name="step">The number of elements to shift the pointer back.</param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void MoveBack(int step)
         {
             if (_currentIndex < step)
@@ -211,6 +245,11 @@ namespace MochaCore.NavigationEx
             _currentIndex -= step;
         }
 
+        /// <summary>
+        /// Tries to move the pointer back by the specified number of elements in the stack.
+        /// </summary>
+        /// <param name="step">The number of elements to shift the pointer back.</param>
+        /// <returns><see langword="true"/> if the operation was successful; otherwise, <see langword="false"/>.</returns>
         public bool TryMoveBack(int step)
         {
             if (_currentIndex < step)
@@ -222,6 +261,11 @@ namespace MochaCore.NavigationEx
             return true;
         }
 
+        /// <summary>
+        /// Moves the pointer to the next element in the stack.
+        /// Throws an <see cref="InvalidOperationException"/> if the current state does not allow performing this operation.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
         public void MoveForward()
         {
             if (_currentIndex >= _internalCollection.Count - 1)
@@ -232,6 +276,10 @@ namespace MochaCore.NavigationEx
             _currentIndex++;
         }
 
+        /// <summary>
+        /// Tries to move the pointer to the next element in the stack.
+        /// </summary>
+        /// <returns><see langword="true"/> if the operation was successful; otherwise, <see langword="false"/>.</returns>
         public bool TryMoveForward()
         {
             if (IsTopIndex)
@@ -243,6 +291,12 @@ namespace MochaCore.NavigationEx
             return true;
         }
 
+        /// <summary>
+        /// Moves the pointer forward by the specified number of elements in the stack.
+        /// Throws an <see cref="InvalidOperationException"/> if the current state does not allow performing this operation.
+        /// </summary>
+        /// <param name="step">The number of elements to shift the pointer forward.</param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void MoveForward(int step)
         {
             if (_currentIndex + step >= _internalCollection.Count)
@@ -253,6 +307,11 @@ namespace MochaCore.NavigationEx
             _currentIndex += step;
         }
 
+        /// <summary>
+        /// Tries to move the pointer forward by the specified number of elements in the stack.
+        /// </summary>
+        /// <param name="step">The number of elements to shift the pointer forward.</param>
+        /// <returns><see langword="true"/> if the operation was successful; otherwise, <see langword="false"/>.</returns>
         public bool TryMoveForward(int step)
         {
             if (_currentIndex + step >= _internalCollection.Count)
@@ -264,6 +323,13 @@ namespace MochaCore.NavigationEx
             return true;
         }
 
+        /// <summary>
+        /// Returns the element at the specified number of steps back from the current element in the stack
+        /// without changing the current pointer position.
+        /// If the current index does not allow accessing the specified number of steps back, the method returns null.
+        /// </summary>
+        /// <param name="step">The number of steps back from the current element to peek at.</param>
+        /// <returns>The element at the specified number of steps back from the current element, or null if not available.</returns>
         public T? PeekBack(int step)
         {
             if (step > _currentIndex)
@@ -274,6 +340,13 @@ namespace MochaCore.NavigationEx
             return _internalCollection[_currentIndex - step];
         }
 
+        /// <summary>
+        /// Returns the element at the specified number of steps forward from the current element in the stack
+        /// without changing the current pointer position.
+        /// If the current index does not allow accessing the specified number of steps forward, the method returns null.
+        /// </summary>
+        /// <param name="step">The number of steps forward from the current element to peek at.</param>
+        /// <returns>The element at the specified number of steps forward from the current element, or null if not available.</returns>
         public T? PeekForward(int step)
         {
             if (step > Count - _currentIndex - 1)
@@ -284,18 +357,13 @@ namespace MochaCore.NavigationEx
             return _internalCollection[_currentIndex + step];
         }
 
-
-        // może tutaj z minusem?
-        public T? Peek(NavigationType navigationType, int step)
-        {
-            return navigationType switch
-            {
-                NavigationType.Push => throw new ArgumentException($"Cannot use {nameof(Peek)} method if {nameof(NavigationType)} is {NavigationType.Push}", nameof(navigationType)),
-                NavigationType.Back => PeekBack(step),
-                NavigationType.Forward => PeekForward(step),
-                _ => throw new NotImplementedException()
-            };
-        }
+        /// <summary>
+        /// Peeks at the element at the specified number of steps relative to the current element in the stack.
+        /// If the step is positive or zero, it peeks forward; if the step is negative, it peeks backward.
+        /// </summary>
+        /// <param name="step">The number of steps relative to the current element to peek at.</param>
+        /// <returns>The element at the specified number of steps relative to the current element, or null if not available.</returns>
+        public T? Peek(int step) => step >= 0 ? PeekForward(step) : PeekBack(-step);
 
         /// <summary>
         /// Removes all items from this stack except the base item. If removed items are
