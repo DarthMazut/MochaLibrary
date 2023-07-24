@@ -8,9 +8,29 @@ namespace MochaCore.NavigationEx
     /// </summary>
     public class OnNavigatedToEventArgs : EventArgs
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OnNavigatedToEventArgs"/> class.
+        /// </summary>
+        /// <param name="caller">An object which is initiating a navigation process.</param>
+        /// <param name="previousModule">Active <see cref="INavigationModule"/> at the time navigation was requested.</param>
+        /// <param name="parameter">An extra data object used to pass information between <see cref="INavigationParticipant"/>
+        /// objects that take part in navigation transition.</param>
         public OnNavigatedToEventArgs(object? caller, INavigationModule? previousModule, object? parameter)
             : this(caller, previousModule, parameter, NavigationType.Push, 0) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OnNavigatedToEventArgs"/> class.
+        /// </summary>
+        /// <param name="caller">An object which is initiating a navigation process.</param>
+        /// <param name="previousModule">Active <see cref="INavigationModule"/> at the time navigation was requested.</param>
+        /// <param name="parameter">An extra data object used to pass information between <see cref="INavigationParticipant"/>
+        /// objects that take part in navigation transition.</param>
+        /// <param name="navigationType">Defines type of navigation process.</param>
+        /// <param name="step">
+        /// If <see cref="NavigationType"/> is <see cref="NavigationType.Back"/> or <see cref="NavigationType.Forward"/>
+        /// it describes how many layers of navigation should be traversed in the indicated direction. 
+        /// This property is ignored for other navigation types.
+        /// </param>
         public OnNavigatedToEventArgs(
             object? caller,
             INavigationModule? previousModule,

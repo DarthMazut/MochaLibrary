@@ -9,9 +9,29 @@ namespace MochaCore.NavigationEx
     /// </summary>
     public class OnNavigatingFromEventArgs : CancelEventArgs
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OnNavigatingFromEventArgs"/> class.
+        /// </summary>
+        /// <param name="caller">An object which is initiating a navigation process.</param>
+        /// <param name="requestedModule"> An <see cref="INavigationModule"/> object representing navigation target.</param>
+        /// <param name="parameter">An extra data object used to pass information between <see cref="INavigationParticipant"/>
+        /// objects that take part in navigation transition.</param>
         public OnNavigatingFromEventArgs(object? caller, INavigationModule requestedModule, object? parameter)
             : this(caller, requestedModule, parameter, NavigationType.Push, 0) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OnNavigatingFromEventArgs"/> class.
+        /// </summary>
+        /// <param name="caller">An object which is initiating a navigation process.</param>
+        /// <param name="requestedModule"> An <see cref="INavigationModule"/> object representing navigation target.</param>
+        /// <param name="parameter">An extra data object used to pass information between <see cref="INavigationParticipant"/>
+        /// objects that take part in navigation transition.</param>
+        /// <param name="navigationType">Defines type of navigation process.</param>
+        /// <param name="step">
+        /// If <see cref="NavigationType"/> is <see cref="NavigationType.Back"/> or <see cref="NavigationType.Forward"/>
+        /// it describes how many layers of navigation should be traversed in the indicated direction. 
+        /// This property is ignored for other navigation types.
+        /// </param>
         public OnNavigatingFromEventArgs(
             object? caller,
             INavigationModule requestedModule,
@@ -55,7 +75,7 @@ namespace MochaCore.NavigationEx
         /// <summary>
         /// If <see cref="NavigationType"/> is <see cref="NavigationType.Back"/> or <see cref="NavigationType.Forward"/>
         /// it describes how many layers of navigation should be traversed in the indicated direction. 
-        /// This property is ignored in case  <see cref="NavigationType"/> is set to <see cref="NavigationType.Push"/>.
+        /// This property is ignored for other navigation types.
         /// </summary>
         public int Step { get; }
     }
