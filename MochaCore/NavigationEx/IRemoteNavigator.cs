@@ -153,7 +153,7 @@ namespace MochaCore.NavigationEx
         /// from modal navigation.
         /// </summary>
         /// <param name="targetId">Identifier of target <see cref="INavigationModule"/>.</param>
-        Task<NavigationResultData> NavigateModalAsync(string targetId);
+        Task<object?> NavigateModalAsync(string targetId);
 
         /// <summary>
         /// Performs <see cref="NavigationType.PushModal"/> navigation to the specified <see cref="INavigationModule"/>.
@@ -165,6 +165,6 @@ namespace MochaCore.NavigationEx
         /// An extra data object used to pass information between <see cref="INavigationParticipant"/>
         /// objects that take part in navigation transition.
         /// </param>
-        Task<NavigationResultData> NavigateModalAsync(string targetId, object? parameter);
+        Task<object?> NavigateModalAsync(string targetId, object? parameter);
     }
 }

@@ -158,13 +158,13 @@ namespace MochaCore.NavigationEx
         // Modal
 
         /// <inheritdoc/>
-        public Task<NavigationResultData> NavigateModalAsync(string targetId) => NavigateModalAsync(targetId, null);
+        public Task<object?> NavigateModalAsync(string targetId) => NavigateModalAsync(targetId, null);
 
         /// <inheritdoc/>
-        public Task<NavigationResultData> NavigateModalAsync(string targetId, object? parameter)
+        public Task<object?> NavigateModalAsync(string targetId, object? parameter)
         {
             ThrowIfNavigationServiceIsNull();
-            return _navigationService.RequestNavigation(
+            return _navigationService.RequestModalNavigation(
                 NavigationRequestData.CreateModalRequest(
                     targetId,
                     GetModuleOrOwner(),

@@ -140,6 +140,18 @@ namespace MochaCore.NavigationEx
         }
 
         /// <inheritdoc/>
+        public async Task<object?> RequestModalNavigation(NavigationRequestData requestData)
+        {
+            if (requestData.NavigationType != NavigationType.PushModal)
+            {
+                throw new InvalidOperationException($"{nameof(RequestModalNavigation)} can only be called for {NavigationType.PushModal} navigation type.");
+            }
+
+            NavigationResultData result = await RequestNavigation(requestData);
+            return result.Data;
+        }
+
+        /// <inheritdoc/>
         public async Task<NavigationResultData> RequestNavigation(NavigationRequestData requestData)
         {
             InitializationGurad();

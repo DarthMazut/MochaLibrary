@@ -17,7 +17,7 @@ namespace NavigationTest.Pages.ModalPage
         private async Task NavigateModal()
         {
             string x = "";
-            string? returnValue = (await Navigator.NavigateModalAsync("InnerModalPage")).Data as string;
+            string? returnValue = await Navigator.NavigateModalAsync("InnerModalPage") as string;
             x = "xyz";
         }
     }

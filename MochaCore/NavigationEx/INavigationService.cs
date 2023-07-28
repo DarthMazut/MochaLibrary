@@ -50,6 +50,14 @@ namespace MochaCore.NavigationEx
         public event EventHandler<CurrentNavigationModuleChangedEventArgs> CurrentModuleChanged;
 
         /// <summary>
+        /// Handles navigation requests of type <see cref="NavigationType.PushModal"/>.
+        /// Returns data provided by the navigation target's call to <see cref="INavigator.ReturnModal(object)"/>.
+        /// Throws if the specified <see cref="NavigationType"/> is not modal.
+        /// </summary>
+        /// <param name="requestData">Essential data for the navigation process.</param>
+        public Task<object?> RequestModalNavigation(NavigationRequestData requestData);
+
+        /// <summary>
         /// Handles a navigation requests.
         /// </summary>
         /// <param name="requestData">Essential data for navigation process.</param>
