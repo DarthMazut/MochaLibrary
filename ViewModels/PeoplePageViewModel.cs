@@ -1,21 +1,16 @@
 ﻿using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
-using MochaCore.Navigation;
+using MochaCore.NavigationEx;
 using MochaCore.Settings;
 using Model;
 using Prism.Commands;
 using Prism.Mvvm;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ViewModels.Controls;
 
 namespace ViewModels
 {
-    public class PeoplePageViewModel : BindableBase, INavigatable, IOnNavigatedTo
+    public class PeoplePageViewModel : BindableBase, INavigationParticipant, IOnNavigatedToAsync
     {
         private bool _isLoadingPeople;
         private bool _isPeopleListEmpty;
@@ -23,21 +18,20 @@ namespace ViewModels
         private ObservableCollection<Person> _people = new();
         private PersonFilter? _currentFilter;
 
-        private DelegateCommand<Person> _removePersonCommand;
-        private DelegateCommand<Person> _moreInfoCommand;
-        private DelegateCommand _addPerson;
-        private DelegateCommand<Person> _editPersonCommand;
-        private DelegateCommand _openFilterCommand;
-        private DelegateCommand<PersonFilter> _applyFilterCommand;
-        private DelegateCommand _filterRemovedCommand;
+        private DelegateCommand<Person>? _removePersonCommand;
+        private DelegateCommand<Person>? _moreInfoCommand;
+        private DelegateCommand? _addPerson;
+        private DelegateCommand<Person>? _editPersonCommand;
+        private DelegateCommand? _openFilterCommand;
+        private DelegateCommand<PersonFilter>? _applyFilterCommand;
+        private DelegateCommand? _filterRemovedCommand;
 
         public PeoplePageViewModel()
         {
-            Navigator = new(this, NavigationServices.MainNavigationService);
             _people.CollectionChanged += (s, e) => IsPeopleListEmpty = !People.Any();
         }
 
-        public Navigator Navigator { get; }
+        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 
         public FilterTabViewModel FilterTabViewModel { get; } = new FilterTabViewModel();
 
@@ -79,7 +73,7 @@ namespace ViewModels
         public DelegateCommand<PersonFilter> ApplyFilterCommand => _applyFilterCommand ??= new DelegateCommand<PersonFilter>(ApplyFilter);    
         public DelegateCommand FilterRemovedCommand => _filterRemovedCommand ??= new DelegateCommand(RemoveFilter);
 
-        public async void OnNavigatedTo(NavigationData navigationData)
+        public async Task OnNavigatedToAsync(OnNavigatedToEventArgs e)
         {
             IsLoadingPeople = true;
 
@@ -127,12 +121,12 @@ namespace ViewModels
 
         private async void AddPerson()
         {
-            await Navigator.NavigateAsync(Pages.EditPersonPage.GetNavigationModule());
+            await Navigator.NavigateAsync(Pages.EditPersonPage.Id);
         }
 
         private async void EditPerson(Person person)
         {
-            await Navigator.NavigateAsync(Pages.EditPersonPage.GetNavigationModule(), person);
+            await Navigator.NavigateAsync(Pages.EditPersonPage.Id, person);
         }
 
         private async void ApplyFilter(PersonFilter filter)
@@ -153,12 +147,12 @@ namespace ViewModels
 
         private Task<List<Person>> ResolveFilter()
         {
-            //if (CurrentFilter is null)
-            //{
-            //    return Task.FromResult(_modelData);
-            //}
+            if (CurrentFilter is null)
+            {
+                return Task.FromResult(People.ToList());
+            }
 
-            return Task.Run(async () => 
+            return Task.Run(() => 
             {
                 return People.Where(p => CurrentFilter.CheckPerson(p)).ToList();
             });

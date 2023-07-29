@@ -1,6 +1,6 @@
 ﻿using MochaCore.Behaviours;
 using MochaCore.Dialogs;
-using MochaCore.Navigation;
+using MochaCore.NavigationEx;
 using MochaCore.Settings;
 using MochaCore.Utils;
 using Model;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace ViewModels
 {
-    public class EditPersonPageViewModel : BindableBase, INavigatable, IOnNavigatedToAsync
+    public class EditPersonPageViewModel : BindableBase, INavigationParticipant, IOnNavigatedToAsync
     {
         private string? _title;
         private string? _firstName;
@@ -27,19 +27,18 @@ namespace ViewModels
 
         private Person? _editingPerson;
 
-        private DelegateCommand _goBackCommand;
-        private DelegateCommand _editPictureCommand;
-        private DelegateCommand _applyCommand;
+        private DelegateCommand? _goBackCommand;
+        private DelegateCommand? _editPictureCommand;
+        private DelegateCommand? _applyCommand;
 
         public EditPersonPageViewModel()
         {
-            Navigator = new Navigator(this, NavigationServices.MainNavigationService);
-            _initials = new(this, nameof(Initials));
+            _initials = new AsyncProperty<string>(this, nameof(Initials));
             _initials.SynchronizedProperties.Add(nameof(FirstName));
             _initials.SynchronizedProperties.Add(nameof(LastName));
         }
 
-        public Navigator Navigator { get; }
+        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 
         public string? Title
         {
@@ -96,7 +95,7 @@ namespace ViewModels
             Person? person = _editingPerson;
             if (person is null)
             {
-                person = new(FirstName, LastName);
+                person = new Person(FirstName, LastName);
             }
             else
             {
@@ -138,12 +137,12 @@ namespace ViewModels
                 });
             }
 
-            _ = await Navigator.NavigateAsync(Pages.PeoplePage.GetNavigationModule());
+            _ = await Navigator.NavigateAsync(Pages.PeoplePage.Id);
         }
 
         private async void GoBack()
         {
-            _ = await Navigator.NavigateAsync(Pages.PeoplePage.GetNavigationModule());
+            _ = await Navigator.NavigateAsync(Pages.PeoplePage.Id);
         }
 
         private async void EditPicture()
@@ -161,9 +160,9 @@ namespace ViewModels
             }
         }
 
-        public async Task OnNavigatedToAsync(NavigationData navigationData)
+        public async Task OnNavigatedToAsync(OnNavigatedToEventArgs e)
         {
-            if (navigationData.Data is Person person)
+            if (e.Parameter is Person person)
             {
                 Title = "Edit Person";
                 FirstName = person.FirstName;
@@ -171,7 +170,7 @@ namespace ViewModels
                 City = person.City;
                 Birthday = person.Birthday ?? new DateTimeOffset();
                 ImageSource = await ResolveImageSource(person.ImageName);
-                
+
                 _editingPerson = person;
             }
             else

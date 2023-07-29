@@ -1,4 +1,4 @@
-﻿using MochaCore.Navigation;
+﻿using MochaCore.NavigationEx;
 using MochaCore.Utils;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -12,7 +12,7 @@ using ViewModels.Wrappers;
 
 namespace ViewModels;
 
-public class MainWindowViewModel : BindableBase, INavigatable
+public class MainWindowViewModel : BindableBase
 {
     private object? _frameContent;
     private object? _fullScreenContent;
@@ -20,22 +20,22 @@ public class MainWindowViewModel : BindableBase, INavigatable
     private bool _isSettigsInvoked;
     private bool _isFullScreen;
 
-    private DelegateCommand<NavigationInvokedDetails> _navigationItemInvokedCommand;
-    private DelegateCommand _loadedCommand;
+    private DelegateCommand<NavigationInvokedDetails>? _navigationItemInvokedCommand;
+
+    private IRemoteNavigator _remoteNavigator;
 
     public MainWindowViewModel()
     {
-        NavigationServices.MainNavigationService.NavigationRequested += HandleNavigationRequest;
-        Navigator = new Navigator(this, NavigationServices.MainNavigationService);
+        _remoteNavigator = Navigator.CreateProxy(NavigationServices.MainNavigationServiceId, this);
+        NavigationServices.MainNavigationService.CurrentModuleChanged += HandleNavigationRequest;
+        FrameContent = NavigationServices.MainNavigationService.CurrentModule.View;
     }
 
-    public Navigator Navigator { get; }
-
-    public IList<ApplicationPage> NavigationPages { get; } = new List<ApplicationPage> 
-    { 
-        Pages.BlankPage1, 
-        Pages.PeoplePage, 
-        Pages.BlankPage3 
+    public IReadOnlyList<ApplicationPage> NavigationPages { get; } = new List<ApplicationPage>
+    {
+        Pages.BlankPage1,
+        Pages.PeoplePage,
+        Pages.BlankPage3
     };
 
     public bool IsSettingsInvoked
@@ -68,19 +68,17 @@ public class MainWindowViewModel : BindableBase, INavigatable
         set => SetProperty(ref _selectedPage, value);
     }
 
-    
     public DelegateCommand<NavigationInvokedDetails> NavigationItemInvokedCommand => _navigationItemInvokedCommand ?? (_navigationItemInvokedCommand = new DelegateCommand<NavigationInvokedDetails>(NavigationItemInvoked));
-    public DelegateCommand LoadedCommand => _loadedCommand ?? (_loadedCommand = new DelegateCommand(Loaded));
 
     private async void NavigationItemInvoked(NavigationInvokedDetails e)
     {
         if (e.InvokedPage is not null)
         {
-            NavigationResultData navigationResult = await Navigator.NavigateAsync(e.InvokedPage.GetNavigationModule());
+            NavigationResultData navigationResult = await _remoteNavigator.NavigateAsync(e.InvokedPage.Id);
             if (navigationResult.Result != NavigationResult.Succeed)
             {
                 await Task.Yield();
-                SelectedPage = GetPageFromModule(NavigationServices.MainNavigationService.CurrentView);
+                SelectedPage = Pages.AsCollection().FirstOrDefault(p => p.Id == NavigationServices.MainNavigationService.CurrentModule.Id);
             }
 
         }
@@ -88,52 +86,29 @@ public class MainWindowViewModel : BindableBase, INavigatable
         {
             if(e.IsSettingsInvoked)
             {
-                await Navigator.NavigateAsync(Pages.SettingsPage.GetNavigationModule());
+                await _remoteNavigator.NavigateAsync(Pages.SettingsPage.Id);
             }
             else
             {
-                // some thing went wrong... ;(
+                // something went wrong... ;(
             }
         }
     }
 
-    private void Loaded()
+    private void HandleNavigationRequest(object? sender, CurrentNavigationModuleChangedEventArgs e)
     {
-        Navigator.NavigateAsync(Pages.BlankPage1.GetNavigationModule());
-    }
-
-    private void HandleNavigationRequest(object? sender, NavigationData e)
-    {
-        SelectedPage = GetPageFromModule(e.RequestedModule);
+        SelectedPage = Pages.AsCollection().FirstOrDefault(p => p.Id == e.CurrentModule.Id);
         IsFullScreen = SelectedPage?.IsFullScreen ?? false;
         if (IsFullScreen)
         {
             FrameContent = null;
-            FullScreenContent = e.RequestedModule.View;
+            FullScreenContent = e.CurrentModule.View;
         }
         else
         {
             FullScreenContent = null;
-            FrameContent = e.RequestedModule.View;
+            FrameContent = e.CurrentModule.View;
         }
         
-    }
-
-    private ApplicationPage? GetPageFromModule(INavigationModule? requestedModule)
-    {
-        if (requestedModule is null)
-        {
-            return null;
-        }
-
-        foreach (ApplicationPage page in Pages.AsCollection())
-        {
-            if (requestedModule.Equals(NavigationManager.FetchModule(page.Id)))
-            {
-                return page;
-            }
-        }
-
-        return null;
     }
 }

@@ -1,4 +1,4 @@
-﻿using MochaCore.Navigation;
+﻿using MochaCore.NavigationEx;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
@@ -8,22 +8,17 @@ using System.Threading.Tasks;
 
 namespace ViewModels
 {
-    public class BlankPage3ViewModel : INavigatable
+    public class BlankPage3ViewModel : INavigationParticipant
     {
-        private DelegateCommand _goBackCommand;
+        private DelegateCommand? _goBackCommand;
 
-        public BlankPage3ViewModel()
-        {
-            Navigator = new(this, NavigationServices.MainNavigationService);
-        }
-
-        public Navigator Navigator { get; }
+        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 
         public DelegateCommand GoBackCommand => _goBackCommand ??= new DelegateCommand(GoBack);
 
         private async void GoBack()
         {
-            _ = await Navigator.NavigateAsync(Pages.BlankPage1.GetNavigationModule());
+            _ = await Navigator.NavigateAsync(Pages.BlankPage1.Id);
         }
     }
 }

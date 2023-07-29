@@ -27,7 +27,7 @@ namespace MochaCore.NavigationEx.Extensions
             where TView : T
             where TDataContext : class, INavigationParticipant
         {
-            AddModule(CreateModule<TView, TDataContext>(nameof(TView), () => Activator.CreateInstance<TView>(), null, null));
+            AddModule(CreateModule<TView, TDataContext>(typeof(TView).Name, () => Activator.CreateInstance<TView>(), null, null));
             return this;
         }
 
@@ -67,7 +67,7 @@ namespace MochaCore.NavigationEx.Extensions
             where TView : T
             where TDataContext : class, INavigationParticipant
         {
-            AddModule(CreateModule<TView, TDataContext>(nameof(TView), () => Activator.CreateInstance<TView>(), null, lifecycleOptions));
+            AddModule(CreateModule<TView, TDataContext>(typeof(TView).Name, () => Activator.CreateInstance<TView>(), null, lifecycleOptions));
             return this;
         }
 

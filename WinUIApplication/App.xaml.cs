@@ -1,35 +1,15 @@
 ﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Behaviours;
 using MochaCore.Dialogs;
 using MochaCore.Dispatching;
-using MochaCore.Events;
-using MochaCore.Navigation;
+using MochaCore.NavigationEx;
 using MochaCore.Settings;
 using MochaWinUI.Dialogs;
 using MochaWinUI.Dispatching;
-using MochaWinUI.Navigation;
+using MochaWinUI.NavigationEx;
 using MochaWinUI.Settings;
 using Model;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using ViewModels;
-using ViewModels.DialogsVMs;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using WinUiApplication.Dialogs;
 using WinUiApplication.Pages;
@@ -61,11 +41,17 @@ namespace WinUiApplication
         {
             _mainWindow = new MainWindow();
 
-            NavigationManager.AddModule(ViewModels.Pages.BlankPage1.Id, () => new NavigationModule(new BlankPage1(), new BlankPage1ViewModel()));
-            NavigationManager.AddModule(ViewModels.Pages.PeoplePage.Id, () => new NavigationModule(new PeoplePage(), new PeoplePageViewModel()));
-            NavigationManager.AddModule(ViewModels.Pages.BlankPage3.Id, () => new NavigationModule(new BlankPage3(), new BlankPage3ViewModel()));
-            NavigationManager.AddModule(ViewModels.Pages.SettingsPage.Id, () => new NavigationModule(new SettingsPage(), new SettingsPageViewModel()));
-            NavigationManager.AddModule(ViewModels.Pages.EditPersonPage.Id, () => new NavigationModule(new EditPersonPage(), new EditPersonPageViewModel()));
+            INavigationService mainNavigationService = NavigationManager.AddNavigationService(
+                NavigationServices.MainNavigationServiceId,
+                new WinUiNavigationService()
+                    .WithModule<BlankPage1, BlankPage1ViewModel>()
+                    .WithModule<PeoplePage, PeoplePageViewModel>()
+                    .WithModule<BlankPage3, BlankPage3ViewModel>()
+                    .WithModule<SettingsPage, SettingsPageViewModel>()
+                    .WithModule<EditPersonPage, EditPersonPageViewModel>()
+                    .WithInitialId(ViewModels.Pages.BlankPage1.Id));
+
+            mainNavigationService.Initialize();
 
             DialogManager.DefineDialog(ViewModels.Dialogs.MoreInfoDialog.ID, () => new StandardMessageDialogModule(_mainWindow));
             DialogManager.DefineDialog(ViewModels.Dialogs.EditPictureDialog.ID, () => new ContentDialogModule(_mainWindow, new EditPictureDialog()));
@@ -76,7 +62,7 @@ namespace WinUiApplication
             BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
 
             DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(_mainWindow));
-
+             
             _mainWindow.Activate();
         }
     }

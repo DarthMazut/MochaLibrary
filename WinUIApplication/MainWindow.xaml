@@ -25,11 +25,6 @@
                 <PopupThemeTransition />
             </TransitionCollection>
         </Grid.Resources>
-        <i:Interaction.Behaviors>
-            <core:EventTriggerBehavior EventName="Loaded">
-                <core:InvokeCommandAction Command="{Binding LoadedCommand}" />
-            </core:EventTriggerBehavior>
-        </i:Interaction.Behaviors>
 
         <NavigationView 
             x:Name="xe_NavigationView"

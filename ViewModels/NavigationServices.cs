@@ -1,4 +1,4 @@
-﻿using MochaCore.Navigation;
+﻿using MochaCore.NavigationEx;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +9,8 @@ namespace ViewModels
 {
     public static class NavigationServices
     {
-        public static NavigationService MainNavigationService { get; } = new NavigationService();
+        public static INavigationService MainNavigationService => NavigationManager.FetchNavigationService(MainNavigationServiceId);
+
+        public static string MainNavigationServiceId => nameof(MainNavigationServiceId);
     }
 }

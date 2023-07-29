@@ -1,7 +1,7 @@
 ﻿using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
 using MochaCore.Dispatching;
-using MochaCore.Navigation;
+using MochaCore.NavigationEx;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -13,19 +13,18 @@ using System.Threading.Tasks;
 
 namespace ViewModels
 {
-    public class BlankPage1ViewModel : BindableBase, INavigatable
+    public class BlankPage1ViewModel : BindableBase, INavigationParticipant
     {
         private bool _isActive;
         private CancellationTokenSource _cts = new();
 
         public BlankPage1ViewModel()
         {
-            Navigator = new Navigator(this, NavigationServices.MainNavigationService);
             NavigateCommand = new DelegateCommand(Navigate);
             OpenDialogCommand = new DelegateCommand(OpenDialog);
         }
 
-        public Navigator Navigator { get; }
+        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
 
         public bool IsActive 
         {
@@ -37,9 +36,11 @@ namespace ViewModels
 
         public DelegateCommand OpenDialogCommand { get; }
 
+        
+
         private async void Navigate()
         {
-            await Navigator.NavigateAsync(NavigationManager.FetchModule(Pages.PeoplePage.Id));
+            await Navigator.NavigateAsync(Pages.PeoplePage.Id);
         }
 
         private async void OpenDialog()

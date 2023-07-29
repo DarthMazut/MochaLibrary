@@ -9,17 +9,35 @@ namespace ViewModels;
 
 public static class Pages
 {
-    public static ApplicationPage BlankPage1 { get; } = new("BlankPage1", "Page 1 xD", "\xE703");
+    public static ApplicationPage BlankPage1 { get; } = new("BlankPage1")
+    {
+        Name = "Page 1 xD",
+        Glyph = "\xE703"
+    };
 
-    public static ApplicationPage PeoplePage { get; } = new("PeoplePage", "People", "\xE716");
+    public static ApplicationPage PeoplePage { get; } = new("PeoplePage")
+    {
+        Name = "People",
+        Glyph = "\xE716"
+    };
 
-    public static ApplicationPage BlankPage3 { get; } = new("BlankPage3", "Page 3 xD", "\xE703", true);
+    public static ApplicationPage BlankPage3 { get; } = new("BlankPage3")
+    {
+        Name = "Page 3 xD",
+        Glyph = "\xE703",
+        IsFullScreen = true
+    };
 
-    public static ApplicationPage SettingsPage { get; } = new("SettingsPage", string.Empty, string.Empty);
+    public static ApplicationPage SettingsPage { get; } = new("SettingsPage")
+    { 
+    };
 
-    public static ApplicationPage EditPersonPage { get; } = new("EditPersonPage", string.Empty, string.Empty, true);
+    public static ApplicationPage EditPersonPage { get; } = new("EditPersonPage")
+    {
+        IsFullScreen = true
+    };
 
-    public static IList<ApplicationPage> AsCollection()
+    public static IEnumerable<ApplicationPage> AsCollection()
     {
         return new List<ApplicationPage>()
         {
@@ -34,26 +52,17 @@ public static class Pages
 
 public class ApplicationPage
 {
-    public ApplicationPage(string id, string name) : this(id, name, string.Empty) { }
-
-    public ApplicationPage(string id, string name, string glyph) : this(id, name, glyph, false) { }
-
-    public ApplicationPage(string id, string name, string glyph, bool isFullScreen)
+    public ApplicationPage(string id)
     {
         Id = id;
-        Name = name;
-        Glyph = glyph;
-        IsFullScreen = isFullScreen;
     }
 
     public string Id { get; }
 
-    public string Name { get; }
+    public string Name { get; init; } = string.Empty;
 
-    public string Glyph { get; }
+    public string Glyph { get; init; } = string.Empty;
 
-    public bool IsFullScreen { get; }
-
-    public INavigationModule GetNavigationModule() => NavigationManager.FetchModule(Id);
+    public bool IsFullScreen { get; init; } = false;
 }
 
