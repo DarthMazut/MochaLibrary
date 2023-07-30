@@ -149,7 +149,7 @@ namespace MochaCore.NavigationEx
         public static NavigationRequestData CreatePopRequest(object? callingModule, object? returnValue, NavigationEventsOptions? eventOptions)
             => new(null, callingModule, returnValue, NavigationType.Pop, 0, false, false, eventOptions);
 
-        private NavigationRequestData
+        protected NavigationRequestData
             (string? targetId,
             object? callingModule,
             object? parameter,
