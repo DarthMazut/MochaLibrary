@@ -1,13 +1,8 @@
 ﻿using Microsoft.UI.Xaml;
 using MochaCore.Dialogs;
-using MochaCore.Navigation;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Email;
 using Windows.Storage.Pickers;
 
 namespace MochaWinUI.Dialogs

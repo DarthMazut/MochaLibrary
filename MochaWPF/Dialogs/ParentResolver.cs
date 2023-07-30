@@ -1,5 +1,5 @@
 ﻿using MochaCore.Dialogs;
-using MochaCore.Navigation;
+using MochaCore.NavigationEx;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,9 +50,9 @@ namespace MochaWPF.Dialogs
             //    }
             //}
 
-            if (host is INavigatable navigatable)
+            if (host is INavigationParticipant navigatable)
             {
-                foundWindow = TraverseVisualTreeToFindWindow((navigatable.Navigator as INavigatorGetHostView).HostView!);
+                foundWindow = TraverseVisualTreeToFindWindow(navigatable.Navigator.Module.View!);
                 if (foundWindow is not null)
                 {
                     return foundWindow;

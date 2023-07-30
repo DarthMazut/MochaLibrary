@@ -1,15 +1,6 @@
-﻿using Microsoft.UI;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
-using MochaCore.Navigation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MochaWinUI.Dialogs
 {

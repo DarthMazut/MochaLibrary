@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using MochaCore.Dialogs;
-using MochaCore.Navigation;
+using MochaCore.NavigationEx;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,14 +23,11 @@ namespace MochaWinUI.Dialogs
         /// <param name="host">Object whose parent <see cref="XamlRoot"/> is to be found.</param>
         public static XamlRoot? FindParentXamlRoot<T>(object host) where T : DialogProperties, new()
         {
-            if (host is INavigatable navigatable)
+            if (host is INavigationParticipant navigatable)
             {
-                if (navigatable.Navigator is INavigatorGetHostView getHostView)
+                if (navigatable.Navigator.Module.View is UIElement element)
                 {
-                    if(getHostView.HostView is UIElement element)
-                    {
-                        return element.XamlRoot;
-                    }
+                    return element.XamlRoot;
                 }
             }
 
@@ -58,14 +55,11 @@ namespace MochaWinUI.Dialogs
         /// <param name="host">Object whose parent is to be found.</param>
         public static Window? FindParentWindow<T>(object host) where T : DialogProperties, new()
         {
-            if (host is INavigatable navigatable)
+            if (host is INavigationParticipant navigatable)
             {
-                if (navigatable.Navigator is INavigatorGetHostView getHostView)
-                {
-                    object? hostView = getHostView.HostView;
-                    UIElement? topElement = FindTopElement(hostView);
-                    return FindWindowWithContent(topElement);
-                }
+                object? hostView = navigatable.Navigator.Module.View;
+                UIElement? topElement = FindTopElement(hostView);
+                return FindWindowWithContent(topElement);
             }
 
             if (host is IDataContextDialog<T> dialogBackend)

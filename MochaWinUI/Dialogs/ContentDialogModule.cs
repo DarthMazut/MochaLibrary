@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MochaCore.Dialogs;
-using MochaCore.Navigation;
-using Windows.UI.Core;
 
 namespace MochaWinUI.Dialogs
 {
