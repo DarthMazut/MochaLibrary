@@ -39,8 +39,6 @@ namespace WinUiApplication
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            _mainWindow = new MainWindow();
-
             INavigationService mainNavigationService = NavigationManager.AddNavigationService(
                 NavigationServices.MainNavigationServiceId,
                 new WinUiNavigationService()
@@ -51,7 +49,7 @@ namespace WinUiApplication
                     .WithModule<EditPersonPage, EditPersonPageViewModel>()
                     .WithInitialId(ViewModels.Pages.BlankPage1.Id));
 
-            mainNavigationService.Initialize();
+            _mainWindow = new MainWindow();
 
             DialogManager.DefineDialog(ViewModels.Dialogs.MoreInfoDialog.ID, () => new StandardMessageDialogModule(_mainWindow));
             DialogManager.DefineDialog(ViewModels.Dialogs.EditPictureDialog.ID, () => new ContentDialogModule(_mainWindow, new EditPictureDialog()));
@@ -62,7 +60,7 @@ namespace WinUiApplication
             BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
 
             DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(_mainWindow));
-             
+
             _mainWindow.Activate();
         }
     }

@@ -22,13 +22,10 @@ public class MainWindowViewModel : BindableBase
 
     private DelegateCommand<NavigationInvokedDetails>? _navigationItemInvokedCommand;
 
-    private IRemoteNavigator _remoteNavigator;
-
     public MainWindowViewModel()
     {
-        _remoteNavigator = Navigator.CreateProxy(NavigationServices.MainNavigationServiceId, this);
         NavigationServices.MainNavigationService.CurrentModuleChanged += HandleNavigationRequest;
-        FrameContent = NavigationServices.MainNavigationService.CurrentModule.View;
+        NavigationServices.MainNavigationService.Initialize();
     }
 
     public IReadOnlyList<ApplicationPage> NavigationPages { get; } = new List<ApplicationPage>
@@ -72,9 +69,11 @@ public class MainWindowViewModel : BindableBase
 
     private async void NavigationItemInvoked(NavigationInvokedDetails e)
     {
+        IRemoteNavigator remoteNavigator = Navigator.CreateProxy(NavigationServices.MainNavigationServiceId, this);
+
         if (e.InvokedPage is not null)
         {
-            NavigationResultData navigationResult = await _remoteNavigator.NavigateAsync(e.InvokedPage.Id);
+            NavigationResultData navigationResult = await remoteNavigator.NavigateAsync(e.InvokedPage.Id);
             if (navigationResult.Result != NavigationResult.Succeed)
             {
                 await Task.Yield();
@@ -86,7 +85,7 @@ public class MainWindowViewModel : BindableBase
         {
             if(e.IsSettingsInvoked)
             {
-                await _remoteNavigator.NavigateAsync(Pages.SettingsPage.Id);
+                await remoteNavigator.NavigateAsync(Pages.SettingsPage.Id);
             }
             else
             {
@@ -109,6 +108,5 @@ public class MainWindowViewModel : BindableBase
             FullScreenContent = null;
             FrameContent = e.CurrentModule.View;
         }
-        
     }
 }
