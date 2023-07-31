@@ -25,7 +25,7 @@ namespace MochaCore.Utils
         /// </summary>
         /// <param name="propertyName">Name of dependency property to be changed</param>
         /// <param name="newValue">New value for changing dependency proeprty.</param>
-        public static BindingTargetControlRequestedEventArgs ChangeProperty(string propertyName, object? newValue)
+        public static BindingTargetControlRequestedEventArgs SetProperty(string propertyName, object? newValue)
             => new(BindingTargetControlRequestType.SetDependencyProperty, propertyName, newValue, null, null, null, null, null);
 
         /// <summary>
@@ -35,6 +35,15 @@ namespace MochaCore.Utils
         /// <param name="commandName">Name of command to be invoked.</param>
         public static BindingTargetControlRequestedEventArgs InvokeCommand(string commandName)
             => new(BindingTargetControlRequestType.InvokeCommand, null, null, commandName, null, null, null, null);
+
+        /// <summary>
+        /// Creates an instance of <see cref="BindingTargetControlRequestedEventArgs"/> for 
+        /// <see cref="BindingTargetControlRequestType.InvokeCommand"/> request type.
+        /// </summary>
+        /// <param name="commandName">Name of command to be invoked.</param>
+        /// <param name="parameter">Command parameter.</param>
+        public static BindingTargetControlRequestedEventArgs InvokeCommand(string commandName, object? parameter)
+            => new(BindingTargetControlRequestType.InvokeCommand, null, null, commandName, parameter, null, null, null);
 
         // TODO
 
