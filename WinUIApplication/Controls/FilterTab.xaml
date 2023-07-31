@@ -21,8 +21,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <utils:DependencyPropertyNotifier Binding="{x:Bind ViewModel.Notifier.Binding, Mode=TwoWay}" NotifyRequested="PropertyNotifier_NotifyRequested" />
-        
         <StackPanel Spacing="5" Padding="10">
             <TextBlock Text="Filter by:" FontSize="16" />
             <ComboBox ItemsSource="{x:Bind ViewModel.FilterValues, Converter={StaticResource PersonFilterValueToStringConverter}}" SelectedItem="{x:Bind ViewModel.SelectedFilter, Mode=TwoWay, Converter={StaticResource PersonFilterValueToStringConverter}}" HorizontalAlignment="Stretch"/>

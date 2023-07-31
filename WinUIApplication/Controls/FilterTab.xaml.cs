@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using MochaCore.Utils;
+using MochaWinUI.Utils;
 using Model;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace WinUiApplication.Controls
         public FilterTab()
         {
             this.InitializeComponent();
+            _ = BindingControl.RegisterContextProperty(this, ViewModelProperty);
         }
 
         #region DEPENDENCY PROPERTIES
@@ -68,23 +70,5 @@ namespace WinUiApplication.Controls
         }
 
         #endregion
-
-        private void PropertyNotifier_NotifyRequested(object sender, NotifyDependencyPropertyEventArgs e)
-        {
-            if (e.DependencyPropertyName == nameof(FilterAppliedCommand))
-            {
-                FilterAppliedCommand?.Execute(e.Value);
-            }
-
-            if (e.DependencyPropertyName == nameof(Filter))
-            {
-                Filter = e.Value as PersonFilter;
-            }
-
-            if (e.DependencyPropertyName == nameof(FilterRemovedCommand))
-            {
-                FilterRemovedCommand?.Execute(null);
-            }
-        }
     }
 }

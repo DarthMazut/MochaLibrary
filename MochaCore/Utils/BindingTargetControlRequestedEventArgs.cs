@@ -3,81 +3,110 @@
 namespace MochaCore.Utils
 {
     /// <summary>
-    /// Provides arguments for <see cref="IBindingTargetController.BindingTargetControlRequested"/> event.
+    /// Provides arguments for <see cref="IBindingTargetController.ControlRequested"/> event.
     /// </summary>
     public class BindingTargetControlRequestedEventArgs : EventArgs
     {
-        protected BindingTargetControlRequestedEventArgs(BindingTargetControlRequestType requestType, string targetName, object? parameter)
+        protected BindingTargetControlRequestedEventArgs(BindingTargetControlRequestType requestType, string? propertyName, object? propertyValue, string? commandName, object? commandParameter, string? animationName, string? visualStateName, object? extraData)
         {
             RequestType = requestType;
-            TargetName = targetName;
-            Parameter = parameter;
+            PropertyName = propertyName;
+            PropertyValue = propertyValue;
+            CommandName = commandName;
+            CommandParameter = commandParameter;
+            AnimationName = animationName;
+            VisualStateName = visualStateName;
+            ExtraData = extraData;
         }
 
         /// <summary>
-        /// Creates a control request event argument for changing the value of a specified dependency property.
+        /// Creates an instance of <see cref="BindingTargetControlRequestedEventArgs"/> for 
+        /// <see cref="BindingTargetControlRequestType.SetDependencyProperty"/> request type.
         /// </summary>
-        /// <param name="propertyName">The name of the dependency property to be changed.</param>
-        /// <param name="newValue">The new value to set for the dependency property.</param>
-        public static BindingTargetControlRequestedEventArgs SetProperty(string propertyName, object? newValue)
-            => new BindingTargetControlRequestedEventArgs(BindingTargetControlRequestType.SetDependencyProperty, propertyName, newValue);
+        /// <param name="propertyName">Name of dependency property to be changed</param>
+        /// <param name="newValue">New value for changing dependency proeprty.</param>
+        public static BindingTargetControlRequestedEventArgs ChangeProperty(string propertyName, object? newValue)
+            => new(BindingTargetControlRequestType.SetDependencyProperty, propertyName, newValue, null, null, null, null, null);
 
         /// <summary>
-        /// Creates a control request event argument for invoking a command implementation.
+        /// Creates an instance of <see cref="BindingTargetControlRequestedEventArgs"/> for 
+        /// <see cref="BindingTargetControlRequestType.InvokeCommand"/> request type.
         /// </summary>
-        /// <param name="commandName">The name of the command to be invoked.</param>
+        /// <param name="commandName">Name of command to be invoked.</param>
         public static BindingTargetControlRequestedEventArgs InvokeCommand(string commandName)
-            => new BindingTargetControlRequestedEventArgs(BindingTargetControlRequestType.InvokeCommand, commandName, null);
+            => new(BindingTargetControlRequestType.InvokeCommand, null, null, commandName, null, null, null, null);
+
+        // TODO
 
         /// <summary>
-        /// Creates a control request event argument for invoking a command implementation.
-        /// </summary>
-        /// <param name="commandName">The name of the command to be invoked.</param>
-        /// <param name="commandParameter">The parameter to pass to the command implementation.</param>
-        public static BindingTargetControlRequestedEventArgs InvokeCommand(string commandName, object? commandParameter)
-            => new BindingTargetControlRequestedEventArgs(BindingTargetControlRequestType.InvokeCommand, commandName, commandParameter);
-
-        /// <summary>
-        /// Creates a control request event argument for starting an animation's storyboard.
-        /// </summary>
-        /// <param name="animationName">The name of the animation to be played.</param>
-        public static BindingTargetControlRequestedEventArgs PlayAnimation(string animationName)
-            => new BindingTargetControlRequestedEventArgs(BindingTargetControlRequestType.PlayAnimation, animationName, null);
-
-        /// <summary>
-        /// Type of control request.
+        /// The type of control request.
         /// </summary>
         public BindingTargetControlRequestType RequestType { get; }
 
         /// <summary>
-        /// The name of the element targeted by the request.
+        /// Name of dependency property to be changed.
         /// </summary>
-        public string TargetName { get; }
+        public string? PropertyName { get; }
 
         /// <summary>
-        /// Parameter of control request.
+        /// New value for changing dependency property.
         /// </summary>
-        public object? Parameter { get; }
+        public object? PropertyValue { get; }
+
+        /// <summary>
+        /// Name of command to be invoked.
+        /// </summary>
+        public string? CommandName { get; }
+
+        /// <summary>
+        /// Parameter of command to be invoked.
+        /// </summary>
+        public object? CommandParameter { get; }
+
+        /// <summary>
+        /// Name of storyboard to be played. This can be either resource key or element name.
+        /// </summary>
+        public string? AnimationName { get; }
+
+        /// <summary>
+        /// Name of target visual state.
+        /// </summary>
+        public string? VisualStateName { get; }
+
+        /// <summary>
+        /// An extra data object which can be used be  UI's elemnt custom handler 
+        /// of <see cref="IBindingTargetController.ControlRequested"/>
+        /// </summary>
+        public object? ExtraData { get; }
     }
 
     /// <summary>
-    /// Describes the type of control request.
+    /// Describes possible actions which can be requested by <see cref="IBindingTargetController"/> implementation.
     /// </summary>
     public enum BindingTargetControlRequestType
     {
         /// <summary>
-        /// Request for changing the value of a specified dependency property.
+        /// Request for changing the value of a specified dependency property of UI object 
+        /// which subscribes to <see cref="IBindingTargetController.ControlRequested"/>.
         /// </summary>
         SetDependencyProperty,
 
         /// <summary>
-        /// Request for invoking a command implementation.
+        /// Request for invoking a command implementation of UI object which subscribes to 
+        /// <see cref="IBindingTargetController.ControlRequested"/>.
         /// </summary>
         InvokeCommand,
 
         /// <summary>
-        /// Request for starting an animation's storyboard.
+        /// Request for starting an animation's storyboard of UI object which subscribes to 
+        /// <see cref="IBindingTargetController.ControlRequested"/>.
         /// </summary>
-        PlayAnimation
+        PlayAnimation,
+
+        /// <summary>
+        /// Request for setting a visual state of UI object which subscribes to 
+        /// <see cref="IBindingTargetController.ControlRequested"/>.
+        /// </summary>
+        SetVisualState
     }
 }

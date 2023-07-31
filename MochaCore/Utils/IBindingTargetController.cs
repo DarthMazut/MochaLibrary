@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 namespace MochaCore.Utils
 {
     /// <summary>
-    /// Allows for limited control over an object whose data context is set to the implementing instance.
+    /// Allows for execution of specified action by UI object which subscribes to <see cref="ControlRequested"/>
+    /// event of implementing instance. See <see cref="BindingTargetControlRequestType"/> for avaiable actions.
     /// </summary>
     public interface IBindingTargetController
     {
         /// <summary>
-        /// Occurs when the current instance requests the execution of a defined action.
+        /// Occurs when the current instance requests the execution of a specified action.
         /// </summary>
-        public event EventHandler<BindingTargetControlRequestedEventArgs>? BindingTargetControlRequested;
+        public event EventHandler<BindingTargetControlRequestedEventArgs>? ControlRequested;
     }
 }

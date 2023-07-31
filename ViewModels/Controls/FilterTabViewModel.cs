@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ViewModels.Controls
 {
-    public class FilterTabViewModel : BindableBase
+    public class FilterTabViewModel : BindableBase, IBindingTargetController
     {
         private PersonFilterValue _selectedFilter;
         private string? _expression = "test";
@@ -19,12 +19,12 @@ namespace ViewModels.Controls
         private DelegateCommand? _applyFilterCommand;
         private DelegateCommand? _removeFilterCommand;
 
+        public event EventHandler<BindingTargetControlRequestedEventArgs>? ControlRequested;
+
         public FilterTabViewModel()
         {
             SelectedFilter = FilterValues.First();
         }
-
-        public ControlNotifier Notifier { get; } = new ControlNotifier();
 
         public PersonFilterValue SelectedFilter
         {
@@ -58,15 +58,15 @@ namespace ViewModels.Controls
 
         private void RemoveFilter()
         {
-            Notifier.SetDependencyPropertyValue("Filter", null);
-            Notifier.InvokeCommand("FilterRemovedCommand", null);
+            ControlRequested?.Invoke(this, BindingTargetControlRequestedEventArgs.SetProperty("Filter", null));
+            ControlRequested?.Invoke(this, BindingTargetControlRequestedEventArgs.InvokeCommand("FilterRemovedCommand"));
         }
 
         private void ApplyFilter()
         {
             PersonFilter createdFilter = CreateFilter();
-            Notifier.SetDependencyPropertyValue("Filter", createdFilter);
-            Notifier.InvokeCommand("FilterAppliedCommand", createdFilter);
+            ControlRequested?.Invoke(this, BindingTargetControlRequestedEventArgs.SetProperty("Filter", createdFilter));
+            ControlRequested?.Invoke(this, BindingTargetControlRequestedEventArgs.InvokeCommand("FilterAppliedCommand", createdFilter));
         }
 
         private PersonFilter CreateFilter()
