@@ -2,45 +2,62 @@
 
 public static class Pages
 {
-    public static ApplicationPage BlankPage1 { get; } = new("BlankPage1")
+    private static List<ApplicationPage> _pages = new()
     {
-        Name = "Page 1 xD",
-        Glyph = "\xE703"
-    };
-
-    public static ApplicationPage PeoplePage { get; } = new("PeoplePage")
-    {
-        Name = "People",
-        Glyph = "\xE716"
-    };
-
-    public static ApplicationPage BlankPage3 { get; } = new("BlankPage3")
-    {
-        Name = "Page 3 xD",
-        Glyph = "\xE703",
-        IsFullScreen = true
-    };
-
-    public static ApplicationPage SettingsPage { get; } = new("SettingsPage")
-    { 
-    };
-
-    public static ApplicationPage EditPersonPage { get; } = new("EditPersonPage")
-    {
-        IsFullScreen = true
-    };
-
-    public static IEnumerable<ApplicationPage> AsCollection()
-    {
-        return new List<ApplicationPage>()
+        new(nameof(BlankPage1))
         {
-            BlankPage1,
-            PeoplePage,
-            BlankPage3,
-            SettingsPage,
-            EditPersonPage
-        };
-    }
+            Name = "Page 1 xD",
+            IsMenuPage = true,
+            Glyph = "\xE703"
+        },
+
+        new(nameof(PeoplePage))
+        {
+            Name = "People",
+            IsMenuPage = true,
+            Glyph = "\xE716"
+        },
+
+        new(nameof(BlankPage3))
+        {
+            Name = "Page 3 xD",
+            IsMenuPage = true,
+            Glyph = "\xE703",
+            IsFullScreen = true
+        },
+
+        new(nameof(BindingControlPage))
+        {
+            Name = "Binding Control",
+            IsMenuPage = true,
+            Glyph = "\xE71B"
+        },
+
+        new(nameof(SettingsPage))
+        {
+        },
+
+        new(nameof(EditPersonPage))
+        {
+            IsFullScreen = true
+        }
+    };
+
+    public static ApplicationPage BlankPage1 => _pages.First(p => p.Id == nameof(BlankPage1));
+
+    public static ApplicationPage PeoplePage => _pages.First(p => p.Id == nameof(PeoplePage));
+
+    public static ApplicationPage BlankPage3 => _pages.First(p => p.Id == nameof(BlankPage3));
+
+    public static ApplicationPage BindingControlPage => _pages.First(p => p.Id == nameof(BindingControlPage));
+
+    public static ApplicationPage SettingsPage => _pages.First(p => p.Id == nameof(SettingsPage));
+
+    public static ApplicationPage EditPersonPage => _pages.First(p => p.Id == nameof(EditPersonPage));
+
+    public static IList<ApplicationPage> AsCollection() => _pages;
+
+    public static IList<ApplicationPage> GetMenuPages() => _pages.Where(p => p.IsMenuPage).ToList();
 }
 
 public class ApplicationPage
@@ -55,6 +72,8 @@ public class ApplicationPage
     public string Name { get; init; } = string.Empty;
 
     public string Glyph { get; init; } = string.Empty;
+
+    public bool IsMenuPage { get; init; } = false;
 
     public bool IsFullScreen { get; init; } = false;
 }

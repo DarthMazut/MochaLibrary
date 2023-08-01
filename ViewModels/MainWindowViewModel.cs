@@ -28,13 +28,6 @@ public class MainWindowViewModel : BindableBase
         NavigationServices.MainNavigationService.Initialize();
     }
 
-    public IReadOnlyList<ApplicationPage> NavigationPages { get; } = new List<ApplicationPage>
-    {
-        Pages.BlankPage1,
-        Pages.PeoplePage,
-        Pages.BlankPage3
-    };
-
     public bool IsSettingsInvoked
     {
         get => _isSettigsInvoked;
@@ -77,7 +70,7 @@ public class MainWindowViewModel : BindableBase
             if (navigationResult.Result != NavigationResult.Succeed)
             {
                 await Task.Yield();
-                SelectedPage = Pages.AsCollection().FirstOrDefault(p => p.Id == NavigationServices.MainNavigationService.CurrentModule.Id);
+                SelectedPage = Pages.GetMenuPages().FirstOrDefault(p => p.Id == NavigationServices.MainNavigationService.CurrentModule.Id);
             }
 
         }

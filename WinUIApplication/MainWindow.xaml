@@ -9,6 +9,7 @@
     xmlns:converters="using:WinUiApplication.Converters"
     xmlns:toolkitConverters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:vm="using:ViewModels"
+    xmlns:xaml="using:WinUiApplication.Utils.Xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -30,7 +31,7 @@
             x:Name="xe_NavigationView"
             Visibility="{Binding IsFullScreen, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}"
             IsBackButtonVisible="Collapsed" 
-            MenuItemsSource="{Binding NavigationPages}"
+            MenuItemsSource="{xaml:MenuPages}"
             SelectedItem="{Binding SelectedPage, Mode=TwoWay}">
             <NavigationView.MenuItemTemplate>
                 <DataTemplate>
