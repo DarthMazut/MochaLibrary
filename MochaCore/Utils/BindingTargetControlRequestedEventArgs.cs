@@ -7,7 +7,7 @@ namespace MochaCore.Utils
     /// </summary>
     public class BindingTargetControlRequestedEventArgs : EventArgs
     {
-        protected BindingTargetControlRequestedEventArgs(BindingTargetControlRequestType requestType, string? propertyName, object? propertyValue, string? commandName, object? commandParameter, string? animationName, string? visualStateName, object? extraData)
+        protected BindingTargetControlRequestedEventArgs(BindingTargetControlRequestType requestType, string? propertyName, object? propertyValue, string? commandName, object? commandParameter, string? animationName, string? visualStateName)
         {
             RequestType = requestType;
             PropertyName = propertyName;
@@ -16,7 +16,6 @@ namespace MochaCore.Utils
             CommandParameter = commandParameter;
             AnimationName = animationName;
             VisualStateName = visualStateName;
-            ExtraData = extraData;
         }
 
         /// <summary>
@@ -26,7 +25,7 @@ namespace MochaCore.Utils
         /// <param name="propertyName">Name of dependency property to be changed</param>
         /// <param name="newValue">New value for changing dependency proeprty.</param>
         public static BindingTargetControlRequestedEventArgs SetProperty(string propertyName, object? newValue)
-            => new(BindingTargetControlRequestType.SetDependencyProperty, propertyName, newValue, null, null, null, null, null);
+            => new(BindingTargetControlRequestType.SetDependencyProperty, propertyName, newValue, null, null, null, null);
 
         /// <summary>
         /// Creates an instance of <see cref="BindingTargetControlRequestedEventArgs"/> for 
@@ -34,7 +33,7 @@ namespace MochaCore.Utils
         /// </summary>
         /// <param name="commandName">Name of command to be invoked.</param>
         public static BindingTargetControlRequestedEventArgs InvokeCommand(string commandName)
-            => new(BindingTargetControlRequestType.InvokeCommand, null, null, commandName, null, null, null, null);
+            => new(BindingTargetControlRequestType.InvokeCommand, null, null, commandName, null, null, null);
 
         /// <summary>
         /// Creates an instance of <see cref="BindingTargetControlRequestedEventArgs"/> for 
@@ -43,9 +42,23 @@ namespace MochaCore.Utils
         /// <param name="commandName">Name of command to be invoked.</param>
         /// <param name="parameter">Command parameter.</param>
         public static BindingTargetControlRequestedEventArgs InvokeCommand(string commandName, object? parameter)
-            => new(BindingTargetControlRequestType.InvokeCommand, null, null, commandName, parameter, null, null, null);
+            => new(BindingTargetControlRequestType.InvokeCommand, null, null, commandName, parameter, null, null);
 
-        // TODO
+        /// <summary>
+        /// Creates an instance of <see cref="BindingTargetControlRequestedEventArgs"/> for 
+        /// <see cref="BindingTargetControlRequestType.PlayAnimation"/> request type.
+        /// </summary>
+        /// <param name="storyboardName">Name of the sotryboard to begin.</param>
+        public static BindingTargetControlRequestedEventArgs PlayAnimation(string storyboardName)
+            => new(BindingTargetControlRequestType.PlayAnimation, null, null, null, null, storyboardName, null);
+
+        /// <summary>
+        /// Creates an instance of <see cref="BindingTargetControlRequestedEventArgs"/> for 
+        /// <see cref="BindingTargetControlRequestType.SetVisualState"/> request type.
+        /// </summary>
+        /// <param name="targetStateName">Name of the visual state that is target of this request.</param>
+        public static BindingTargetControlRequestedEventArgs SetVisualState(string targetStateName)
+            => new(BindingTargetControlRequestType.SetVisualState, null, null, null, null, null, targetStateName);
 
         /// <summary>
         /// The type of control request.
@@ -81,12 +94,6 @@ namespace MochaCore.Utils
         /// Name of target visual state.
         /// </summary>
         public string? VisualStateName { get; }
-
-        /// <summary>
-        /// An extra data object which can be used be  UI's elemnt custom handler 
-        /// of <see cref="IBindingTargetController.ControlRequested"/>
-        /// </summary>
-        public object? ExtraData { get; }
     }
 
     /// <summary>
