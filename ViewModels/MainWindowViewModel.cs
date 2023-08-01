@@ -1,4 +1,4 @@
-﻿using MochaCore.NavigationEx;
+﻿using MochaCore.Navigation;
 using MochaCore.Utils;
 using Prism.Commands;
 using Prism.Mvvm;

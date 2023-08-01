@@ -1,4 +1,4 @@
-﻿using MochaCore.NavigationEx;
+﻿using MochaCore.Navigation;
 using Model;
 using Prism.Commands;
 using System;
@@ -14,7 +14,7 @@ namespace ViewModels
     {
         private DelegateCommand? _delegateCommand;
 
-        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
+        public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
         public DelegateCommand OpenSettingsFolderCommand => _delegateCommand ??= new DelegateCommand(OpenSettingsFolder);
 

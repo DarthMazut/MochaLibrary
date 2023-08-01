@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.Navigation
 {
     /// <summary>
     /// Provides arguments for <see cref="INavigator.Initialized"/> event.

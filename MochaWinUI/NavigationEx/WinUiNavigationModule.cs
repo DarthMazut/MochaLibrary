@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MochaCore.NavigationEx;
-using MochaCore.NavigationEx.Extensions;
+using MochaCore.Navigation;
+using MochaCore.Navigation.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

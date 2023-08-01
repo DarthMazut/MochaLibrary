@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.Navigation
 {
     /// <summary>
     /// Describes strategy used to handle navigation request.

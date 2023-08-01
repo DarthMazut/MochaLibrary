@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.Navigation
 {
     /// <summary>
     /// Provides state and logic for single navigatable area. Each implementation of <see cref="INavigationService"/>

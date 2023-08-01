@@ -1,6 +1,6 @@
 ﻿using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
-using MochaCore.NavigationEx;
+using MochaCore.Navigation;
 using MochaCore.Settings;
 using Model;
 using Prism.Commands;
@@ -31,7 +31,7 @@ namespace ViewModels
             _people.CollectionChanged += (s, e) => IsPeopleListEmpty = !People.Any();
         }
 
-        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
+        public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
         public FilterTabViewModel FilterTabViewModel { get; } = new FilterTabViewModel();
 

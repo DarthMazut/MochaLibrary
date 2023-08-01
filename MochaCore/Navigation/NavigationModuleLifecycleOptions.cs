@@ -5,7 +5,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.Navigation
 {
     /// <summary>
     /// Provides additional settings for managing lifecycle of <see cref="INavigationLifecycleModule"/>.

@@ -1,4 +1,4 @@
-﻿namespace MochaCore.NavigationEx
+﻿namespace MochaCore.Navigation
 {
     /// <summary>
     /// Provides an abstraction for supplying navigation context to <see cref="INavigator"/> instances.

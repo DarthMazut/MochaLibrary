@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using MochaCore.Dialogs;
-using MochaCore.NavigationEx;
+using MochaCore.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;

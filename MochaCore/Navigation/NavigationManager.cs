@@ -1,11 +1,11 @@
-﻿using MochaCore.NavigationEx.Extensions;
+﻿using MochaCore.Navigation.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.Navigation
 {
     /// <summary>
     /// Allows for registering <see cref="INavigationService"/> instances on the technology-specific side 

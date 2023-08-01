@@ -2,7 +2,7 @@
 using MochaCore.Behaviours;
 using MochaCore.Dialogs;
 using MochaCore.Dispatching;
-using MochaCore.NavigationEx;
+using MochaCore.Navigation;
 using MochaCore.Settings;
 using MochaWinUI.Dialogs;
 using MochaWinUI.Dispatching;
@@ -47,6 +47,7 @@ namespace WinUiApplication
                     .WithModule<BlankPage3, BlankPage3ViewModel>()
                     .WithModule<SettingsPage, SettingsPageViewModel>()
                     .WithModule<EditPersonPage, EditPersonPageViewModel>()
+                    .WithModule<BindingControlPage, BindingControlPageViewModel>()
                     .WithInitialId(ViewModels.Pages.BlankPage1.Id));
 
             _mainWindow = new MainWindow();

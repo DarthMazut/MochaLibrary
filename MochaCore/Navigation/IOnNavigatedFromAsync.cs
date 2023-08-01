@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.Navigation
 {
     /// <summary>
     /// Allows an implementing class to expose an asynchronous version of the <c>OnNavigatedFrom()</c> 

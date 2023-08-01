@@ -1,4 +1,4 @@
-﻿using MochaCore.NavigationEx;
+﻿using MochaCore.Navigation;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace ViewModels
     {
         private DelegateCommand? _goBackCommand;
 
-        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
+        public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
         public DelegateCommand GoBackCommand => _goBackCommand ??= new DelegateCommand(GoBack);
 

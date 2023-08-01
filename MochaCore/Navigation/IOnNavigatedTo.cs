@@ -1,4 +1,4 @@
-﻿namespace MochaCore.NavigationEx
+﻿namespace MochaCore.Navigation
 {
     /// <summary>
     /// Allows an implementing class to expose an <c>OnNavigatedTo()</c> method 

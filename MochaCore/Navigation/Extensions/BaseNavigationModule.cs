@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx.Extensions
+namespace MochaCore.Navigation.Extensions
 {
     /// <summary>
     /// Provides base class for technology specific implementations of <see cref="INavigationModule"/>.

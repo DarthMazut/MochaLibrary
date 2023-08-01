@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx.Extensions
+namespace MochaCore.Navigation.Extensions
 {
     /// <summary>
     /// Extends <see cref="NavigationService"/> with fluent API.

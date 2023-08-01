@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.Navigation
 {
     /// <summary>
     /// Provides arguments for implementations of <see cref="IOnNavigatedTo"/> and <see cref="IOnNavigatedToAsync"/>

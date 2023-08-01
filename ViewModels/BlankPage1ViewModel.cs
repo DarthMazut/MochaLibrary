@@ -1,7 +1,7 @@
 ﻿using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
 using MochaCore.Dispatching;
-using MochaCore.NavigationEx;
+using MochaCore.Navigation;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -24,7 +24,7 @@ namespace ViewModels
             OpenDialogCommand = new DelegateCommand(OpenDialog);
         }
 
-        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
+        public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
         public bool IsActive 
         {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.Navigation
 {
     /// <summary>
     /// Provides an abstraction for a single item of the <see cref="IReadOnlyNavigationStack{T}"/> implementation.

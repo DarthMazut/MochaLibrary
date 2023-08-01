@@ -1,6 +1,6 @@
 ﻿using MochaCore.Behaviours;
 using MochaCore.Dialogs;
-using MochaCore.NavigationEx;
+using MochaCore.Navigation;
 using MochaCore.Settings;
 using MochaCore.Utils;
 using Model;
@@ -38,7 +38,7 @@ namespace ViewModels
             _initials.SynchronizedProperties.Add(nameof(LastName));
         }
 
-        public INavigator Navigator { get; } = MochaCore.NavigationEx.Navigator.Create();
+        public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
         public string? Title
         {

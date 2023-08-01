@@ -16,6 +16,7 @@
     <None Remove="Controls\FilterTab.xaml" />
     <None Remove="Controls\PageHeader.xaml" />
     <None Remove="Dialogs\EditPictureDialog.xaml" />
+    <None Remove="Pages\BindingControlPage.xaml" />
     <None Remove="Pages\BlankPage1.xaml" />
     <None Remove="Pages\BlankPage3.xaml" />
     <None Remove="Pages\EditPersonPage.xaml" />
@@ -51,6 +52,11 @@
   <ItemGroup>
     <ProjectReference Include="..\MochaWinUI\MochaWinUI.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\BindingControlPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\PageHeader.xaml">

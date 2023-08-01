@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.Navigation
 {
     /// <summary>
     /// Provides arguments for implementations of <see cref="IOnNavigatingFrom"/> and <see cref="IOnNavigatingFromAsync"/>

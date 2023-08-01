@@ -1,4 +1,4 @@
-﻿namespace MochaCore.NavigationEx
+﻿namespace MochaCore.Navigation
 {
     /// <summary>
     /// Allows the implementing class to actively participate in the navigation process.

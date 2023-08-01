@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaCore.NavigationEx
+namespace MochaCore.Navigation
 {
     /// <summary>
     /// Provides implementation of <see cref="INavigationDestinationBuilder"/> and <see cref="INavigationRequestDetailsBuilder"/>

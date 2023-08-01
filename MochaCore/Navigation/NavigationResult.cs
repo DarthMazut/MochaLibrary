@@ -1,4 +1,4 @@
-﻿namespace MochaCore.NavigationEx
+﻿namespace MochaCore.Navigation
 {
     /// <summary>
     /// Describes the possible outcomes of the navigation process.
