@@ -3,13 +3,62 @@
     x:Class="WinUiApplication.Pages.BindingControlPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:WinUiApplication.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:WinUiApplication.Controls"
+    xmlns:viewModels="using:ViewModels.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <Page.Resources>
+        <Style x:Key="PageTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24" />
+        </Style>
+        <Storyboard x:Key="Animation">
+            <DoubleAnimation Storyboard.TargetName="Stop" Storyboard.TargetProperty="Offset" Duration="0:0:2" To="1" EnableDependentAnimation="True" AutoReverse="True"/>
+            <ColorAnimation Storyboard.TargetName="Stop" Storyboard.TargetProperty="Color" Duration="0:0:2" To="Red" EnableDependentAnimation="True" AutoReverse="True"/>
+        </Storyboard>
+    </Page.Resources>
 
-    </Grid>
+    <controls:PageRoot Title="Binding Control" Glyph="&#xE71B;">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="State1"/>
+                <VisualState x:Name="State2">
+                    <VisualState.Setters>
+                        <Setter Target="xe_TextBlock.Text" Value="State 2" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <StackPanel>
+            <ComboBox ItemsSource="{Binding AvailableStates}" SelectedItem="{Binding SelectedState, Mode=TwoWay}" Width="200"/>
+            <Border Height="5"/>
+            <TextBlock x:Name="xe_TextBlock" Text="State 1"/>
+            <Border Height="5"/>
+            <Border Height="5">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                        <GradientStop Color="{ThemeResource ApplicationPageBackgroundThemeBrush}" Offset="0" />
+                        <GradientStop x:Name="Stop" Color="LightBlue" Offset="0" />
+                        <GradientStop Color="{ThemeResource ApplicationPageBackgroundThemeBrush}" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border Height="10"/>
+            <Button Content="Play animation" Command="{Binding PlayAnimationCommand}" />
+            <Border Height="5"/>
+            <TextBlock Text="Value:" />
+            <TextBlock Text="{Binding Value, ElementName=SubPage}" />
+            <Border Height="5"/>
+            <TextBlock Text="Click count:" />
+            <TextBlock Text="{Binding ClickCount}" />
+            <controls:BindingControlSubPage x:Name="SubPage" Command="{Binding SubPageClickCommand}">
+                <controls:BindingControlSubPage.ViewModel>
+                    <viewModels:BindingControlSubPageViewModel />
+                </controls:BindingControlSubPage.ViewModel>
+            </controls:BindingControlSubPage>
+        </StackPanel>
+    </controls:PageRoot>
 </Page>

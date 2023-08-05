@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using MochaWinUI.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,6 +27,7 @@ namespace WinUiApplication.Pages
         public BindingControlPage()
         {
             this.InitializeComponent();
+            BindingControl.RegisterContextProperty(this);
         }
     }
 }
