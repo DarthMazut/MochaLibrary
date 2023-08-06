@@ -144,8 +144,8 @@ namespace MochaWinUI.Dialogs
             DisposeDialog?.Invoke(this);
             _view.DataContext = null;
             _dataContext = null;
-            _view.Opened += DialogOpened;
-            _view.Closing += DialogClosing;
+            _view.Opened -= DialogOpened;
+            _view.Closing -= DialogClosing;
 
             GC.SuppressFinalize(this);
             Disposed?.Invoke(this, EventArgs.Empty);
