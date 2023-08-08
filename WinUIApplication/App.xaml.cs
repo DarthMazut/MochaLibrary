@@ -4,15 +4,19 @@ using MochaCore.Dialogs;
 using MochaCore.Dispatching;
 using MochaCore.Navigation;
 using MochaCore.Settings;
+using MochaCore.Windowing;
 using MochaWinUI.Dialogs;
 using MochaWinUI.Dispatching;
 using MochaWinUI.NavigationEx;
 using MochaWinUI.Settings;
+using MochaWinUI.Windowing;
 using Model;
 using ViewModels;
+using ViewModels.Windows;
 using Windows.Storage;
 using WinUiApplication.Dialogs;
 using WinUiApplication.Pages;
+using WinUiApplication.Windows;
 
 namespace WinUiApplication
 {
@@ -48,6 +52,7 @@ namespace WinUiApplication
                     .WithModule<SettingsPage, SettingsPageViewModel>()
                     .WithModule<EditPersonPage, EditPersonPageViewModel>()
                     .WithModule<BindingControlPage, BindingControlPageViewModel>()
+                    .WithModule<WindowingPage, WindowingPageViewModel>()
                     .WithInitialId(ViewModels.Pages.BlankPage1.Id));
 
             _mainWindow = new MainWindow();
@@ -61,6 +66,8 @@ namespace WinUiApplication
             BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
 
             DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(_mainWindow));
+
+            WindowManager.RegisterWindow("TestWindow", () => new WindowModule(new TestWindow(), new TestWindowViewModel()));
 
             _mainWindow.Activate();
         }

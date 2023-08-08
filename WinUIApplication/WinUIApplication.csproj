@@ -24,7 +24,9 @@
     <None Remove="Pages\EditPersonPage.xaml" />
     <None Remove="Pages\PeoplePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Pages\WindowingPage.xaml" />
     <None Remove="Styles\PeopleListViewItem.xaml" />
+    <None Remove="Windows\TestWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,6 +56,11 @@
   <ItemGroup>
     <ProjectReference Include="..\MochaWinUI\MochaWinUI.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\WindowingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\BindingControlSubPage.xaml">
@@ -112,6 +119,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Dialogs\EditPictureDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Windows\TestWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
