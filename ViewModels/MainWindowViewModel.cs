@@ -1,5 +1,6 @@
 ﻿using MochaCore.Navigation;
 using MochaCore.Utils;
+using MochaCore.Windowing;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -12,7 +13,7 @@ using ViewModels.Wrappers;
 
 namespace ViewModels;
 
-public class MainWindowViewModel : BindableBase
+public class MainWindowViewModel : BindableBase, ICustomWindowAware
 {
     private object? _frameContent;
     private object? _fullScreenContent;
@@ -21,6 +22,8 @@ public class MainWindowViewModel : BindableBase
     private bool _isFullScreen;
 
     private DelegateCommand<NavigationInvokedDetails>? _navigationItemInvokedCommand;
+
+    public ICustomWindowControl WindowControl { get; } = new CustomWindowControl();
 
     public MainWindowViewModel()
     {

@@ -4,9 +4,11 @@ using MochaCore.Navigation;
 using MochaCore.Windowing;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ViewModels.Windows;
 
 namespace ViewModels
 {
@@ -15,11 +17,18 @@ namespace ViewModels
         public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
         [RelayCommand]
-        private void OpenWindow()
+        private async Task OpenWindow()
         {
+            IWindowModule mainWindowModule = WindowManager.GetOpenedModules().FirstOrDefault();
+
             IWindowModule testWindowModule = WindowManager.RetrieveWindow("TestWindow");
-            testWindowModule.Open();
-            //testWindowModule.Dispose();
+            if (testWindowModule is ICustomWindowModule<GenericWindowProperties> module)
+            {
+                
+            }
+
+            await testWindowModule.OpenAsync(mainWindowModule);
+            testWindowModule.Dispose();
         }
     }
 }

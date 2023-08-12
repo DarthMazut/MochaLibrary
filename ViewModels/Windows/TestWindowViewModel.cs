@@ -9,14 +9,20 @@ using System.Threading.Tasks;
 
 namespace ViewModels.Windows
 {
-    public partial class TestWindowViewModel : ObservableObject, IWindowAware
+    public partial class TestWindowViewModel : ObservableObject, ICustomWindowAware<GenericWindowProperties>
     {
-        public IWindowControl WindowControl { get; } = new WindowControl();
+        public ICustomWindowControl<GenericWindowProperties> WindowControl { get; } = new CustomWindowControl<GenericWindowProperties>();
 
         [RelayCommand]
         private void Close()
         {
             WindowControl.Close();
+        }
+
+        [RelayCommand]
+        private void Maximize()
+        {
+            WindowControl.Maximize();
         }
     }
 }

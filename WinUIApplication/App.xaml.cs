@@ -43,6 +43,9 @@ namespace WinUiApplication
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            WindowManager.RegisterWindow("MainWindow", () => new CustomWindowModule(new MainWindow(), new MainWindowViewModel()));
+            WindowManager.RegisterWindow("TestWindow", () => new CustomWindowModule<GenericWindowProperties>(new TestWindow(), new TestWindowViewModel()));
+
             INavigationService mainNavigationService = NavigationManager.AddNavigationService(
                 NavigationServices.MainNavigationServiceId,
                 new WinUiNavigationService()
@@ -55,7 +58,8 @@ namespace WinUiApplication
                     .WithModule<WindowingPage, WindowingPageViewModel>()
                     .WithInitialId(ViewModels.Pages.BlankPage1.Id));
 
-            _mainWindow = new MainWindow();
+            IWindowModule mainWindowModule = WindowManager.RetrieveWindow("MainWindow");
+            _mainWindow = mainWindowModule.View as MainWindow;
 
             DialogManager.DefineDialog(ViewModels.Dialogs.MoreInfoDialog.ID, () => new StandardMessageDialogModule(_mainWindow));
             DialogManager.DefineDialog(ViewModels.Dialogs.EditPictureDialog.ID, () => new ContentDialogModule(_mainWindow, new EditPictureDialog()));
@@ -67,9 +71,9 @@ namespace WinUiApplication
 
             DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(_mainWindow));
 
-            WindowManager.RegisterWindow("TestWindow", () => new WindowModule(new TestWindow(), new TestWindowViewModel()));
+            mainWindowModule.Open();
 
-            _mainWindow.Activate();
+            //_mainWindow.Activate();
         }
     }
 }

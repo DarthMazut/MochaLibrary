@@ -1,47 +1,31 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using MochaCore.Windowing;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MochaWinUI.Windowing
 {
-    /// <summary>
-    /// Provides WinUI implementation of <see cref="IWindowModule"/>.
-    /// </summary>
     public class WindowModule : IWindowModule
     {
-        private Window _window;
-        private AppWindow? _appWindow;
+        protected readonly Window _window;
+        protected readonly AppWindow _appWindow;
+
         private IWindowAware _dataContext;
         private bool _isOpen = false;
         private bool _isDisposed = false;
         private TaskCompletionSource<object?>? _openTaskTsc;
         private object? _result;
 
-        /// <inheritdoc/>
-        public event EventHandler? Opened;
-
-        /// <inheritdoc/>
-        public event EventHandler? Disposed;
-
-        /// <inheritdoc/>
-        public event EventHandler? Closed;
-
-        /// <inheritdoc/>
-        public event EventHandler<CancelEventArgs>? Closing;
-
         public WindowModule(Window window, IWindowAware dataContext)
         {
             _window = window;
             _dataContext = dataContext;
-            
+
             _appWindow = AppWindow.GetFromWindowId(GetWindowId(_window));
             _window.Closed += WindowClosed;
         }
@@ -59,28 +43,49 @@ namespace MochaWinUI.Windowing
         public bool IsDisposed => _isDisposed;
 
         /// <inheritdoc/>
-        public void Open()
-        {
-            InitializeDataContext(_dataContext);
-            SetDataContext(_dataContext);
-            _window.Activate();
-            _isOpen = true;
-
-            Opened?.Invoke(this, EventArgs.Empty);
-        }
+        public event EventHandler? Opened;
 
         /// <inheritdoc/>
-        public void Open(object parent) => Open();
+        public event EventHandler? Closed;
+
+        /// <inheritdoc/>
+        public event EventHandler? Disposed;
+
+        /// <inheritdoc/>
+        public void Open()
+        {
+            DisposedGuard();
+
+            if (!IsOpen)
+            {
+                InitializeDataContext(_dataContext);
+                SetDataContext(_dataContext);
+
+                OpenCore();
+
+                _isOpen = true;
+                Opened?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         /// <inheritdoc/>
         public void Open(IWindowModule parentModule) => Open();
 
         /// <inheritdoc/>
+        public void Open(object parent) => Open();
+
+        /// <inheritdoc/>
         public Task OpenAsync()
         {
-            _openTaskTsc = new();
-            Open();
-            return _openTaskTsc.Task;
+            DisposedGuard();
+
+            if (!IsOpen)
+            {
+                _openTaskTsc = new();
+                Open();
+            }
+
+            return _openTaskTsc?.Task ?? Task.CompletedTask;
         }
 
         /// <inheritdoc/>
@@ -92,37 +97,59 @@ namespace MochaWinUI.Windowing
         /// <inheritdoc/>
         public void Close()
         {
-            _window.Close();
+            if (IsOpen)
+            {
+                CloseCore();
+            }
         }
 
         /// <inheritdoc/>
         public void Close(object? result)
         {
-            _result = result;
-            Close();
-        }
-
-        /// <inheritdoc/>
-        public void Maximize()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public void Minimize()
-        {
-            throw new NotImplementedException();
+            if (IsOpen)
+            {
+                _result = result;
+                Close();
+            }
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            UninitializeDataContext(_dataContext);
-            SetDataContext(null);
-            _window.Closed -= WindowClosed;
+            if (!IsDisposed)
+            {
+                Close();
 
-            _isDisposed = true;
-            Disposed?.Invoke(this, EventArgs.Empty);
+                DisposeCore();
+
+                UninitializeDataContext(_dataContext);
+                SetDataContext(null);
+                _window.Closed -= WindowClosed;
+
+                _isDisposed = true;
+                Disposed?.Invoke(this, EventArgs.Empty); 
+            }
+        }
+
+        /// <summary>
+        /// Allows to specify additional disposing action. 
+        /// </summary>
+        protected virtual void DisposeCore() { }
+
+        /// <summary>
+        /// Defines how the window is being closed.
+        /// </summary>
+        protected virtual void CloseCore()
+        {
+            _window.Close();
+        }
+
+        /// <summary>
+        /// Defines how the window is being opened.
+        /// </summary>
+        protected virtual void OpenCore()
+        {
+            _window.Activate();
         }
 
         private void WindowClosed(object sender, WindowEventArgs args)
@@ -130,12 +157,6 @@ namespace MochaWinUI.Windowing
             _isOpen = false;
             Closed?.Invoke(this, EventArgs.Empty);
             _openTaskTsc?.SetResult(_result);
-        }
-
-        private static WindowId GetWindowId(Window window)
-        {
-            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            return Win32Interop.GetWindowIdFromWindow(hWnd);
         }
 
         private void SetDataContext(IWindowAware? dataContext)
@@ -161,5 +182,44 @@ namespace MochaWinUI.Windowing
                 control.Uninitialize();
             }
         }
+
+        private void DisposedGuard()
+        {
+            if (IsDisposed)
+            {
+                throw new InvalidOperationException("Cannot perform operation on disposed object.");
+            }
+        }
+
+        private static WindowId GetWindowId(Window window)
+        {
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            return Win32Interop.GetWindowIdFromWindow(hWnd);
+        }
+    }
+
+    public class WindowModule<T> : WindowModule, IWindowModule<T> where T : class, new()
+    {
+        public WindowModule(Window window, IWindowAware dataContext) : base(window, dataContext)
+        {
+            Properties = new();
+        }
+
+        /// <inheritdoc/>
+        public T Properties { get; set; }
+
+        /// <inheritdoc/>
+        protected override sealed void OpenCore()
+        {
+            ApplyProperties();
+            OpenCoreOverride();
+        }
+
+        protected virtual void OpenCoreOverride()
+        {
+            base.OpenCore();
+        }
+
+        protected virtual void ApplyProperties() { }
     }
 }

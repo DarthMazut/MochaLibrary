@@ -1,0 +1,59 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MochaCore.Windowing
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public class CustomWindowControl : WindowControl, ICustomWindowControl, IMaximizeWindow, IMinimizeWindow, IClosingWindow
+    {
+        protected ICustomWindowModule? _customModule;
+
+        /// <inheritdoc/>
+        public event EventHandler<CancelEventArgs>? Closing;
+
+        /// <inheritdoc/>
+        public void Maximize()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public void Minimize()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public override void Initialize(IWindowModule module)
+        {
+            if (module is ICustomWindowModule customModule)
+            {
+                _customModule = customModule;
+            }
+            else
+            {
+                throw new InvalidCastException($"{GetType().Name} can only be initialized with {typeof(ICustomWindowModule)}.");
+            }
+            base.Initialize(module);
+        }
+    }
+
+    public class CustomWindowControl<T> : CustomWindowControl, ICustomWindowControl<T> where T : class, new()
+    {
+        /// <inheritdoc/>
+        public T Properties
+        {
+            get
+            {
+                InitializationGuard();
+                return ((ICustomWindowModule<T>)_module!).Properties;
+            }
+        }
+    }
+}

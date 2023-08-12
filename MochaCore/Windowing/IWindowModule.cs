@@ -44,11 +44,6 @@ namespace MochaCore.Windowing
         public event EventHandler? Closed;
 
         /// <summary>
-        /// Occurs when representing window is about to close.
-        /// </summary>
-        public event EventHandler<CancelEventArgs>? Closing;
-
-        /// <summary>
         /// Occurs when representing window is disposed.
         /// </summary>
         public event EventHandler? Disposed;
@@ -91,16 +86,6 @@ namespace MochaCore.Windowing
         public Task OpenAsync(IWindowModule parentModule);
 
         /// <summary>
-        /// Maximizes the representing window.
-        /// </summary>
-        public void Maximize();
-
-        /// <summary>
-        /// Minimizes the representing window.
-        /// </summary>
-        public void Minimize();
-
-        /// <summary>
         /// Closes the representing window if open.
         /// </summary>
         public void Close();
@@ -119,7 +104,7 @@ namespace MochaCore.Windowing
     /// Provides technology-agnostic abstraction over technology-specific window instance and its data context.
     /// </summary>
     /// <typeparam name="T">Type of module properties.</typeparam>
-    public interface IWindowModule<T> : IWindowModule
+    public interface IWindowModule<T> : IWindowModule where T : class, new()
     {
         /// <summary>
         /// Allows for providing additional data for module customization.
