@@ -15,7 +15,20 @@ namespace MochaCore.Windowing
         protected ICustomWindowModule? _customModule;
 
         /// <inheritdoc/>
-        public event EventHandler<CancelEventArgs>? Closing;
+        public event EventHandler<CancelEventArgs>? Closing
+        {
+            add
+            {
+                InitializationGuard();
+                _customModule!.Closing += value;
+            }
+            remove
+            {
+                InitializationGuard();
+                _customModule!.Closing -= value;
+            }
+        }
+
 
         /// <inheritdoc/>
         public void Maximize()
