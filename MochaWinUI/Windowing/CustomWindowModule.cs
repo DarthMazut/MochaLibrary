@@ -1,7 +1,6 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using MochaCore.Windowing;
 using System;
 using System.Collections.Generic;
@@ -14,17 +13,122 @@ using Windows.Win32.Foundation;
 namespace MochaWinUI.Windowing
 {
     /// <summary>
-    /// Provides WinUI implementation of <see cref="IWindowModule"/>.
+    /// Provides WinUI implementation of <see cref="ICustomWindowModule{T}"/>.
     /// </summary>
-    public class CustomWindowModule : WindowModule, ICustomWindowModule
+    public class CustomWindowModule : ICustomWindowModule
     {
-        public CustomWindowModule(Window window, ICustomWindowAware dataContext) : base(window, dataContext)
+        protected readonly Window _window;
+        protected readonly AppWindow _appWindow;
+
+        private IWindowAware? _dataContext;
+        private bool _isOpen = false;
+        private bool _isDisposed = false;
+        private bool _isInitialized = false;
+        private TaskCompletionSource<object?>? _openTaskTsc;
+        private object? _result;
+
+        public CustomWindowModule(Window window) : this(window, null) { }
+
+        public CustomWindowModule(Window window, IWindowAware? dataContext)
         {
+            _window = window;
+            _dataContext = dataContext ?? GetDataContextFromWindow(window);
+
+            _appWindow = AppWindow.GetFromWindowId(GetWindowId(_window));
+            _window.Closed += WindowClosed;
             _appWindow.Closing += WindowClosing;
         }
 
+        private IWindowAware? GetDataContextFromWindow(Window window)
+        {
+            object? windowContext = null;
+            if (window.Content is FrameworkElement rootElement)
+            {
+                windowContext = rootElement.DataContext;
+                if (windowContext is not null or IWindowAware)
+                {
+                    throw new InvalidOperationException($"The data context provided in {window.GetType()} was not of type {typeof(IWindowAware)}");
+                }
+            }
+
+            return windowContext as IWindowAware;
+        }
+
+        /// <inheritdoc/>
+        public object View => _window;
+
+        /// <inheritdoc/>
+        public IWindowAware? DataContext => _dataContext;
+
+        /// <inheritdoc/>
+        public bool IsOpen => _isOpen;
+
+        /// <inheritdoc/>
+        public bool IsDisposed => _isDisposed;
+
+        /// <inheritdoc/>
+        public bool IsInitialized => _isInitialized;
+
+        /// <inheritdoc/>
+        public event EventHandler? Opened;
+
+        /// <inheritdoc/>
+        public event EventHandler? Closed;
+
+        /// <inheritdoc/>
+        public event EventHandler? Disposed;
+
         /// <inheritdoc/>
         public event EventHandler<CancelEventArgs>? Closing;
+
+        /// <inheritdoc/>
+        public void Open()
+        {
+            DisposedGuard();
+
+            if (!IsOpen)
+            {
+                InitializeDataContext(_dataContext);
+                SetDataContext(_dataContext);
+
+                OpenCore();
+
+                _isOpen = true;
+                Opened?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Open(IWindowModule parentModule)
+        {
+            Open();
+            Windows.Win32.PInvoke.SetParent(
+                (HWND)WinRT.Interop.WindowNative.GetWindowHandle(_window),
+                (HWND)WinRT.Interop.WindowNative.GetWindowHandle(parentModule.View));
+        }
+
+        /// <inheritdoc/>
+        public void Open(object parent) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public Task OpenAsync()
+        {
+            DisposedGuard();
+
+            if (!IsOpen)
+            {
+                _openTaskTsc = new();
+                Open();
+            }
+
+            return _openTaskTsc?.Task ?? Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
+        public Task OpenAsync(object parent) => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public Task OpenAsync(IWindowModule parentModule) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public void Maximize()
@@ -43,9 +147,63 @@ namespace MochaWinUI.Windowing
         }
 
         /// <inheritdoc/>
-        protected override void DisposeCore()
+        public void Close()
         {
+            if (IsOpen)
+            {
+                CloseCore();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Close(object? result)
+        {
+            if (IsOpen)
+            {
+                _result = result;
+                Close();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            if (!IsDisposed)
+            {
+                Close();
+                DisposeCore();
+                SetDataContext(null);
+
+                _isDisposed = true;
+                _isInitialized = false;
+
+                Disposed?.Invoke(this, EventArgs.Empty); 
+            }
+        }
+
+        /// <summary>
+        /// Defines disposing actions.
+        /// </summary>
+        protected virtual void DisposeCore()
+        {
+            _window.Closed -= WindowClosed;
             _appWindow.Closing -= WindowClosing;
+        }
+
+        /// <summary>
+        /// Defines how the window is being closed.
+        /// </summary>
+        protected virtual void CloseCore()
+        {
+            _window.Close();
+        }
+
+        /// <summary>
+        /// Defines how the window is being opened.
+        /// </summary>
+        protected virtual void OpenCore()
+        {
+            _window.Activate();
         }
 
         private void WindowClosing(AppWindow sender, AppWindowClosingEventArgs args)
@@ -54,13 +212,74 @@ namespace MochaWinUI.Windowing
             Closing?.Invoke(this, e);
             args.Cancel = e.Cancel;
         }
+
+        private void WindowClosed(object sender, WindowEventArgs args)
+        {
+            _isOpen = false;
+            Closed?.Invoke(this, EventArgs.Empty);
+            _openTaskTsc?.SetResult(_result);
+        }
+
+        private void SetDataContext(IWindowAware? dataContext)
+        {
+            if (_window.Content is FrameworkElement rootElement)
+            {
+                rootElement.DataContext = dataContext;
+            }
+        }
+
+        private void InitializeDataContext(IWindowAware dataContext)
+        {
+            if (dataContext.WindowControl is IWindowControlInitialize controlInitialize)
+            {
+                controlInitialize.Initialize(this);
+                _isInitialized = true;
+            }
+        }
+
+        private void DisposedGuard()
+        {
+            if (IsDisposed)
+            {
+                throw new InvalidOperationException("Cannot perform operation on disposed object.");
+            }
+        }
+
+        private static WindowId GetWindowId(Window window)
+        {
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            return Win32Interop.GetWindowIdFromWindow(hWnd);
+        }
     }
 
+    /// <summary>
+    /// Provides WinUI implementation of <see cref="ICustomWindowModule{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">Type of module custom properties.</typeparam>
     public class CustomWindowModule<T> : CustomWindowModule, ICustomWindowModule<T> where T : class, new()
     {
-        public CustomWindowModule(Window window, ICustomWindowAware<T> dataContext) : base(window, dataContext)
+        public CustomWindowModule(Window window) : this(window, null, new()) { }
+
+        public CustomWindowModule(Window window, T properties) : this(window, null, properties) { }
+
+        public CustomWindowModule(Window window, IWindowAware? dataContext) : this(window, dataContext, new()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomWindowControl{T}"/> class.
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="dataContext">
+        /// The data context for represented window.
+        /// Passing <see langword="null"/> means that the data context will be searched in provided window instance.
+        /// If
+        /// 
+        /// from the provided view object will be used, 
+        /// as long as it's of type <see cref="ICustomDialog{T}"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
+        /// <param name="properties">Allows for providing additional data for module customization.</param>
+        public CustomWindowModule(Window window, IWindowAware? dataContext, T properties) : base(window, dataContext)
         {
-            Properties = new();
+            Properties = properties;
         }
 
         /// <inheritdoc/>
@@ -73,14 +292,17 @@ namespace MochaWinUI.Windowing
             OpenCoreOverride();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Defines how to window is being opened.
+        /// </summary>
         protected virtual void OpenCoreOverride()
         {
             base.OpenCore();
         }
 
         /// <summary>
-        /// 
+        /// Allows for additional customization of current module.
+        /// This method is called right before the related window opens.
         /// </summary>
         protected virtual void ApplyProperties() { }
     }

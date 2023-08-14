@@ -15,45 +15,49 @@ namespace MochaCore.Windowing
         protected ICustomWindowModule? _customModule;
 
         /// <inheritdoc/>
-        public event EventHandler<CancelEventArgs>? Closing
-        {
-            add
-            {
-                InitializationGuard();
-                _customModule!.Closing += value;
-            }
-            remove
-            {
-                InitializationGuard();
-                _customModule!.Closing -= value;
-            }
-        }
-
+        public event EventHandler<CancelEventArgs>? Closing;
 
         /// <inheritdoc/>
         public void Maximize()
         {
-            throw new NotImplementedException();
+            InitializationGuard();
+            _customModule!.Maximize();
         }
 
         /// <inheritdoc/>
         public void Minimize()
         {
-            throw new NotImplementedException();
+            InitializationGuard();
+            _customModule!.Minimize();
         }
 
         /// <inheritdoc/>
-        public override void Initialize(IWindowModule module)
+        protected override void InitializeCore()
         {
-            if (module is ICustomWindowModule customModule)
+            if (_module is ICustomWindowModule customModule)
             {
                 _customModule = customModule;
+                _customModule.Closing += ModuleClosing;
             }
             else
             {
                 throw new InvalidCastException($"{GetType().Name} can only be initialized with {typeof(ICustomWindowModule)}.");
             }
-            base.Initialize(module);
+
+            base.InitializeCore();
+        }
+
+        /// <inheritdoc/>
+        protected override void UninitializeCore()
+        {
+            _customModule!.Closing -= ModuleClosing;
+        }
+
+        private void ModuleClosing(object? sender, CancelEventArgs e)
+        {
+            CancelEventArgs args = new();
+            Closing?.Invoke(this, args);
+            e.Cancel = args.Cancel;
         }
     }
 

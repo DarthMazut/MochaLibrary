@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace MochaCore.Windowing
 {
@@ -21,6 +22,11 @@ namespace MochaCore.Windowing
         /// Occurs when related window closes.
         /// </summary>
         public event EventHandler? Closed;
+
+        /// <summary>
+        /// Occurs when related module is disposed.
+        /// </summary>
+        public event EventHandler? Disposed;
 
         /// <summary>
         /// Closes associated window.

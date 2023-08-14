@@ -13,6 +13,12 @@ namespace ViewModels.Windows
     {
         public ICustomWindowControl<GenericWindowProperties> WindowControl { get; } = new CustomWindowControl<GenericWindowProperties>();
 
+        public TestWindowViewModel()
+        {
+            WindowControl.Opened += WindowOpened;
+            WindowControl.Disposed += WindowDisposed;
+        }
+
         [RelayCommand]
         private void Close()
         {
@@ -23,6 +29,17 @@ namespace ViewModels.Windows
         private void Maximize()
         {
             WindowControl.Maximize();
+        }
+
+        private void WindowOpened(object? sender, EventArgs e)
+        {
+            
+        }
+
+        private void WindowDisposed(object? sender, EventArgs e)
+        {
+            WindowControl.Opened -= WindowOpened;
+            WindowControl.Disposed -= WindowDisposed;
         }
     }
 }

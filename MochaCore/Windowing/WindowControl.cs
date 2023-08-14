@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace MochaCore.Windowing
 {
     /// <summary>
-    /// Provides API form managing related window.
+    /// Prvoides implementation of <see cref="IWindowControl"/>.
     /// </summary>
-    public class WindowControl : IWindowControl
+    public class WindowControl : IWindowControl, IWindowControlInitialize
     {
         protected IWindowModule? _module;
         private bool _isInitialized = false;
@@ -21,6 +21,9 @@ namespace MochaCore.Windowing
         public event EventHandler? Closed;
 
         /// <inheritdoc/>
+        public event EventHandler? Disposed;
+
+        /// <inheritdoc/>
         public object View
         {
             get
@@ -30,23 +33,10 @@ namespace MochaCore.Windowing
             }
         }
 
-        public virtual void Initialize(IWindowModule module)
-        {
-            _module = module;
-            _isInitialized = true;
-        }
-
-        public void Uninitialize()
-        {
-            _module = null;
-            _isInitialized = false;
-        }
-
         /// <inheritdoc/>
         public void Close()
         {
             InitializationGuard();
-
             _module!.Close();
         }
 
@@ -57,6 +47,39 @@ namespace MochaCore.Windowing
             _module!.Close(result);
         }
 
+        /// <inheritdoc/>
+        void IWindowControlInitialize.Initialize(IWindowModule module)
+        {
+            _module = module;
+
+            InitializeCore();
+
+            _isInitialized = true;
+        }
+
+        /// <summary>
+        /// Contains core logic for initialization.
+        /// </summary>
+        protected virtual void InitializeCore()
+        {
+            _module!.Opened += ModuleOpened;
+            _module!.Closed += ModuleClosed;
+            _module!.Disposed += ModuleDisposed;
+        }
+
+        /// <summary>
+        /// Contains core logic of uninitialization.
+        /// </summary>
+        protected virtual void UninitializeCore()
+        {
+            _module!.Opened -= ModuleOpened;
+            _module!.Closed -= ModuleClosed;
+            _module!.Disposed -= ModuleDisposed;
+        }
+
+        /// <summary>
+        /// Throws <see cref="InvalidOperationException"/> if current object isn't initialized.
+        /// </summary>
         protected void InitializationGuard()
         {
             if (!_isInitialized)
@@ -64,12 +87,39 @@ namespace MochaCore.Windowing
                 throw new InvalidOperationException($"{GetType().Name} was not initialized.");
             }
         }
+
+        private void ModuleOpened(object? sender, EventArgs e)
+        {
+            Opened?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ModuleClosed(object? sender, EventArgs e)
+        {
+            Closed?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ModuleDisposed(object? sender, EventArgs e)
+        {
+            Disposed?.Invoke(this, EventArgs.Empty);
+            if (_isInitialized)
+            {
+                Uninitialize();
+            }
+        }
+
+        private void Uninitialize()
+        {
+            UninitializeCore();
+
+            _module = null;
+            _isInitialized = false;
+        }
     }
 
     /// <summary>
     /// Provides API form managing related window.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Type of module properties.</typeparam>
     public class WindowControl<T> : WindowControl, IWindowControl<T> where T : class, new()
     {
         /// <inheritdoc/>

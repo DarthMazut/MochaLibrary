@@ -28,6 +28,11 @@ namespace MochaCore.Windowing
         public bool IsOpen { get; }
 
         /// <summary>
+        /// Indicates whether module is initialized.
+        /// </summary>
+        public bool IsInitialized { get; }
+
+        /// <summary>
         /// Inidicates whether current instance was already disposed.
         /// Disposed <see cref="IWindowModule"/> objects should no longer be interacted with.
         /// </summary>
