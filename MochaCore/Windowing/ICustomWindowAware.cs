@@ -3,10 +3,12 @@
 namespace MochaCore.Windowing
 {
     /// <summary>
-    /// 
+    /// Marks implementing class as data context for <see cref="ICustomWindowModule"/>.
+    /// Allows for managing associated window.
     /// </summary>
     public interface ICustomWindowAware : IWindowAware
     {
+        /// <inheritdoc/>
         IWindowControl IWindowAware.WindowControl => WindowControl;
 
         /// <summary>
@@ -16,13 +18,16 @@ namespace MochaCore.Windowing
     }
 
     /// <summary>
-    /// 
+    /// Marks implementing class as data context for <see cref="ICustomWindowModule"/>.
+    /// Allows for managing associated window.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Type of module properties.</typeparam>
     public interface ICustomWindowAware<T> : ICustomWindowAware, IWindowAware<T> where T : class, new()
     {
+        /// <inheritdoc/>
         ICustomWindowControl ICustomWindowAware.WindowControl => WindowControl;
 
+        /// <inheritdoc/>
         IWindowControl<T> IWindowAware<T>.WindowControl => WindowControl;
 
         /// <summary>

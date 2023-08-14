@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MochaCore.Windowing
 {
     /// <summary>
-    /// 
+    /// Prvoides implementation of <see cref="ICustomWindowControl"/>.
     /// </summary>
     public class CustomWindowControl : WindowControl, ICustomWindowControl, IMaximizeWindow, IMinimizeWindow, IClosingWindow
     {
@@ -57,6 +57,10 @@ namespace MochaCore.Windowing
         }
     }
 
+    /// <summary>
+    /// Prvoides implementation of <see cref="ICustomWindowControl"/>.
+    /// </summary>
+    /// <typeparam name="T">Type of module properties.</typeparam>
     public class CustomWindowControl<T> : CustomWindowControl, ICustomWindowControl<T> where T : class, new()
     {
         /// <inheritdoc/>
