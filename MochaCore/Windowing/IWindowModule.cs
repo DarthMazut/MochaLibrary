@@ -112,7 +112,7 @@ namespace MochaCore.Windowing
     public interface IWindowModule<T> : IWindowModule where T : class, new()
     {
         /// <summary>
-        /// Allows for providing additional data for module customization.
+        /// Provides additional data for module customization.
         /// </summary>
         public T Properties { get; set; }
     }
