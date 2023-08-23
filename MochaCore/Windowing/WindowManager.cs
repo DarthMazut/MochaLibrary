@@ -46,6 +46,40 @@ namespace MochaCore.Windowing
             return module;
         }
 
+        public static IWindowModule<T> RetrieveWindow<T>(string id) where T : class, new()
+        {
+            IWindowModule module = RetrieveWindow(id);
+            if (module is IWindowModule<T> typedModule)
+            {
+                return typedModule;
+            }
+
+            throw new InvalidCastException($"Module with id={id} cannot accept properties of type {typeof(T).Name}.");
+        }
+
+        public static ICustomWindowModule RetrieveCustomWindow(string id)
+        {
+            IWindowModule module = RetrieveWindow(id);
+            if (module is ICustomWindowModule typedModule)
+            {
+                return typedModule;
+            }
+
+            throw new InvalidCastException($"Module with id={id} is not a {typeof(ICustomWindowModule).Name}.");
+        }
+
+        public static ICustomWindowModule<T> RetrieveCustomWindow<T>(string id) where T : class, new()
+        {
+            IWindowModule module = RetrieveWindow(id);
+            if (module is ICustomWindowModule<T> typedModule)
+            {
+                return typedModule;
+            }
+
+            throw new InvalidCastException($"Module with id={id} is not a {typeof(ICustomWindowModule).Name} or " +
+                $"cannot accept properties of type {typeof(T).Name}.");
+        }
+
         /// <summary>
         /// Returns a <see cref="IReadOnlyCollection{T}"/> of instantiated modules.
         /// </summary>

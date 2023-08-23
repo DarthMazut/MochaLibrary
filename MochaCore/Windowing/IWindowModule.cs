@@ -28,11 +28,6 @@ namespace MochaCore.Windowing
         public bool IsOpen { get; }
 
         /// <summary>
-        /// Indicates whether module is initialized.
-        /// </summary>
-        public bool IsInitialized { get; }
-
-        /// <summary>
         /// Inidicates whether current instance was already disposed.
         /// Disposed <see cref="IWindowModule"/> objects should no longer be interacted with.
         /// </summary>
@@ -74,21 +69,21 @@ namespace MochaCore.Windowing
         /// Opens the representing window and returns <see cref="Task"/> which completes
         /// when opened window is closed.
         /// </summary>
-        public Task OpenAsync();
+        public Task<object?> OpenAsync();
 
         /// <summary>
         /// Opens the representing window and returns <see cref="Task"/> which completes
         /// when opened window is closed.
         /// </summary>
         /// <param name="parent">Object to be parent of the representing window.</param>
-        public Task OpenAsync(object parent);
+        public Task<object?> OpenAsync(object parent);
 
         /// <summary>
         /// Opens the representing window and returns <see cref="Task"/> which completes
         /// when opened window is closed.
         /// </summary>
         /// <param name="parentModule">Module to be parent of the representing window.</param>
-        public Task OpenAsync(IWindowModule parentModule);
+        public Task<object?> OpenAsync(IWindowModule parentModule);
 
         /// <summary>
         /// Closes the representing window if open.

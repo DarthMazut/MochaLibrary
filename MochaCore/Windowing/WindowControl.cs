@@ -24,6 +24,9 @@ namespace MochaCore.Windowing
         public event EventHandler? Disposed;
 
         /// <inheritdoc/>
+        public bool IsInitialized => _isInitialized;
+
+        /// <inheritdoc/>
         public object View
         {
             get

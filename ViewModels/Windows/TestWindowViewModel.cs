@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MochaCore.Dispatching;
 using MochaCore.Windowing;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,13 +18,17 @@ namespace ViewModels.Windows
         public TestWindowViewModel()
         {
             WindowControl.Opened += WindowOpened;
+            WindowControl.Closing += WindowClosing;
             WindowControl.Disposed += WindowDisposed;
         }
+
+        [ObservableProperty]
+        private string? _text;
 
         [RelayCommand]
         private void Close()
         {
-            WindowControl.Close();
+            WindowControl.Close("test param");
         }
 
         [RelayCommand]
@@ -31,9 +37,22 @@ namespace ViewModels.Windows
             WindowControl.Maximize();
         }
 
-        private void WindowOpened(object? sender, EventArgs e)
+        private async void WindowOpened(object? sender, EventArgs e)
         {
-            
+            Text = WindowControl.Properties.Info;
+            await Task.Delay(3000).ContinueWith(t =>
+            {
+                DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
+                {
+                    Text = "Test!";
+                    WindowControl.Properties.Info = "xyz...";
+                });
+            });
+        }
+
+        private void WindowClosing(object? sender, CancelEventArgs e)
+        {
+            WindowControl.Close("close by framework");
         }
 
         private void WindowDisposed(object? sender, EventArgs e)

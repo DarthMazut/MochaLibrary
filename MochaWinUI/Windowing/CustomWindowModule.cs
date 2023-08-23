@@ -23,7 +23,6 @@ namespace MochaWinUI.Windowing
         private IWindowAware? _dataContext;
         private bool _isOpen = false;
         private bool _isDisposed = false;
-        private bool _isInitialized = false;
         private TaskCompletionSource<object?>? _openTaskTsc;
         private object? _result;
 
@@ -81,9 +80,6 @@ namespace MochaWinUI.Windowing
         public bool IsDisposed => _isDisposed;
 
         /// <inheritdoc/>
-        public bool IsInitialized => _isInitialized;
-
-        /// <inheritdoc/>
         public event EventHandler? Opened;
 
         /// <inheritdoc/>
@@ -125,7 +121,7 @@ namespace MochaWinUI.Windowing
         public void Open(object parent) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public Task OpenAsync()
+        public Task<object?> OpenAsync()
         {
             DisposedGuard();
 
@@ -135,14 +131,14 @@ namespace MochaWinUI.Windowing
                 Open();
             }
 
-            return _openTaskTsc?.Task ?? Task.CompletedTask;
+            return _openTaskTsc?.Task ?? Task.FromResult<object?>(null);
         }
 
         /// <inheritdoc/>
-        public Task OpenAsync(object parent) => throw new NotImplementedException();
+        public Task<object?> OpenAsync(object parent) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public Task OpenAsync(IWindowModule parentModule) => throw new NotImplementedException();
+        public Task<object?> OpenAsync(IWindowModule parentModule) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public void Maximize()
@@ -189,8 +185,6 @@ namespace MochaWinUI.Windowing
                 SetDataContext(null);
 
                 _isDisposed = true;
-                _isInitialized = false;
-
                 Disposed?.Invoke(this, EventArgs.Empty); 
             }
         }
@@ -242,12 +236,11 @@ namespace MochaWinUI.Windowing
             }
         }
 
-        private void InitializeDataContext(IWindowAware dataContext)
+        private void InitializeDataContext(IWindowAware? dataContext)
         {
-            if (dataContext.WindowControl is IWindowControlInitialize controlInitialize)
+            if (dataContext?.WindowControl is IWindowControlInitialize controlInitialize)
             {
                 controlInitialize.Initialize(this);
-                _isInitialized = true;
             }
         }
 

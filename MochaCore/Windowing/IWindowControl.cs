@@ -14,6 +14,11 @@ namespace MochaCore.Windowing
         public object View { get; }
 
         /// <summary>
+        /// Indicates whether current instance is initialized.
+        /// </summary>
+        public bool IsInitialized { get; }
+
+        /// <summary>
         /// Occurs when related window is opened.
         /// </summary>
         public event EventHandler? Opened;
@@ -44,13 +49,13 @@ namespace MochaCore.Windowing
     }
 
     /// <summary>
-    /// Provides API form managing related window.
+    /// Provides API for managing related window.
     /// </summary>
-    /// <typeparam name="T">Type of module properties.</typeparam>
+    /// <typeparam name="T">Properties type of associated module.</typeparam>
     public interface IWindowControl<T> : IWindowControl where T : class, new()
     {
         /// <summary>
-        /// Allows for providing additional data for module customization.
+        /// Provides additional data for module customization.
         /// </summary>
         T Properties { get; }
     }

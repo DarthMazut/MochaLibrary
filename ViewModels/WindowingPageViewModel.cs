@@ -19,16 +19,12 @@ namespace ViewModels
         [RelayCommand]
         private async Task OpenWindow()
         {
-            IWindowModule mainWindowModule = WindowManager.GetOpenedModules("MainWindow").FirstOrDefault()!;
+            using ICustomWindowModule<GenericWindowProperties> testWindowModule
+                = WindowManager.RetrieveCustomWindow<GenericWindowProperties>("TestWindow");
 
-            IWindowModule testWindowModule = WindowManager.RetrieveWindow("TestWindow");
-            if (testWindowModule is ICustomWindowModule<GenericWindowProperties> module)
-            {
-                module.Open(mainWindowModule);
-                //module.Open();
-            }
+            testWindowModule.Properties.Info = "Hello there 😎";
 
-            //testWindowModule.Dispose();
+            object? result = await testWindowModule.OpenAsync();
         }
     }
 }
