@@ -1,7 +1,7 @@
 ﻿namespace MochaCore.Windowing
 {
     /// <summary>
-    /// Provides arguments for <see cref="IWindowStateAware.StateChanged"/> event.
+    /// Provides arguments for <see cref="IWindowStateChanged.StateChanged"/> event.
     /// </summary>
     public class WindowStateChangedEventArgs
     {
@@ -9,7 +9,7 @@
         /// Initializes a new instance of the <see cref="WindowStateChangedEventArgs"/> class.
         /// </summary>
         /// <param name="windowState">The current window state at the time the 
-        /// <see cref="IWindowStateAware.StateChanged"/> event is triggered.</param>
+        /// <see cref="IWindowStateChanged.StateChanged"/> event is triggered.</param>
         public WindowStateChangedEventArgs(ModuleWindowState windowState)
         {
             WindowState = windowState;

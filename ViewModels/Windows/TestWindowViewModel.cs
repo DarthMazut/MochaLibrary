@@ -51,7 +51,7 @@ namespace ViewModels.Windows
 
         private async void WindowOpened(object? sender, EventArgs e)
         {
-            Text = WindowControl.Properties.Info;
+            Text = $"Window state: {WindowControl.WindowState}";
             //await Task.Delay(3000).ContinueWith(t =>
             //{
             //    DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>

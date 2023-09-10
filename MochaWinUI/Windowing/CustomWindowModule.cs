@@ -15,10 +15,9 @@ namespace MochaWinUI.Windowing
     /// <summary>
     /// Provides WinUI implementation of <see cref="ICustomWindowModule{T}"/>.
     /// </summary>
-    public class CustomWindowModule : ICustomWindowModule // TODO: Add IGetXamlRoot
+    public class CustomWindowModule : ICustomWindowModule
     {
         protected readonly Window _window;
-        protected readonly AppWindow _appWindow;
 
         private IWindowAware? _dataContext;
         private bool _isOpen = false;
@@ -46,12 +45,11 @@ namespace MochaWinUI.Windowing
         public CustomWindowModule(Window window, IWindowAware? dataContext)
         {
             _window = window;
-            _appWindow = _window.AppWindow;
             _dataContext = dataContext ?? GetDataContextFromWindow(window);
 
             _window.Closed += WindowClosed;
-            _appWindow.Closing += WindowClosing;
-            _appWindow.Changed += WindowChanged;
+            _window.AppWindow.Closing += WindowClosing;
+            _window.AppWindow.Changed += WindowChanged;
         }
 
         /// <inheritdoc/>
@@ -64,14 +62,7 @@ namespace MochaWinUI.Windowing
         public bool IsOpen => _isOpen;
 
         /// <inheritdoc/>
-        public ModuleWindowState WindowState
-        {
-            get
-            {
-                _state = ResolveCurrentState();
-                return _state;
-            }
-        }
+        public ModuleWindowState WindowState => _state;
 
         /// <inheritdoc/>
         public bool IsDisposed => _isDisposed;
@@ -101,9 +92,10 @@ namespace MochaWinUI.Windowing
                 InitializeDataContext(_dataContext);
                 SetDataContext(_dataContext);
 
-                OpenCore(); // TODO: need to update state onOpen and onClose
+                OpenCore();
 
                 _isOpen = true;
+                UpdateState();
                 Opened?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -137,25 +129,25 @@ namespace MochaWinUI.Windowing
         /// <inheritdoc/>
         public void Maximize()
         {
-            (_appWindow.Presenter as OverlappedPresenter)?.Maximize();
+            (_window.AppWindow.Presenter as OverlappedPresenter)?.Maximize();
         }
 
         /// <inheritdoc/>
         public void Minimize()
         {
-            (_appWindow.Presenter as OverlappedPresenter)?.Minimize();
+            (_window.AppWindow.Presenter as OverlappedPresenter)?.Minimize();
         }
 
         /// <inheritdoc/>
         public void Hide()
         {
-            _appWindow.Hide();
+            _window.AppWindow.Hide();
         }
 
         /// <inheritdoc/>
         public void Restore()
         {
-            (_appWindow.Presenter as OverlappedPresenter)?.Restore(true);
+            (_window.AppWindow.Presenter as OverlappedPresenter)?.Restore(true);
         }
 
         /// <inheritdoc/>
@@ -197,8 +189,8 @@ namespace MochaWinUI.Windowing
         protected virtual void DisposeCore()
         {
             _window.Closed -= WindowClosed;
-            _appWindow.Closing -= WindowClosing;
-            _appWindow.Changed -= WindowChanged;
+            _window.AppWindow.Closing -= WindowClosing;
+            _window.AppWindow.Changed -= WindowChanged;
         }
 
         /// <summary>
@@ -224,12 +216,12 @@ namespace MochaWinUI.Windowing
         {
             if (IsOpen)
             {
-                if (!_appWindow.IsVisible)
+                if (!_window.AppWindow.IsVisible)
                 {
                     return ModuleWindowState.Hidden;
                 }
 
-                if (_appWindow.Presenter is OverlappedPresenter overlappedPresenter)
+                if (_window.AppWindow.Presenter is OverlappedPresenter overlappedPresenter)
                 {
                     if (overlappedPresenter.IsModal)
                     {
@@ -245,12 +237,12 @@ namespace MochaWinUI.Windowing
                     };
                 }
 
-                if (_appWindow.Presenter is FullScreenPresenter)
+                if (_window.AppWindow.Presenter is FullScreenPresenter)
                 {
                     return ModuleWindowState.FullScreen;
                 }
 
-                if (_appWindow.Presenter is CompactOverlayPresenter)
+                if (_window.AppWindow.Presenter is CompactOverlayPresenter)
                 {
                     return ModuleWindowState.Floating;
                 }
@@ -271,11 +263,17 @@ namespace MochaWinUI.Windowing
         private void WindowClosed(object sender, WindowEventArgs args)
         {
             _isOpen = false;
+            UpdateState();
             Closed?.Invoke(this, EventArgs.Empty);
             _openTaskTsc?.SetResult(_result);
         }
 
         private void WindowChanged(AppWindow sender, AppWindowChangedEventArgs e)
+        {
+            UpdateState();
+        }
+
+        private void UpdateState()
         {
             ModuleWindowState currentState = ResolveCurrentState();
             if (_state != currentState)
