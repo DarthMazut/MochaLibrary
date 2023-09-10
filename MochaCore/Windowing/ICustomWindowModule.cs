@@ -10,7 +10,7 @@ namespace MochaCore.Windowing
     /// <summary>
     /// Extends <see cref="IWindowModule"/> with additional capabilities.
     /// </summary>
-    public interface ICustomWindowModule : IWindowModule, IMaximizeWindow, IMinimizeWindow, IClosingWindow
+    public interface ICustomWindowModule : IWindowModule, IMaximizeWindow, IMinimizeWindow, IClosingWindow, IHideWindow, IRestoreWindow, IWindowStateChanged, IWindowStateAware
     {
 
     }

@@ -17,6 +17,9 @@
             <Button HorizontalAlignment="Center" Command="{Binding MaximizeCommand}">
                 Maximize
             </Button>
+            <Button HorizontalAlignment="Center" Command="{Binding HideCommand}">
+               Hide
+            </Button>
         </StackPanel>
 
     </Grid>

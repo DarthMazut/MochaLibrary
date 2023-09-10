@@ -23,6 +23,10 @@ namespace ViewModels
                 = WindowManager.RetrieveCustomWindow<GenericWindowProperties>("TestWindow");
 
             testWindowModule.Properties.Info = "Hello there 😎";
+            testWindowModule.StateChanged += (s, e) =>
+            {
+
+            };
 
             object? result = await testWindowModule.OpenAsync();
         }

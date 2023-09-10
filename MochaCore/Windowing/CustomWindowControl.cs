@@ -10,12 +10,25 @@ namespace MochaCore.Windowing
     /// <summary>
     /// Prvoides implementation of <see cref="ICustomWindowControl"/>.
     /// </summary>
-    public class CustomWindowControl : WindowControl, ICustomWindowControl, IMaximizeWindow, IMinimizeWindow, IClosingWindow
+    public class CustomWindowControl : WindowControl, ICustomWindowControl
     {
         protected ICustomWindowModule? _customModule;
 
         /// <inheritdoc/>
+        public ModuleWindowState WindowState
+        {
+            get
+            {
+                InitializationGuard();
+                return _customModule!.WindowState;
+            }
+        }
+
+        /// <inheritdoc/>
         public event EventHandler<CancelEventArgs>? Closing;
+
+        /// <inheritdoc/>
+        public event EventHandler<WindowStateChangedEventArgs>? StateChanged;
 
         /// <inheritdoc/>
         public void Maximize()
@@ -32,12 +45,27 @@ namespace MochaCore.Windowing
         }
 
         /// <inheritdoc/>
+        public void Restore()
+        {
+            InitializationGuard();
+            _customModule!.Restore();
+        }
+
+        /// <inheritdoc/>
+        public void Hide()
+        {
+            InitializationGuard();
+            _customModule!.Hide();
+        }
+
+        /// <inheritdoc/>
         protected override void InitializeCore()
         {
             if (_module is ICustomWindowModule customModule)
             {
                 _customModule = customModule;
                 _customModule.Closing += ModuleClosing;
+                _customModule.StateChanged += ModuleStateChanged;
             }
             else
             {
@@ -58,6 +86,11 @@ namespace MochaCore.Windowing
             CancelEventArgs args = new();
             Closing?.Invoke(this, args);
             e.Cancel = args.Cancel;
+        }
+
+        private void ModuleStateChanged(object? sender, WindowStateChangedEventArgs e)
+        {
+            StateChanged?.Invoke(this, e);
         }
     }
 

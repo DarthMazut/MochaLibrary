@@ -20,6 +20,10 @@ namespace ViewModels.Windows
             WindowControl.Opened += WindowOpened;
             WindowControl.Closing += WindowClosing;
             WindowControl.Disposed += WindowDisposed;
+            WindowControl.StateChanged += (s, e) =>
+            {
+                Text = $"Window state: {e.WindowState}";
+            };
         }
 
         [ObservableProperty]
@@ -37,17 +41,25 @@ namespace ViewModels.Windows
             WindowControl.Maximize();
         }
 
+        [RelayCommand]
+        private async Task Hide()
+        {
+            WindowControl.Hide();
+            await Task.Delay(5000);
+            WindowControl.Restore();
+        }
+
         private async void WindowOpened(object? sender, EventArgs e)
         {
             Text = WindowControl.Properties.Info;
-            await Task.Delay(3000).ContinueWith(t =>
-            {
-                DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
-                {
-                    Text = "Test!";
-                    WindowControl.Properties.Info = "xyz...";
-                });
-            });
+            //await Task.Delay(3000).ContinueWith(t =>
+            //{
+            //    DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
+            //    {
+            //        Text = "Test!";
+            //        WindowControl.Properties.Info = "xyz...";
+            //    });
+            //});
         }
 
         private void WindowClosing(object? sender, CancelEventArgs e)
@@ -58,6 +70,7 @@ namespace ViewModels.Windows
         private void WindowDisposed(object? sender, EventArgs e)
         {
             WindowControl.Opened -= WindowOpened;
+            WindowControl.Closing -= WindowClosing;
             WindowControl.Disposed -= WindowDisposed;
         }
     }

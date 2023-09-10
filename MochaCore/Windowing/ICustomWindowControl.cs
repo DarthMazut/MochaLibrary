@@ -9,7 +9,7 @@ namespace MochaCore.Windowing
     /// <summary>
     /// Provides API form managing related window.
     /// </summary>
-    public interface ICustomWindowControl : IWindowControl, IMaximizeWindow, IMinimizeWindow, IClosingWindow
+    public interface ICustomWindowControl : IWindowControl, IMaximizeWindow, IMinimizeWindow, IClosingWindow, IHideWindow, IRestoreWindow, IWindowStateAware, IWindowStateChanged
     {
 
     }
