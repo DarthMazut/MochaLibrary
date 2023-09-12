@@ -19,6 +19,9 @@
     /// <typeparam name="T">Type of module properties.</typeparam>
     public interface IWindowAware<T> : IWindowAware where T : class, new()
     {
+        /// <inheritdoc/>
+        IWindowControl IWindowAware.WindowControl => WindowControl;
+
         /// <summary>
         /// Provides API form managing related window.
         /// </summary>
