@@ -25,6 +25,9 @@ namespace MochaCore.Windowing
         }
 
         /// <inheritdoc/>
+        public new ICustomWindowModule Module => (ICustomWindowModule)base.Module;
+
+        /// <inheritdoc/>
         public event EventHandler<CancelEventArgs>? Closing;
 
         /// <inheritdoc/>
@@ -109,5 +112,8 @@ namespace MochaCore.Windowing
                 return ((ICustomWindowModule<T>)_module!).Properties;
             }
         }
+
+        /// <inheritdoc/>
+        new public ICustomWindowModule<T> Module => (ICustomWindowModule<T>)base.Module;
     }
 }

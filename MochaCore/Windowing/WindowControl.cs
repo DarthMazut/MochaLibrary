@@ -37,6 +37,16 @@ namespace MochaCore.Windowing
         }
 
         /// <inheritdoc/>
+        public IWindowModule Module
+        {
+            get
+            {
+                InitializationGuard();
+                return _module!;
+            }
+        }
+
+        /// <inheritdoc/>
         public void Close()
         {
             InitializationGuard();
@@ -134,5 +144,22 @@ namespace MochaCore.Windowing
                 return ((IWindowModule<T>)_module!).Properties;
             }
         }
+
+        /// <inheritdoc/>
+        new public IWindowModule<T> Module => (IWindowModule<T>)base.Module;
+
+        // Not sure whether below is neccessary.
+        // Initialize() is called by module on its dataContext, and that dataContext is statically typed via module ctor.
+        // So it's hard to imagine case where Initialize() gets misstyped module.
+
+        //protected override void InitializeCore()
+        //{
+        //    if (_module is not IWindowModule<T>)
+        //    {
+        //        throw new ArgumentException();
+        //    }
+
+        //    base.InitializeCore();
+        //}
     }
 }

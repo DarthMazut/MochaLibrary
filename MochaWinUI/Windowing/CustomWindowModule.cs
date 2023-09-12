@@ -19,7 +19,7 @@ namespace MochaWinUI.Windowing
     {
         protected readonly Window _window;
 
-        private IWindowAware? _dataContext;
+        private ICustomWindowAware? _dataContext;
         private bool _isOpen = false;
         private bool _isDisposed = false;
         private ModuleWindowState _state;
@@ -42,7 +42,7 @@ namespace MochaWinUI.Windowing
         /// specified window is also null, then the module's data context will be null. 
         /// If the window's data context is of a different type than <see cref="IWindowAware"/>, an exception will be thrown.
         /// </param>
-        public CustomWindowModule(Window window, IWindowAware? dataContext)
+        public CustomWindowModule(Window window, ICustomWindowAware? dataContext)
         {
             _window = window;
             _dataContext = dataContext ?? GetDataContextFromWindow(window);
@@ -56,7 +56,7 @@ namespace MochaWinUI.Windowing
         public object View => _window;
 
         /// <inheritdoc/>
-        public IWindowAware? DataContext => _dataContext;
+        public ICustomWindowAware? DataContext => _dataContext;
 
         /// <inheritdoc/>
         public bool IsOpen => _isOpen;
@@ -291,7 +291,7 @@ namespace MochaWinUI.Windowing
             }
         }
 
-        private IWindowAware? GetDataContextFromWindow(Window window)
+        private ICustomWindowAware? GetDataContextFromWindow(Window window)
         {
             object? windowContext = null;
             if (window.Content is FrameworkElement rootElement)
@@ -303,7 +303,7 @@ namespace MochaWinUI.Windowing
                 }
             }
 
-            return windowContext as IWindowAware;
+            return windowContext as ICustomWindowAware;
         }
 
         private void InitializeDataContext(IWindowAware? dataContext)
@@ -356,9 +356,9 @@ namespace MochaWinUI.Windowing
         /// The data context for the window associated with the initialized module. If null is passed, 
         /// the data context object will be searched within the provided window object. If the data context of the 
         /// specified window is also null, then the module's data context will be null. 
-        /// If the window's data context is of a different type than <see cref="IWindowAware"/>, an exception will be thrown.
+        /// If the window's data context is of a different type than <see cref="ICustomWindowAware{T}"/>, an exception will be thrown.
         /// </param>
-        public CustomWindowModule(Window window, IWindowAware? dataContext) : this(window, dataContext, new()) { }
+        public CustomWindowModule(Window window, ICustomWindowAware<T>? dataContext) : this(window, dataContext, new()) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomWindowControl{T}"/> class.
@@ -368,16 +368,19 @@ namespace MochaWinUI.Windowing
         /// The data context for the window associated with the initialized module. If null is passed, 
         /// the data context object will be searched within the provided window object. If the data context of the 
         /// specified window is also null, then the module's data context will be null. 
-        /// If the window's data context is of a different type than <see cref="IWindowAware"/>, an exception will be thrown.
+        /// If the window's data context is of a different type than <see cref="ICustomWindowAware{T}"/>, an exception will be thrown.
         /// </param>
         /// <param name="properties">Provides additional data for module customization.</param>
-        public CustomWindowModule(Window window, IWindowAware? dataContext, T properties) : base(window, dataContext)
+        public CustomWindowModule(Window window, ICustomWindowAware<T>? dataContext, T properties) : base(window, dataContext)
         {
             Properties = properties;
         }
 
         /// <inheritdoc/>
         public T Properties { get; set; }
+
+        /// <inheritdoc/>
+        new public ICustomWindowAware<T>? DataContext => base.DataContext is not null ? (ICustomWindowAware<T>)base.DataContext : null;
 
         /// <inheritdoc/>
         protected override sealed void OpenCore()

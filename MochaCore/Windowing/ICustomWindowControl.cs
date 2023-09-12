@@ -11,7 +11,13 @@ namespace MochaCore.Windowing
     /// </summary>
     public interface ICustomWindowControl : IWindowControl, IMaximizeWindow, IMinimizeWindow, IClosingWindow, IHideWindow, IRestoreWindow, IWindowStateAware, IWindowStateChanged
     {
+        /// <inheritdoc/>
+        IWindowModule IWindowControl.Module => Module;
 
+        /// <summary>
+        /// Returns related <see cref="ICustomWindowModule"/> instance.
+        /// </summary>
+        new public ICustomWindowModule Module { get; }
     }
 
     /// <summary>
@@ -20,6 +26,15 @@ namespace MochaCore.Windowing
     /// <typeparam name="T">Type of module properties.</typeparam>
     public interface ICustomWindowControl<T> : ICustomWindowControl, IWindowControl<T> where T : class, new()
     {
+        /// <inheritdoc/>
+        ICustomWindowModule ICustomWindowControl.Module => Module;
 
+        /// <inheritdoc/>
+        IWindowModule<T> IWindowControl<T>.Module => Module;
+
+        /// <summary>
+        /// Returns related <see cref="ICustomWindowModule{T}"/> instance.
+        /// </summary>
+        new public ICustomWindowModule<T> Module { get; }
     }
 }

@@ -12,7 +12,13 @@ namespace MochaCore.Windowing
     /// </summary>
     public interface ICustomWindowModule : IWindowModule, IMaximizeWindow, IMinimizeWindow, IClosingWindow, IHideWindow, IRestoreWindow, IWindowStateChanged, IWindowStateAware
     {
+        /// <inheritdoc/>
+        IWindowAware? IWindowModule.DataContext => DataContext;
 
+        /// <summary>
+        /// Returns the data context of the representing window or <see langword="null"/> if no such was specified.
+        /// </summary>
+        new public ICustomWindowAware? DataContext { get; }
     }
 
     /// <summary>
@@ -21,6 +27,18 @@ namespace MochaCore.Windowing
     /// <typeparam name="T">Type of module properties.</typeparam>
     public interface ICustomWindowModule<T> : ICustomWindowModule, IWindowModule<T> where T : class, new()
     {
+        /// <inheritdoc/>
+        IWindowAware? IWindowModule.DataContext => DataContext;
 
+        /// <inheritdoc/>
+        IWindowAware<T>? IWindowModule<T>.DataContext => DataContext;
+
+        /// <inheritdoc/>
+        ICustomWindowAware? ICustomWindowModule.DataContext => DataContext;
+
+        /// <summary>
+        /// Returns the data context of the representing window or <see langword="null"/> if no such was specified.
+        /// </summary>
+        new public ICustomWindowAware<T>? DataContext { get; }
     }
 }

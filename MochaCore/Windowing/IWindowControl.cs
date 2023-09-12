@@ -14,6 +14,11 @@ namespace MochaCore.Windowing
         public object View { get; }
 
         /// <summary>
+        /// Returns related <see cref="IWindowModule"/> instance.
+        /// </summary>
+        public IWindowModule Module { get;}
+
+        /// <summary>
         /// Indicates whether current instance is initialized.
         /// </summary>
         public bool IsInitialized { get; }
@@ -54,6 +59,14 @@ namespace MochaCore.Windowing
     /// <typeparam name="T">Properties type of associated module.</typeparam>
     public interface IWindowControl<T> : IWindowControl where T : class, new()
     {
+        /// <inheritdoc/>
+        IWindowModule IWindowControl.Module => Module;
+
+        /// <summary>
+        /// Returns related <see cref="IWindowModule{T}"/> instance.
+        /// </summary>
+        new public IWindowModule<T> Module { get; }
+
         /// <summary>
         /// Provides additional data for module customization.
         /// </summary>

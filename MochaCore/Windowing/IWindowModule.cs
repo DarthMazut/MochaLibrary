@@ -110,5 +110,13 @@ namespace MochaCore.Windowing
         /// Provides additional data for module customization.
         /// </summary>
         public T Properties { get; set; }
+
+        /// <inheritdoc/>
+        IWindowAware? IWindowModule.DataContext => DataContext;
+
+        /// <summary>
+        /// Returns the data context of the representing window or <see langword="null"/> if no such was specified.
+        /// </summary>
+        new public IWindowAware<T>? DataContext { get; }
     }
 }
