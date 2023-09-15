@@ -333,20 +333,20 @@ namespace MochaWinUI.Windowing
     /// Provides WinUI implementation of <see cref="IWindowModule{T}"/>.
     /// </summary>
     /// <typeparam name="T">Type of module custom properties.</typeparam>
-    public class CustomWindowModule<T> : WindowModule, IWindowModule<T> where T : class, new()
+    public class WindowModule<T> : WindowModule, IWindowModule<T> where T : class, new()
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowControl{T}"/> class.
         /// </summary>
         /// <param name="window">The technology-specific window object associated with the initialized module.</param>
-        public CustomWindowModule(Window window) : this(window, null, new()) { }
+        public WindowModule(Window window) : this(window, null, new()) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowControl{T}"/> class.
         /// </summary>
         /// <param name="window">The technology-specific window object associated with the initialized module.</param>
         /// <param name="properties">Provides additional data for module customization.</param>
-        public CustomWindowModule(Window window, T properties) : this(window, null, properties) { }
+        public WindowModule(Window window, T properties) : this(window, null, properties) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowControl{T}"/> class.
@@ -358,7 +358,7 @@ namespace MochaWinUI.Windowing
         /// specified window is also null, then the module's data context will be null. 
         /// If the window's data context is of a different type than <see cref="IWindowAware{T}"/>, an exception will be thrown.
         /// </param>
-        public CustomWindowModule(Window window, IWindowAware<T>? dataContext) : this(window, dataContext, new()) { }
+        public WindowModule(Window window, IWindowAware<T>? dataContext) : this(window, dataContext, new()) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowControl{T}"/> class.
@@ -371,7 +371,7 @@ namespace MochaWinUI.Windowing
         /// If the window's data context is of a different type than <see cref="IWindowAware{T}"/>, an exception will be thrown.
         /// </param>
         /// <param name="properties">Provides additional data for module customization.</param>
-        public CustomWindowModule(Window window, IWindowAware<T>? dataContext, T properties) : base(window, dataContext)
+        public WindowModule(Window window, IWindowAware<T>? dataContext, T properties) : base(window, dataContext)
         {
             Properties = properties;
         }

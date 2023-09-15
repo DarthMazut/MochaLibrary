@@ -44,7 +44,7 @@ namespace WinUiApplication
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
-            WindowManager.RegisterWindow("TestWindow", () => new CustomWindowModule<GenericWindowProperties>(new TestWindow(), new TestWindowViewModel()));
+            WindowManager.RegisterWindow("TestWindow", () => new WindowModule<GenericWindowProperties>(new TestWindow(), new TestWindowViewModel()));
 
             INavigationService mainNavigationService = NavigationManager.AddNavigationService(
                 NavigationServices.MainNavigationServiceId,
