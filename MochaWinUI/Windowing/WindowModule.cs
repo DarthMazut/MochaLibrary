@@ -13,13 +13,13 @@ using Windows.Win32.Foundation;
 namespace MochaWinUI.Windowing
 {
     /// <summary>
-    /// Provides WinUI implementation of <see cref="ICustomWindowModule{T}"/>.
+    /// Provides WinUI implementation of <see cref="IWindowModule{T}"/>.
     /// </summary>
-    public class CustomWindowModule : ICustomWindowModule
+    public class WindowModule : IWindowModule
     {
         protected readonly Window _window;
 
-        private ICustomWindowAware? _dataContext;
+        private IWindowAware? _dataContext;
         private bool _isOpen = false;
         private bool _isDisposed = false;
         private ModuleWindowState _state;
@@ -27,22 +27,22 @@ namespace MochaWinUI.Windowing
         private object? _result;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomWindowControl{T}"/> class.
+        /// Initializes a new instance of the <see cref="WindowControl{T}"/> class.
         /// </summary>
         /// <param name="window">The technology-specific window object associated with the initialized module.</param>
-        public CustomWindowModule(Window window) : this(window, null) { }
+        public WindowModule(Window window) : this(window, null) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomWindowControl{T}"/> class.
+        /// Initializes a new instance of the <see cref="WindowControl{T}"/> class.
         /// </summary>
         /// <param name="window">The technology-specific window object associated with the initialized module.</param>
         /// <param name="dataContext">
         /// The data context for the window associated with the initialized module. If null is passed, 
         /// the data context object will be searched within the provided window object. If the data context of the 
         /// specified window is also null, then the module's data context will be null. 
-        /// If the window's data context is of a different type than <see cref="IWindowAware"/>, an exception will be thrown.
+        /// If the window's data context is of a different type than <see cref="IBaseWindowAware"/>, an exception will be thrown.
         /// </param>
-        public CustomWindowModule(Window window, ICustomWindowAware? dataContext)
+        public WindowModule(Window window, IWindowAware? dataContext)
         {
             _window = window;
             _dataContext = dataContext ?? GetDataContextFromWindow(window);
@@ -56,7 +56,7 @@ namespace MochaWinUI.Windowing
         public object View => _window;
 
         /// <inheritdoc/>
-        public ICustomWindowAware? DataContext => _dataContext;
+        public IWindowAware? DataContext => _dataContext;
 
         /// <inheritdoc/>
         public bool IsOpen => _isOpen;
@@ -101,7 +101,7 @@ namespace MochaWinUI.Windowing
         }
 
         /// <inheritdoc/>
-        public void Open(IWindowModule parentModule) => throw new NotImplementedException();
+        public void Open(IBaseWindowModule parentModule) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public void Open(object parent) => throw new NotImplementedException();
@@ -124,7 +124,7 @@ namespace MochaWinUI.Windowing
         public Task<object?> OpenAsync(object parent) => throw new NotImplementedException();
 
         /// <inheritdoc/>
-        public Task<object?> OpenAsync(IWindowModule parentModule) => throw new NotImplementedException();
+        public Task<object?> OpenAsync(IBaseWindowModule parentModule) => throw new NotImplementedException();
 
         /// <inheritdoc/>
         public void Maximize()
@@ -283,7 +283,7 @@ namespace MochaWinUI.Windowing
             }
         }
 
-        private void SetDataContext(IWindowAware? dataContext)
+        private void SetDataContext(IBaseWindowAware? dataContext)
         {
             if (_window.Content is FrameworkElement rootElement)
             {
@@ -291,22 +291,22 @@ namespace MochaWinUI.Windowing
             }
         }
 
-        private ICustomWindowAware? GetDataContextFromWindow(Window window)
+        private IWindowAware? GetDataContextFromWindow(Window window)
         {
             object? windowContext = null;
             if (window.Content is FrameworkElement rootElement)
             {
                 windowContext = rootElement.DataContext;
-                if (windowContext is not null or IWindowAware)
+                if (windowContext is not null or IBaseWindowAware)
                 {
-                    throw new InvalidOperationException($"The data context provided in {window.GetType()} was not of type {typeof(IWindowAware)}");
+                    throw new InvalidOperationException($"The data context provided in {window.GetType()} was not of type {typeof(IBaseWindowAware)}");
                 }
             }
 
-            return windowContext as ICustomWindowAware;
+            return windowContext as IWindowAware;
         }
 
-        private void InitializeDataContext(IWindowAware? dataContext)
+        private void InitializeDataContext(IBaseWindowAware? dataContext)
         {
             if (dataContext?.WindowControl is IWindowControlInitialize controlInitialize)
             {
@@ -330,48 +330,48 @@ namespace MochaWinUI.Windowing
     }
 
     /// <summary>
-    /// Provides WinUI implementation of <see cref="ICustomWindowModule{T}"/>.
+    /// Provides WinUI implementation of <see cref="IWindowModule{T}"/>.
     /// </summary>
     /// <typeparam name="T">Type of module custom properties.</typeparam>
-    public class CustomWindowModule<T> : CustomWindowModule, ICustomWindowModule<T> where T : class, new()
+    public class CustomWindowModule<T> : WindowModule, IWindowModule<T> where T : class, new()
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomWindowControl{T}"/> class.
+        /// Initializes a new instance of the <see cref="WindowControl{T}"/> class.
         /// </summary>
         /// <param name="window">The technology-specific window object associated with the initialized module.</param>
         public CustomWindowModule(Window window) : this(window, null, new()) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomWindowControl{T}"/> class.
+        /// Initializes a new instance of the <see cref="WindowControl{T}"/> class.
         /// </summary>
         /// <param name="window">The technology-specific window object associated with the initialized module.</param>
         /// <param name="properties">Provides additional data for module customization.</param>
         public CustomWindowModule(Window window, T properties) : this(window, null, properties) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomWindowControl{T}"/> class.
+        /// Initializes a new instance of the <see cref="WindowControl{T}"/> class.
         /// </summary>
         /// <param name="window">The technology-specific window object associated with the initialized module.</param>
         /// <param name="dataContext">
         /// The data context for the window associated with the initialized module. If null is passed, 
         /// the data context object will be searched within the provided window object. If the data context of the 
         /// specified window is also null, then the module's data context will be null. 
-        /// If the window's data context is of a different type than <see cref="ICustomWindowAware{T}"/>, an exception will be thrown.
+        /// If the window's data context is of a different type than <see cref="IWindowAware{T}"/>, an exception will be thrown.
         /// </param>
-        public CustomWindowModule(Window window, ICustomWindowAware<T>? dataContext) : this(window, dataContext, new()) { }
+        public CustomWindowModule(Window window, IWindowAware<T>? dataContext) : this(window, dataContext, new()) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomWindowControl{T}"/> class.
+        /// Initializes a new instance of the <see cref="WindowControl{T}"/> class.
         /// </summary>
         /// <param name="window">The technology-specific window object associated with the initialized module.</param>
         /// <param name="dataContext">
         /// The data context for the window associated with the initialized module. If null is passed, 
         /// the data context object will be searched within the provided window object. If the data context of the 
         /// specified window is also null, then the module's data context will be null. 
-        /// If the window's data context is of a different type than <see cref="ICustomWindowAware{T}"/>, an exception will be thrown.
+        /// If the window's data context is of a different type than <see cref="IWindowAware{T}"/>, an exception will be thrown.
         /// </param>
         /// <param name="properties">Provides additional data for module customization.</param>
-        public CustomWindowModule(Window window, ICustomWindowAware<T>? dataContext, T properties) : base(window, dataContext)
+        public CustomWindowModule(Window window, IWindowAware<T>? dataContext, T properties) : base(window, dataContext)
         {
             Properties = properties;
         }
@@ -380,7 +380,7 @@ namespace MochaWinUI.Windowing
         public T Properties { get; set; }
 
         /// <inheritdoc/>
-        new public ICustomWindowAware<T>? DataContext => base.DataContext is not null ? (ICustomWindowAware<T>)base.DataContext : null;
+        new public IWindowAware<T>? DataContext => base.DataContext is not null ? (IWindowAware<T>)base.DataContext : null;
 
         /// <inheritdoc/>
         protected override sealed void OpenCore()

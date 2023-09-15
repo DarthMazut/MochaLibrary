@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,128 +10,95 @@ namespace MochaCore.Windowing
     /// <summary>
     /// Prvoides implementation of <see cref="IWindowControl"/>.
     /// </summary>
-    public class WindowControl : IWindowControl, IWindowControlInitialize
+    public class WindowControl : BaseWindowControl, IWindowControl
     {
-        protected IWindowModule? _module;
-        private bool _isInitialized = false;
+        protected IWindowModule? _customModule;
 
         /// <inheritdoc/>
-        public event EventHandler? Opened;
-
-        /// <inheritdoc/>
-        public event EventHandler? Closed;
-
-        /// <inheritdoc/>
-        public event EventHandler? Disposed;
-
-        /// <inheritdoc/>
-        public bool IsInitialized => _isInitialized;
-
-        /// <inheritdoc/>
-        public object View
+        public ModuleWindowState WindowState
         {
             get
             {
                 InitializationGuard();
-                return _module!.View;
+                return _customModule!.WindowState;
             }
         }
 
         /// <inheritdoc/>
-        public IWindowModule Module
-        {
-            get
-            {
-                InitializationGuard();
-                return _module!;
-            }
-        }
+        public new IWindowModule Module => (IWindowModule)base.Module;
 
         /// <inheritdoc/>
-        public void Close()
+        public event EventHandler<CancelEventArgs>? Closing;
+
+        /// <inheritdoc/>
+        public event EventHandler<WindowStateChangedEventArgs>? StateChanged;
+
+        /// <inheritdoc/>
+        public void Maximize()
         {
             InitializationGuard();
-            _module!.Close();
+            _customModule!.Maximize();
         }
 
         /// <inheritdoc/>
-        public void Close(object? result)
+        public void Minimize()
         {
             InitializationGuard();
-            _module!.Close(result);
+            _customModule!.Minimize();
         }
 
         /// <inheritdoc/>
-        void IWindowControlInitialize.Initialize(IWindowModule module)
+        public void Restore()
         {
-            _module = module;
-
-            InitializeCore();
-
-            _isInitialized = true;
+            InitializationGuard();
+            _customModule!.Restore();
         }
 
-        /// <summary>
-        /// Contains core logic for initialization.
-        /// </summary>
-        protected virtual void InitializeCore()
+        /// <inheritdoc/>
+        public void Hide()
         {
-            _module!.Opened += ModuleOpened;
-            _module!.Closed += ModuleClosed;
-            _module!.Disposed += ModuleDisposed;
+            InitializationGuard();
+            _customModule!.Hide();
         }
 
-        /// <summary>
-        /// Contains core logic of uninitialization.
-        /// </summary>
-        protected virtual void UninitializeCore()
+        /// <inheritdoc/>
+        protected override void InitializeCore()
         {
-            _module!.Opened -= ModuleOpened;
-            _module!.Closed -= ModuleClosed;
-            _module!.Disposed -= ModuleDisposed;
-        }
-
-        /// <summary>
-        /// Throws <see cref="InvalidOperationException"/> if current object isn't initialized.
-        /// </summary>
-        protected void InitializationGuard()
-        {
-            if (!_isInitialized)
+            if (_module is IWindowModule customModule)
             {
-                throw new InvalidOperationException($"{GetType().Name} was not initialized.");
+                _customModule = customModule;
+                _customModule.Closing += ModuleClosing;
+                _customModule.StateChanged += ModuleStateChanged;
             }
-        }
-
-        private void ModuleOpened(object? sender, EventArgs e)
-        {
-            Opened?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void ModuleClosed(object? sender, EventArgs e)
-        {
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void ModuleDisposed(object? sender, EventArgs e)
-        {
-            Disposed?.Invoke(this, EventArgs.Empty);
-            if (_isInitialized)
+            else
             {
-                Uninitialize();
+                throw new InvalidCastException($"{GetType().Name} can only be initialized with {typeof(IWindowModule)}.");
             }
+
+            base.InitializeCore();
         }
 
-        private void Uninitialize()
+        /// <inheritdoc/>
+        protected override void UninitializeCore()
         {
-            UninitializeCore();
+            _customModule!.Closing -= ModuleClosing;
+        }
 
-            _module = null;
-            _isInitialized = false;
+        private void ModuleClosing(object? sender, CancelEventArgs e)
+        {
+            CancelEventArgs args = new();
+            Closing?.Invoke(this, args);
+            e.Cancel = args.Cancel;
+        }
+
+        private void ModuleStateChanged(object? sender, WindowStateChangedEventArgs e)
+        {
+            StateChanged?.Invoke(this, e);
         }
     }
 
     /// <summary>
-    /// Provides API form managing related window.
+    /// Prvoides implementation of <see cref="IWindowControl"/>.
     /// </summary>
     /// <typeparam name="T">Type of module properties.</typeparam>
     public class WindowControl<T> : WindowControl, IWindowControl<T> where T : class, new()
@@ -147,19 +115,5 @@ namespace MochaCore.Windowing
 
         /// <inheritdoc/>
         new public IWindowModule<T> Module => (IWindowModule<T>)base.Module;
-
-        // Not sure whether below is neccessary.
-        // Initialize() is called by module on its dataContext, and that dataContext is statically typed via module ctor.
-        // So it's hard to imagine case where Initialize() gets misstyped module.
-
-        //protected override void InitializeCore()
-        //{
-        //    if (_module is not IWindowModule<T>)
-        //    {
-        //        throw new ArgumentException();
-        //    }
-
-        //    base.InitializeCore();
-        //}
     }
 }

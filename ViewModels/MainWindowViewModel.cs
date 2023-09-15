@@ -13,7 +13,7 @@ using ViewModels.Wrappers;
 
 namespace ViewModels;
 
-public class MainWindowViewModel : BindableBase, ICustomWindowAware
+public class MainWindowViewModel : BindableBase, IWindowAware
 {
     private object? _frameContent;
     private object? _fullScreenContent;
@@ -23,7 +23,7 @@ public class MainWindowViewModel : BindableBase, ICustomWindowAware
 
     private DelegateCommand<NavigationInvokedDetails>? _navigationItemInvokedCommand;
 
-    public ICustomWindowControl WindowControl { get; } = new CustomWindowControl();
+    public IWindowControl WindowControl { get; } = new WindowControl();
 
     public MainWindowViewModel()
     {

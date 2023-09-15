@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace ViewModels.Windows
 {
-    public partial class TestWindowViewModel : ObservableObject, ICustomWindowAware<GenericWindowProperties>
+    public partial class TestWindowViewModel : ObservableObject, IWindowAware<GenericWindowProperties>
     {
-        public ICustomWindowControl<GenericWindowProperties> WindowControl { get; } = new CustomWindowControl<GenericWindowProperties>();
+        public IWindowControl<GenericWindowProperties> WindowControl { get; } = new WindowControl<GenericWindowProperties>();
 
         public TestWindowViewModel()
         {

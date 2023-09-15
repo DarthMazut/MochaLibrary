@@ -19,7 +19,7 @@ namespace ViewModels
         [RelayCommand]
         private async Task OpenWindow()
         {
-            using ICustomWindowModule<GenericWindowProperties> testWindowModule
+            using IWindowModule<GenericWindowProperties> testWindowModule
                 = WindowManager.RetrieveCustomWindow<GenericWindowProperties>("TestWindow");
 
             testWindowModule.Properties.Info = "Hello there 😎";

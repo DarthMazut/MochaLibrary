@@ -43,7 +43,7 @@ namespace WinUiApplication
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            WindowManager.RegisterWindow("MainWindow", () => new CustomWindowModule(new MainWindow(), new MainWindowViewModel()));
+            WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
             WindowManager.RegisterWindow("TestWindow", () => new CustomWindowModule<GenericWindowProperties>(new TestWindow(), new TestWindowViewModel()));
 
             INavigationService mainNavigationService = NavigationManager.AddNavigationService(
@@ -58,7 +58,7 @@ namespace WinUiApplication
                     .WithModule<WindowingPage, WindowingPageViewModel>()
                     .WithInitialId(ViewModels.Pages.BlankPage1.Id));
 
-            IWindowModule mainWindowModule = WindowManager.RetrieveWindow("MainWindow");
+            IBaseWindowModule mainWindowModule = WindowManager.RetrieveWindow("MainWindow");
             _mainWindow = mainWindowModule.View as MainWindow;
 
             DialogManager.DefineDialog(ViewModels.Dialogs.MoreInfoDialog.ID, () => new StandardMessageDialogModule(_mainWindow));

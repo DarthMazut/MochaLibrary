@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MochaCore.Windowing
@@ -6,70 +9,32 @@ namespace MochaCore.Windowing
     /// <summary>
     /// Provides API form managing related window.
     /// </summary>
-    public interface IWindowControl
+    public interface IWindowControl : IBaseWindowControl, IMaximizeWindow, IMinimizeWindow, IClosingWindow, IHideWindow, IRestoreWindow, IWindowStateAware, IWindowStateChanged
     {
-        /// <summary>
-        /// Returns the technolog-specific window object.
-        /// </summary>
-        public object View { get; }
+        /// <inheritdoc/>
+        IBaseWindowModule IBaseWindowControl.Module => Module;
 
         /// <summary>
         /// Returns related <see cref="IWindowModule"/> instance.
         /// </summary>
-        public IWindowModule Module { get;}
-
-        /// <summary>
-        /// Indicates whether current instance is initialized.
-        /// </summary>
-        public bool IsInitialized { get; }
-
-        /// <summary>
-        /// Occurs when related window is opened.
-        /// </summary>
-        public event EventHandler? Opened;
-
-        /// <summary>
-        /// Occurs when related window closes.
-        /// </summary>
-        public event EventHandler? Closed;
-
-        /// <summary>
-        /// Occurs when related module is disposed.
-        /// </summary>
-        public event EventHandler? Disposed;
-
-        /// <summary>
-        /// Closes associated window.
-        /// </summary>
-        public void Close();
-
-        /// <summary>
-        /// Closes the related window if open.
-        /// </summary>
-        /// <param name="result">
-        /// Additional result data which can be retireved by awaiting <see cref="Task"/>
-        /// returnd by one of the <c>OpenAsync()</c> methods.
-        /// </param>
-        public void Close(object? result);
+        new public IWindowModule Module { get; }
     }
 
     /// <summary>
-    /// Provides API for managing related window.
+    /// Provides API form managing related window.
     /// </summary>
-    /// <typeparam name="T">Properties type of associated module.</typeparam>
-    public interface IWindowControl<T> : IWindowControl where T : class, new()
+    /// <typeparam name="T">Type of module properties.</typeparam>
+    public interface IWindowControl<T> : IWindowControl, IBaseWindowControl<T> where T : class, new()
     {
         /// <inheritdoc/>
         IWindowModule IWindowControl.Module => Module;
+
+        /// <inheritdoc/>
+        IBaseWindowModule<T> IBaseWindowControl<T>.Module => Module;
 
         /// <summary>
         /// Returns related <see cref="IWindowModule{T}"/> instance.
         /// </summary>
         new public IWindowModule<T> Module { get; }
-
-        /// <summary>
-        /// Provides additional data for module customization.
-        /// </summary>
-        T Properties { get; }
     }
 }
