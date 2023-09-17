@@ -49,17 +49,9 @@ namespace ViewModels.Windows
             WindowControl.Restore();
         }
 
-        private async void WindowOpened(object? sender, EventArgs e)
+        private void WindowOpened(object? sender, EventArgs e)
         {
             Text = $"Window state: {WindowControl.WindowState}";
-            //await Task.Delay(3000).ContinueWith(t =>
-            //{
-            //    DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
-            //    {
-            //        Text = "Test!";
-            //        WindowControl.Properties.Info = "xyz...";
-            //    });
-            //});
         }
 
         private void WindowClosing(object? sender, CancelEventArgs e)

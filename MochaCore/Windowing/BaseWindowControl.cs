@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,9 +12,11 @@ namespace MochaCore.Windowing
     /// </summary>
     public class BaseWindowControl : IBaseWindowControl, IWindowControlInitialize
     {
-        protected IBaseWindowModule? _module;
         private bool _isInitialized = false;
 
+        protected IBaseWindowModule? _module;
+        protected List<SubscriptionDelegate> _subscriptionDelegates = new();
+        
         /// <inheritdoc/>
         public event EventHandler? Opened;
 
@@ -60,6 +63,62 @@ namespace MochaCore.Windowing
             _module!.Close(result);
         }
 
+        public IDisposable TrySubscribeWindowClosing(EventHandler<CancelEventArgs> closingHandler)
+            => TrySubscribeWindowClosing(closingHandler, null);
+
+        public IDisposable TrySubscribeWindowClosing(EventHandler<CancelEventArgs> closingHandler, Action<IBaseWindowModule>? featureUnavailableHandler)
+        {
+            // What if we're already initialized?
+
+            SubscriptionDelegate subscription = new(m =>
+            {
+                if (m is IClosingWindow closing)
+                {
+                    closing.Closing += closingHandler;
+                }
+                else
+                {
+                    featureUnavailableHandler?.Invoke(m);
+                }
+            }, m =>
+            {
+                if (m is IClosingWindow closing)
+                {
+                    closing.Closing -= closingHandler;
+                }
+            });
+
+            _subscriptionDelegates.Add(subscription);
+            return subscription;
+        }
+
+        public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler)
+            => TrySubscribeWindowStateChanged(stateChangedHandler, null);
+
+        public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler, Action<IBaseWindowModule>? featureUnavailableHandler)
+        {
+            SubscriptionDelegate subscription = new(m =>
+            {
+                if (m is IWindowStateChanged stateChanged)
+                {
+                    stateChanged.StateChanged += stateChangedHandler;
+                }
+                else
+                {
+                    featureUnavailableHandler?.Invoke(m);
+                }
+            }, m =>
+            {
+                if (m is IWindowStateChanged stateChanged)
+                {
+                    stateChanged.StateChanged -= stateChangedHandler;
+                }
+            });
+
+            _subscriptionDelegates.Add(subscription);
+            return subscription;
+        }
+
         /// <inheritdoc/>
         void IWindowControlInitialize.Initialize(IBaseWindowModule module)
         {
@@ -78,6 +137,7 @@ namespace MochaCore.Windowing
             _module!.Opened += ModuleOpened;
             _module!.Closed += ModuleClosed;
             _module!.Disposed += ModuleDisposed;
+            _subscriptionDelegates.ForEach(d => d.SubscribeOrExecute(_module));
         }
 
         /// <summary>
@@ -88,6 +148,7 @@ namespace MochaCore.Windowing
             _module!.Opened -= ModuleOpened;
             _module!.Closed -= ModuleClosed;
             _module!.Disposed -= ModuleDisposed;
+            _subscriptionDelegates.ForEach(d => d.Dispose());
         }
 
         /// <summary>
@@ -135,6 +196,8 @@ namespace MochaCore.Windowing
     /// <typeparam name="T">Type of module properties.</typeparam>
     public class BaseWindowControl<T> : BaseWindowControl, IBaseWindowControl<T> where T : class, new()
     {
+        private Action<T>? _customizeDelegate;
+
         /// <inheritdoc/>
         public T Properties
         {
@@ -147,6 +210,18 @@ namespace MochaCore.Windowing
 
         /// <inheritdoc/>
         new public IBaseWindowModule<T> Module => (IBaseWindowModule<T>)base.Module;
+
+        public void Customize(Action<T> customizeDelegate)
+        {
+            _customizeDelegate = customizeDelegate;
+        }
+
+        /// <inheritdoc/>
+        protected override void InitializeCore()
+        {
+            base.InitializeCore();
+            _customizeDelegate?.Invoke(Properties);
+        }
 
         // Not sure whether below is neccessary.
         // Initialize() is called by module on its dataContext, and that dataContext is statically typed via module ctor.
