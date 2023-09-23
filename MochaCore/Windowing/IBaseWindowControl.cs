@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace MochaCore.Windowing
@@ -39,6 +40,44 @@ namespace MochaCore.Windowing
         public event EventHandler? Disposed;
 
         /// <summary>
+        /// Equeues request to subscribe to <see cref="IClosingWindow"/> of related module during initialization 
+        /// of this instance. If related module implements <see cref="IClosingWindow"/>, subscription will occur
+        /// at initialization time.
+        /// </summary>
+        /// <param name="closingHandler">A delegate to be called when <see cref="IClosingWindow.Closing"/> event occures.</param>
+        /// <returns>Object representing enqueued request. Dispose it to cancel subscription or unavailable handler.</returns>
+        public IDisposable TrySubscribeWindowClosing(EventHandler<CancelEventArgs> closingHandler);
+
+        /// <summary>
+        /// Equeues request to subscribe to <see cref="IClosingWindow"/> of related module during initialization 
+        /// of this instance. If related module implements <see cref="IClosingWindow"/>, subscription will occur 
+        /// otherwise provided unavailable handler will be called at initialization time.
+        /// </summary>
+        /// <param name="closingHandler">A delegate to be called when <see cref="IClosingWindow.Closing"/> event occures.</param>
+        /// <param name="featureUnavailableHandler">A delegate to be called when related module does not provide <see cref="IClosingWindow.Closing"/> event.</param>
+        /// <returns>Object representing enqueued request. Dispose it to cancel subscription or unavailable handler.</returns>
+        public IDisposable TrySubscribeWindowClosing(EventHandler<CancelEventArgs> closingHandler, Action<IBaseWindowModule>? featureUnavailableHandler);
+
+        /// <summary>
+        /// Equeues request to subscribe to <see cref="IWindowStateChanged"/> of related module during initialization 
+        /// of this instance. If related module implements <see cref="IWindowStateChanged"/>, subscription will occur
+        /// at initialization time.
+        /// </summary>
+        /// <param name="stateChangedHandler">A delegate to be called when <see cref="IWindowStateChanged.StateChanged"/> event occures.</param>
+        /// <returns>Object representing enqueued request. Dispose it to cancel subscription or unavailable handler.</returns>
+        public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler);
+
+        /// <summary>
+        /// Equeues request to subscribe to <see cref="IWindowStateChanged"/> of related module during initialization 
+        /// of this instance. If related module implements <see cref="IWindowStateChanged"/>, subscription will occur 
+        /// otherwise provided unavailable handler will be called at initialization time.
+        /// </summary>
+        /// <param name="stateChangedHandler">A delegate to be called when <see cref="IWindowStateChanged.StateChanged"/> event occures.</param>
+        /// <param name="featureUnavailableHandler">A delegate to be called when related module does not provide <see cref="IWindowStateChanged.StateChanged"/> event.</param>
+        /// <returns>Object representing enqueued request. Dispose it to cancel subscription or unavailable handler.</returns>
+        public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler, Action<IBaseWindowModule>? featureUnavailableHandler);
+
+        /// <summary>
         /// Closes associated window.
         /// </summary>
         public void Close();
@@ -71,5 +110,11 @@ namespace MochaCore.Windowing
         /// Provides additional data for module customization.
         /// </summary>
         T Properties { get; }
+
+        /// <summary>
+        /// Enqueue customization delegate to be called during initialization time.
+        /// </summary>
+        /// <param name="customizeDelegate">Customization delegate.</param>
+        public void Customize(Action<T> customizeDelegate);
     }
 }

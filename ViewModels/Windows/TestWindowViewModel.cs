@@ -11,19 +11,21 @@ using System.Threading.Tasks;
 
 namespace ViewModels.Windows
 {
-    public partial class TestWindowViewModel : ObservableObject, IWindowAware<GenericWindowProperties>
+    public partial class TestWindowViewModel : ObservableObject, IBaseWindowAware<GenericWindowProperties>
     {
-        public IWindowControl<GenericWindowProperties> WindowControl { get; } = new WindowControl<GenericWindowProperties>();
+        // Skoro i tak trzymamy WindowControl za interfejs, to jak jest róznica, czy ja utworze instancje BaseWindowControl,
+        // czy WindowControl? Czy nie wystarczy 1 obiekt WindowControl?
+        public IBaseWindowControl<GenericWindowProperties> WindowControl { get; } = new BaseWindowControl<GenericWindowProperties>();
 
         public TestWindowViewModel()
         {
             WindowControl.Opened += WindowOpened;
-            WindowControl.Closing += WindowClosing;
             WindowControl.Disposed += WindowDisposed;
-            WindowControl.StateChanged += (s, e) =>
-            {
-                Text = $"Window state: {e.WindowState}";
-            };
+            //WindowControl.Closing += WindowClosing;
+            //WindowControl.StateChanged += (s, e) =>
+            //{
+            //    Text = $"Window state: {e.WindowState}";
+            //};
         }
 
         [ObservableProperty]
@@ -38,20 +40,20 @@ namespace ViewModels.Windows
         [RelayCommand]
         private void Maximize()
         {
-            WindowControl.Maximize();
+            //WindowControl.Maximize();
         }
 
         [RelayCommand]
         private async Task Hide()
         {
-            WindowControl.Hide();
+            //WindowControl.Hide();
             await Task.Delay(5000);
-            WindowControl.Restore();
+            //WindowControl.Restore();
         }
 
         private void WindowOpened(object? sender, EventArgs e)
         {
-            Text = $"Window state: {WindowControl.WindowState}";
+            //Text = $"Window state: {WindowControl.WindowState}";
         }
 
         private void WindowClosing(object? sender, CancelEventArgs e)
@@ -62,7 +64,7 @@ namespace ViewModels.Windows
         private void WindowDisposed(object? sender, EventArgs e)
         {
             WindowControl.Opened -= WindowOpened;
-            WindowControl.Closing -= WindowClosing;
+           // WindowControl.Closing -= WindowClosing;
             WindowControl.Disposed -= WindowDisposed;
         }
     }

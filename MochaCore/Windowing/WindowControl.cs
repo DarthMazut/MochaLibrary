@@ -103,17 +103,36 @@ namespace MochaCore.Windowing
     /// <typeparam name="T">Type of module properties.</typeparam>
     public class WindowControl<T> : WindowControl, IWindowControl<T> where T : class, new()
     {
+        private Action<T>? _customizeDelegate;
+
         /// <inheritdoc/>
         public T Properties
         {
             get
             {
                 InitializationGuard();
-                return ((IWindowModule<T>)_module!).Properties;
+                return Module.Properties;
             }
         }
 
         /// <inheritdoc/>
         new public IWindowModule<T> Module => (IWindowModule<T>)base.Module;
+
+        /// <inheritdoc/>
+        public void Customize(Action<T> customizeDelegate) => _customizeDelegate = customizeDelegate;
+
+        /// <inheritdoc/>
+        protected override void InitializeCore()
+        {
+            if (_customModule is IWindowModule<T> typedModule)
+            {
+                base.InitializeCore();
+                _customizeDelegate?.Invoke(typedModule.Properties);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
     }
 }

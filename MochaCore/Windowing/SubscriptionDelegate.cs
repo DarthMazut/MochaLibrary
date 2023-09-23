@@ -28,10 +28,11 @@ namespace MochaCore.Windowing
 
         public void Dispose()
         {
-            if (!_isDisposed && _module is not null)
+            if (_module is not null)
             {
                 _unsubscribe.Invoke(_module);
             }
+            _isDisposed = true;
         }
     }
 }

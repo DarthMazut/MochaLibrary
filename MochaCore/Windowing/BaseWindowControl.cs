@@ -63,13 +63,13 @@ namespace MochaCore.Windowing
             _module!.Close(result);
         }
 
+        /// <inheritdoc/>
         public IDisposable TrySubscribeWindowClosing(EventHandler<CancelEventArgs> closingHandler)
             => TrySubscribeWindowClosing(closingHandler, null);
 
+        /// <inheritdoc/>
         public IDisposable TrySubscribeWindowClosing(EventHandler<CancelEventArgs> closingHandler, Action<IBaseWindowModule>? featureUnavailableHandler)
         {
-            // What if we're already initialized?
-
             SubscriptionDelegate subscription = new(m =>
             {
                 if (m is IClosingWindow closing)
@@ -89,12 +89,20 @@ namespace MochaCore.Windowing
             });
 
             _subscriptionDelegates.Add(subscription);
+
+            if (IsInitialized && _module is not null)
+            {
+                subscription.SubscribeOrExecute(_module);
+            }
+
             return subscription;
         }
 
+        /// <inheritdoc/>
         public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler)
             => TrySubscribeWindowStateChanged(stateChangedHandler, null);
 
+        /// <inheritdoc/>
         public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler, Action<IBaseWindowModule>? featureUnavailableHandler)
         {
             SubscriptionDelegate subscription = new(m =>
@@ -116,6 +124,12 @@ namespace MochaCore.Windowing
             });
 
             _subscriptionDelegates.Add(subscription);
+
+            if (IsInitialized && _module is not null)
+            {
+                subscription.SubscribeOrExecute(_module);
+            }
+
             return subscription;
         }
 
@@ -211,30 +225,19 @@ namespace MochaCore.Windowing
         /// <inheritdoc/>
         new public IBaseWindowModule<T> Module => (IBaseWindowModule<T>)base.Module;
 
-        public void Customize(Action<T> customizeDelegate)
-        {
-            _customizeDelegate = customizeDelegate;
-        }
+        /// <inheritdoc/>
+        public void Customize(Action<T> customizeDelegate) => _customizeDelegate = customizeDelegate;
 
         /// <inheritdoc/>
         protected override void InitializeCore()
         {
+            if (_module is not IWindowModule<T>)
+            {
+                throw new ArgumentException($"{GetType().Name} can only be initialized with {typeof(IBaseWindowModule<T>)}.");
+            }
+
             base.InitializeCore();
             _customizeDelegate?.Invoke(Properties);
         }
-
-        // Not sure whether below is neccessary.
-        // Initialize() is called by module on its dataContext, and that dataContext is statically typed via module ctor.
-        // So it's hard to imagine case where Initialize() gets misstyped module.
-
-        //protected override void InitializeCore()
-        //{
-        //    if (_module is not IWindowModule<T>)
-        //    {
-        //        throw new ArgumentException();
-        //    }
-
-        //    base.InitializeCore();
-        //}
     }
 }
