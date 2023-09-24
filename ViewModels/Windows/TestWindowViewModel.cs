@@ -11,21 +11,24 @@ using System.Threading.Tasks;
 
 namespace ViewModels.Windows
 {
-    public partial class TestWindowViewModel : ObservableObject, IBaseWindowAware<GenericWindowProperties>
+    public partial class TestWindowViewModel : ObservableObject, IWindowAware<GenericWindowProperties>
     {
-        // Skoro i tak trzymamy WindowControl za interfejs, to jak jest róznica, czy ja utworze instancje BaseWindowControl,
-        // czy WindowControl? Czy nie wystarczy 1 obiekt WindowControl?
-        public IBaseWindowControl<GenericWindowProperties> WindowControl { get; } = new BaseWindowControl<GenericWindowProperties>();
+        public IWindowControl<GenericWindowProperties> WindowControl { get; } = new WindowControl<GenericWindowProperties>();
 
         public TestWindowViewModel()
         {
             WindowControl.Opened += WindowOpened;
             WindowControl.Disposed += WindowDisposed;
             //WindowControl.Closing += WindowClosing;
+            WindowControl.TrySubscribeWindowClosing(WindowClosing);
             //WindowControl.StateChanged += (s, e) =>
             //{
             //    Text = $"Window state: {e.WindowState}";
             //};
+            WindowControl.TrySubscribeWindowStateChanged((s, e) =>
+            {
+                Text = $"Window state: {e.WindowState}";
+            });
         }
 
         [ObservableProperty]
@@ -41,19 +44,26 @@ namespace ViewModels.Windows
         private void Maximize()
         {
             //WindowControl.Maximize();
+            _ = WindowControl.TryMaximize();
         }
 
         [RelayCommand]
         private async Task Hide()
         {
             //WindowControl.Hide();
+            WindowControl.TryHide();
             await Task.Delay(5000);
             //WindowControl.Restore();
+            WindowControl.TryRestore();
         }
 
         private void WindowOpened(object? sender, EventArgs e)
         {
             //Text = $"Window state: {WindowControl.WindowState}";
+            if (WindowControl.TryGetState(out ModuleWindowState state))
+            {
+                Text = $"Window state: {state}";
+            }
         }
 
         private void WindowClosing(object? sender, CancelEventArgs e)

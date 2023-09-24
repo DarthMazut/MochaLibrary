@@ -78,7 +78,7 @@ namespace MochaCore.Windowing
         public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler, Action<IBaseWindowModule>? featureUnavailableHandler);
 
         /// <summary>
-        /// Closes associated window.
+        /// Closes associated window if open.
         /// </summary>
         public void Close();
 
@@ -90,6 +90,40 @@ namespace MochaCore.Windowing
         /// returnd by one of the <c>OpenAsync()</c> methods.
         /// </param>
         public void Close(object? result);
+
+        /// <summary>
+        /// Tries to perform <see cref="IHideWindow.Hide"/> operation on associated module.
+        /// Returns <see langword="true"/> if operation was provided by module, otherwise <see langword="false"/>.
+        /// </summary>
+        public bool TryHide();
+
+        /// <summary>
+        /// Tries to perform <see cref="IMinimizeWindow.Minimize"/> operation on associated module.
+        /// Returns <see langword="true"/> if operation was provided by module, otherwise <see langword="false"/>.
+        /// </summary>
+        public bool TryMinimize();
+
+        /// <summary>
+        /// Tries to perform <see cref="IMaximizeWindow.Maximize"/> operation on associated module.
+        /// Returns <see langword="true"/> if operation was provided by module, otherwise <see langword="false"/>.
+        /// </summary>
+        public bool TryMaximize();
+
+        /// <summary>
+        /// Tries to perform <see cref="IRestoreWindow.Restore"/> operation on associated module.
+        /// Returns <see langword="true"/> if operation was provided by module, otherwise <see langword="false"/>.
+        /// </summary>
+        public bool TryRestore();
+
+        /// <summary>
+        /// Tries to retrieve value from <see cref="IWindowStateAware.WindowState"/> property on associated module.
+        /// Returns <see langword="true"/> if operation was provided by module, otherwise <see langword="false"/>.
+        /// </summary>
+        /// <param name="windowState">
+        /// If method returns <see langword="true"/>, the value of <see cref="IWindowStateAware.WindowState"/> 
+        /// property on associated module.
+        /// </param> 
+        public bool TryGetState(out ModuleWindowState windowState);
     }
 
     /// <summary>

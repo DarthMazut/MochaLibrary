@@ -11,9 +11,6 @@ namespace MochaCore.Windowing
     /// </summary>
     public interface IWindowControl : IBaseWindowControl, IMaximizeWindow, IMinimizeWindow, IClosingWindow, IHideWindow, IRestoreWindow, IWindowStateAware, IWindowStateChanged
     {
-        /// <inheritdoc/>
-        IBaseWindowModule IBaseWindowControl.Module => Module;
-
         /// <summary>
         /// Returns related <see cref="IWindowModule"/> instance.
         /// </summary>
@@ -26,12 +23,6 @@ namespace MochaCore.Windowing
     /// <typeparam name="T">Type of module properties.</typeparam>
     public interface IWindowControl<T> : IWindowControl, IBaseWindowControl<T> where T : class, new()
     {
-        /// <inheritdoc/>
-        IWindowModule IWindowControl.Module => Module;
-
-        /// <inheritdoc/>
-        IBaseWindowModule<T> IBaseWindowControl<T>.Module => Module;
-
         /// <summary>
         /// Returns related <see cref="IWindowModule{T}"/> instance.
         /// </summary>

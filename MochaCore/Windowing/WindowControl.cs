@@ -2,30 +2,31 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MochaCore.Windowing
 {
     /// <summary>
-    /// Prvoides implementation of <see cref="IWindowControl"/>.
+    /// Provides implementation for both <see cref="IBaseWindowControl"/> and <see cref="IWindowControl"/> interfaces.
     /// </summary>
-    public class WindowControl : BaseWindowControl, IWindowControl
+    public class WindowControl : IWindowControl, IWindowControlInitialize
     {
-        protected IWindowModule? _customModule;
+        private bool _isInitialized;
+        
+        protected IBaseWindowModule? _module;
+        protected List<SubscriptionDelegate> _subscriptionDelegates = new();
 
         /// <inheritdoc/>
-        public ModuleWindowState WindowState
-        {
-            get
-            {
-                InitializationGuard();
-                return _customModule!.WindowState;
-            }
-        }
+        public event EventHandler? Opened;
 
         /// <inheritdoc/>
-        public new IWindowModule Module => (IWindowModule)base.Module;
+        public event EventHandler? Closed;
+
+        /// <inheritdoc/>
+        public event EventHandler? Disposed;
 
         /// <inheritdoc/>
         public event EventHandler<CancelEventArgs>? Closing;
@@ -34,71 +35,316 @@ namespace MochaCore.Windowing
         public event EventHandler<WindowStateChangedEventArgs>? StateChanged;
 
         /// <inheritdoc/>
-        public void Maximize()
+        public bool IsInitialized => _isInitialized;
+
+        IWindowModule IWindowControl.Module
         {
-            InitializationGuard();
-            _customModule!.Maximize();
+            get
+            {
+                InitializationGuard();
+                if (_module is IWindowModule typedModule)
+                {
+                    return typedModule;
+                }
+
+                throw new InvalidCastException($"Associated module is not of type {typeof(IWindowModule)}");
+            }
         }
 
         /// <inheritdoc/>
-        public void Minimize()
+        public IBaseWindowModule Module
         {
-            InitializationGuard();
-            _customModule!.Minimize();
+            get
+            {
+                InitializationGuard();
+                return _module!;
+            }
         }
 
         /// <inheritdoc/>
-        public void Restore()
+        public object View
+        {
+            get
+            {
+                InitializationGuard();
+                return _module!.View;
+            }
+        }
+
+        /// <inheritdoc/>
+        public ModuleWindowState WindowState
+        {
+            get
+            {
+                InitializationGuard();
+                ModuleTypeGuard(typeof(IWindowStateAware));
+                return ((IWindowStateAware)_module!).WindowState;
+            }
+        }
+
+        /// <inheritdoc/>
+        public bool TryGetState(out ModuleWindowState windowState)
+        {
+            windowState = default;
+
+            if (_module is IWindowStateAware stateAware)
+            {
+                windowState = stateAware.WindowState;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public void Close()
         {
             InitializationGuard();
-            _customModule!.Restore();
+            _module!.Close();
+        }
+
+        /// <inheritdoc/>
+        public void Close(object? result)
+        {
+            InitializationGuard();
+            _module!.Close(result);
         }
 
         /// <inheritdoc/>
         public void Hide()
         {
             InitializationGuard();
-            _customModule!.Hide();
+            ModuleTypeGuard(typeof(IHideWindow));
+            ((IHideWindow)_module!).Hide();
         }
 
         /// <inheritdoc/>
-        protected override void InitializeCore()
+        public bool TryHide()
         {
-            if (_module is IWindowModule customModule)
+            if (_module is IHideWindow hide)
             {
-                _customModule = customModule;
-                _customModule.Closing += ModuleClosing;
-                _customModule.StateChanged += ModuleStateChanged;
-            }
-            else
-            {
-                throw new InvalidCastException($"{GetType().Name} can only be initialized with {typeof(IWindowModule)}.");
+                hide.Hide();
+                return true;
             }
 
-            base.InitializeCore();
+            return false;
         }
 
         /// <inheritdoc/>
-        protected override void UninitializeCore()
+        public void Maximize()
         {
-            _customModule!.Closing -= ModuleClosing;
+            InitializationGuard();
+            ModuleTypeGuard(typeof(IMaximizeWindow));
+            ((IMaximizeWindow)_module!).Maximize();
         }
 
-        private void ModuleClosing(object? sender, CancelEventArgs e)
+        /// <inheritdoc/>
+        public bool TryMaximize()
         {
-            CancelEventArgs args = new();
-            Closing?.Invoke(this, args);
-            e.Cancel = args.Cancel;
+            if (_module is IMaximizeWindow maximize)
+            {
+                maximize.Maximize();
+                return true;
+            }
+
+            return false;
         }
 
-        private void ModuleStateChanged(object? sender, WindowStateChangedEventArgs e)
+        /// <inheritdoc/>
+        public void Minimize()
         {
-            StateChanged?.Invoke(this, e);
+            InitializationGuard();
+            ModuleTypeGuard(typeof(IMinimizeWindow));
+            ((IMinimizeWindow)_module!).Minimize();
+        }
+
+        /// <inheritdoc/>
+        public bool TryMinimize()
+        {
+            if (_module is IMinimizeWindow minimize)
+            {
+                minimize.Minimize();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public void Restore()
+        {
+            InitializationGuard();
+            ModuleTypeGuard(typeof(IRestoreWindow));
+            ((IRestoreWindow)_module!).Restore();
+        }
+
+        /// <inheritdoc/>
+        public bool TryRestore()
+        {
+            if (_module is IRestoreWindow restore)
+            {
+                restore.Restore();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public IDisposable TrySubscribeWindowClosing(EventHandler<CancelEventArgs> closingHandler)
+            => TrySubscribeWindowClosing(closingHandler, null);
+
+        /// <inheritdoc/>
+        public IDisposable TrySubscribeWindowClosing(EventHandler<CancelEventArgs> closingHandler, Action<IBaseWindowModule>? featureUnavailableHandler)
+        {
+            SubscriptionDelegate subscription = new(m =>
+            {
+                if (m is IClosingWindow closing)
+                {
+                    closing.Closing += closingHandler;
+                }
+                else
+                {
+                    featureUnavailableHandler?.Invoke(m);
+                }
+            }, m =>
+            {
+                if (m is IClosingWindow closing)
+                {
+                    closing.Closing -= closingHandler;
+                }
+            });
+
+            _subscriptionDelegates.Add(subscription);
+
+            if (IsInitialized && _module is not null)
+            {
+                subscription.SubscribeOrExecute(_module);
+            }
+
+            return subscription;
+        }
+
+        /// <inheritdoc/>
+        public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler)
+            => TrySubscribeWindowStateChanged(stateChangedHandler, null);
+
+        /// <inheritdoc/>
+        public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler, Action<IBaseWindowModule>? featureUnavailableHandler)
+        {
+            SubscriptionDelegate subscription = new(m =>
+            {
+                if (m is IWindowStateChanged stateChanged)
+                {
+                    stateChanged.StateChanged += stateChangedHandler;
+                }
+                else
+                {
+                    featureUnavailableHandler?.Invoke(m);
+                }
+            }, m =>
+            {
+                if (m is IWindowStateChanged stateChanged)
+                {
+                    stateChanged.StateChanged -= stateChangedHandler;
+                }
+            });
+
+            _subscriptionDelegates.Add(subscription);
+
+            if (IsInitialized && _module is not null)
+            {
+                subscription.SubscribeOrExecute(_module);
+            }
+
+            return subscription;
+        }
+
+        /// <inheritdoc/>
+        void IWindowControlInitialize.Initialize(IBaseWindowModule module)
+        {
+            _module = module;
+
+            InitializeCore();
+
+            _isInitialized = true;
+        }
+
+        /// <summary>
+        /// Contains core logic for initialization.
+        /// </summary>
+        protected virtual void InitializeCore()
+        {
+            _module!.Opened += ModuleOpened;
+            _module!.Closed += ModuleClosed;
+            _module!.Disposed += ModuleDisposed;
+            _subscriptionDelegates.ForEach(d => d.SubscribeOrExecute(_module));
+        }
+
+        /// <summary>
+        /// Contains core logic of uninitialization.
+        /// </summary>
+        protected virtual void UninitializeCore()
+        {
+            _module!.Opened -= ModuleOpened;
+            _module!.Closed -= ModuleClosed;
+            _module!.Disposed -= ModuleDisposed;
+            _subscriptionDelegates.ForEach(d => d.Dispose());
+        }
+
+        /// <summary>
+        /// Throws an <see cref="InvalidOperationException"/> if current object isn't initialized.
+        /// </summary>
+        protected void InitializationGuard()
+        {
+            if (!_isInitialized)
+            {
+                throw new InvalidOperationException($"{GetType().Name} was not initialized.");
+            }
+        }
+
+        /// <summary>
+        /// Throws an <see cref="InvalidOperationException"/> if related module is not of provided type.
+        /// </summary>
+        /// <param name="type">Type of module to be checked against.</param>
+        protected void ModuleTypeGuard(Type type)
+        {
+            if (_module?.GetType() != type)
+            {
+                throw new InvalidOperationException($"Associated module was expected to be of type {type}, but it's not.");
+            }
+        }
+
+        private void ModuleOpened(object? sender, EventArgs e)
+        {
+            Opened?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ModuleClosed(object? sender, EventArgs e)
+        {
+            Closed?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ModuleDisposed(object? sender, EventArgs e)
+        {
+            Disposed?.Invoke(this, EventArgs.Empty);
+            if (_isInitialized)
+            {
+                Uninitialize();
+            }
+        }
+
+        private void Uninitialize()
+        {
+            UninitializeCore();
+
+            _module = null;
+            _isInitialized = false;
         }
     }
 
     /// <summary>
-    /// Prvoides implementation of <see cref="IWindowControl"/>.
+    /// Provides implementation for both <see cref="IBaseWindowControl"/> and <see cref="IWindowControl"/> interfaces.
     /// </summary>
     /// <typeparam name="T">Type of module properties.</typeparam>
     public class WindowControl<T> : WindowControl, IWindowControl<T> where T : class, new()
@@ -111,12 +357,30 @@ namespace MochaCore.Windowing
             get
             {
                 InitializationGuard();
-                return Module.Properties;
+                ModuleTypeGuard(typeof(IBaseWindowModule<T>));
+                return ((IBaseWindowModule<T>)Module).Properties;
             }
         }
 
-        /// <inheritdoc/>
-        new public IWindowModule<T> Module => (IWindowModule<T>)base.Module;
+        IBaseWindowModule<T> IBaseWindowControl<T>.Module
+        {
+            get
+            {
+                InitializationGuard();
+                ModuleTypeGuard(typeof(IBaseWindowModule<T>));
+                return (IBaseWindowModule<T>)Module;
+            }
+        }
+
+        IWindowModule<T> IWindowControl<T>.Module
+        {
+            get
+            {
+                InitializationGuard();
+                ModuleTypeGuard(typeof(IWindowModule<T>));
+                return (IWindowModule<T>)Module;
+            }
+        }
 
         /// <inheritdoc/>
         public void Customize(Action<T> customizeDelegate) => _customizeDelegate = customizeDelegate;
@@ -124,15 +388,13 @@ namespace MochaCore.Windowing
         /// <inheritdoc/>
         protected override void InitializeCore()
         {
-            if (_customModule is IWindowModule<T> typedModule)
+            if (_module is not IBaseWindowModule<T>)
             {
-                base.InitializeCore();
-                _customizeDelegate?.Invoke(typedModule.Properties);
+                throw new ArgumentException($"{GetType().Name} can only be initialized with {typeof(IBaseWindowModule<T>)}.");
             }
-            else
-            {
-                throw new ArgumentException();
-            }
+
+            base.InitializeCore();
+            _customizeDelegate?.Invoke(Properties);
         }
     }
 }
