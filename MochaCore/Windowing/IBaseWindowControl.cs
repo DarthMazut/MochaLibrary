@@ -25,6 +25,11 @@ namespace MochaCore.Windowing
         public bool IsInitialized { get; }
 
         /// <summary>
+        /// Occurs when current instance gets initialized.
+        /// </summary>
+        public event EventHandler? Initialized;
+
+        /// <summary>
         /// Occurs when related window is opened.
         /// </summary>
         public event EventHandler? Opened;

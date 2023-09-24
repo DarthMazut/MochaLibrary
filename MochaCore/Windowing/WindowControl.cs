@@ -20,6 +20,9 @@ namespace MochaCore.Windowing
         protected List<SubscriptionDelegate> _subscriptionDelegates = new();
 
         /// <inheritdoc/>
+        public event EventHandler? Initialized;
+
+        /// <inheritdoc/>
         public event EventHandler? Opened;
 
         /// <inheritdoc/>
@@ -33,7 +36,7 @@ namespace MochaCore.Windowing
 
         /// <inheritdoc/>
         public event EventHandler<WindowStateChangedEventArgs>? StateChanged;
-
+        
         /// <inheritdoc/>
         public bool IsInitialized => _isInitialized;
 
@@ -42,12 +45,8 @@ namespace MochaCore.Windowing
             get
             {
                 InitializationGuard();
-                if (_module is IWindowModule typedModule)
-                {
-                    return typedModule;
-                }
-
-                throw new InvalidCastException($"Associated module is not of type {typeof(IWindowModule)}");
+                ModuleTypeGuard(typeof(IWindowModule));
+                return (IWindowModule)_module!;
             }
         }
 
@@ -268,6 +267,7 @@ namespace MochaCore.Windowing
             InitializeCore();
 
             _isInitialized = true;
+            Initialized?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
