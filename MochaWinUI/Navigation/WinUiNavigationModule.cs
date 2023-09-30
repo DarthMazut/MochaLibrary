@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaWinUI.NavigationEx
+namespace MochaWinUI.Navigation
 {
     /// <summary>
     /// Provides implementation of <see cref="INavigationModule"/> for WinUI.

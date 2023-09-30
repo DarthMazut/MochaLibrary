@@ -7,7 +7,7 @@ using MochaCore.Settings;
 using MochaCore.Windowing;
 using MochaWinUI.Dialogs;
 using MochaWinUI.Dispatching;
-using MochaWinUI.NavigationEx;
+using MochaWinUI.Navigation;
 using MochaWinUI.Settings;
 using MochaWinUI.Windowing;
 using Model;
