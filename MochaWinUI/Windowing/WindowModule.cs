@@ -376,6 +376,12 @@ namespace MochaWinUI.Windowing
             Properties = properties;
         }
 
+        /// <summary>
+        /// Customizes view object based on properties within <see cref="Properties"/>.
+        /// Use this delagate to avoiding subcalssing only for overriding <see cref="ApplyPropertiesCore"/>.
+        /// </summary>
+        public Action<Window, T>? ApplyProperties { get; init; }
+
         /// <inheritdoc/>
         public T Properties { get; set; }
 
@@ -385,7 +391,7 @@ namespace MochaWinUI.Windowing
         /// <inheritdoc/>
         protected override sealed void OpenCore()
         {
-            ApplyProperties();
+            ApplyPropertiesCore();
             OpenCoreOverride();
         }
 
@@ -402,6 +408,9 @@ namespace MochaWinUI.Windowing
         /// Override this method to implement logic that applies the <see cref="Properties"/>,
         /// set by the technology-agnostic client code, onto the technology-specific window instance.
         /// </summary>
-        protected virtual void ApplyProperties() { }
+        protected virtual void ApplyPropertiesCore()
+        {
+            ApplyProperties?.Invoke(_window, Properties);
+        }
     }
 }
