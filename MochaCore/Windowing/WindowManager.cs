@@ -34,7 +34,7 @@ namespace MochaCore.Windowing
         /// Returns registered implementation of <see cref="IBaseWindowModule"/> with specified id.
         /// </summary>
         /// <param name="id">Identifier of module which implementation is to be retrieved.</param>
-        public static IBaseWindowModule RetrieveWindow(string id)
+        public static IBaseWindowModule RetrieveBaseWindow(string id)
         {
             if (!_builders.ContainsKey(id))
             {
@@ -46,9 +46,14 @@ namespace MochaCore.Windowing
             return module;
         }
 
-        public static IBaseWindowModule<T> RetrieveWindow<T>(string id) where T : class, new()
+        /// <summary>
+        /// Returns registered implementation of <see cref="IBaseWindowModule{T}"/> with specified id.
+        /// </summary>
+        /// <typeparam name="T">Type of module properties.</typeparam>
+        /// <param name="id">Identifier of module which implementation is to be retrieved.</param>
+        public static IBaseWindowModule<T> RetrieveBaseWindow<T>(string id) where T : class, new()
         {
-            IBaseWindowModule module = RetrieveWindow(id);
+            IBaseWindowModule module = RetrieveBaseWindow(id);
             if (module is IBaseWindowModule<T> typedModule)
             {
                 return typedModule;
@@ -57,9 +62,13 @@ namespace MochaCore.Windowing
             throw new InvalidCastException($"Module with id={id} cannot accept properties of type {typeof(T).Name}.");
         }
 
-        public static IWindowModule RetrieveCustomWindow(string id)
+        /// <summary>
+        /// Returns registered implementation of <see cref="IWindowModule"/> with specified id.
+        /// </summary>
+        /// <param name="id">Identifier of module which implementation is to be retrieved.</param>
+        public static IWindowModule RetrieveWindow(string id)
         {
-            IBaseWindowModule module = RetrieveWindow(id);
+            IBaseWindowModule module = RetrieveBaseWindow(id);
             if (module is IWindowModule typedModule)
             {
                 return typedModule;
@@ -68,9 +77,14 @@ namespace MochaCore.Windowing
             throw new InvalidCastException($"Module with id={id} is not a {typeof(IWindowModule).Name}.");
         }
 
-        public static IWindowModule<T> RetrieveCustomWindow<T>(string id) where T : class, new()
+        /// <summary>
+        /// Returns registered implementation of <see cref="IWindowModule{T}"/> with specified id.
+        /// </summary>
+        /// <typeparam name="T">Type of module properties.</typeparam>
+        /// <param name="id">Identifier of module which implementation is to be retrieved.</param>
+        public static IWindowModule<T> RetrieveWindow<T>(string id) where T : class, new()
         {
-            IBaseWindowModule module = RetrieveWindow(id);
+            IBaseWindowModule module = RetrieveBaseWindow(id);
             if (module is IWindowModule<T> typedModule)
             {
                 return typedModule;

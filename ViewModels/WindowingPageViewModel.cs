@@ -20,7 +20,7 @@ namespace ViewModels
         private async Task OpenWindow()
         {
             using IBaseWindowModule<GenericWindowProperties> testWindowModule
-                = WindowManager.RetrieveWindow<GenericWindowProperties>("TestWindow");
+                = WindowManager.RetrieveBaseWindow<GenericWindowProperties>("TestWindow");
 
             testWindowModule.Properties.Info = "Hello there 😎";
             object? result = await testWindowModule.OpenAsync();

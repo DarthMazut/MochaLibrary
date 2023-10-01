@@ -58,7 +58,7 @@ namespace WinUiApplication
                     .WithModule<WindowingPage, WindowingPageViewModel>()
                     .WithInitialId(ViewModels.Pages.BlankPage1.Id));
 
-            IBaseWindowModule mainWindowModule = WindowManager.RetrieveWindow("MainWindow");
+            IBaseWindowModule mainWindowModule = WindowManager.RetrieveBaseWindow("MainWindow");
             _mainWindow = mainWindowModule.View as MainWindow;
 
             DialogManager.DefineDialog(ViewModels.Dialogs.MoreInfoDialog.ID, () => new StandardMessageDialogModule(_mainWindow));
