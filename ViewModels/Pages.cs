@@ -40,6 +40,13 @@ public static class Pages
         new(nameof(EditPersonPage))
         {
             IsFullScreen = true
+        },
+
+        new(nameof(WindowingPage))
+        {
+            Name = "Windowing Page",
+            Glyph = "\xE8A7",
+            IsMenuPage = true,
         }
     };
 
@@ -54,6 +61,8 @@ public static class Pages
     public static ApplicationPage SettingsPage => _pages.First(p => p.Id == nameof(SettingsPage));
 
     public static ApplicationPage EditPersonPage => _pages.First(p => p.Id == nameof(EditPersonPage));
+
+    public static ApplicationPage WindowingPage => _pages.First(p => p.Id == nameof(WindowingPage));
 
     public static IList<ApplicationPage> AsCollection() => _pages;
 

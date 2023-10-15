@@ -4,15 +4,19 @@ using MochaCore.Dialogs;
 using MochaCore.Dispatching;
 using MochaCore.Navigation;
 using MochaCore.Settings;
+using MochaCore.Windowing;
 using MochaWinUI.Dialogs;
 using MochaWinUI.Dispatching;
-using MochaWinUI.NavigationEx;
+using MochaWinUI.Navigation;
 using MochaWinUI.Settings;
+using MochaWinUI.Windowing;
 using Model;
 using ViewModels;
+using ViewModels.Windows;
 using Windows.Storage;
 using WinUiApplication.Dialogs;
 using WinUiApplication.Pages;
+using WinUiApplication.Windows;
 
 namespace WinUiApplication
 {
@@ -39,6 +43,9 @@ namespace WinUiApplication
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
+            WindowManager.RegisterWindow("TestWindow", () => new WindowModule<GenericWindowProperties>(new TestWindow(), new TestWindowViewModel()));
+
             INavigationService mainNavigationService = NavigationManager.AddNavigationService(
                 NavigationServices.MainNavigationServiceId,
                 new WinUiNavigationService()
@@ -48,9 +55,11 @@ namespace WinUiApplication
                     .WithModule<SettingsPage, SettingsPageViewModel>()
                     .WithModule<EditPersonPage, EditPersonPageViewModel>()
                     .WithModule<BindingControlPage, BindingControlPageViewModel>()
+                    .WithModule<WindowingPage, WindowingPageViewModel>()
                     .WithInitialId(ViewModels.Pages.BlankPage1.Id));
 
-            _mainWindow = new MainWindow();
+            IBaseWindowModule mainWindowModule = WindowManager.RetrieveBaseWindow("MainWindow");
+            _mainWindow = mainWindowModule.View as MainWindow;
 
             DialogManager.DefineDialog(ViewModels.Dialogs.MoreInfoDialog.ID, () => new StandardMessageDialogModule(_mainWindow));
             DialogManager.DefineDialog(ViewModels.Dialogs.EditPictureDialog.ID, () => new ContentDialogModule(_mainWindow, new EditPictureDialog()));
@@ -62,7 +71,9 @@ namespace WinUiApplication
 
             DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(_mainWindow));
 
-            _mainWindow.Activate();
+            mainWindowModule.Open();
+
+            //_mainWindow.Activate();
         }
     }
 }

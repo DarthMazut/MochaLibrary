@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs.Extensions.DI
 {
+    /// <summary>
+    /// Provides implementation of <see cref="IDialogFactory"/>.
+    /// </summary>
     public class DialogFactory : IDialogFactory
     {
         /// <inheritdoc/>
