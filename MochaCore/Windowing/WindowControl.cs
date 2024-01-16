@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MochaCore.Utils;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace MochaCore.Windowing
         private bool _isInitialized;
         
         protected IBaseWindowModule? _module;
-        protected List<SubscriptionDelegate> _subscriptionDelegates = new();
+        protected List<LazySubscruption> _subscriptionDelegates = new();
 
         /// <inheritdoc/>
         public event EventHandler? Initialized;
@@ -195,34 +196,7 @@ namespace MochaCore.Windowing
 
         /// <inheritdoc/>
         public IDisposable TrySubscribeWindowClosing(EventHandler<CancelEventArgs> closingHandler, Action<IBaseWindowModule>? featureUnavailableHandler)
-        {
-            SubscriptionDelegate subscription = new(m =>
-            {
-                if (m is IClosingWindow closing)
-                {
-                    closing.Closing += closingHandler;
-                }
-                else
-                {
-                    featureUnavailableHandler?.Invoke(m);
-                }
-            }, m =>
-            {
-                if (m is IClosingWindow closing)
-                {
-                    closing.Closing -= closingHandler;
-                }
-            });
-
-            _subscriptionDelegates.Add(subscription);
-
-            if (IsInitialized && _module is not null)
-            {
-                subscription.SubscribeOrExecute(_module);
-            }
-
-            return subscription;
-        }
+            => DeferSubscription(closingHandler, featureUnavailableHandler, nameof(IClosingWindow.Closing));
 
         /// <inheritdoc/>
         public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler)
@@ -230,34 +204,7 @@ namespace MochaCore.Windowing
 
         /// <inheritdoc/>
         public IDisposable TrySubscribeWindowStateChanged(EventHandler<WindowStateChangedEventArgs> stateChangedHandler, Action<IBaseWindowModule>? featureUnavailableHandler)
-        {
-            SubscriptionDelegate subscription = new(m =>
-            {
-                if (m is IWindowStateChanged stateChanged)
-                {
-                    stateChanged.StateChanged += stateChangedHandler;
-                }
-                else
-                {
-                    featureUnavailableHandler?.Invoke(m);
-                }
-            }, m =>
-            {
-                if (m is IWindowStateChanged stateChanged)
-                {
-                    stateChanged.StateChanged -= stateChangedHandler;
-                }
-            });
-
-            _subscriptionDelegates.Add(subscription);
-
-            if (IsInitialized && _module is not null)
-            {
-                subscription.SubscribeOrExecute(_module);
-            }
-
-            return subscription;
-        }
+            => DeferSubscription(stateChangedHandler, featureUnavailableHandler, nameof(IWindowStateChanged.StateChanged));
 
         /// <inheritdoc/>
         void IWindowControlInitialize.Initialize(IBaseWindowModule module)
@@ -313,6 +260,17 @@ namespace MochaCore.Windowing
             {
                 throw new InvalidOperationException($"Associated module was expected to be of type {type}, but it's not.");
             }
+        }
+
+        protected IDisposable DeferSubscription(Delegate eventHandler, Delegate? featureUnavailableHandler, string eventName)
+        {
+            LazySubscruption subscription = new(eventHandler, featureUnavailableHandler, eventName);
+            _subscriptionDelegates.Add(subscription);
+            if (IsInitialized && _module is not null)
+            {
+                subscription.SubscribeOrExecute(_module);
+            }
+            return subscription;
         }
 
         private void ModuleOpened(object? sender, EventArgs e)
