@@ -18,7 +18,7 @@ namespace MochaCore.Windowing
         private bool _isInitialized;
         
         protected IBaseWindowModule? _module;
-        protected List<LazySubscruption> _subscriptionDelegates = new();
+        protected List<LazySubscription> _subscriptionDelegates = new();
 
         /// <inheritdoc/>
         public event EventHandler? Initialized;
@@ -264,7 +264,7 @@ namespace MochaCore.Windowing
 
         protected IDisposable DeferSubscription(Delegate eventHandler, Delegate? featureUnavailableHandler, string eventName)
         {
-            LazySubscruption subscription = new(eventHandler, featureUnavailableHandler, eventName);
+            LazySubscription subscription = new(eventHandler, featureUnavailableHandler, eventName);
             _subscriptionDelegates.Add(subscription);
             if (IsInitialized && _module is not null)
             {
