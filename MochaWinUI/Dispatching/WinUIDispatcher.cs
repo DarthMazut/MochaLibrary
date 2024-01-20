@@ -1,8 +1,10 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using MochaCore.Dispatching;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI.Core;
 
 namespace MochaWinUI.Dispatching
 {
@@ -11,28 +13,30 @@ namespace MochaWinUI.Dispatching
     /// </summary>
     public class WinUIDispatcher : IDispatcher
     {
-        private readonly Window _mainWindow;
+        private readonly DispatcherQueue _dispatcherQueue;
+        private readonly CoreDispatcher _dispatcher;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WinUIDispatcher"/> class.
         /// </summary>
-        /// <param name="mainWindow">Application's main window.</param>
-        public WinUIDispatcher(Window mainWindow)
+        /// <param name="app">Root application object.</param>
+        public WinUIDispatcher(Application app)
         {
-            _mainWindow = mainWindow;
+            _dispatcherQueue = app.Resources.DispatcherQueue;
+            _dispatcher = app.Resources.Dispatcher;
         }
 
         /// <inheritdoc/>
         public void EnqueueOnMainThread(Action action)
         {
-            _mainWindow.DispatcherQueue.TryEnqueue(() => action.Invoke());
+            _dispatcherQueue.TryEnqueue(() => action.Invoke());
         }
 
         /// <inheritdoc/>
         public void RunOnMainThread(Action action)
         {
             SemaphoreSlim semaphore = new(1, 1);
-            _mainWindow.DispatcherQueue.TryEnqueue(() => 
+            _dispatcherQueue.TryEnqueue(() => 
             {
                 action.Invoke();
                 semaphore.Release();
@@ -45,7 +49,7 @@ namespace MochaWinUI.Dispatching
         public async Task RunOnMainThreadAsync(Func<Task> func)
         {
             CancellationTokenSource cts = new();
-            _mainWindow.DispatcherQueue.TryEnqueue(async () => 
+            _dispatcherQueue.TryEnqueue(async () => 
             {
                 await func.Invoke();
                 cts.Cancel();
@@ -65,7 +69,7 @@ namespace MochaWinUI.Dispatching
         /// <inheritdoc/>
         public async Task Yield()
         {
-            if (_mainWindow.DispatcherQueue.HasThreadAccess && _mainWindow.Dispatcher?.ShouldYield() != false)
+            if (_dispatcherQueue.HasThreadAccess && _dispatcher?.ShouldYield() != false)
             {
                 await Task.Factory.StartNew(
                     () => { },

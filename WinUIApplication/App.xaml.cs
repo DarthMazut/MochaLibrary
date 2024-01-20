@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using MochaCore.Behaviours;
 using MochaCore.Dialogs;
 using MochaCore.Dispatching;
@@ -69,11 +70,9 @@ namespace WinUiApplication
 
             BehaviourManager.Record("GetLocalAppFolderPath", (object o) => ApplicationData.Current.LocalFolder.Path);
 
-            DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(_mainWindow));
+            DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(this));
 
             mainWindowModule.Open();
-
-            //_mainWindow.Activate();
         }
     }
 }
