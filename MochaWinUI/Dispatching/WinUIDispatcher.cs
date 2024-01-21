@@ -27,15 +27,16 @@ namespace MochaWinUI.Dispatching
         }
 
         /// <inheritdoc/>
-        public void EnqueueOnMainThread(Action action)
-        {
-            _dispatcherQueue.TryEnqueue(() => action.Invoke());
-        }
-
-        /// <inheritdoc/>
         public void RunOnMainThread(Action action)
         {
+            if (_dispatcherQueue.HasThreadAccess)
+            {
+                action.Invoke();
+                return;
+            }
+
             SemaphoreSlim semaphore = new(1, 1);
+            semaphore.Wait();
             _dispatcherQueue.TryEnqueue(() => 
             {
                 action.Invoke();
@@ -43,27 +44,68 @@ namespace MochaWinUI.Dispatching
             });
 
             semaphore.Wait();
+            semaphore.Dispose();
         }
 
         /// <inheritdoc/>
-        public async Task RunOnMainThreadAsync(Func<Task> func)
+        public void RunOnMainThread(Func<Task> asyncAction)
         {
-            CancellationTokenSource cts = new();
-            _dispatcherQueue.TryEnqueue(async () => 
+            if (_dispatcherQueue.HasThreadAccess)
             {
-                await func.Invoke();
-                cts.Cancel();
+                throw new InvalidOperationException(
+                    $"You called {nameof(RunOnMainThread)} with async delegate on UI thread. " +
+                    $"Remember that {nameof(RunOnMainThread)} blocks the current thread until async delegate is completed. " +
+                    "You cannot simultaneously block UI thread and enqueue delegate to await something on UI thread because that leads to deadlock.");
+            }
+
+            SemaphoreSlim semaphore = new(1, 1);
+            semaphore.Wait();
+            _dispatcherQueue.TryEnqueue(async () =>
+            {
+                await asyncAction.Invoke();
+                semaphore.Release();
             });
 
-            try
+            semaphore.Wait();
+            semaphore.Dispose();
+        }
+
+        /// <inheritdoc/>
+        public Task RunOnMainThreadAsync(Action action)
+        {
+            TaskCompletionSource tsc = new();
+            _dispatcherQueue.TryEnqueue(() =>
             {
-                await Task.Delay(Timeout.Infinite, cts.Token);
-            }
-            catch (OperationCanceledException) { }
-            finally 
+                action.Invoke();
+                tsc.SetResult();
+            });
+
+            return tsc.Task;
+        }
+
+        /// <inheritdoc/>
+        public Task RunOnMainThreadAsync(Func<Task> asyncAction)
+        {
+            TaskCompletionSource tsc = new();
+            _dispatcherQueue.TryEnqueue(async () =>
             {
-                cts.Dispose();
-            }
+                await asyncAction.Invoke();
+                tsc.SetResult();
+            });
+
+            return tsc.Task;
+        }
+
+        /// <inheritdoc/>
+        public void EnqueueOnMainThread(Action action)
+        {
+            _dispatcherQueue.TryEnqueue(() => action.Invoke());
+        }
+
+        /// <inheritdoc/>
+        public void EnqueueOnMainThread(Func<Task> asyncAction)
+        {
+            _dispatcherQueue.TryEnqueue(async () => await asyncAction.Invoke());
         }
 
         /// <inheritdoc/>

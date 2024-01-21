@@ -14,6 +14,10 @@ namespace MochaCore.Dispatching
         /// <param name="action">Delegate to be executed on Main Thread</param>
         void RunOnMainThread(Action action);
 
+        void RunOnMainThread(Func<Task> asyncAction);
+
+        Task RunOnMainThreadAsync(Action action);
+
         /// <summary>
         /// Executes asynchronous delegate on Main Thread and blocks until execution is finished.
         /// </summary>
@@ -25,6 +29,8 @@ namespace MochaCore.Dispatching
         /// </summary>
         /// <param name="action">Delegate to be enqueued</param>
         void EnqueueOnMainThread(Action action);
+
+        void EnqueueOnMainThread(Func<Task> asyncAction);
 
         /// <summary>
         /// Returns control to the Main/UI thread and executes succeeding code 

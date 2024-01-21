@@ -23,21 +23,39 @@ namespace MochaWPF.Dispatching
         }
 
         /// <inheritdoc/>
-        public void EnqueueOnMainThread(Action action)
-        {
-            _dispatcher.BeginInvoke(action);
-        }
-
-        /// <inheritdoc/>
         public void RunOnMainThread(Action action)
         {
             _dispatcher.Invoke(action);
         }
 
         /// <inheritdoc/>
+        public void RunOnMainThread(Func<Task> asyncAction)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public Task RunOnMainThreadAsync(Action action)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
         public async Task RunOnMainThreadAsync(Func<Task> func)
         {
             await _dispatcher.InvokeAsync(func);
+        }
+
+        /// <inheritdoc/>
+        public void EnqueueOnMainThread(Action action)
+        {
+            _dispatcher.BeginInvoke(action);
+        }
+
+        /// <inheritdoc/>
+        public void EnqueueOnMainThread(Func<Task> asyncAction)
+        {
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
