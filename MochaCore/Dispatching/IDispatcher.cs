@@ -9,6 +9,11 @@ namespace MochaCore.Dispatching
     public interface IDispatcher
     {
         /// <summary>
+        /// Checks whether the calling thread is the Main Thread.
+        /// </summary>
+        public bool HasThreadAccess { get; }
+
+        /// <summary>
         /// Executes given delegate on Main Thread and blocks until execution in finished.
         /// </summary>
         /// <param name="action">Delegate to be executed on Main Thread.</param>

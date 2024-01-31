@@ -13,6 +13,9 @@ namespace MochaWPF.Dispatching
     {
         readonly Dispatcher _dispatcher;
 
+        /// <inheritdoc/>
+        public bool HasThreadAccess => _dispatcher.CheckAccess();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WpfDispatcher"/> class.
         /// </summary>

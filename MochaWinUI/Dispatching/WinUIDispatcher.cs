@@ -16,6 +16,9 @@ namespace MochaWinUI.Dispatching
         private readonly DispatcherQueue _dispatcherQueue;
         private readonly CoreDispatcher _dispatcher;
 
+        /// <inheritdoc/>
+        public bool HasThreadAccess => _dispatcherQueue.HasThreadAccess;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WinUIDispatcher"/> class.
         /// </summary>
