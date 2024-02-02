@@ -57,6 +57,7 @@ namespace WinUiApplication
                     .WithModule<EditPersonPage, EditPersonPageViewModel>()
                     .WithModule<BindingControlPage, BindingControlPageViewModel>()
                     .WithModule<WindowingPage, WindowingPageViewModel>()
+                    .WithModule<DispatcherPage, DispatchingPageViewModel>()
                     .WithInitialId(ViewModels.Pages.BlankPage1.Id));
 
             IBaseWindowModule mainWindowModule = WindowManager.RetrieveBaseWindow("MainWindow");

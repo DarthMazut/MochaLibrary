@@ -47,6 +47,13 @@ public static class Pages
             Name = "Windowing Page",
             Glyph = "\xE8A7",
             IsMenuPage = true,
+        },
+
+        new(nameof(DispatcherPage))
+        {
+            Name = "Dispatcher Page",
+            Glyph = "\xE717",
+            IsMenuPage = true,
         }
     };
 
@@ -63,6 +70,8 @@ public static class Pages
     public static ApplicationPage EditPersonPage => _pages.First(p => p.Id == nameof(EditPersonPage));
 
     public static ApplicationPage WindowingPage => _pages.First(p => p.Id == nameof(WindowingPage));
+
+    public static ApplicationPage DispatcherPage => _pages.First(p => p.Id == nameof(DispatcherPage));
 
     public static IList<ApplicationPage> AsCollection() => _pages;
 
