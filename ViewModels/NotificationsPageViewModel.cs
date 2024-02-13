@@ -22,13 +22,13 @@ namespace ViewModels
         private void ShowNotification()
         {
             INotification<object> notification = NotificationManager.RetrieveNotification<object>("MyNotification");
-            notification.Interacted += (s, e) =>
-            {
-                DispatcherManager.GetMainThreadDispatcher().RunOnMainThread(() =>
-                {
-                    Title = "Handled 😎";
-                });
-            };
+            //notification.Interacted += (s, e) =>
+            //{
+            //    DispatcherManager.GetMainThreadDispatcher().RunOnMainThread(() =>
+            //    {
+            //        Title = "Handled 😎";
+            //    });
+            //};
             notification.Schedule();
         }
     }

@@ -78,7 +78,13 @@ namespace MochaCore.Notifications
                 _notifications[id].Add(notification);
             }
 
-            notification.Interacted += NotificationInteracted; // ????????????????????????????????
+            notification.Disposed += Disposed;
+            notification.Interacted += NotificationInteractedCore;
+
+            void Disposed(object? sender, EventArgs e)
+            {
+
+            }
         }
 
         private static void NotificationInteractedCore(object? sender, EventArgs e)
