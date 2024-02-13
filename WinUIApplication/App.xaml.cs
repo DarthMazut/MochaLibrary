@@ -1,14 +1,17 @@
 ﻿using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppNotifications;
 using MochaCore.Behaviours;
 using MochaCore.Dialogs;
 using MochaCore.Dispatching;
 using MochaCore.Navigation;
+using MochaCore.Notifications;
 using MochaCore.Settings;
 using MochaCore.Windowing;
 using MochaWinUI.Dialogs;
 using MochaWinUI.Dispatching;
 using MochaWinUI.Navigation;
+using MochaWinUI.Notifications;
 using MochaWinUI.Settings;
 using MochaWinUI.Windowing;
 using Model;
@@ -44,6 +47,12 @@ namespace WinUiApplication
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            AppNotificationManager notificationManager = AppNotificationManager.Default;
+            notificationManager.NotificationInvoked += (s, e) => { };
+            notificationManager.Register();
+
+            NotificationManager.RegisterNotification("MyNotification", () => new WinUiNotification<object>());
+
             WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
             WindowManager.RegisterWindow("TestWindow", () => new WindowModule<GenericWindowProperties>(new TestWindow(), new TestWindowViewModel()));
 
@@ -58,6 +67,7 @@ namespace WinUiApplication
                     .WithModule<BindingControlPage, BindingControlPageViewModel>()
                     .WithModule<WindowingPage, WindowingPageViewModel>()
                     .WithModule<DispatcherPage, DispatchingPageViewModel>()
+                    .WithModule<NotificationsPage, NotificationsPageViewModel>()
                     .WithInitialId(ViewModels.Pages.BlankPage1.Id));
 
             IBaseWindowModule mainWindowModule = WindowManager.RetrieveBaseWindow("MainWindow");
