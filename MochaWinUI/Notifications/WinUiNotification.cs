@@ -53,18 +53,25 @@ namespace MochaWinUI.Notifications
             .AddButton(new AppNotificationButton("Test Button"))
             .BuildNotification();
 
+            _scheduledTime = DateTimeOffset.Now;
             AppNotificationManager.Default.Show(appNotification);
         }
 
         /// <inheritdoc/>
         public void Schedule(DateTimeOffset scheduledTime)
         {
+            _scheduledTime = scheduledTime;
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
+            if (_isDisposed)
+            {
+                return;
+            }
+
             AppNotificationManager.Default.NotificationInvoked -= AnyNotificationInvoked;
             // If scheduled but not yet displayed unschedule here...
             _isDisposed = true;
@@ -77,6 +84,8 @@ namespace MochaWinUI.Notifications
             if (args.Arguments["id"] == ResolveId())
             {
                 Interacted?.Invoke(this, EventArgs.Empty);
+                _displayed = true;
+                Dispose();
             }
         }
 

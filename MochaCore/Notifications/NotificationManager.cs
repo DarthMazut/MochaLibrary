@@ -83,7 +83,9 @@ namespace MochaCore.Notifications
 
             void Disposed(object? sender, EventArgs e)
             {
-
+                _notifications[id].Remove(notification);
+                notification.Disposed -= Disposed;
+                notification.Interacted -= NotificationInteractedCore;
             }
         }
 
