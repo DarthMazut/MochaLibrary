@@ -83,8 +83,8 @@ namespace MochaWinUI.Notifications
             Debug.WriteLine("AnyNotificationInvoked in WinUiNotification");
             if (args.Arguments["id"] == ResolveId())
             {
-                Interacted?.Invoke(this, EventArgs.Empty);
                 _displayed = true;
+                Interacted?.Invoke(this, EventArgs.Empty);
                 Dispose();
             }
         }

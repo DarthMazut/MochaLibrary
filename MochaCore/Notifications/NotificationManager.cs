@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,10 +14,23 @@ namespace MochaCore.Notifications
     /// </summary>
     public static class NotificationManager
     {
+        private static bool _isSetup = false;
         private static Dictionary<string, Func<INotification>> _builders = new();
         private static Dictionary<string, List<INotification>> _notifications = new();
 
-        public static event EventHandler? NotificationInteracted;
+        public static event EventHandler<AnyNotificationInteractedEventArgs>? NotificationInteracted;
+
+        public static void Setup(INotificationSetupProvider setupProvider)
+        {
+            if (_isSetup)
+            {
+                throw new InvalidOperationException("Notification setup has already been performed. " +
+                    "Cannot set up notifications more than once.");
+            }
+
+            setupProvider.Setup(RawNotificationHandler);
+            _isSetup = true;
+        }
 
         public static void RegisterNotification(string id, Func<INotification> factoryDelegate)
             => RegisterNotificationCore(id, factoryDelegate);
@@ -25,6 +40,8 @@ namespace MochaCore.Notifications
 
         public static INotification RetrieveNotification(string id)
         {
+            SetupGuard();
+
             INotification createdNotification = GetBuilderOrThrow(id).Invoke();
             TrackNotification(id, createdNotification);
             return createdNotification;
@@ -32,6 +49,8 @@ namespace MochaCore.Notifications
 
         public static INotification<T> RetrieveNotification<T>(string id) where T : new()
         {
+            SetupGuard();
+
             if (GetBuilderOrThrow(id) is Func<INotification<T>> typedBuilder)
             {
                 INotification<T> notification = typedBuilder.Invoke();
@@ -42,11 +61,16 @@ namespace MochaCore.Notifications
             throw new InvalidCastException($"Notification with id={id} was found, but generic parameter was invalid.");
         }
 
-        public static List<INotification> GetCreatedNotifications(string id)
+        public static IReadOnlyCollection<INotification> GetCreatedNotifications()
+            => _notifications.Values.SelectMany(n => n).ToImmutableArray();
+
+        public static IReadOnlyCollection<INotification> GetCreatedNotifications(string id)
         {
+            SetupGuard();
+
             if (_notifications.TryGetValue(id, out List<INotification>? notofications))
             {
-                return notofications;
+                return notofications.ToImmutableArray();
             }
 
             return new List<INotification>();
@@ -54,6 +78,8 @@ namespace MochaCore.Notifications
 
         private static void RegisterNotificationCore(string id, Func<INotification> factoryDelegate)
         {
+            SetupGuard();
+
             if (!_builders.TryAdd(id, factoryDelegate))
             {
                 throw new InvalidOperationException($"Notification factory delegate with id={id} has been already registered");
@@ -89,9 +115,20 @@ namespace MochaCore.Notifications
             }
         }
 
-        private static void NotificationInteractedCore(object? sender, EventArgs e)
+        private static void SetupGuard()
         {
-            NotificationInteracted?.Invoke(sender, e);
+            if (!_isSetup)
+            {
+                throw new InvalidOperationException("Notification setup has not been performed.");
+            }
+        }
+
+        private static void RawNotificationHandler(RawNotificationInteractedEventArgs args)
+        {
+            INotification? notification = _notifications.Values
+                .SelectMany(l => l).FirstOrDefault(n => n.Id == args.NotificationId);
+
+            NotificationInteracted?.Invoke(null, new AnyNotificationInteractedEventArgs(args.NotificationId, notification));
         }
     }
 }
