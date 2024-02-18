@@ -61,9 +61,17 @@ namespace MochaCore.Notifications
             throw new InvalidCastException($"Notification with id={id} was found, but generic parameter was invalid.");
         }
 
+        /// <summary>
+        /// Retrieves all instantiated <see cref="INotification"/> objects that hasn't been disposed yet.
+        /// </summary>
         public static IReadOnlyCollection<INotification> GetCreatedNotifications()
             => _notifications.Values.SelectMany(n => n).ToImmutableArray();
 
+        /// <summary>
+        /// Retrieves all instantiated <see cref="INotification"/> objects registerd 
+        /// by given ID that hasn't been disposed yet.
+        /// </summary>
+        /// <param name="id">Registration ID of requested notifications.</param>
         public static IReadOnlyCollection<INotification> GetCreatedNotifications(string id)
         {
             SetupGuard();
@@ -105,13 +113,11 @@ namespace MochaCore.Notifications
             }
 
             notification.Disposed += Disposed;
-            notification.Interacted += NotificationInteractedCore;
 
             void Disposed(object? sender, EventArgs e)
             {
                 _notifications[id].Remove(notification);
                 notification.Disposed -= Disposed;
-                notification.Interacted -= NotificationInteractedCore;
             }
         }
 
