@@ -18,6 +18,9 @@ namespace MochaCore.Notifications
         private static Dictionary<string, Func<INotification>> _builders = new();
         private static Dictionary<string, List<INotification>> _notifications = new();
 
+        /// <summary>
+        /// Occurs when any notification associated with the current application has been interacted with by the user.
+        /// </summary>
         public static event EventHandler<AnyNotificationInteractedEventArgs>? NotificationInteracted;
 
         public static void Setup(INotificationSetupProvider setupProvider)
@@ -121,20 +124,20 @@ namespace MochaCore.Notifications
             }
         }
 
+        private static void RawNotificationHandler(RawNotificationInteractedArgs args)
+        {
+            INotification? notification = _notifications.Values
+                .SelectMany(l => l).FirstOrDefault(n => n.Id == args.NotificationId);
+
+            NotificationInteracted?.Invoke(null, new AnyNotificationInteractedEventArgs(args.NotificationId, notification));
+        }
+
         private static void SetupGuard()
         {
             if (!_isSetup)
             {
                 throw new InvalidOperationException("Notification setup has not been performed.");
             }
-        }
-
-        private static void RawNotificationHandler(RawNotificationInteractedEventArgs args)
-        {
-            INotification? notification = _notifications.Values
-                .SelectMany(l => l).FirstOrDefault(n => n.Id == args.NotificationId);
-
-            NotificationInteracted?.Invoke(null, new AnyNotificationInteractedEventArgs(args.NotificationId, notification));
         }
     }
 }

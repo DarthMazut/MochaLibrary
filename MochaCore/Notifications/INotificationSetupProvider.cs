@@ -18,6 +18,6 @@ namespace MochaCore.Notifications
         /// A delegate that is called every time a notification related to the current application
         /// is interacted with by the user.
         /// </param>
-        public void Setup(Action<RawNotificationInteractedEventArgs> rawNotificationHandler);
+        public void Setup(Action<RawNotificationInteractedArgs> rawNotificationHandler);
     }
 }

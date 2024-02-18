@@ -2,13 +2,13 @@
 
 namespace MochaCore.Notifications
 {
-    public class RawNotificationInteractedEventArgs : EventArgs
+    public class RawNotificationInteractedArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RawNotificationInteractedEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="RawNotificationInteractedArgs"/> class.
         /// </summary>
         /// <param name="notificationId">Identifier of interacted notification.</param>
-        public RawNotificationInteractedEventArgs(string notificationId)
+        public RawNotificationInteractedArgs(string? notificationId)
         {
             NotificationId = notificationId;
         }
@@ -16,7 +16,7 @@ namespace MochaCore.Notifications
         /// <summary>
         /// Identifier of interacted notification.
         /// </summary>
-        public string NotificationId { get; }
+        public string? NotificationId { get; }
 
         // TODO: add interaction args
     }

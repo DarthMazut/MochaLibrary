@@ -12,7 +12,7 @@ namespace MochaCore.Notifications
         /// </summary>
         /// <param name="notificationId">The identifier of the interacted notification.</param>
         /// <param name="notification">The interacted notification object.</param>
-        public AnyNotificationInteractedEventArgs(string notificationId, INotification? notification)
+        public AnyNotificationInteractedEventArgs(string? notificationId, INotification? notification)
         {
             NotificationId = notificationId;
             Notification = notification;
@@ -21,7 +21,7 @@ namespace MochaCore.Notifications
         /// <summary>
         /// Gets the identifier of the interacted notification.
         /// </summary>
-        public string NotificationId { get; }
+        public string? NotificationId { get; }
 
         /// <summary>
         /// Gets the interacted notification object, if available.

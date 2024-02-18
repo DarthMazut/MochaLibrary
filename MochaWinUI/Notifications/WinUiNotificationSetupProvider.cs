@@ -14,10 +14,10 @@ namespace MochaWinUI.Notifications
     public class WinUiNotificationSetupProvider : INotificationSetupProvider, IDisposable
     {
         private bool _isDisposed = false;
-        private Action<RawNotificationInteractedEventArgs>? _rawNotificationHandler;
+        private Action<RawNotificationInteractedArgs>? _rawNotificationHandler;
 
         /// <inheritdoc/>
-        public void Setup(Action<RawNotificationInteractedEventArgs> rawNotificationHandler)
+        public void Setup(Action<RawNotificationInteractedArgs> rawNotificationHandler)
         {
             _rawNotificationHandler = rawNotificationHandler;
 
@@ -39,7 +39,9 @@ namespace MochaWinUI.Notifications
 
         private void NotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
         {
-            _rawNotificationHandler!.Invoke(new RawNotificationInteractedEventArgs(args.Arguments["Id"]));
+            // TODO extract "Id" to some constant...
+            _ = args.Arguments.TryGetValue("id", out string? id);
+            _rawNotificationHandler!.Invoke(new RawNotificationInteractedArgs(id));
         }
     }
 }

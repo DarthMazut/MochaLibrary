@@ -50,9 +50,13 @@ namespace MochaWinUI.Notifications
             AppNotification appNotification = new AppNotificationBuilder()
             .AddArgument("id", ResolveId())
             .AddText("Test!!!")
-            .AddButton(new AppNotificationButton("Test Button"))
+            .SetHeroImage(new Uri(@"C:\Users\AsyncMilk\Desktop\img_temp.PNG"))
+            .AddButton(
+                new AppNotificationButton("Test Button")
+                .AddArgument("btn", "clicked")
+                .SetToolTip("Test tooltip !!!"))
             .BuildNotification();
-
+ 
             _scheduledTime = DateTimeOffset.Now;
             AppNotificationManager.Default.Show(appNotification);
         }
