@@ -21,7 +21,7 @@ namespace MochaCore.Notifications
         /// <summary>
         /// Occurs when any notification associated with the current application has been interacted with by the user.
         /// </summary>
-        public static event EventHandler<AnyNotificationInteractedEventArgs>? NotificationInteracted;
+        public static event EventHandler<AppNotificationInteractedEventArgs>? NotificationInteracted;
 
         public static void Setup(INotificationSetupProvider setupProvider)
         {
@@ -129,7 +129,7 @@ namespace MochaCore.Notifications
             INotification? notification = _notifications.Values
                 .SelectMany(l => l).FirstOrDefault(n => n.Id == args.NotificationId);
 
-            NotificationInteracted?.Invoke(null, new AnyNotificationInteractedEventArgs(args.NotificationId, notification));
+            NotificationInteracted?.Invoke(null, new AppNotificationInteractedEventArgs(args.NotificationId, notification));
         }
 
         private static void SetupGuard()

@@ -5,14 +5,14 @@ namespace MochaCore.Notifications
     /// <summary>
     /// Provides arguments for the <see cref="NotificationManager.NotificationInteracted"/> event.
     /// </summary>
-    public class AnyNotificationInteractedEventArgs : EventArgs
+    public class AppNotificationInteractedEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AnyNotificationInteractedEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="AppNotificationInteractedEventArgs"/> class.
         /// </summary>
         /// <param name="notificationId">The identifier of the interacted notification.</param>
         /// <param name="notification">The interacted notification object.</param>
-        public AnyNotificationInteractedEventArgs(string? notificationId, INotification? notification)
+        public AppNotificationInteractedEventArgs(string? notificationId, INotification? notification)
         {
             NotificationId = notificationId;
             Notification = notification;

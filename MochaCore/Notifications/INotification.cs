@@ -20,8 +20,15 @@ namespace MochaCore.Notifications
         /// </summary>
         public string Id { get; set; }
 
+        /// <summary>
+        /// Notification schedule time.
+        /// </summary>
         public DateTimeOffset? ScheduledTime { get; }
 
+        /// <summary>
+        /// Indicates whether the notification has been displayed.
+        /// Once the notification is displayed, it can no longer be scheduled.
+        /// </summary>
         public bool Displayed { get; }
 
         /// <summary>
