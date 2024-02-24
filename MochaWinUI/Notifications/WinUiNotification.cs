@@ -84,7 +84,6 @@ namespace MochaWinUI.Notifications
 
         private void AnyNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
         {
-            Debug.WriteLine("AnyNotificationInvoked in WinUiNotification");
             if (args.Arguments["id"] == ResolveId())
             {
                 _displayed = true;

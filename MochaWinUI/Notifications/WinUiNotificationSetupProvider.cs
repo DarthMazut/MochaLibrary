@@ -41,7 +41,30 @@ namespace MochaWinUI.Notifications
         {
             // TODO extract "Id" to some constant...
             _ = args.Arguments.TryGetValue("id", out string? id);
-            _rawNotificationHandler!.Invoke(new RawNotificationInteractedArgs(id));
+            IReadOnlyDictionary<string, object> rawArgs = ParseRawArgs(args.Arguments, args.UserInput);
+            _rawNotificationHandler!.Invoke(new RawNotificationInteractedArgs(rawArgs, id));
+        }
+
+        private IReadOnlyDictionary<string, object> ParseRawArgs(IDictionary<string, string> arguments, IDictionary<string, string> userInput)
+        {
+            Dictionary<string, object> rawArgs = new();
+            foreach ((string key, string arg) in arguments)
+            {
+                rawArgs[key] = arg;
+            }
+
+            foreach ((string key, string input) in userInput)
+            {
+                if (rawArgs.TryGetValue(key, out object? value))
+                {
+                    rawArgs[key] = new List<string>() { (string)value, input };
+                    continue;   
+                }
+
+                rawArgs[key] = input;
+            }
+
+            return rawArgs;
         }
     }
 }

@@ -10,8 +10,14 @@ namespace MochaCore.Notifications
     {
         public INotification Notification { get; }
 
-        public bool SupressDispose { get; } //
+        public string InvokedItemId { get; }
 
-        public object? RawArgs { get; }
+        public string? TextInput { get; }
+
+        public string? SelectedItemId { get; }
+
+        public DateTimeOffset? SlectedDate { get; }
+
+        public IReadOnlyDictionary<string, object> RawArgs { get; }
     }
 }

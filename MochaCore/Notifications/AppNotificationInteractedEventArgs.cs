@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MochaCore.Notifications
 {
@@ -28,6 +29,7 @@ namespace MochaCore.Notifications
         /// </summary>
         public INotification? Notification { get; }
 
-        // TODO: add interaction args
+
+        public IReadOnlyDictionary<string, object> RawArgs { get; }
     }
 }
