@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 
 namespace MochaCore.Notifications
 {
-
-    // Notification lifetime:
-    // Instantiated --> Scheduled --> Displayed (handled or not) --> Disposed --> GCd
-
     /// <summary>
     /// Represents a single instance of local notification.
     /// </summary>
@@ -39,7 +35,7 @@ namespace MochaCore.Notifications
         /// <summary>
         /// Occurs when the user interacts with the notification associated with this instance.
         /// </summary>
-        public event EventHandler? Interacted;
+        public event EventHandler<NotificationInteractedEventArgs> Interacted;
 
         /// <summary>
         /// Occurs when this instance is disposed.

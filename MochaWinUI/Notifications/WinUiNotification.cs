@@ -39,7 +39,7 @@ namespace MochaWinUI.Notifications
         public bool IsDisposed => _isDisposed;
 
         /// <inheritdoc/>
-        public event EventHandler? Interacted;
+        public event EventHandler<NotificationInteractedEventArgs>? Interacted;
 
         /// <inheritdoc/>
         public event EventHandler? Disposed;
@@ -87,7 +87,7 @@ namespace MochaWinUI.Notifications
             if (args.Arguments["id"] == ResolveId())
             {
                 _displayed = true;
-                Interacted?.Invoke(this, EventArgs.Empty);
+                Interacted?.Invoke(this, new NotificationInteractedEventArgs(this, "", new Dictionary<string, object>(), args));
                 Dispose();
             }
         }
