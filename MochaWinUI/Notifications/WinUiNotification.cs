@@ -10,17 +10,28 @@ using System.Threading.Tasks;
 
 namespace MochaWinUI.Notifications
 {
-    public class WinUiNotification<T> : INotification<T> where T : new()
+    public class WinUiNotification<T> : INotificationTracker, INotification<T> where T : new()
     {
         private readonly string _internalId = Guid.NewGuid().ToString();
+        private EventHandler<NotificationInteractedEventArgs>? genericEvent;
 
         private DateTimeOffset? _scheduledTime;
         private bool _displayed;
         private bool _isDisposed;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WinUiNotification{T}"/> class.
+        /// </summary>
         public WinUiNotification()
         {
             AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
+        }
+
+        /// <inheritdoc/>
+        event EventHandler<NotificationInteractedEventArgs>? INotificationTracker.GenericNotificationInteracted
+        {
+            add => genericEvent += value;
+            remove => genericEvent -= value;
         }
 
         /// <inheritdoc/>
