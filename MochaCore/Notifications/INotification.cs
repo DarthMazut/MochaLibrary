@@ -68,4 +68,18 @@ namespace MochaCore.Notifications
         /// </summary>
         public T Properties { get; set; }
     }
+
+    /// <summary>
+    /// Represents a single instance of local notification
+    /// with customizable properties object and interaction event args.
+    /// </summary>
+    /// <typeparam name="TProps">Type of custom properties object.</typeparam>
+    /// <typeparam name="TArgs">Type of interaction event args.</typeparam>
+    public interface INotification<TProps, TArgs> : INotification<TProps> where TProps : new()
+    {
+        /// <summary>
+        /// Occurs when the user interacts with the notification associated with this instance.
+        /// </summary>
+        public new event EventHandler<TArgs?>? Interacted;
+    }
 }

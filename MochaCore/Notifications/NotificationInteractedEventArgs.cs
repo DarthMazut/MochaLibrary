@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 
 namespace MochaCore.Notifications
 {
+    /// <summary>
+    /// Provides data for the event that occurs when a notification is interacted with.
+    /// </summary>
     public class NotificationInteractedEventArgs : EventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationInteractedEventArgs"/> class.
         /// </summary>
-        /// <param name="notification"></param>
-        /// <param name="invokedItemId"></param>
-        /// <param name="asDictionary"></param>
-        /// <param name="rawArgs"></param>
+        /// <param name="notification">Interacted notification.</param>
+        /// <param name="invokedItemId">Identifier of the element that was invoked on the notification, triggering its activation.</param>
+        /// <param name="asDictionary">Interaction data represented as a dictionary.</param>
+        /// <param name="rawArgs">Original arguments of technology-specific interaction event.</param>
         public NotificationInteractedEventArgs(
             INotification notification,
             string invokedItemId,
@@ -28,12 +31,12 @@ namespace MochaCore.Notifications
         }
 
         /// <summary>
-        /// 
+        /// Interacted notification.
         /// </summary>
         public INotification Notification { get; }
 
         /// <summary>
-        /// 
+        /// Identifier of the element that was invoked on the notification, triggering its activation.
         /// </summary>
         public string InvokedItemId { get; }
 
@@ -44,17 +47,18 @@ namespace MochaCore.Notifications
         public string? TextInput { get; init; }
 
         /// <summary>
-        /// 
+        /// Identifier of the item selected during notification interaction, 
+        /// often from a ComboBox or similar widgets or <see langword="null"/> if no such was selected.
         /// </summary>
         public string? SelectedItemId { get; init; }
 
         /// <summary>
-        /// 
+        /// The date selected during interaction with a notification, if any.
         /// </summary>
-        public DateTimeOffset? SlectedDate { get; init; }
+        public DateTimeOffset? SelectedDate { get; init; }
 
         /// <summary>
-        /// 
+        /// Gets the interaction data represented as a dictionary.
         /// </summary>
         public IReadOnlyDictionary<string, object> AsDictionary { get; }
 
@@ -64,6 +68,10 @@ namespace MochaCore.Notifications
         public object? RawArgs { get; }
     }
 
+    /// <summary>
+    /// Provides data for the event that occurs when a notification is interacted with.
+    /// </summary>
+    /// <typeparam name="T">Type of detailed interaction data.</typeparam>
     public class NotificationInteractedEventArgs<T> : NotificationInteractedEventArgs
     {
         /// <summary>
