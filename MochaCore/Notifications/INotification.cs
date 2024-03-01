@@ -16,6 +16,9 @@ namespace MochaCore.Notifications
         /// </summary>
         public string Id { get; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string? Tag { get; }
 
         /// <summary>
