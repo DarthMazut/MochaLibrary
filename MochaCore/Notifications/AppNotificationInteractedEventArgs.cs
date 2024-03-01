@@ -22,14 +22,25 @@ namespace MochaCore.Notifications
         /// <summary>
         /// Gets the identifier of the interacted notification.
         /// </summary>
-        public string? NotificationId { get; }
+        public string NotificationId { get; }
+
+        /// <summary>
+        /// Tag assigned to interacted notification.
+        /// </summary>
+        public string Tag { get; }
 
         /// <summary>
         /// Gets the interacted notification object, if available.
         /// </summary>
         public INotification? Notification { get; }
 
+        public IReadOnlyDictionary<string, object> AsDictionary { get; }
 
-        public IReadOnlyDictionary<string, object> RawArgs { get; }
+        public object? RawArgs { get; }
+    }
+
+    public class AppNotificationInteractedEventArgs<T> : AppNotificationInteractedEventArgs
+    {
+        public T InteractionData { get; }
     }
 }

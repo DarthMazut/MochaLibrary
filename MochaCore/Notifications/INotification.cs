@@ -12,9 +12,11 @@ namespace MochaCore.Notifications
     public interface INotification : IDisposable
     {
         /// <summary>
-        /// Alows to specify custom identifier for current instance.
+        /// Unique identifier for current instance.
         /// </summary>
-        public string Id { get; set; }
+        public string Id { get; }
+
+        public string? Tag { get; }
 
         /// <summary>
         /// Notification schedule time.
@@ -47,6 +49,8 @@ namespace MochaCore.Notifications
         /// </summary>
         public void Schedule();
 
+        public void Schedule(string tag);
+
         /// <summary>
         /// Schedules the notification to be displayed at the specified time.
         /// </summary>
@@ -54,6 +58,8 @@ namespace MochaCore.Notifications
         /// The date and time when the notification should be displayed.
         /// </param>
         public void Schedule(DateTimeOffset scheduledTime);
+
+        public void Schedule(DateTimeOffset scheduledTime, string tag);
     }
 
     /// <summary>

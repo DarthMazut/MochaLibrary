@@ -15,5 +15,12 @@ namespace MochaCore.Notifications
         /// Occurs when any notification of a specific type is interacted with by the user.
         /// </summary>
         public event EventHandler<NotificationInteractedEventArgs>? GenericNotificationInteracted;
+
+        // setID
+        
+        // set callback
+
+        // Func<string, Action<NotificaionInteracedEventArgs>?, INotification>
+        // NotificationManager.Register("MyId", (id, callback) => new WinUiNotification(id, callback));
     }
 }
