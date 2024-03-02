@@ -5,10 +5,18 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using NotificationBuilder = System.Func<string, System.Action<MochaCore.Notifications.AppNotificationInteractedEventArgs>?, MochaCore.Notifications.INotification>;
+//using NotificationBuilder = System.Func<string, System.Action<MochaCore.Notifications.AppNotificationInteractedEventArgs>?, MochaCore.Notifications.INotification>;
 
 namespace MochaCore.Notifications
 {
+    /// <summary>
+    /// Provides a standarized signature for <see cref="INotification"/> builders.
+    /// </summary>
+    /// <param name="registrationId">The very same id that was used to register current builder.</param>
+    /// <param name="generalHandler">A function called whenever there is an interaction with a notification related to the registration ID.</param>
+    /// <returns>New instance of <see cref="INotification"/> implementation.</returns>
+    public delegate INotification NotificationBuilder(string registrationId, Action<AppNotificationInteractedEventArgs>? generalHandler);
+
     /// <summary>
     /// Register your notification implementations and retrieve it later via abstraction.
     /// Manage your notifications.

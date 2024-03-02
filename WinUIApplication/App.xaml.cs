@@ -48,8 +48,7 @@ namespace WinUiApplication
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
 
-            NotificationManager.Setup(new WinUiNotificationSetupProvider());
-            NotificationManager.RegisterNotification("MyNotification", () => new WinUiNotification<object>());
+            NotificationManager.RegisterNotification("MyNotification", (id, handler) => new WinUiNotification<object>(id, handler));
 
             WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
             WindowManager.RegisterWindow("TestWindow", () => new WindowModule<GenericWindowProperties>(new TestWindow(), new TestWindowViewModel()));

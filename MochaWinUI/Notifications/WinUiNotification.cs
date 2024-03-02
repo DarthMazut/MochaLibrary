@@ -10,10 +10,14 @@ using System.Threading.Tasks;
 
 namespace MochaWinUI.Notifications
 {
-    public class WinUiNotification<T> : INotificationTracker, INotification<T> where T : new()
+    public class WinUiNotification<T> : INotification<T> where T : new()
     {
-        private readonly string _internalId = Guid.NewGuid().ToString();
-        private EventHandler<NotificationInteractedEventArgs>? genericEvent;
+        private static readonly string NOTIFICATION_ID = "notification-id";
+        private static readonly string REGISTRATION_ID = "registration-id";
+        private static readonly string TAG = "tag";
+
+        private readonly string _registrationId;
+        private readonly Action<AppNotificationInteractedEventArgs>? _generalHandler;
 
         private DateTimeOffset? _scheduledTime;
         private bool _displayed;
@@ -22,20 +26,18 @@ namespace MochaWinUI.Notifications
         /// <summary>
         /// Initializes a new instance of the <see cref="WinUiNotification{T}"/> class.
         /// </summary>
-        public WinUiNotification()
+        /// <param name="registrationId"></param>
+        /// <param name="generalHandler"></param>
+        public WinUiNotification(string registrationId, Action<AppNotificationInteractedEventArgs>? generalHandler)
         {
+            _registrationId = registrationId;
+            _generalHandler = generalHandler;
+            Id = Guid.NewGuid().ToString();
             AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
         }
 
         /// <inheritdoc/>
-        event EventHandler<NotificationInteractedEventArgs>? INotificationTracker.GenericNotificationInteracted
-        {
-            add => genericEvent += value;
-            remove => genericEvent -= value;
-        }
-
-        /// <inheritdoc/>
-        public string Id { get; set; }
+        public string Id { get; }
 
         /// <inheritdoc/>
         public T Properties { get; set; } = new();
@@ -48,6 +50,9 @@ namespace MochaWinUI.Notifications
 
         /// <inheritdoc/>
         public bool IsDisposed => _isDisposed;
+
+        /// <inheritdoc/>
+        public string? Tag { get; }
 
         /// <inheritdoc/>
         public event EventHandler<NotificationInteractedEventArgs>? Interacted;
@@ -67,15 +72,25 @@ namespace MochaWinUI.Notifications
                 .AddArgument("btn", "clicked")
                 .SetToolTip("Test tooltip !!!"))
             .BuildNotification();
- 
+
             _scheduledTime = DateTimeOffset.Now;
             AppNotificationManager.Default.Show(appNotification);
+        }
+
+        public void Schedule(string tag)
+        {
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
         public void Schedule(DateTimeOffset scheduledTime)
         {
             _scheduledTime = scheduledTime;
+            throw new NotImplementedException();
+        }
+
+        public void Schedule(DateTimeOffset scheduledTime, string tag)
+        {
             throw new NotImplementedException();
         }
 
@@ -95,6 +110,11 @@ namespace MochaWinUI.Notifications
 
         private void AnyNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
         {
+            if (args.Arguments["registrationdId"] == _registrationId)
+            {
+                _generalHandler?.Invoke(new AppNotificationInteractedEventArgs<T>("", "", new Dictionary<string, object>(), "", new()));
+            }
+
             if (args.Arguments["id"] == ResolveId())
             {
                 _displayed = true;
@@ -102,8 +122,6 @@ namespace MochaWinUI.Notifications
                 Dispose();
             }
         }
-
-        private string ResolveId() => Id ?? _internalId;
     }
 
 }
