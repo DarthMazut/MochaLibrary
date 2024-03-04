@@ -15,6 +15,7 @@ using MochaWinUI.Notifications;
 using MochaWinUI.Settings;
 using MochaWinUI.Windowing;
 using Model;
+using System;
 using ViewModels;
 using ViewModels.Windows;
 using Windows.Storage;
@@ -47,6 +48,8 @@ namespace WinUiApplication
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            AppNotificationManager.Default.NotificationInvoked += (s, e) => { };
+            AppNotificationManager.Default.Register();
 
             NotificationManager.RegisterNotification("MyNotification", (id, handler) => new WinUiNotification<object>(id, handler));
 
