@@ -19,7 +19,7 @@ namespace MochaCore.Notifications
         /// <summary>
         /// 
         /// </summary>
-        public string? Tag { get; }
+        public string? Tag { get; set; }
 
         /// <summary>
         /// Notification schedule time.
@@ -52,8 +52,6 @@ namespace MochaCore.Notifications
         /// </summary>
         public void Schedule();
 
-        public void Schedule(string tag);
-
         /// <summary>
         /// Schedules the notification to be displayed at the specified time.
         /// </summary>
@@ -61,8 +59,6 @@ namespace MochaCore.Notifications
         /// The date and time when the notification should be displayed.
         /// </param>
         public void Schedule(DateTimeOffset scheduledTime);
-
-        public void Schedule(DateTimeOffset scheduledTime, string tag);
     }
 
     /// <summary>

@@ -19,21 +19,33 @@ namespace MochaWinUI.Notifications
         private static readonly string TAG = "tag";
 
         private readonly string _registrationId;
-        private readonly Action<NotificationInteractedEventArgs>? _generalHandler;
+        private readonly NotificationRelay? _relay;
 
+        private string? _tag;
         private DateTimeOffset? _scheduledTime;
         private bool _displayed;
         private bool _isDisposed;
 
+        static WinUiNotification()
+        {
+            try
+            {
+                AppNotificationManager.Default.NotificationInvoked += (s, e) => { };
+                AppNotificationManager.Default.Register();
+            }
+            catch (Exception ex) when (ex.InnerException?.HResult == 0) // TODO: number
+            {
+                // We're already registered so just ignore :)
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WinUiNotification{T}"/> class.
         /// </summary>
-        /// <param name="registrationId"></param>
-        /// <param name="generalHandler"></param>
-        public WinUiNotification(string registrationId, Action<NotificationInteractedEventArgs>? generalHandler)
+        public WinUiNotification(NotificationRelay relay)
         {
-            _registrationId = registrationId;
-            _generalHandler = generalHandler;
+            _relay = relay;
+            _registrationId = relay.RegistrationdId;
             Id = Guid.NewGuid().ToString();
             AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
         }
@@ -63,7 +75,22 @@ namespace MochaWinUI.Notifications
         public bool IsDisposed => _isDisposed;
 
         /// <inheritdoc/>
-        public string? Tag { get; }
+        public string? Tag
+        {
+            get => _tag;
+            set
+            {
+                // In this case we need to reschedule in case this changes after scheduling,
+                // it might be better to disallow tag change after Schedule(),
+                // but on the other side if we can Schedule() to reschedule, why shouldn't we allow for this?
+                if (_displayed)
+                {
+                    throw new InvalidOperationException("Cannot change tag after notification has been displayed");
+                }
+
+                _tag = value;
+            }
+        }
 
         /// <inheritdoc/>
         public event EventHandler<NotificationInteractedEventArgs>? Interacted;
@@ -75,7 +102,9 @@ namespace MochaWinUI.Notifications
         public void Schedule()
         {
             AppNotification appNotification = new AppNotificationBuilder()
-            .AddArgument("id", Id)
+            .AddArgument(NOTIFICATION_ID, Id)
+            .AddArgument(REGISTRATION_ID, _registrationId)
+            .AddArgument(INVOKED_ITEM_ID, Id)
             .AddText("Test!!!")
             .SetHeroImage(new Uri(@"C:\Users\AsyncMilk\Desktop\img_temp.PNG"))
             .AddButton(
@@ -89,25 +118,13 @@ namespace MochaWinUI.Notifications
         }
 
         /// <inheritdoc/>
-        public void Schedule(string tag)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
         public void Schedule(DateTimeOffset scheduledTime)
         {
             _scheduledTime = scheduledTime;
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc/>
-        public void Schedule(DateTimeOffset scheduledTime, string tag)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ScheduleCore(DateTimeOffset? scheduledTime, string? tag)
+        private void ScheduleCore(DateTimeOffset? scheduledTime)
         {
             if (Displayed)
             {
@@ -141,7 +158,7 @@ namespace MochaWinUI.Notifications
 
             if (args.Arguments[REGISTRATION_ID] == _registrationId)
             {
-                _generalHandler?.Invoke(CreateEventArgsFromRawEvent(args));
+                _relay!.NotifyInteracted(CreateEventArgsFromRawEvent(args));
             }
 
             if (args.Arguments[NOTIFICATION_ID] == Id)

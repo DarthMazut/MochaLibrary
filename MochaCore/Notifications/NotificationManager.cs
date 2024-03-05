@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-using NotificationBuilder = System.Func<string, System.Action<MochaCore.Notifications.NotificationInteractedEventArgs>, MochaCore.Notifications.INotification>;
+using NotificationBuilder = System.Func<MochaCore.Notifications.NotificationRelay, MochaCore.Notifications.INotification>;
 
 namespace MochaCore.Notifications
 {
@@ -50,7 +50,7 @@ namespace MochaCore.Notifications
         /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <param name="factoryDelegate"></param>
-        public static void RegisterNotification<T>(string id, Func<string, Action<NotificationInteractedEventArgs>, INotification<T>> factoryDelegate) where T : new()
+        public static void RegisterNotification<T>(string id, Func<NotificationRelay, INotification<T>> factoryDelegate) where T : new()
             => RegisterNotificationCore(id, factoryDelegate);
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace MochaCore.Notifications
         /// <returns></returns>
         public static INotification RetrieveNotification(string id)
         {
-            INotification createdNotification = GetBuilderOrThrow(id).Invoke(id, null);
+            INotification createdNotification = GetBuilderOrThrow(id).Invoke(new NotificationRelay(id));
             TrackNotification(id, createdNotification);
             return createdNotification;
         }
@@ -74,9 +74,9 @@ namespace MochaCore.Notifications
         /// <exception cref="InvalidCastException"></exception>
         public static INotification<T> RetrieveNotification<T>(string id) where T : new()
         {
-            if (GetBuilderOrThrow(id) is Func<string, Action<NotificationInteractedEventArgs>, INotification<T>> typedBuilder)
+            if (GetBuilderOrThrow(id) is Func<NotificationRelay, INotification<T>> typedBuilder)
             {
-                INotification<T> notification = typedBuilder.Invoke(id, null);
+                INotification<T> notification = typedBuilder.Invoke(new NotificationRelay(id));
                 TrackNotification(id, notification);
                 return notification;
             }
@@ -113,14 +113,12 @@ namespace MochaCore.Notifications
             }
 
             _builders[id] = factoryDelegate;
-            _ = factoryDelegate.Invoke(id, (e) =>
+            _ = factoryDelegate.Invoke(new NotificationRelay(id, (e) =>
             {
-                // Find builded notification that matches e.Notification.Id
-                // If exists put it in brodcasted event args
-                // If not use provdided event args
-
+                // if exists in notifications assign existing notification to event args
+                // else just pass 'e'
                 NotificationInteracted?.Invoke(null, e);
-            });
+            }));
         }
 
         private static NotificationBuilder GetBuilderOrThrow(string id)
