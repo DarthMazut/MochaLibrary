@@ -115,9 +115,14 @@ namespace MochaCore.Notifications
             _builders[id] = factoryDelegate;
             _ = factoryDelegate.Invoke(new NotificationRelay(id, (e) =>
             {
+                NotificationInteractedEventArgs args = e;
+                if (_notifications[id].Any(n => n.Id == e.Notification.Id))
+                {
+                    args = new NotificationInteractedEventArgs()
+                }
                 // if exists in notifications assign existing notification to event args
                 // else just pass 'e'
-                NotificationInteracted?.Invoke(null, e);
+                NotificationInteracted?.Invoke(null, args);
             }));
         }
 
