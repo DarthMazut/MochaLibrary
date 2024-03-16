@@ -116,12 +116,12 @@ namespace MochaCore.Notifications
             _ = factoryDelegate.Invoke(new NotificationRelay(id, (e) =>
             {
                 NotificationInteractedEventArgs args = e;
-                if (_notifications[id].Any(n => n.Id == e.Notification.Id))
+                INotification? existingInstance = _notifications[id].FirstOrDefault(n => n.Id == e.Notification.Id);
+                if (existingInstance is not null)
                 {
-                    args = new NotificationInteractedEventArgs()
+                    args = SetNotificationForArgs(e, existingInstance);
                 }
-                // if exists in notifications assign existing notification to event args
-                // else just pass 'e'
+
                 NotificationInteracted?.Invoke(null, args);
             }));
         }
@@ -152,5 +152,17 @@ namespace MochaCore.Notifications
                 notification.Disposed -= Disposed;
             }
         }
+
+        private static NotificationInteractedEventArgs SetNotificationForArgs(NotificationInteractedEventArgs args, INotification notification)
+            => new(
+            notification,
+            args.InvokedItemId,
+            args.AsDictionary,
+            args.RawArgs)
+            {
+                SelectedDate = args.SelectedDate,
+                SelectedItemId = args.SelectedItemId,
+                TextInput = args.TextInput
+            };
     }
 }

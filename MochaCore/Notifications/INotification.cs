@@ -17,7 +17,7 @@ namespace MochaCore.Notifications
         public string Id { get; }
 
         /// <summary>
-        /// 
+        /// Everyone knows what a Tag is.
         /// </summary>
         public string? Tag { get; set; }
 
@@ -34,6 +34,8 @@ namespace MochaCore.Notifications
 
         /// <summary>
         /// Indicates whether this instance has been disposed.
+        /// Disposed notification is removed from notification center
+        /// and can no longer be interacted by the user.
         /// </summary>
         public bool IsDisposed { get; }
 
@@ -85,6 +87,6 @@ namespace MochaCore.Notifications
         /// <summary>
         /// Occurs when the user interacts with the notification associated with this instance.
         /// </summary>
-        public new event EventHandler<TArgs?>? Interacted;
+        public new event EventHandler<NotificationInteractedEventArgs<TArgs?>>? Interacted;
     }
 }
