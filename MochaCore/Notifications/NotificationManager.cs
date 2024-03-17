@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using MochaCore.Notifications.Extensions;
 
 using NotificationBuilder = System.Func<MochaCore.Notifications.NotificationContext, MochaCore.Notifications.INotification>;
 
@@ -119,7 +120,7 @@ namespace MochaCore.Notifications
                 INotification? existingInstance = _notifications[id].FirstOrDefault(n => n.Id == e.Notification.Id);
                 if (existingInstance is not null)
                 {
-                    args = SetNotificationForArgs(e, existingInstance);
+                    args = e.WithNotification(existingInstance);
                 }
 
                 NotificationInteracted?.Invoke(null, args);
@@ -152,17 +153,5 @@ namespace MochaCore.Notifications
                 notification.Disposed -= Disposed;
             }
         }
-
-        private static NotificationInteractedEventArgs SetNotificationForArgs(NotificationInteractedEventArgs args, INotification notification)
-            => new(
-            notification,
-            args.InvokedItemId,
-            args.AsDictionary,
-            args.RawArgs)
-            {
-                SelectedDate = args.SelectedDate,
-                SelectedItemId = args.SelectedItemId,
-                TextInput = args.TextInput
-            };
     }
 }

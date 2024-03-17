@@ -21,7 +21,7 @@ namespace MochaCore.Notifications
         public NotificationInteractedEventArgs(
             INotification notification,
             string invokedItemId,
-            IReadOnlyDictionary<string, object> asDictionary,
+            IReadOnlyDictionary<string, object> asDictionary, // this shouldn't be called here as 'asDictionary'. Property name can stay.
             object? rawArgs)
         {
             Notification = notification;
@@ -77,10 +77,10 @@ namespace MochaCore.Notifications
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationInteractedEventArgs{T}"/> class.
         /// </summary>
-        /// <param name="notification"></param>
-        /// <param name="invokedItemId"></param>
-        /// <param name="asDictionary"></param>
-        /// <param name="rawArgs"></param>
+        /// <param name="notification">Interacted notification.</param>
+        /// <param name="invokedItemId">Identifier of the element that was invoked on the notification, triggering its activation.</param>
+        /// <param name="asDictionary">Interaction data represented as a dictionary.</param>
+        /// <param name="rawArgs">Original arguments of technology-specific interaction event.</param>
         /// <param name="interactionData">Detailed data regarding user interaction with the notification.</param>
         public NotificationInteractedEventArgs(
             INotification notification,

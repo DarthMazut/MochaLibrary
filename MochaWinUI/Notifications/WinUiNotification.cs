@@ -1,6 +1,7 @@
 ﻿using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using MochaCore.Notifications;
+using MochaCore.Notifications.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -164,14 +165,14 @@ namespace MochaWinUI.Notifications
             if (args.Arguments[NOTIFICATION_ID] == Id)
             {
                 _displayed = true;
-                Interacted?.Invoke(this, new NotificationInteractedEventArgs(this, "", new Dictionary<string, object>(), args));
+                Interacted?.Invoke(this, CreateEventArgsFromRawEvent(args).WithNotification(this));
             }
         }
 
         private static NotificationInteractedEventArgs CreateEventArgsFromRawEvent(AppNotificationActivatedEventArgs args)
         {
             return new NotificationInteractedEventArgs(
-                CreateNotificationForRawEvent(args),
+                CreateNotificationFromRawEvent(args),
                 args.Arguments[INVOKED_ITEM_ID],
                 CreateArgsDictionary(args),
                 args);
@@ -183,7 +184,7 @@ namespace MochaWinUI.Notifications
             return args.Arguments.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as object);
         }
 
-        private static INotification<T> CreateNotificationForRawEvent(AppNotificationActivatedEventArgs args)
+        private static INotification<T> CreateNotificationFromRawEvent(AppNotificationActivatedEventArgs args)
         {
             return new WinUiNotification<T>(
                 args.Arguments[NOTIFICATION_ID],
