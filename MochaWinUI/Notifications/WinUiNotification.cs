@@ -19,7 +19,7 @@ namespace MochaWinUI.Notifications
         private static readonly string TAG = "tag";
 
         private readonly string _registrationId;
-        private readonly NotificationRelay? _relay;
+        private readonly NotificationContext? _context;
 
         private string? _tag;
         private DateTimeOffset? _scheduledTime;
@@ -42,9 +42,9 @@ namespace MochaWinUI.Notifications
         /// <summary>
         /// Initializes a new instance of the <see cref="WinUiNotification{T}"/> class.
         /// </summary>
-        public WinUiNotification(NotificationRelay relay)
+        public WinUiNotification(NotificationContext relay)
         {
-            _relay = relay;
+            _context = relay;
             _registrationId = relay.RegistrationdId;
             Id = Guid.NewGuid().ToString();
             AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
@@ -158,7 +158,7 @@ namespace MochaWinUI.Notifications
 
             if (args.Arguments[REGISTRATION_ID] == _registrationId)
             {
-                _relay!.NotifyInteracted(CreateEventArgsFromRawEvent(args));
+                _context!.NotifyInteracted(CreateEventArgsFromRawEvent(args));
             }
 
             if (args.Arguments[NOTIFICATION_ID] == Id)

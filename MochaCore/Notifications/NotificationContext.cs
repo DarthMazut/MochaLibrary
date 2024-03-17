@@ -9,14 +9,14 @@ namespace MochaCore.Notifications
     /// <summary>
     /// Passes messages between implementations of <see cref="INotification"/> and <see cref="NotificationManager"/>
     /// </summary>
-    public class NotificationRelay
+    public class NotificationContext
     {
         private readonly Action<NotificationInteractedEventArgs> _interactionHandler;
 
-        public NotificationRelay(string registrationId) : this(registrationId, null) { }
+        public NotificationContext(string registrationId) : this(registrationId, null) { }
 
 
-        public NotificationRelay(string registrationId, Action<NotificationInteractedEventArgs>? interactionHandler)
+        public NotificationContext(string registrationId, Action<NotificationInteractedEventArgs>? interactionHandler)
         {
             RegistrationdId = registrationId;
             _interactionHandler = interactionHandler;
