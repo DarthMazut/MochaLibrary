@@ -14,6 +14,7 @@ namespace MochaWinUI.Notifications
 {
     public class WinUiNotification<T> : INotification<T> where T : new()
     {
+        private static readonly int ALREADY_REGISTERED_EXCEPTION_CODE = -2147024809;
         private static readonly string NOTIFICATION_ID = "notification-id";
         private static readonly string REGISTRATION_ID = "registration-id";
         private static readonly string INVOKED_ITEM_ID = "invoked-item-id";
@@ -34,7 +35,7 @@ namespace MochaWinUI.Notifications
                 AppNotificationManager.Default.NotificationInvoked += (s, e) => { };
                 AppNotificationManager.Default.Register();
             }
-            catch (Exception ex) when (ex.InnerException?.HResult == 0) // TODO: number
+            catch (Exception ex) when (ex.HResult == ALREADY_REGISTERED_EXCEPTION_CODE)
             {
                 // We're already registered so just ignore :)
             }
@@ -43,10 +44,10 @@ namespace MochaWinUI.Notifications
         /// <summary>
         /// Initializes a new instance of the <see cref="WinUiNotification{T}"/> class.
         /// </summary>
-        public WinUiNotification(NotificationContext relay)
+        public WinUiNotification(NotificationContext context)
         {
-            _context = relay;
-            _registrationId = relay.RegistrationdId;
+            _context = context;
+            _registrationId = context.RegistrationId;
             Id = Guid.NewGuid().ToString();
             AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
         }
@@ -106,6 +107,7 @@ namespace MochaWinUI.Notifications
             .AddArgument(NOTIFICATION_ID, Id)
             .AddArgument(REGISTRATION_ID, _registrationId)
             .AddArgument(INVOKED_ITEM_ID, Id)
+            .SetTag("DupaTag")
             .AddText("Test!!!")
             .SetHeroImage(new Uri(@"C:\Users\AsyncMilk\Desktop\img_temp.PNG"))
             .AddButton(
@@ -131,8 +133,6 @@ namespace MochaWinUI.Notifications
             {
                 throw new InvalidOperationException("Displayed notification cannot be rescheduled.");
             }
-
-
         }
 
         /// <inheritdoc/>
@@ -180,8 +180,16 @@ namespace MochaWinUI.Notifications
 
         private static Dictionary<string, object> CreateArgsDictionary(AppNotificationActivatedEventArgs args)
         {
-            // TODO
-            return args.Arguments.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as object);
+            Dictionary<string, object> dictionary = args.Arguments.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as object);
+            foreach ((string key, string value) in args.UserInput)
+            {
+                if (!dictionary.TryAdd(key, value))
+                {
+                    dictionary[key] = new string[2] { (string)dictionary[key], value };
+                }
+            }
+
+            return dictionary;
         }
 
         private static INotification<T> CreateNotificationFromRawEvent(AppNotificationActivatedEventArgs args)
@@ -200,11 +208,6 @@ namespace MochaWinUI.Notifications
             bool hasInvokedItemId = args.Arguments.ContainsKey(INVOKED_ITEM_ID);
 
             return hasNotificationId && hasRegistrationId && hasInvokedItemId;
-        }
-
-        private static T CreateInteractionData(AppNotificationActivatedEventArgs args)
-        {
-            return new T();
         }
     }
 
