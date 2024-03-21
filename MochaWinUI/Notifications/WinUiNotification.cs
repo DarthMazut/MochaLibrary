@@ -9,6 +9,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Data.Xml.Dom;
+using Windows.Devices.Haptics;
+using Windows.UI.Notifications;
 
 namespace MochaWinUI.Notifications
 {
@@ -82,15 +85,18 @@ namespace MochaWinUI.Notifications
             get => _tag;
             set
             {
-                // In this case we need to reschedule in case this changes after scheduling,
-                // it might be better to disallow tag change after Schedule(),
-                // but on the other side if we can Schedule() to reschedule, why shouldn't we allow for this?
                 if (_displayed)
                 {
                     throw new InvalidOperationException("Cannot change tag after notification has been displayed");
                 }
 
                 _tag = value;
+
+                if (ScheduledTime is not null)
+                {
+                    Unschedule();
+                    Schedule(ScheduledTime.Value);
+                } 
             }
         }
 
@@ -102,6 +108,44 @@ namespace MochaWinUI.Notifications
 
         /// <inheritdoc/>
         public void Schedule()
+        {
+            ScheduleGuard();
+
+            AppNotification notification = new(CreateNotification());
+            _scheduledTime = DateTimeOffset.Now;
+            AppNotificationManager.Default.Show(notification);
+        }
+
+        /// <inheritdoc/>
+        public void Schedule(DateTimeOffset scheduledTime)
+        {
+            ScheduleGuard();
+
+            XmlDocument xml = new();
+            xml.LoadXml(CreateNotification());
+
+            ScheduledToastNotification scheduledNotification = new(xml, scheduledTime);
+            ToastNotifier notifier = ToastNotificationManager.CreateToastNotifier();
+
+            _scheduledTime = scheduledTime;
+            notifier.AddToSchedule(scheduledNotification);  
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            AppNotificationManager.Default.NotificationInvoked -= AnyNotificationInvoked;
+            Unschedule();
+            _isDisposed = true;
+            Disposed?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual string CreateNotification()
         {
             AppNotification appNotification = new AppNotificationBuilder()
             .AddArgument(NOTIFICATION_ID, Id)
@@ -116,37 +160,20 @@ namespace MochaWinUI.Notifications
                 .SetToolTip("Test tooltip !!!"))
             .BuildNotification();
 
-            _scheduledTime = DateTimeOffset.Now;
-            AppNotificationManager.Default.Show(appNotification);
+            return appNotification.Payload;
         }
 
-        /// <inheritdoc/>
-        public void Schedule(DateTimeOffset scheduledTime)
+        private void Unschedule()
         {
-            _scheduledTime = scheduledTime;
             throw new NotImplementedException();
         }
 
-        private void ScheduleCore(DateTimeOffset? scheduledTime)
+        private void ScheduleGuard()
         {
             if (Displayed)
             {
                 throw new InvalidOperationException("Displayed notification cannot be rescheduled.");
             }
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            AppNotificationManager.Default.NotificationInvoked -= AnyNotificationInvoked;
-            // If scheduled but not yet displayed unschedule here...
-            _isDisposed = true;
-            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         private void AnyNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
