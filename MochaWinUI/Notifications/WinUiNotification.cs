@@ -5,12 +5,8 @@ using MochaCore.Notifications.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
-using Windows.Devices.Haptics;
 using Windows.UI.Notifications;
 
 namespace MochaWinUI.Notifications
@@ -25,6 +21,8 @@ namespace MochaWinUI.Notifications
 
         private readonly string _registrationId;
         private readonly NotificationContext? _context;
+
+        private ScheduledToastNotification? _scheduledNotification;
 
         private string? _tag;
         private DateTimeOffset? _scheduledTime;
@@ -120,6 +118,7 @@ namespace MochaWinUI.Notifications
         public void Schedule(DateTimeOffset scheduledTime)
         {
             ScheduleGuard();
+            Unschedule();
 
             XmlDocument xml = new();
             xml.LoadXml(CreateNotification());
@@ -128,6 +127,7 @@ namespace MochaWinUI.Notifications
             ToastNotifier notifier = ToastNotificationManager.CreateToastNotifier();
 
             _scheduledTime = scheduledTime;
+            _scheduledNotification = scheduledNotification;
             notifier.AddToSchedule(scheduledNotification);  
         }
 
@@ -165,7 +165,10 @@ namespace MochaWinUI.Notifications
 
         private void Unschedule()
         {
-            throw new NotImplementedException();
+            if (_scheduledNotification is not null)
+            {
+                ToastNotificationManager.CreateToastNotifier().RemoveFromSchedule(_scheduledNotification);
+            }
         }
 
         private void ScheduleGuard()
