@@ -26,7 +26,7 @@ namespace ViewModels
             if (_notification is null)
             {
                 _notification = NotificationManager.RetrieveNotification("MyNotification");
-                _notification.Tag = "MyTestTag :)";
+                //_notification.Tag = "MyTestTag :)";
 
                 _notification.Interacted += (s, e) =>
                 {

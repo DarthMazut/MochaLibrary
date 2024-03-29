@@ -36,10 +36,6 @@ public class MainWindowViewModel : BindableBase, IWindowAware
 
         NotificationManager.NotificationInteracted += (s, e) =>
         {
-            DispatcherManager.GetMainThreadDispatcher().RunOnMainThread(() =>
-            {
-                WindowControl.Maximize();
-            });
 
         };
     }

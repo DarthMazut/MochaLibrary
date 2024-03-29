@@ -28,6 +28,7 @@ namespace MochaWinUI.Notifications
                 new AppNotificationButton("Test Button")
                 .AddElementArguments(this, "Button")
                 .SetToolTip("Test tooltip !!!"))
+            .SetAppLogoOverride(new Uri(@"C:\Users\Ellie\Desktop\test.png"))
             .BuildNotification();
 
             return appNotification.Payload;
@@ -35,11 +36,13 @@ namespace MochaWinUI.Notifications
 
         protected override NotificationInteractedEventArgs CreateEventArgsFromRawEvent(AppNotificationActivatedEventArgs args)
         {
+            args.Arguments.TryGetValue(TagKey, out string? tag);
+
             return new NotificationInteractedEventArgs(
                 new TestWinUiNotification(
                     args.Arguments[NotificationIdKey],
                     args.Arguments[RegistrationIdKey],
-                    args.Arguments[TagKey],
+                    tag,
                     DateTimeOffset.UtcNow),
                 args.Arguments[InvokedItemIdKey],
                 CreateArgsDictionary(args),
