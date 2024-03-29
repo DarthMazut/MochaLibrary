@@ -18,18 +18,27 @@ namespace ViewModels
         [ObservableProperty]
         private string _title = Pages.NotificationsPage.Name;
 
+        private INotification? _notification;
+
         [RelayCommand]
         private void ShowNotification()
         {
-            INotification<object> notification = NotificationManager.RetrieveNotification<object>("MyNotification");
-            //notification.Interacted += (s, e) =>
-            //{
-            //    DispatcherManager.GetMainThreadDispatcher().RunOnMainThread(() =>
-            //    {
-            //        Title = "Handled 😎";
-            //    });
-            //};
-            notification.Schedule();
+            if (_notification is null)
+            {
+                _notification = NotificationManager.RetrieveNotification("MyNotification");
+                _notification.Tag = "MyTestTag :)";
+
+                _notification.Interacted += (s, e) =>
+                {
+                    DispatcherManager.GetMainThreadDispatcher().RunOnMainThread(() =>
+                    {
+                        Title = "Handled 😎";
+                        _notification = null;
+                    });
+                };
+            }
+
+            _notification.Schedule(DateTimeOffset.UtcNow + TimeSpan.FromSeconds(10));
         }
     }
 }

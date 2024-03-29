@@ -117,7 +117,7 @@ namespace MochaCore.Notifications
             _ = factoryDelegate.Invoke(new NotificationContext(id, (e) =>
             {
                 NotificationInteractedEventArgs args = e;
-                INotification? existingInstance = _notifications[id].FirstOrDefault(n => n.Id == e.Notification.Id);
+                INotification? existingInstance = _notifications.GetValueOrDefault(id)?.FirstOrDefault(n => n.Id == e.Notification.Id);
                 if (existingInstance is not null)
                 {
                     args = e.WithNotification(existingInstance);

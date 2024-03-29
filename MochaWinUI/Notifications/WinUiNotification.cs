@@ -1,5 +1,4 @@
 ﻿using Microsoft.Windows.AppNotifications;
-using Microsoft.Windows.AppNotifications.Builder;
 using MochaCore.Notifications;
 using MochaCore.Notifications.Extensions;
 using System;
@@ -11,15 +10,15 @@ using Windows.UI.Notifications;
 
 namespace MochaWinUI.Notifications
 {
-    public class WinUiNotification<T> : INotification<T> where T : new()
+    public abstract class WinUiNotification : INotification
     {
         private static readonly int ALREADY_REGISTERED_EXCEPTION_CODE = -2147024809;
-        private static readonly string NOTIFICATION_ID = "notification-id";
-        private static readonly string REGISTRATION_ID = "registration-id";
-        private static readonly string INVOKED_ITEM_ID = "invoked-item-id";
-        private static readonly string TAG = "tag";
 
-        private readonly string _registrationId;
+        public static readonly string NotificationIdKey = "notification-id";
+        public static readonly string RegistrationIdKey = "registration-id";
+        public static readonly string InvokedItemIdKey = "invoked-item-id";
+        public static readonly string TagKey = "tag";
+
         private readonly NotificationContext? _context;
 
         private ScheduledToastNotification? _scheduledNotification;
@@ -43,20 +42,20 @@ namespace MochaWinUI.Notifications
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WinUiNotification{T}"/> class.
+        /// Initializes a new instance of the <see cref="WinUiNotification"/> class.
         /// </summary>
         public WinUiNotification(NotificationContext context)
         {
             _context = context;
-            _registrationId = context.RegistrationId;
+            RegistrationId = context.RegistrationId;
             Id = Guid.NewGuid().ToString();
             AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
         }
 
-        private WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
+        protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
         {
             Id = notificationId;
-            _registrationId = registrationId;
+            RegistrationId = registrationId;
             Tag = tag;
             _scheduledTime = scheduledTime;
             _displayed = true;
@@ -64,10 +63,9 @@ namespace MochaWinUI.Notifications
 
         /// <inheritdoc/>
         public string Id { get; }
-
-        /// <inheritdoc/>
-        public T Properties { get; set; } = new();
         
+        public string RegistrationId { get; }
+
         /// <inheritdoc/>
         public DateTimeOffset? ScheduledTime => _scheduledTime;
 
@@ -145,22 +143,22 @@ namespace MochaWinUI.Notifications
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual string CreateNotification()
-        {
-            AppNotification appNotification = new AppNotificationBuilder()
-            .AddArgument(NOTIFICATION_ID, Id)
-            .AddArgument(REGISTRATION_ID, _registrationId)
-            .AddArgument(INVOKED_ITEM_ID, Id)
-            .SetTag("DupaTag")
-            .AddText("Test!!!")
-            .SetHeroImage(new Uri(@"C:\Users\AsyncMilk\Desktop\img_temp.PNG"))
-            .AddButton(
-                new AppNotificationButton("Test Button")
-                .AddArgument("btn", "clicked")
-                .SetToolTip("Test tooltip !!!"))
-            .BuildNotification();
+        protected abstract string CreateNotification();
 
-            return appNotification.Payload;
+        protected abstract NotificationInteractedEventArgs CreateEventArgsFromRawEvent(AppNotificationActivatedEventArgs args);
+
+        protected Dictionary<string, object> CreateArgsDictionary(AppNotificationActivatedEventArgs args)
+        {
+            Dictionary<string, object> dictionary = args.Arguments.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as object);
+            foreach ((string key, string value) in args.UserInput)
+            {
+                if (!dictionary.TryAdd(key, value))
+                {
+                    dictionary[key] = new string[2] { (string)dictionary[key], value };
+                }
+            }
+
+            return dictionary;
         }
 
         private void Unschedule()
@@ -187,57 +185,59 @@ namespace MochaWinUI.Notifications
                 return;
             }
 
-            if (args.Arguments[REGISTRATION_ID] == _registrationId)
+            if (args.Arguments[RegistrationIdKey] == RegistrationId)
             {
                 _context!.NotifyInteracted(CreateEventArgsFromRawEvent(args));
             }
 
-            if (args.Arguments[NOTIFICATION_ID] == Id)
+            if (args.Arguments[NotificationIdKey] == Id)
             {
                 _displayed = true;
                 Interacted?.Invoke(this, CreateEventArgsFromRawEvent(args).WithNotification(this));
             }
         }
 
-        private static NotificationInteractedEventArgs CreateEventArgsFromRawEvent(AppNotificationActivatedEventArgs args)
+        private bool ValidateArgs(AppNotificationActivatedEventArgs args)
         {
-            return new NotificationInteractedEventArgs(
-                CreateNotificationFromRawEvent(args),
-                args.Arguments[INVOKED_ITEM_ID],
-                CreateArgsDictionary(args),
-                args);
-        }
-
-        private static Dictionary<string, object> CreateArgsDictionary(AppNotificationActivatedEventArgs args)
-        {
-            Dictionary<string, object> dictionary = args.Arguments.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as object);
-            foreach ((string key, string value) in args.UserInput)
-            {
-                if (!dictionary.TryAdd(key, value))
-                {
-                    dictionary[key] = new string[2] { (string)dictionary[key], value };
-                }
-            }
-
-            return dictionary;
-        }
-
-        private static INotification<T> CreateNotificationFromRawEvent(AppNotificationActivatedEventArgs args)
-        {
-            return new WinUiNotification<T>(
-                args.Arguments[NOTIFICATION_ID],
-                args.Arguments[REGISTRATION_ID],
-                args.Arguments.ToImmutableDictionary().GetValueOrDefault(TAG),
-                DateTimeOffset.UtcNow);
-        }
-
-        private static bool ValidateArgs(AppNotificationActivatedEventArgs args)
-        {
-            bool hasNotificationId = args.Arguments.ContainsKey(NOTIFICATION_ID);
-            bool hasRegistrationId = args.Arguments.ContainsKey(REGISTRATION_ID);
-            bool hasInvokedItemId = args.Arguments.ContainsKey(INVOKED_ITEM_ID);
+            bool hasNotificationId = args.Arguments.ContainsKey(NotificationIdKey);
+            bool hasRegistrationId = args.Arguments.ContainsKey(RegistrationIdKey);
+            bool hasInvokedItemId = args.Arguments.ContainsKey(InvokedItemIdKey);
 
             return hasNotificationId && hasRegistrationId && hasInvokedItemId;
+        }
+    }
+
+    public abstract class WinUiNotification<T> : WinUiNotification, INotification<T> where T : new()
+    {
+        public WinUiNotification(NotificationContext context)
+            : base(context) { }
+
+        protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
+            : base(notificationId, registrationId, tag, scheduledTime) { }
+
+        /// <inheritdoc/>
+        public T Properties { get; set; } = new();
+    }
+
+    public abstract class WinUiNotification<TProps, TArgs> : WinUiNotification<TProps>, INotification<TProps, TArgs> where TProps : new()
+    {
+        protected WinUiNotification(NotificationContext context)
+            : base(context) { }
+
+        protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
+            : base(notificationId, registrationId, tag, scheduledTime) { }
+
+        event EventHandler<NotificationInteractedEventArgs<TArgs?>>? INotification<TProps, TArgs>.Interacted
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 

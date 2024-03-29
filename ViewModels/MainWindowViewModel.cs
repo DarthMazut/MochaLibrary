@@ -6,6 +6,7 @@ using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ public class MainWindowViewModel : BindableBase, IWindowAware
 
         NotificationManager.NotificationInteracted += (s, e) =>
         {
-
+            
         };
     }
 
