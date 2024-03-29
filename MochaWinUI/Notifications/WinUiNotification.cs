@@ -25,7 +25,7 @@ namespace MochaWinUI.Notifications
 
         private string? _tag;
         private DateTimeOffset? _scheduledTime;
-        private bool _displayed;
+        private bool _interacted;
         private bool _isDisposed;
 
         static WinUiNotification()
@@ -58,7 +58,7 @@ namespace MochaWinUI.Notifications
             RegistrationId = registrationId;
             Tag = tag;
             _scheduledTime = scheduledTime;
-            _displayed = true;
+            _interacted = true;
         }
 
         /// <inheritdoc/>
@@ -69,8 +69,10 @@ namespace MochaWinUI.Notifications
         /// <inheritdoc/>
         public DateTimeOffset? ScheduledTime => _scheduledTime;
 
+        // TODO: add Interacted, because why not?
+
         /// <inheritdoc/>
-        public bool Displayed => _displayed;
+        public bool Displayed => _interacted || ScheduledTime.HasValue && ScheduledTime.Value < DateTimeOffset.Now;
 
         /// <inheritdoc/>
         public bool IsDisposed => _isDisposed;
@@ -81,7 +83,7 @@ namespace MochaWinUI.Notifications
             get => _tag;
             set
             {
-                if (_displayed)
+                if (Displayed)
                 {
                     throw new InvalidOperationException("Cannot change tag after notification has been displayed");
                 }
@@ -171,9 +173,9 @@ namespace MochaWinUI.Notifications
 
         private void ScheduleGuard()
         {
-            if (Displayed)
+            if (Displayed || IsDisposed)
             {
-                throw new InvalidOperationException("Displayed notification cannot be rescheduled.");
+                throw new InvalidOperationException("Disposed or displayed notification cannot be rescheduled.");
             }
         }
 
@@ -192,7 +194,7 @@ namespace MochaWinUI.Notifications
 
             if (args.Arguments[NotificationIdKey] == Id)
             {
-                _displayed = true;
+                _interacted = true;
                 Interacted?.Invoke(this, CreateEventArgsFromRawEvent(args).WithNotification(this));
             }
         }

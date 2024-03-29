@@ -1,4 +1,6 @@
-﻿using MochaCore.Navigation;
+﻿using MochaCore.Dispatching;
+using MochaCore.Dispatching.Extensions.DI;
+using MochaCore.Navigation;
 using MochaCore.Notifications;
 using MochaCore.Utils;
 using MochaCore.Windowing;
@@ -34,7 +36,11 @@ public class MainWindowViewModel : BindableBase, IWindowAware
 
         NotificationManager.NotificationInteracted += (s, e) =>
         {
-            
+            DispatcherManager.GetMainThreadDispatcher().RunOnMainThread(() =>
+            {
+                WindowControl.Maximize();
+            });
+
         };
     }
 
