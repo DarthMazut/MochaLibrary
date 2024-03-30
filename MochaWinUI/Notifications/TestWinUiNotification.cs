@@ -11,7 +11,17 @@ using System.Threading.Tasks;
 
 namespace MochaWinUI.Notifications
 {
-    public class TestWinUiNotification : WinUiNotification
+    public class MyNotificationSettings
+    {
+        public string CustomSetting { get; set; }
+    }
+
+    public class MyNotificationCustomEventArgs
+    {
+        public string EventCustomables { get; set; }
+    }
+
+    public class TestWinUiNotification : WinUiNotification<MyNotificationSettings, MyNotificationCustomEventArgs>
     {
         public TestWinUiNotification(NotificationContext context)
             : base(context) { }
@@ -34,11 +44,11 @@ namespace MochaWinUI.Notifications
             return appNotification.Payload;
         }
 
-        protected override NotificationInteractedEventArgs CreateEventArgsFromRawEvent(AppNotificationActivatedEventArgs args)
+        protected override NotificationInteractedEventArgs<MyNotificationCustomEventArgs> CreateEventArgsFromRawEvent(AppNotificationActivatedEventArgs args)
         {
             args.Arguments.TryGetValue(TagKey, out string? tag);
 
-            return new NotificationInteractedEventArgs(
+            return new NotificationInteractedEventArgs<MyNotificationCustomEventArgs>(
                 new TestWinUiNotification(
                     args.Arguments[NotificationIdKey],
                     args.Arguments[RegistrationIdKey],
@@ -46,7 +56,7 @@ namespace MochaWinUI.Notifications
                     DateTimeOffset.UtcNow),
                 args.Arguments[InvokedItemIdKey],
                 CreateArgsDictionary(args),
-                args);
+                args, new MyNotificationCustomEventArgs() { EventCustomables = "Custom ;)"});
         }
     }
 }

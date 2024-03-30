@@ -195,8 +195,14 @@ namespace MochaWinUI.Notifications
             if (args.Arguments[NotificationIdKey] == Id)
             {
                 _interacted = true;
-                Interacted?.Invoke(this, CreateEventArgsFromRawEvent(args).WithNotification(this));
+                //Interacted?.Invoke(this, CreateEventArgsFromRawEvent(args).WithNotification(this));
+                OnInteracted(CreateEventArgsFromRawEvent(args).WithNotification(this));
             }
+        }
+
+        protected virtual void OnInteracted(NotificationInteractedEventArgs e)
+        {
+            Interacted?.Invoke(this, e);
         }
 
         private bool ValidateArgs(AppNotificationActivatedEventArgs args)
@@ -223,23 +229,26 @@ namespace MochaWinUI.Notifications
 
     public abstract class WinUiNotification<TProps, TArgs> : WinUiNotification<TProps>, INotification<TProps, TArgs> where TProps : new()
     {
+        private EventHandler<NotificationInteractedEventArgs<TArgs?>>? _interactedHandler;
+
         protected WinUiNotification(NotificationContext context)
             : base(context) { }
 
         protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
             : base(notificationId, registrationId, tag, scheduledTime) { }
 
+        protected override abstract NotificationInteractedEventArgs<TArgs> CreateEventArgsFromRawEvent(AppNotificationActivatedEventArgs args);
+
+        protected override void OnInteracted(NotificationInteractedEventArgs e)
+        {
+            base.OnInteracted(e);
+            _interactedHandler?.Invoke(this, (e as NotificationInteractedEventArgs<TArgs>)!);
+        }
+
         event EventHandler<NotificationInteractedEventArgs<TArgs?>>? INotification<TProps, TArgs>.Interacted
         {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
+            add => _interactedHandler += value;
+            remove => _interactedHandler -= value;
         }
     }
 
