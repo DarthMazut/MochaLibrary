@@ -66,6 +66,23 @@ namespace MochaCore.Notifications
         /// Original arguments of technology-specific interaction event.
         /// </summary>
         public object? RawArgs { get; }
+
+        /// <summary>
+        /// Creates a copy of the current instance with the <see cref="Notification"/> value replaced 
+        /// by the provided <paramref name="notification"/> parameter.
+        /// </summary>
+        /// <param name="notification">The new notification to be associated with the event arguments.</param>
+        public virtual NotificationInteractedEventArgs WithNotification(INotification notification)
+            => new(
+                notification,
+                InvokedItemId,
+                AsDictionary,
+                RawArgs)
+                {
+                    SelectedDate = SelectedDate,
+                    SelectedItemId = SelectedItemId,
+                    TextInput = TextInput
+                };
     }
 
     /// <summary>
@@ -97,5 +114,19 @@ namespace MochaCore.Notifications
         /// Detailed data regarding user interaction with the notification.
         /// </summary>
         public T InteractionData { get; }
+
+        /// <inheritdoc/>
+        public override NotificationInteractedEventArgs<T> WithNotification(INotification notification)
+        => new(
+            notification,
+            InvokedItemId,
+            AsDictionary,
+            RawArgs,
+            InteractionData)
+            {
+                SelectedDate = SelectedDate,
+                SelectedItemId = SelectedItemId,
+                TextInput = TextInput
+            };
     }
 }

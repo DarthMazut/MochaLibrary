@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using MochaCore.Notifications.Extensions;
 
 using NotificationBuilder = System.Func<MochaCore.Notifications.NotificationContext, MochaCore.Notifications.INotification>;
 

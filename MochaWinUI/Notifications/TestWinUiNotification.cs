@@ -38,7 +38,7 @@ namespace MochaWinUI.Notifications
                 new AppNotificationButton("Test Button")
                 .AddElementArguments(this, "Button")
                 .SetToolTip("Test tooltip !!!"))
-            .SetAppLogoOverride(new Uri(@"C:\Users\Ellie\Desktop\test.png"))
+            .SetAppLogoOverride(new Uri(@"C:\Users\AsyncMilk\Desktop\img_temp.PNG"))
             .BuildNotification();
 
             return appNotification.Payload;

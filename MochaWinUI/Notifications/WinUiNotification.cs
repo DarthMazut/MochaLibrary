@@ -1,6 +1,5 @@
 ﻿using Microsoft.Windows.AppNotifications;
 using MochaCore.Notifications;
-using MochaCore.Notifications.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
