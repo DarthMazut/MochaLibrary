@@ -23,8 +23,7 @@ namespace MochaWinUI.Notifications
 
     public class TestWinUiNotification : WinUiNotification<MyNotificationSettings, MyNotificationCustomEventArgs>
     {
-        public TestWinUiNotification(NotificationContext context)
-            : base(context) { }
+        public TestWinUiNotification(string registrationId) : base(registrationId) { }
 
         protected TestWinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
             : base(notificationId, registrationId, tag, scheduledTime) { }

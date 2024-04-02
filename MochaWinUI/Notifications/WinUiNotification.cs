@@ -18,8 +18,6 @@ namespace MochaWinUI.Notifications
         public static readonly string InvokedItemIdKey = "invoked-item-id";
         public static readonly string TagKey = "tag";
 
-        private readonly NotificationContext? _context;
-
         private ScheduledToastNotification? _scheduledNotification;
 
         private string? _tag;
@@ -43,11 +41,10 @@ namespace MochaWinUI.Notifications
         /// <summary>
         /// Initializes a new instance of the <see cref="WinUiNotification"/> class.
         /// </summary>
-        public WinUiNotification(NotificationContext context)
+        public WinUiNotification(string registrationId)
         {
-            _context = context;
-            RegistrationId = context.RegistrationId;
             Id = Guid.NewGuid().ToString();
+            RegistrationId = registrationId;
             AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
         }
 
@@ -105,7 +102,7 @@ namespace MochaWinUI.Notifications
 
         // TODO: This should be implemented explicitly
         /// <inheritdoc/>
-        public event EventHandler<NotificationInteractedEventArgs> NotificationInteracted;
+        public event EventHandler<NotificationInteractedEventArgs>? NotificationInteracted;
 
         /// <inheritdoc/>
         public void Schedule()
@@ -192,14 +189,12 @@ namespace MochaWinUI.Notifications
 
             if (args.Arguments[RegistrationIdKey] == RegistrationId)
             {
-                _context!.NotifyInteracted(CreateEventArgsFromRawEvent(args));
                 NotificationInteracted?.Invoke(this, CreateEventArgsFromRawEvent(args));
             }
 
             if (args.Arguments[NotificationIdKey] == Id)
             {
                 _interacted = true;
-                //Interacted?.Invoke(this, CreateEventArgsFromRawEvent(args).WithNotification(this));
                 OnInteracted(CreateEventArgsFromRawEvent(args).WithNotification(this));
             }
         }
@@ -221,8 +216,7 @@ namespace MochaWinUI.Notifications
 
     public abstract class WinUiNotification<T> : WinUiNotification, INotification<T> where T : new()
     {
-        public WinUiNotification(NotificationContext context)
-            : base(context) { }
+        public WinUiNotification(string registrationId) : base(registrationId) { }
 
         protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
             : base(notificationId, registrationId, tag, scheduledTime) { }
@@ -235,8 +229,7 @@ namespace MochaWinUI.Notifications
     {
         private EventHandler<NotificationInteractedEventArgs<TArgs?>>? _interactedHandler;
 
-        protected WinUiNotification(NotificationContext context)
-            : base(context) { }
+        protected WinUiNotification(string registrationId) : base(registrationId) { }
 
         protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
             : base(notificationId, registrationId, tag, scheduledTime) { }
