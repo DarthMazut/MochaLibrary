@@ -66,6 +66,24 @@ namespace MochaWinUI.Notifications
             AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WinUiNotification"/> class.
+        /// 
+        /// <para>
+        /// When client subscribes to <see cref="NotificationManager.NotificationInteracted"/> he/she expects
+        /// that provided <see cref="NotificationInteractedEventArgs"/> will expose <see cref="NotificationInteractedEventArgs.Notification"/>
+        /// value. Now, when notification is scheduled and interacted during application lifetime, we actually swaping instance created in such way
+        /// for the tracked instance - so we provided the client with actual instance that was used to schedule notification in the first place.
+        /// The problem is when the app was restarted after notification has been scheduled, but before user interaction. In such case, we still need to provide
+        /// at least subsitute of real notification, but it don't need to expose all functionalities. For instance, we know in advance, that
+        /// such instance won't be possible to be rescheduled or e.g. <see cref="INotification.Displayed"/> will always be true. For such scenarios
+        /// you can leverage current constructor.
+        /// </para>
+        /// </summary>
+        /// <param name="notificationId"></param>
+        /// <param name="registrationId"></param>
+        /// <param name="tag"></param>
+        /// <param name="scheduledTime"></param>
         protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
         {
             Id = notificationId;
