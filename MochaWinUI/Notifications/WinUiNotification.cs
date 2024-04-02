@@ -9,7 +9,7 @@ using Windows.UI.Notifications;
 
 namespace MochaWinUI.Notifications
 {
-    public abstract class WinUiNotification : INotification
+    public abstract class WinUiNotification : INotificationRoot, INotification
     {
         private static readonly int ALREADY_REGISTERED_EXCEPTION_CODE = -2147024809;
 
@@ -103,6 +103,10 @@ namespace MochaWinUI.Notifications
         /// <inheritdoc/>
         public event EventHandler? Disposed;
 
+        // TODO: This should be implemented explicitly
+        /// <inheritdoc/>
+        public event EventHandler<NotificationInteractedEventArgs> NotificationInteracted;
+
         /// <inheritdoc/>
         public void Schedule()
         {
@@ -189,6 +193,7 @@ namespace MochaWinUI.Notifications
             if (args.Arguments[RegistrationIdKey] == RegistrationId)
             {
                 _context!.NotifyInteracted(CreateEventArgsFromRawEvent(args));
+                NotificationInteracted?.Invoke(this, CreateEventArgsFromRawEvent(args));
             }
 
             if (args.Arguments[NotificationIdKey] == Id)

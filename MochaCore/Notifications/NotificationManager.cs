@@ -6,29 +6,15 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-using NotificationBuilder = System.Func<MochaCore.Notifications.NotificationContext, MochaCore.Notifications.INotification>;
-
 namespace MochaCore.Notifications
 {
-    /*
-    /// <summary>
-    /// Provides a standarized signature for <see cref="INotification"/> builders.
-    /// </summary>
-    /// <param name="registrationId">The very same id that was used to register current builder.</param>
-    /// <param name="generalHandler">A function called whenever there is an interaction with a notification related to the registration ID.</param>
-    /// <returns>New instance of <see cref="INotification"/> implementation.</returns>
-    public delegate INotification NotificationBuilder(string registrationId, Action<NotificationInteractedEventArgs>? generalHandler);
-
-    public delegate INotification<T> NotificationBuilder<T>(string registrationId, Action<NotificationInteractedEventArgs>? generalHandler) where T : new();
-    */
-
     /// <summary>
     /// Register your notification implementations and retrieve it later via abstraction.
     /// Manage your notifications.
     /// </summary>
     public static class NotificationManager
     {
-        private static Dictionary<string, NotificationBuilder> _builders = new();
+        private static Dictionary<string, Func<INotificationRoot>> _builders = new();
         private static Dictionary<string, List<INotification>> _notifications = new();
 
         /// <summary>
@@ -36,22 +22,28 @@ namespace MochaCore.Notifications
         /// </summary>
         public static event EventHandler<NotificationInteractedEventArgs>? NotificationInteracted;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="factoryDelegate"></param>
-        public static void RegisterNotification(string id, NotificationBuilder factoryDelegate)
-            => RegisterNotificationCore(id, factoryDelegate);
+        public static void RegisterNotification(string id, Func<INotificationRoot> factoryDelegate)
+        {
+            _ = factoryDelegate ?? throw new ArgumentNullException(nameof(factoryDelegate));
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="id"></param>
-        /// <param name="factoryDelegate"></param>
-        public static void RegisterNotification<T>(string id, Func<NotificationContext, INotification<T>> factoryDelegate) where T : new()
-            => RegisterNotificationCore(id, factoryDelegate);
+            if (_builders.ContainsKey(id))
+            {
+                throw new InvalidOperationException($"Notification factory delegate with id={id} has been already registered");
+            }
+
+            _builders[id] = factoryDelegate;
+            factoryDelegate.Invoke().NotificationInteracted += (s, e) =>
+            {
+                NotificationInteractedEventArgs args = e;
+                INotification? existingInstance = _notifications.GetValueOrDefault(id)?.FirstOrDefault(n => n.Id == e.Notification.Id);
+                if (existingInstance is not null)
+                {
+                    args = e.WithNotification(existingInstance);
+                }
+
+                NotificationInteracted?.Invoke(null, args);
+            };
+        }
 
         /// <summary>
         /// 
@@ -60,7 +52,7 @@ namespace MochaCore.Notifications
         /// <returns></returns>
         public static INotification RetrieveNotification(string id)
         {
-            INotification createdNotification = GetBuilderOrThrow(id).Invoke(new NotificationContext(id));
+            INotification createdNotification = GetBuilderOrThrow(id).Invoke();
             TrackNotification(id, createdNotification);
             return createdNotification;
         }
@@ -105,30 +97,9 @@ namespace MochaCore.Notifications
             return new List<INotification>();
         }
 
-        private static void RegisterNotificationCore(string id, NotificationBuilder factoryDelegate)
+        private static Func<INotificationRoot> GetBuilderOrThrow(string id)
         {
-            if (_builders.ContainsKey(id))
-            {
-                throw new InvalidOperationException($"Notification factory delegate with id={id} has been already registered");
-            }
-
-            _builders[id] = factoryDelegate;
-            _ = factoryDelegate.Invoke(new NotificationContext(id, (e) =>
-            {
-                NotificationInteractedEventArgs args = e;
-                INotification? existingInstance = _notifications.GetValueOrDefault(id)?.FirstOrDefault(n => n.Id == e.Notification.Id);
-                if (existingInstance is not null)
-                {
-                    args = e.WithNotification(existingInstance);
-                }
-
-                NotificationInteracted?.Invoke(null, args);
-            }));
-        }
-
-        private static NotificationBuilder GetBuilderOrThrow(string id)
-        {
-            if (_builders.TryGetValue(id, out NotificationBuilder? builder))
+            if (_builders.TryGetValue(id, out Func<INotificationRoot>? builder))
             {
                 return builder;
                 

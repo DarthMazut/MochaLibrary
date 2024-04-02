@@ -48,7 +48,7 @@ namespace WinUiApplication
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            NotificationManager.RegisterNotification("MyNotification", (relay) => new TestWinUiNotification(relay));
+            NotificationManager.RegisterNotification("MyNotification", () => new TestWinUiNotification("MyNotification"));
 
             WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow()));
             WindowManager.RegisterWindow("TestWindow", () => new WindowModule<GenericWindowProperties>(new TestWindow(), new TestWindowViewModel()));
