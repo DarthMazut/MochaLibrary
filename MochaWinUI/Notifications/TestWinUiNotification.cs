@@ -28,7 +28,7 @@ namespace MochaWinUI.Notifications
         protected TestWinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
             : base(notificationId, registrationId, tag, scheduledTime) { }
 
-        protected override string CreateNotification()
+        protected override string CreateNotificationDefinition()
         {
             AppNotification appNotification = new AppNotificationBuilder()
             .AddNotificationArguments(this)
@@ -43,7 +43,7 @@ namespace MochaWinUI.Notifications
             return appNotification.Payload;
         }
 
-        protected override NotificationInteractedEventArgs<MyNotificationCustomEventArgs> CreateEventArgsFromRawEvent(AppNotificationActivatedEventArgs args)
+        protected override NotificationInteractedEventArgs<MyNotificationCustomEventArgs> CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args)
         {
             args.Arguments.TryGetValue(TagKey, out string? tag);
 

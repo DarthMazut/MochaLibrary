@@ -9,13 +9,31 @@ using Windows.UI.Notifications;
 
 namespace MochaWinUI.Notifications
 {
-    public abstract class WinUiNotification : INotificationRoot, INotification
+    /// <summary>
+    /// Provides a base implementation of <see cref="INotificationRoot"/> for WinUI.
+    /// </summary>
+    public abstract class WinUiNotification : INotificationRoot
     {
         private static readonly int ALREADY_REGISTERED_EXCEPTION_CODE = -2147024809;
 
+        /// <summary>
+        /// Provides internal key for notification id value.
+        /// </summary>
         public static readonly string NotificationIdKey = "notification-id";
+
+        /// <summary>
+        /// Provides internal key for registration id value.
+        /// </summary>
         public static readonly string RegistrationIdKey = "registration-id";
+
+        /// <summary>
+        /// Provides internal key for invoked item id value.
+        /// </summary>
         public static readonly string InvokedItemIdKey = "invoked-item-id";
+
+        /// <summary>
+        /// Provides internal key for tag value.
+        /// </summary>
         public static readonly string TagKey = "tag";
 
         private ScheduledToastNotification? _scheduledNotification;
@@ -59,7 +77,10 @@ namespace MochaWinUI.Notifications
 
         /// <inheritdoc/>
         public string Id { get; }
-        
+
+        /// <summary>
+        /// Unique identifier provided during registration with <see cref="NotificationManager"/>.
+        /// </summary>
         public string RegistrationId { get; }
 
         /// <inheritdoc/>
@@ -109,7 +130,7 @@ namespace MochaWinUI.Notifications
         {
             ScheduleGuard();
 
-            AppNotification notification = new(CreateNotification());
+            AppNotification notification = new(CreateNotificationDefinition());
             _scheduledTime = DateTimeOffset.Now;
             AppNotificationManager.Default.Show(notification);
         }
@@ -121,7 +142,7 @@ namespace MochaWinUI.Notifications
             Unschedule();
 
             XmlDocument xml = new();
-            xml.LoadXml(CreateNotification());
+            xml.LoadXml(CreateNotificationDefinition());
 
             ScheduledToastNotification scheduledNotification = new(xml, scheduledTime);
             ToastNotifier notifier = ToastNotificationManager.CreateToastNotifier();
@@ -145,10 +166,22 @@ namespace MochaWinUI.Notifications
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
-        protected abstract string CreateNotification();
+        /// <summary>
+        /// Override this method to provide a string defining the current appearance of the notification.
+        /// </summary>
+        protected abstract string CreateNotificationDefinition();
 
-        protected abstract NotificationInteractedEventArgs CreateEventArgsFromRawEvent(AppNotificationActivatedEventArgs args);
+        /// <summary>
+        /// Override this method to create a <see cref="NotificationInteractedEventArgs"/> object based on 
+        /// the provided <see cref="AppNotificationActivatedEventArgs"/> from the core interaction event.
+        /// </summary>
+        /// <param name="args">Raw arguments from the core interaction event.</param>
+        protected abstract NotificationInteractedEventArgs CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args);
 
+        /// <summary>
+        /// Flattens the provided <see cref="AppNotificationActivatedEventArgs"/> into dictionary.
+        /// </summary>
+        /// <param name="args">The arguments from the core interaction event.</param>
         protected Dictionary<string, object> CreateArgsDictionary(AppNotificationActivatedEventArgs args)
         {
             Dictionary<string, object> dictionary = args.Arguments.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as object);
@@ -189,13 +222,13 @@ namespace MochaWinUI.Notifications
 
             if (args.Arguments[RegistrationIdKey] == RegistrationId)
             {
-                NotificationInteracted?.Invoke(this, CreateEventArgsFromRawEvent(args));
+                NotificationInteracted?.Invoke(this, CreateArgsFromInteractedEvent(args));
             }
 
             if (args.Arguments[NotificationIdKey] == Id)
             {
                 _interacted = true;
-                OnInteracted(CreateEventArgsFromRawEvent(args).WithNotification(this));
+                OnInteracted(CreateArgsFromInteractedEvent(args).WithNotification(this));
             }
         }
 
@@ -214,6 +247,10 @@ namespace MochaWinUI.Notifications
         }
     }
 
+    /// <summary>
+    /// Extends <see cref="WinUiNotification"/> with statically typed properties.
+    /// </summary>
+    /// <typeparam name="T">Properties type.</typeparam>
     public abstract class WinUiNotification<T> : WinUiNotification, INotification<T> where T : new()
     {
         public WinUiNotification(string registrationId) : base(registrationId) { }
@@ -225,6 +262,11 @@ namespace MochaWinUI.Notifications
         public T Properties { get; set; } = new();
     }
 
+    /// <summary>
+    /// Extends <see cref="WinUiNotification{T}"/> with statically typed arguments of <see cref="WinUiNotification.Interacted"/> event.
+    /// </summary>
+    /// <typeparam name="TProps">Properties type.</typeparam>
+    /// <typeparam name="TArgs">Interacted event arguments type.</typeparam>
     public abstract class WinUiNotification<TProps, TArgs> : WinUiNotification<TProps>, INotification<TProps, TArgs> where TProps : new()
     {
         private EventHandler<NotificationInteractedEventArgs<TArgs?>>? _interactedHandler;
@@ -234,7 +276,7 @@ namespace MochaWinUI.Notifications
         protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
             : base(notificationId, registrationId, tag, scheduledTime) { }
 
-        protected override abstract NotificationInteractedEventArgs<TArgs> CreateEventArgsFromRawEvent(AppNotificationActivatedEventArgs args);
+        protected override abstract NotificationInteractedEventArgs<TArgs> CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args);
 
         protected override void OnInteracted(NotificationInteractedEventArgs e)
         {

@@ -18,6 +18,7 @@ namespace MochaCore.Notifications
 
         /// <summary>
         /// Everyone knows what a Tag is.
+        /// <para><c>Koń jaki jest, każdy widzi.</c></para>
         /// </summary>
         public string? Tag { get; set; }
 
