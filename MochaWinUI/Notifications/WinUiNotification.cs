@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 
@@ -168,7 +169,9 @@ namespace MochaWinUI.Notifications
 
             _scheduledTime = scheduledTime;
             _scheduledNotification = scheduledNotification;
-            notifier.AddToSchedule(scheduledNotification);  
+            notifier.AddToSchedule(scheduledNotification);
+
+            ScheduleRemovalFromMessageCenter();
         }
 
         /// <inheritdoc/>
@@ -231,6 +234,24 @@ namespace MochaWinUI.Notifications
                 ToastNotificationManager.CreateToastNotifier().RemoveFromSchedule(_scheduledNotification);
             }
         }
+
+        private void ScheduleRemovalFromMessageCenter()
+        {
+            _ = Task.Run(async () =>
+            {
+                IList<AppNotification> notifications = await AppNotificationManager.Default.GetAllAsync();
+                AppNotification? currentNotification = GetCurrentNotificationFromCollection(notifications);
+                await AppNotificationManager.Default.RemoveByIdAsync(currentNotification?.Id ?? default);
+            });
+        }
+
+        private AppNotification? GetCurrentNotificationFromCollection(IEnumerable<AppNotification> collection)
+            => collection.FirstOrDefault(n =>
+            {
+                XmlDocument xml = new();
+                xml.LoadXml(n.Payload);
+                return xml.FirstChild.Attributes[0].InnerText.Split(";")[1].Split("=")[1] == Id;
+            });
 
         private void ScheduleGuard()
         {
@@ -342,5 +363,4 @@ namespace MochaWinUI.Notifications
             remove => _interactedHandler -= value;
         }
     }
-
 }
