@@ -170,6 +170,7 @@ namespace MochaWinUI.Notifications
             _scheduledTime = scheduledTime;
             _scheduledNotification = scheduledNotification;
             notifier.AddToSchedule(scheduledNotification);
+            Test();
         }
 
         /// <inheritdoc/>
@@ -244,6 +245,13 @@ namespace MochaWinUI.Notifications
             });
         }
 
+        private void GetPendingNotifications()
+        {
+            IReadOnlyList<ScheduledToastNotification> scheduled = ToastNotificationManager.GetDefault().CreateToastNotifier().GetScheduledToastNotifications();
+            List<string?> ids = scheduled.Select(n => GetNotificationId(n)).ToList();
+
+        }
+
         private void ScheduleGuard()
         {
             if (Displayed || IsDisposed)
@@ -286,6 +294,16 @@ namespace MochaWinUI.Notifications
             XmlDocument xml = new();
             xml.LoadXml(notification.Payload);
             string headerAttribute = xml.FirstChild.Attributes[0].InnerText;
+            return headerAttribute
+                .Split(";") // notification-id=xyz
+                .Select(s => s.Split("=")) // [notification-id][xyz]
+                .Where(arr => arr[0] == NotificationIdKey)
+                ?.FirstOrDefault()?[1];
+        }
+
+        private string? GetNotificationId(ScheduledToastNotification notification)
+        {
+            string headerAttribute = notification.Content.FirstChild.Attributes[0].InnerText;
             return headerAttribute
                 .Split(";") // notification-id=xyz
                 .Select(s => s.Split("=")) // [notification-id][xyz]
