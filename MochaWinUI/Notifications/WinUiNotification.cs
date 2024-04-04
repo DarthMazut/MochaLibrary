@@ -170,8 +170,6 @@ namespace MochaWinUI.Notifications
             _scheduledTime = scheduledTime;
             _scheduledNotification = scheduledNotification;
             notifier.AddToSchedule(scheduledNotification);
-
-            ScheduleRemovalFromMessageCenter();
         }
 
         /// <inheritdoc/>
@@ -184,6 +182,7 @@ namespace MochaWinUI.Notifications
 
             AppNotificationManager.Default.NotificationInvoked -= AnyNotificationInvoked;
             Unschedule();
+            ScheduleRemovalFromMessageCenter();
             _isDisposed = true;
             Disposed?.Invoke(this, EventArgs.Empty);
         }
@@ -240,18 +239,10 @@ namespace MochaWinUI.Notifications
             _ = Task.Run(async () =>
             {
                 IList<AppNotification> notifications = await AppNotificationManager.Default.GetAllAsync();
-                AppNotification? currentNotification = GetCurrentNotificationFromCollection(notifications);
+                AppNotification? currentNotification = notifications.FirstOrDefault(n => GetNotificationId(n) == Id);
                 await AppNotificationManager.Default.RemoveByIdAsync(currentNotification?.Id ?? default);
             });
         }
-
-        private AppNotification? GetCurrentNotificationFromCollection(IEnumerable<AppNotification> collection)
-            => collection.FirstOrDefault(n =>
-            {
-                XmlDocument xml = new();
-                xml.LoadXml(n.Payload);
-                return xml.FirstChild.Attributes[0].InnerText.Split(";")[1].Split("=")[1] == Id;
-            });
 
         private void ScheduleGuard()
         {
@@ -288,6 +279,18 @@ namespace MochaWinUI.Notifications
             bool hasInvokedItemId = args.Arguments.ContainsKey(InvokedItemIdKey);
 
             return hasNotificationId && hasRegistrationId && hasInvokedItemId;
+        }
+
+        private string? GetNotificationId(AppNotification notification)
+        {
+            XmlDocument xml = new();
+            xml.LoadXml(notification.Payload);
+            string headerAttribute = xml.FirstChild.Attributes[0].InnerText;
+            return headerAttribute
+                .Split(";") // notification-id=xyz
+                .Select(s => s.Split("=")) // [notification-id][xyz]
+                .Where(arr => arr[0] == NotificationIdKey)
+                ?.FirstOrDefault()?[1];
         }
     }
 
