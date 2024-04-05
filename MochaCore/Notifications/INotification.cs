@@ -31,7 +31,12 @@ namespace MochaCore.Notifications
         /// Indicates whether the notification has been displayed.
         /// Once the notification is displayed, it can no longer be scheduled.
         /// </summary>
-        public bool Displayed { get; }
+        public bool IsDisplayed { get; }
+
+        /// <summary>
+        /// Indicates whether the notification has been interacted with by the user.
+        /// </summary>
+        public bool IsInteracted { get; }
 
         /// <summary>
         /// Indicates whether this instance has been disposed.

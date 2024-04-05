@@ -1,5 +1,6 @@
 ﻿using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
+using System;
 using System.Linq;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
@@ -54,6 +55,14 @@ namespace MochaWinUI.Notifications.Extensions
                 .Select(s => s.Split("="))
                 .Where(arr => arr[0] == key)
                 ?.FirstOrDefault()?[1];
+        }
+
+        public static bool IsValid(this ScheduledToastNotification notification)
+        {
+            return
+                notification.Content.FirstChild.Attributes.Count > 0 &&
+                notification.Content.FirstChild.Attributes[0].InnerText.Split(";").Count() > 3 &&
+
         }
     }
 }

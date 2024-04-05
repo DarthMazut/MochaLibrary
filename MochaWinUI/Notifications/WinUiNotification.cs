@@ -40,6 +40,7 @@ namespace MochaWinUI.Notifications
 
         private string? _tag;
         private DateTimeOffset? _scheduledTime;
+        private bool _displayed;
         private bool _interacted;
         private bool _isDisposed;
 
@@ -65,33 +66,46 @@ namespace MochaWinUI.Notifications
             Id = Guid.NewGuid().ToString();
             RegistrationId = registrationId;
             AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
+            ToastNotificationManager.CreateToastNotifier().ScheduledToastNotificationShowing += NotificationDisplayed;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WinUiNotification"/> class.
-        /// 
         /// <para>
-        /// When a client subscribes to the <see cref="NotificationManager.NotificationInteracted"/> event, they expect 
-        /// the provided <see cref="NotificationInteractedEventArgs"/> to expose the <see cref="NotificationInteractedEventArgs.Notification"/>
-        /// value. Now, when a notification is scheduled and interacted with during the application lifetime, the instance 
-        /// created by current constructor is replaced with the tracked instance, ensuring that the client receives the 
-        /// actual instance used for scheduling. However, if the application is restarted after the notification is scheduled
-        /// but before user interaction, this constructor provides a substitute instance of the notification with limited functionality,
-        /// such as the inability to be rescheduled or the <see cref="INotification.Displayed"/> property always being true.
-        /// For such scenarios you can leverage current constructor.
+        /// TODO: explain when this constructor is needed.
         /// </para>
         /// </summary>
         /// <param name="notificationId">The unique identifier for the notification.</param>
         /// <param name="registrationId">The identifier assigned during registration with the <see cref="NotificationManager"/>.</param>
         /// <param name="tag">An optional tag associated with the notification.</param>
         /// <param name="scheduledTime">The scheduled time for the notification.</param>
-        protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
+        /// <param name="wasDisplayed">Whether this notification was already displayed and so cannot be scheduled again.</param>
+        /// <param name="wasInteracted">Whether this notification was already interacted by the user.</param>
+        protected WinUiNotification(
+            string notificationId,
+            string registrationId,
+            string? tag,
+            DateTimeOffset scheduledTime,
+            bool wasDisplayed,
+            bool wasInteracted)
         {
             Id = notificationId;
             RegistrationId = registrationId;
             Tag = tag;
             _scheduledTime = scheduledTime;
-            _interacted = true;
+            _interacted = wasInteracted;
+            _displayed = wasDisplayed;
+
+            if (wasInteracted && !wasDisplayed)
+            {
+                throw new ArgumentException("Notification cannot be interacted and not displayed at the same time.");
+            }
+
+            if (!wasDisplayed)
+            {
+                AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
+                ToastNotificationManager.CreateToastNotifier().ScheduledToastNotificationShowing += NotificationDisplayed;
+            }
         }
 
         /// <inheritdoc/>
@@ -105,10 +119,11 @@ namespace MochaWinUI.Notifications
         /// <inheritdoc/>
         public DateTimeOffset? ScheduledTime => _scheduledTime;
 
-        // TODO: add Interacted, because why not?
+        /// <inheritdoc/>
+        public bool IsInteracted => _interacted;
 
         /// <inheritdoc/>
-        public bool Displayed => _interacted || ScheduledTime.HasValue && ScheduledTime.Value < DateTimeOffset.Now;
+        public bool IsDisplayed => _displayed;
 
         /// <inheritdoc/>
         public bool IsDisposed => _isDisposed;
@@ -119,7 +134,7 @@ namespace MochaWinUI.Notifications
             get => _tag;
             set
             {
-                if (Displayed)
+                if (IsDisplayed)
                 {
                     throw new InvalidOperationException("Cannot change tag after notification has been displayed");
                 }
@@ -198,7 +213,7 @@ namespace MochaWinUI.Notifications
         /// <param name="args">Raw arguments from the core interaction event.</param>
         protected abstract NotificationInteractedEventArgs CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args);
 
-        protected abstract INotification CreatePendingNotification(ScheduledToastNotification notification);
+        protected abstract INotification? CreatePendingNotification(ScheduledToastNotification notification);
 
         /// <summary>
         /// Flattens the provided <see cref="AppNotificationActivatedEventArgs"/> into dictionary.
@@ -258,13 +273,23 @@ namespace MochaWinUI.Notifications
                 .CreateToastNotifier()
                 .GetScheduledToastNotifications()
                 .Select(n => CreatePendingNotification(n))
-                .ToList();
+                .Where(n => n is not null)
+                .ToList()!;
 
         private void ScheduleGuard()
         {
-            if (Displayed || IsDisposed)
+            if (IsDisplayed || IsDisposed)
             {
                 throw new InvalidOperationException("Disposed or displayed notification cannot be rescheduled.");
+            }
+        }
+
+        private void NotificationDisplayed(ToastNotifier sender, ScheduledToastNotificationShowingEventArgs e)
+        {
+            string? id = e.ScheduledToastNotification.GetNotificationValueByKey(NotificationIdKey);
+            if (id == Id)
+            {
+                _displayed = true;
             }
         }
 
@@ -288,6 +313,7 @@ namespace MochaWinUI.Notifications
             }
         }
 
+        // Should this be extension method as well?
         private bool ValidateArgs(AppNotificationActivatedEventArgs args)
         {
             bool hasNotificationId = args.Arguments.ContainsKey(NotificationIdKey);
@@ -296,28 +322,6 @@ namespace MochaWinUI.Notifications
 
             return hasNotificationId && hasRegistrationId && hasInvokedItemId;
         }
-
-        //private string? GetNotificationId(AppNotification notification)
-        //{
-        //    XmlDocument xml = new();
-        //    xml.LoadXml(notification.Payload);
-        //    string headerAttribute = xml.FirstChild.Attributes[0].InnerText;
-        //    return headerAttribute
-        //        .Split(";") // notification-id=xyz
-        //        .Select(s => s.Split("=")) // [notification-id][xyz]
-        //        .Where(arr => arr[0] == NotificationIdKey)
-        //        ?.FirstOrDefault()?[1];
-        //}
-
-        //private string? GetNotificationId(ScheduledToastNotification notification)
-        //{
-        //    string headerAttribute = notification.Content.FirstChild.Attributes[0].InnerText;
-        //    return headerAttribute
-        //        .Split(";") // notification-id=xyz
-        //        .Select(s => s.Split("=")) // [notification-id][xyz]
-        //        .Where(arr => arr[0] == NotificationIdKey)
-        //        ?.FirstOrDefault()?[1];
-        //}
     }
 
     /// <summary>
@@ -335,14 +339,19 @@ namespace MochaWinUI.Notifications
         public WinUiNotification(string registrationId) : base(registrationId) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WinUiNotification{T}"/> class.
+        /// Initializes a new instance of the <see cref="WinUiNotification"/> class.
+        /// <para>
+        /// TODO: explain when this constructor is needed.
+        /// </para>
         /// </summary>
         /// <param name="notificationId">The unique identifier for the notification.</param>
         /// <param name="registrationId">The identifier assigned during registration with the <see cref="NotificationManager"/>.</param>
         /// <param name="tag">An optional tag associated with the notification.</param>
         /// <param name="scheduledTime">The scheduled time for the notification.</param>
-        protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
-            : base(notificationId, registrationId, tag, scheduledTime) { }
+        /// <param name="wasDisplayed">Whether this notification was already displayed and so cannot be scheduled again.</param>
+        /// <param name="wasInteracted">Whether this notification was already interacted by the user.</param>
+        protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime, bool wasDisplayed, bool wasInteracted)
+            : base(notificationId, registrationId, tag, scheduledTime, wasDisplayed, wasInteracted) { }
 
         /// <inheritdoc/>
         public T Properties { get; set; } = new();
@@ -366,14 +375,19 @@ namespace MochaWinUI.Notifications
         public WinUiNotification(string registrationId) : base(registrationId) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WinUiNotification{TProps, TArgs}"/> class.
+        /// Initializes a new instance of the <see cref="WinUiNotification"/> class.
+        /// <para>
+        /// TODO: explain when this constructor is needed.
+        /// </para>
         /// </summary>
         /// <param name="notificationId">The unique identifier for the notification.</param>
         /// <param name="registrationId">The identifier assigned during registration with the <see cref="NotificationManager"/>.</param>
         /// <param name="tag">An optional tag associated with the notification.</param>
         /// <param name="scheduledTime">The scheduled time for the notification.</param>
-        protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
-            : base(notificationId, registrationId, tag, scheduledTime) { }
+        /// <param name="wasDisplayed">Whether this notification was already displayed and so cannot be scheduled again.</param>
+        /// <param name="wasInteracted">Whether this notification was already interacted by the user.</param>
+        protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime, bool wasDisplayed, bool wasInteracted)
+            : base(notificationId, registrationId, tag, scheduledTime, wasDisplayed, wasInteracted) { }
 
         /// <inheritdoc/>
         protected override abstract NotificationInteractedEventArgs<TArgs> CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args);

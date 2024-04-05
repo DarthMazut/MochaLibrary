@@ -26,8 +26,8 @@ namespace MochaWinUI.Notifications
     {
         public TestWinUiNotification(string registrationId) : base(registrationId) { }
 
-        protected TestWinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime)
-            : base(notificationId, registrationId, tag, scheduledTime) { }
+        public TestWinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime, bool wasDisplayed, bool wasInteracted)
+            : base(notificationId, registrationId, tag, scheduledTime, wasDisplayed, wasInteracted) { }
 
         protected override string CreateNotificationDefinition()
         {
@@ -52,21 +52,25 @@ namespace MochaWinUI.Notifications
                 new TestWinUiNotification(
                     args.Arguments[NotificationIdKey],
                     args.Arguments[RegistrationIdKey],
-                    tag,
-                    DateTimeOffset.UtcNow),
+                    tag, DateTimeOffset.UtcNow, true, true),
                 args.Arguments[InvokedItemIdKey],
                 CreateArgsDictionary(args),
                 args, new MyNotificationCustomEventArgs() { EventCustomables = "Custom ;)"});
         }
 
-        protected override INotification CreatePendingNotification(ScheduledToastNotification notification)
+        protected override INotification? CreatePendingNotification(ScheduledToastNotification notification)
         {
-            // THIS IS BAD CTOR - NEEDS NEW ONE FOR THIS CASE !!!!!!!!!!!111111aaaaaaaaaa one one one!
+            if (!notification.IsValid())
+            {
+                return null;
+            }
+
             return new TestWinUiNotification(
-                notification.GetNotificationValueByKey(RegistrationIdKey),
-                notification.GetNotificationValueByKey(NotificationIdKey),
+                notification.GetNotificationValueByKey(RegistrationIdKey)!,
+                notification.GetNotificationValueByKey(NotificationIdKey)!,
                 notification.GetNotificationValueByKey(TagKey),
-                notification.DeliveryTime);
+                notification.DeliveryTime,
+                false, false);
         }
     }
 }
