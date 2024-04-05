@@ -20,7 +20,10 @@ namespace MochaCore.Notifications
         /// </summary>
         public event EventHandler<NotificationInteractedEventArgs> NotificationInteracted;
 
-        //public IReadOnlyCollection<INotification> GetPendingNotifications()
+        /// <summary>
+        /// Returns a collection of scheduled notification, registered with implementations id, but not yet displayed.
+        /// </summary>
+        public IReadOnlyCollection<INotification> GetPendingNotifications();
 
         //public IReadOnluCollection<INotification> GetActionCenterNotifications()
     }

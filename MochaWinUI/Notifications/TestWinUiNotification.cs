@@ -8,6 +8,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Notifications;
 
 namespace MochaWinUI.Notifications
 {
@@ -56,6 +57,16 @@ namespace MochaWinUI.Notifications
                 args.Arguments[InvokedItemIdKey],
                 CreateArgsDictionary(args),
                 args, new MyNotificationCustomEventArgs() { EventCustomables = "Custom ;)"});
+        }
+
+        protected override INotification CreatePendingNotification(ScheduledToastNotification notification)
+        {
+            // THIS IS BAD CTOR - NEEDS NEW ONE FOR THIS CASE !!!!!!!!!!!111111aaaaaaaaaa one one one!
+            return new TestWinUiNotification(
+                notification.GetNotificationValueByKey(RegistrationIdKey),
+                notification.GetNotificationValueByKey(NotificationIdKey),
+                notification.GetNotificationValueByKey(TagKey),
+                notification.DeliveryTime);
         }
     }
 }

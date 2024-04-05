@@ -1,5 +1,6 @@
 ﻿using Microsoft.Windows.AppNotifications;
 using MochaCore.Notifications;
+using MochaWinUI.Notifications.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -36,8 +37,6 @@ namespace MochaWinUI.Notifications
         /// Provides internal key for tag value.
         /// </summary>
         public static readonly string TagKey = "tag";
-
-        private ScheduledToastNotification? _scheduledNotification;
 
         private string? _tag;
         private DateTimeOffset? _scheduledTime;
@@ -149,6 +148,7 @@ namespace MochaWinUI.Notifications
         public void Schedule()
         {
             ScheduleGuard();
+            Unschedule();
 
             AppNotification notification = new(CreateNotificationDefinition());
             _scheduledTime = DateTimeOffset.Now;
@@ -168,9 +168,7 @@ namespace MochaWinUI.Notifications
             ToastNotifier notifier = ToastNotificationManager.CreateToastNotifier();
 
             _scheduledTime = scheduledTime;
-            _scheduledNotification = scheduledNotification;
             notifier.AddToSchedule(scheduledNotification);
-            Test();
         }
 
         /// <inheritdoc/>
@@ -199,6 +197,8 @@ namespace MochaWinUI.Notifications
         /// </summary>
         /// <param name="args">Raw arguments from the core interaction event.</param>
         protected abstract NotificationInteractedEventArgs CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args);
+
+        protected abstract INotification CreatePendingNotification(ScheduledToastNotification notification);
 
         /// <summary>
         /// Flattens the provided <see cref="AppNotificationActivatedEventArgs"/> into dictionary.
@@ -229,9 +229,16 @@ namespace MochaWinUI.Notifications
 
         private void Unschedule()
         {
-            if (_scheduledNotification is not null)
+            ScheduledToastNotification? scheduledNotification =
+                ToastNotificationManager
+                   .GetDefault()
+                   .CreateToastNotifier()
+                   .GetScheduledToastNotifications()
+                   .FirstOrDefault(n => n.GetNotificationValueByKey(NotificationIdKey) == Id);
+
+            if (scheduledNotification is not null)
             {
-                ToastNotificationManager.CreateToastNotifier().RemoveFromSchedule(_scheduledNotification);
+                ToastNotificationManager.CreateToastNotifier().RemoveFromSchedule(scheduledNotification);
             }
         }
 
@@ -240,17 +247,18 @@ namespace MochaWinUI.Notifications
             _ = Task.Run(async () =>
             {
                 IList<AppNotification> notifications = await AppNotificationManager.Default.GetAllAsync();
-                AppNotification? currentNotification = notifications.FirstOrDefault(n => GetNotificationId(n) == Id);
+                AppNotification? currentNotification = notifications.FirstOrDefault(n => n.GetNotificationValueByKey(NotificationIdKey) == Id);
                 await AppNotificationManager.Default.RemoveByIdAsync(currentNotification?.Id ?? default);
             });
         }
 
-        private void GetPendingNotifications()
-        {
-            IReadOnlyList<ScheduledToastNotification> scheduled = ToastNotificationManager.GetDefault().CreateToastNotifier().GetScheduledToastNotifications();
-            List<string?> ids = scheduled.Select(n => GetNotificationId(n)).ToList();
-
-        }
+        IReadOnlyCollection<INotification> INotificationSharedDataProvider.GetPendingNotifications()
+            => ToastNotificationManager
+                .GetDefault()
+                .CreateToastNotifier()
+                .GetScheduledToastNotifications()
+                .Select(n => CreatePendingNotification(n))
+                .ToList();
 
         private void ScheduleGuard()
         {
@@ -289,27 +297,27 @@ namespace MochaWinUI.Notifications
             return hasNotificationId && hasRegistrationId && hasInvokedItemId;
         }
 
-        private string? GetNotificationId(AppNotification notification)
-        {
-            XmlDocument xml = new();
-            xml.LoadXml(notification.Payload);
-            string headerAttribute = xml.FirstChild.Attributes[0].InnerText;
-            return headerAttribute
-                .Split(";") // notification-id=xyz
-                .Select(s => s.Split("=")) // [notification-id][xyz]
-                .Where(arr => arr[0] == NotificationIdKey)
-                ?.FirstOrDefault()?[1];
-        }
+        //private string? GetNotificationId(AppNotification notification)
+        //{
+        //    XmlDocument xml = new();
+        //    xml.LoadXml(notification.Payload);
+        //    string headerAttribute = xml.FirstChild.Attributes[0].InnerText;
+        //    return headerAttribute
+        //        .Split(";") // notification-id=xyz
+        //        .Select(s => s.Split("=")) // [notification-id][xyz]
+        //        .Where(arr => arr[0] == NotificationIdKey)
+        //        ?.FirstOrDefault()?[1];
+        //}
 
-        private string? GetNotificationId(ScheduledToastNotification notification)
-        {
-            string headerAttribute = notification.Content.FirstChild.Attributes[0].InnerText;
-            return headerAttribute
-                .Split(";") // notification-id=xyz
-                .Select(s => s.Split("=")) // [notification-id][xyz]
-                .Where(arr => arr[0] == NotificationIdKey)
-                ?.FirstOrDefault()?[1];
-        }
+        //private string? GetNotificationId(ScheduledToastNotification notification)
+        //{
+        //    string headerAttribute = notification.Content.FirstChild.Attributes[0].InnerText;
+        //    return headerAttribute
+        //        .Split(";") // notification-id=xyz
+        //        .Select(s => s.Split("=")) // [notification-id][xyz]
+        //        .Where(arr => arr[0] == NotificationIdKey)
+        //        ?.FirstOrDefault()?[1];
+        //}
     }
 
     /// <summary>
