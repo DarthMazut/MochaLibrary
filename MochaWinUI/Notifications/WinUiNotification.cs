@@ -213,25 +213,12 @@ namespace MochaWinUI.Notifications
         /// <param name="args">Raw arguments from the core interaction event.</param>
         protected abstract NotificationInteractedEventArgs CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args);
 
-        protected abstract INotification? CreatePendingNotification(ScheduledToastNotification notification);
-
         /// <summary>
-        /// Flattens the provided <see cref="AppNotificationActivatedEventArgs"/> into dictionary.
+        /// When overriden should return active instance of <see cref="INotification"/> representing
+        /// provided <see cref="ScheduledToastNotification"/> instance.
         /// </summary>
-        /// <param name="args">The arguments from the core interaction event.</param>
-        protected Dictionary<string, object> CreateArgsDictionary(AppNotificationActivatedEventArgs args)
-        {
-            Dictionary<string, object> dictionary = args.Arguments.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as object);
-            foreach ((string key, string value) in args.UserInput)
-            {
-                if (!dictionary.TryAdd(key, value))
-                {
-                    dictionary[key] = new string[2] { (string)dictionary[key], value };
-                }
-            }
-
-            return dictionary;
-        }
+        /// <param name="notification">Source of data for creating instance.</param>
+        protected abstract INotification? CreatePendingNotification(ScheduledToastNotification notification);
 
         /// <summary>
         /// Raises the <see cref="Interacted"/> event.
@@ -295,7 +282,7 @@ namespace MochaWinUI.Notifications
 
         private void AnyNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
         {
-            if (!ValidateArgs(args))
+            if (!args.AreValid())
             {
                 // We cannot throw here as application may recieve other notification that are valid but not following our design.
                 return;
@@ -311,16 +298,6 @@ namespace MochaWinUI.Notifications
                 _interacted = true;
                 OnInteracted(CreateArgsFromInteractedEvent(args).WithNotification(this));
             }
-        }
-
-        // Should this be extension method as well?
-        private bool ValidateArgs(AppNotificationActivatedEventArgs args)
-        {
-            bool hasNotificationId = args.Arguments.ContainsKey(NotificationIdKey);
-            bool hasRegistrationId = args.Arguments.ContainsKey(RegistrationIdKey);
-            bool hasInvokedItemId = args.Arguments.ContainsKey(InvokedItemIdKey);
-
-            return hasNotificationId && hasRegistrationId && hasInvokedItemId;
         }
     }
 

@@ -54,7 +54,7 @@ namespace MochaWinUI.Notifications
                     args.Arguments[RegistrationIdKey],
                     tag, DateTimeOffset.UtcNow, true, true),
                 args.Arguments[InvokedItemIdKey],
-                CreateArgsDictionary(args),
+                args.AsDictionary(),
                 args, new MyNotificationCustomEventArgs() { EventCustomables = "Custom ;)"});
         }
 
