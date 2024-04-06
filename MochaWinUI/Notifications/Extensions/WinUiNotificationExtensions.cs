@@ -1,6 +1,7 @@
 ﻿using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
@@ -37,6 +38,12 @@ namespace MochaWinUI.Notifications.Extensions
             return builder;
         }
 
+        /// <summary>
+        /// Tries to retrieve value from <see cref="AppNotification"/> content that was specified
+        /// by given key. 
+        /// </summary>
+        /// <param name="notification"></param>
+        /// <param name="key">Key of the value being searched.</param>
         public static string? GetNotificationValueByKey(this AppNotification notification, string key)
         {
             XmlDocument xml = new();
@@ -57,12 +64,31 @@ namespace MochaWinUI.Notifications.Extensions
                 ?.FirstOrDefault()?[1];
         }
 
+        /// <summary>
+        /// Determines whether content of <see cref="ScheduledTileNotification"/> provides
+        /// a values for following keys: <see cref="WinUiNotification.NotificationIdKey"/>,
+        /// <see cref="WinUiNotification.RegistrationIdKey"/> and <see cref="WinUiNotification.InvokedItemIdKey"/>.
+        /// </summary>
         public static bool IsValid(this ScheduledToastNotification notification)
         {
-            return
-                notification.Content.FirstChild.Attributes.Count > 0 &&
-                notification.Content.FirstChild.Attributes[0].InnerText.Split(";").Count() > 3 &&
+            IXmlNode? firstAttr = notification.Content.FirstChild.Attributes.FirstOrDefault();
+            if (firstAttr is null) { return false; }
 
+            string[] valuePairs = firstAttr.InnerText.Split(";");
+            if (valuePairs.Count() < 3) { return false; }
+
+            List<string> keys = new();
+            foreach (string valuePair in valuePairs)
+            {
+                string[] kvp = valuePair.Split("=");
+                if (kvp.Length != 2) { return false; }
+
+                keys.Add(kvp[0]);
+            }
+
+            return keys.Contains(WinUiNotification.NotificationIdKey) &&
+                   keys.Contains(WinUiNotification.RegistrationIdKey) &&
+                   keys.Contains(WinUiNotification.InvokedItemIdKey);
         }
     }
 }
