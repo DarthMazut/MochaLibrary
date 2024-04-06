@@ -221,6 +221,15 @@ namespace MochaWinUI.Notifications
         protected abstract INotification? CreatePendingNotification(ScheduledToastNotification notification);
 
         /// <summary>
+        /// When overriden should return new instance of <see cref="MochaCore.Notifications.INotification"/>
+        /// that represents provided <see cref="ToastNotification"/>. Created instance should have 
+        /// <see cref="MochaCore.Notifications.INotification.IsDisplayed"/> set to <see langword="true"/> and
+        /// <see cref="MochaCore.Notifications.INotification.IsInteracted"/> to <see langword="false"/>
+        /// </summary>
+        /// <param name="notification">Source of data for creating instance.</param>
+        protected abstract INotification CreateDisplayedNotification(ToastNotification notification);
+
+        /// <summary>
         /// Raises the <see cref="Interacted"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
@@ -229,6 +238,22 @@ namespace MochaWinUI.Notifications
             Interacted?.Invoke(this, e);
         }
 
+        IReadOnlyCollection<INotification> INotificationSharedDataProvider.GetPendingNotifications()
+            => ToastNotificationManager
+                .GetDefault()
+                .CreateToastNotifier()
+                .GetScheduledToastNotifications()
+                .Where(n => n.IsValid())
+                .Select(n => CreatePendingNotification(n))
+                .ToList().AsReadOnly()!;
+
+        IReadOnlyCollection<INotification> INotificationSharedDataProvider.GetActionCenterNotifications()
+            => ToastNotificationManager.History
+                .GetHistory()
+                .Where(n => n.IsValid())
+                .Select(n => CreateDisplayedNotification(n))
+                .ToList().AsReadOnly();
+
         private void Unschedule()
         {
             ScheduledToastNotification? scheduledNotification =
@@ -236,7 +261,7 @@ namespace MochaWinUI.Notifications
                    .GetDefault()
                    .CreateToastNotifier()
                    .GetScheduledToastNotifications()
-                   .FirstOrDefault(n => n.GetNotificationValueByKey(NotificationIdKey) == Id);
+                   .FirstOrDefault(n => n.GetValueByKey(NotificationIdKey) == Id);
 
             if (scheduledNotification is not null)
             {
@@ -249,19 +274,10 @@ namespace MochaWinUI.Notifications
             _ = Task.Run(async () =>
             {
                 IList<AppNotification> notifications = await AppNotificationManager.Default.GetAllAsync();
-                AppNotification? currentNotification = notifications.FirstOrDefault(n => n.GetNotificationValueByKey(NotificationIdKey) == Id);
+                AppNotification? currentNotification = notifications.FirstOrDefault(n => n.GetValueByKey(NotificationIdKey) == Id);
                 await AppNotificationManager.Default.RemoveByIdAsync(currentNotification?.Id ?? default);
             });
         }
-
-        IReadOnlyCollection<INotification> INotificationSharedDataProvider.GetPendingNotifications()
-            => ToastNotificationManager
-                .GetDefault()
-                .CreateToastNotifier()
-                .GetScheduledToastNotifications()
-                .Select(n => CreatePendingNotification(n))
-                .Where(n => n is not null)
-                .ToList()!;
 
         private void ScheduleGuard()
         {
@@ -273,7 +289,7 @@ namespace MochaWinUI.Notifications
 
         private void NotificationDisplayed(ToastNotifier sender, ScheduledToastNotificationShowingEventArgs e)
         {
-            string? id = e.ScheduledToastNotification.GetNotificationValueByKey(NotificationIdKey);
+            string? id = e.ScheduledToastNotification.GetValueByKey(NotificationIdKey);
             if (id == Id)
             {
                 _displayed = true;

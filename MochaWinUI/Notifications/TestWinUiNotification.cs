@@ -59,18 +59,21 @@ namespace MochaWinUI.Notifications
         }
 
         protected override INotification? CreatePendingNotification(ScheduledToastNotification notification)
-        {
-            if (!notification.IsValid())
-            {
-                return null;
-            }
-
-            return new TestWinUiNotification(
-                notification.GetNotificationValueByKey(RegistrationIdKey)!,
-                notification.GetNotificationValueByKey(NotificationIdKey)!,
-                notification.GetNotificationValueByKey(TagKey),
+            => new TestWinUiNotification(
+                notification.GetValueByKey(RegistrationIdKey)!,
+                notification.GetValueByKey(NotificationIdKey)!,
+                notification.GetValueByKey(TagKey),
                 notification.DeliveryTime,
                 false, false);
+
+        protected override INotification CreateDisplayedNotification(ToastNotification notification)
+        {
+            return new TestWinUiNotification(
+                notification.GetValueByKey(RegistrationIdKey)!,
+                notification.GetValueByKey(NotificationIdKey)!,
+                notification.GetValueByKey(TagKey),
+                notification.
+                );
         }
     }
 }

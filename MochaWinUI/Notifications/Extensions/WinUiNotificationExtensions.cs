@@ -1,5 +1,6 @@
 ﻿using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
+using MochaCore.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,15 +60,11 @@ namespace MochaWinUI.Notifications.Extensions
         /// The value associated with the provided <paramref name="key"/> within the <paramref name="notification"/> content,
         /// or <see langword="null"/> if the key is not found or the notification content is invalid.
         /// </returns>
-        public static string? GetNotificationValueByKey(this AppNotification notification, string key)
+        public static string? GetValueByKey(this AppNotification notification, string key)
         {
             XmlDocument xml = new();
             xml.LoadXml(notification.Payload);
-            return xml.FirstChild.Attributes[0].InnerText
-                .Split(";")
-                .Select(s => s.Split("="))
-                .Where(arr => arr[0] == key)
-                ?.FirstOrDefault()?[1];
+            return GetValueByKey(xml, key);
         }
 
         /// <summary>
@@ -79,23 +76,71 @@ namespace MochaWinUI.Notifications.Extensions
         /// The value associated with the provided <paramref name="key"/> within the <paramref name="notification"/> content,
         /// or <see langword="null"/> if the key is not found or the notification content is invalid.
         /// </returns>
-        public static string? GetNotificationValueByKey(this ScheduledToastNotification notification, string key)
-        {
-            return notification.Content.FirstChild.Attributes[0].InnerText
-                .Split(";")
-                .Select(s => s.Split("="))
-                .Where(arr => arr[0] == key)
-                ?.FirstOrDefault()?[1];
-        }
+        public static string? GetValueByKey(this ScheduledToastNotification notification, string key)
+            => GetValueByKey(notification.Content, key);
+
+        /// <summary>
+        /// Searches the notification content to find the value associated with the notification by the given key.
+        /// Returns the found value or <see langword="null"/> if the key is not found.
+        /// </summary>
+        /// <param name="notification"></param>
+        /// <param name="key">The key used to search for the associated value within the notification content.</param>
+        public static string? GetValueByKey(this ToastNotification notification, string key)
+            => GetValueByKey(notification.Content, key);
 
         /// <summary>
         /// Determines whether content of <see cref="ScheduledTileNotification"/> provides
         /// a values for following keys: <see cref="WinUiNotification.NotificationIdKey"/>,
         /// <see cref="WinUiNotification.RegistrationIdKey"/> and <see cref="WinUiNotification.InvokedItemIdKey"/>.
         /// </summary>
-        public static bool IsValid(this ScheduledToastNotification notification)
+        public static bool IsValid(this ScheduledToastNotification notification) => ValidateXmlDocument(notification.Content);
+
+        /// <summary>
+        /// Checks whether the current instance provides values for the required keys defined by <see cref="WinUiNotification"/>.
+        /// </summary>
+        public static bool IsValid(this ToastNotification notification) => ValidateXmlDocument(notification.Content);
+
+        /// <summary>
+        /// Determines whether <see cref="AppNotificationActivatedEventArgs"/> object
+        /// contains keys required to be processed by <see cref="WinUiNotification"/>
+        /// implementations.
+        /// </summary>
+        public static bool AreValid(this AppNotificationActivatedEventArgs args)
         {
-            IXmlNode? firstAttr = notification.Content.FirstChild.Attributes.FirstOrDefault();
+            bool hasNotificationId = args.Arguments.ContainsKey(WinUiNotification.NotificationIdKey);
+            bool hasRegistrationId = args.Arguments.ContainsKey(WinUiNotification.RegistrationIdKey);
+            bool hasInvokedItemId = args.Arguments.ContainsKey(WinUiNotification.InvokedItemIdKey);
+
+            return hasNotificationId && hasRegistrationId && hasInvokedItemId;
+        }
+
+        /// <summary>
+        /// Flattens <see cref="AppNotificationActivatedEventArgs"/> into single <c>Dictionary&lt;string, object&gt;</c>.
+        /// </summary>
+        public static Dictionary<string, object> AsDictionary(this AppNotificationActivatedEventArgs args)
+        {
+            Dictionary<string, object> dictionary = args.Arguments.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as object);
+            foreach ((string key, string value) in args.UserInput)
+            {
+                if (!dictionary.TryAdd(key, value))
+                {
+                    dictionary[key] = new string[2] { (string)dictionary[key], value };
+                }
+            }
+
+            return dictionary;
+        }
+
+        private static string? GetValueByKey(XmlDocument xml, string key)
+            => xml.FirstChild.Attributes[0].InnerText
+                .Split(";")
+                .Select(s => s.Split("="))
+                .Where(arr => arr[0] == key)
+                ?.FirstOrDefault()?[1];
+
+        private static bool ValidateXmlDocument(XmlDocument xml)
+        {
+            IXmlNode? firstAttr = xml.FirstChild.Attributes.FirstOrDefault();
             if (firstAttr is null) { return false; }
 
             string[] valuePairs = firstAttr.InnerText.Split(";");
@@ -113,37 +158,6 @@ namespace MochaWinUI.Notifications.Extensions
             return keys.Contains(WinUiNotification.NotificationIdKey) &&
                    keys.Contains(WinUiNotification.RegistrationIdKey) &&
                    keys.Contains(WinUiNotification.InvokedItemIdKey);
-        }
-
-        /// <summary>
-        /// Determines whether <see cref="AppNotificationActivatedEventArgs"/> object
-        /// contains keys required to be processed by <see cref="WinUiNotification"/>
-        /// implementations.
-        /// </summary>
-        public static bool AreValid(this AppNotificationActivatedEventArgs args)
-        {
-            bool hasNotificationId = args.Arguments.ContainsKey(WinUiNotification.NotificationIdKey);
-            bool hasRegistrationId = args.Arguments.ContainsKey(WinUiNotification.RegistrationIdKey);
-            bool hasInvokedItemId = args.Arguments.ContainsKey(WinUiNotification.InvokedItemIdKey);
-
-            return hasNotificationId && hasRegistrationId && hasInvokedItemId;
-        }
-
-        /// <summary>
-        /// Flattens <see cref="AppNotificationActivatedEventArgs"/> into dictionary.
-        /// </summary>
-        public static Dictionary<string, object> AsDictionary(this AppNotificationActivatedEventArgs args)
-        {
-            Dictionary<string, object> dictionary = args.Arguments.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as object);
-            foreach ((string key, string value) in args.UserInput)
-            {
-                if (!dictionary.TryAdd(key, value))
-                {
-                    dictionary[key] = new string[2] { (string)dictionary[key], value };
-                }
-            }
-
-            return dictionary;
         }
     }
 }

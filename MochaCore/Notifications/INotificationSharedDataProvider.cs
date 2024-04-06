@@ -25,6 +25,10 @@ namespace MochaCore.Notifications
         /// </summary>
         public IReadOnlyCollection<INotification> GetPendingNotifications();
 
-        //public IReadOnluCollection<INotification> GetActionCenterNotifications()
+        /// <summary>
+        /// Returns a read-only collection of <see cref="INotification"/> objects representing notifications 
+        /// currently stored within the action center that match the registration ID of the implementing class.
+        /// </summary>
+        public IReadOnlyCollection<INotification> GetActionCenterNotifications();
     }
 }
