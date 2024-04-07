@@ -52,14 +52,11 @@ namespace MochaWinUI.Notifications.Extensions
         }
 
         /// <summary>
-        /// Retrieves a specific value from the content of an <see cref="AppNotification"/> object based on the provided key.
+        /// Returns a value from the content of an <see cref="AppNotification"/> corresponding to provided key, or
+        /// <see langword="null"/> if the key was not found.
         /// </summary>
         /// <param name="notification">The <see cref="AppNotification"/> object from which to retrieve the value.</param>
         /// <param name="key">The key corresponding to the value being searched within the notification content.</param>
-        /// <returns>
-        /// The value associated with the provided <paramref name="key"/> within the <paramref name="notification"/> content,
-        /// or <see langword="null"/> if the key is not found or the notification content is invalid.
-        /// </returns>
         public static string? GetValueByKey(this AppNotification notification, string key)
         {
             XmlDocument xml = new();

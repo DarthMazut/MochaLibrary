@@ -38,7 +38,7 @@ namespace ViewModels
                 };
             }
 
-            _notification.Schedule(DateTimeOffset.UtcNow + TimeSpan.FromSeconds(30));
+            _notification.Schedule(DateTimeOffset.UtcNow + TimeSpan.FromSeconds(5));
         }
     }
 }

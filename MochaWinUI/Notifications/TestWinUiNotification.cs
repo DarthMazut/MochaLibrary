@@ -44,18 +44,14 @@ namespace MochaWinUI.Notifications
             return appNotification.Payload;
         }
 
-        protected override NotificationInteractedEventArgs<MyNotificationCustomEventArgs> CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args)
+        protected override INotification CreateInteractedNotification(AppNotificationActivatedEventArgs args)
         {
             args.Arguments.TryGetValue(TagKey, out string? tag);
 
-            return new NotificationInteractedEventArgs<MyNotificationCustomEventArgs>(
-                new TestWinUiNotification(
+            return new TestWinUiNotification(
                     args.Arguments[NotificationIdKey],
                     args.Arguments[RegistrationIdKey],
-                    tag, DateTimeOffset.UtcNow, true, true),
-                args.Arguments[InvokedItemIdKey],
-                args.AsDictionary(),
-                args, new MyNotificationCustomEventArgs() { EventCustomables = "Custom ;)"});
+                    tag, DateTimeOffset.UtcNow, true, true);
         }
 
         protected override INotification? CreatePendingNotification(ScheduledToastNotification notification)
@@ -72,8 +68,10 @@ namespace MochaWinUI.Notifications
                 notification.GetValueByKey(RegistrationIdKey)!,
                 notification.GetValueByKey(NotificationIdKey)!,
                 notification.GetValueByKey(TagKey),
-                notification.
-                );
+                default, true, false);
         }
+
+        protected override MyNotificationCustomEventArgs CreateInteractionData(AppNotificationActivatedEventArgs args)
+            => new() { EventCustomables = "Custom ;)" };
     }
 }

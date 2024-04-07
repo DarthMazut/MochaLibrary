@@ -3,7 +3,6 @@ using MochaCore.Notifications;
 using MochaWinUI.Notifications.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
@@ -202,16 +201,18 @@ namespace MochaWinUI.Notifications
         }
 
         /// <summary>
-        /// Override this method to provide a string defining the current appearance of the notification.
+        /// When overriden should return definition of current instance as <see langword="string"/>.
         /// </summary>
         protected abstract string CreateNotificationDefinition();
 
         /// <summary>
-        /// Override this method to create a <see cref="NotificationInteractedEventArgs"/> object based on 
-        /// the provided <see cref="AppNotificationActivatedEventArgs"/> from the core interaction event.
+        /// When overriden, should return new instance of <see cref="MochaCore.Notifications.INotification"/>
+        /// that represents notification which interaction was described by provided arguments. 
+        /// Created instance should have <see cref="MochaCore.Notifications.INotification.IsDisplayed"/> 
+        /// and <see cref="MochaCore.Notifications.INotification.IsInteracted"/> set to <see langword="true"/>
         /// </summary>
-        /// <param name="args">Raw arguments from the core interaction event.</param>
-        protected abstract NotificationInteractedEventArgs CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args);
+        /// <param name="args">Describes notification interaction.</param>
+        protected abstract INotification CreateInteractedNotification(AppNotificationActivatedEventArgs args);
 
         /// <summary>
         /// When overriden should return active instance of <see cref="INotification"/> representing
@@ -228,6 +229,19 @@ namespace MochaWinUI.Notifications
         /// </summary>
         /// <param name="notification">Source of data for creating instance.</param>
         protected abstract INotification CreateDisplayedNotification(ToastNotification notification);
+
+        /// <summary>
+        /// When overriden should return new instance of suitable <see cref="NotificationInteractedEventArgs"/>.
+        /// This basically means that when you implementing <see cref="INotification{TProps, TArgs}"/> you should
+        /// return corresponding <see cref="NotificationInteractedEventArgs{T}"/> object, with matching generic type.
+        /// </summary>
+        /// <param name="args">Source of data for creating instance.</param>
+        protected virtual NotificationInteractedEventArgs CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args)
+            => new (
+                CreateInteractedNotification(args),
+                args.Arguments[InvokedItemIdKey],
+                args.AsDictionary(),
+                args);
 
         /// <summary>
         /// Raises the <see cref="Interacted"/> event.
@@ -300,7 +314,6 @@ namespace MochaWinUI.Notifications
         {
             if (!args.AreValid())
             {
-                // We cannot throw here as application may recieve other notification that are valid but not following our design.
                 return;
             }
 
@@ -382,8 +395,11 @@ namespace MochaWinUI.Notifications
         protected WinUiNotification(string notificationId, string registrationId, string? tag, DateTimeOffset scheduledTime, bool wasDisplayed, bool wasInteracted)
             : base(notificationId, registrationId, tag, scheduledTime, wasDisplayed, wasInteracted) { }
 
-        /// <inheritdoc/>
-        protected override abstract NotificationInteractedEventArgs<TArgs> CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args);
+        /// <summary>
+        /// When overriden should return new instance of <c>TArgs</c> based on provided <paramref name="args"/>.
+        /// </summary>
+        /// <param name="args">Source of data for creating instance.</param>
+        protected abstract TArgs CreateInteractionData(AppNotificationActivatedEventArgs args);
 
         /// <inheritdoc/>
         protected override void OnInteracted(NotificationInteractedEventArgs e)
@@ -392,11 +408,19 @@ namespace MochaWinUI.Notifications
             _interactedHandler?.Invoke(this, (e as NotificationInteractedEventArgs<TArgs>)!);
         }
 
-        /// <inheritdoc/>
         event EventHandler<NotificationInteractedEventArgs<TArgs?>>? INotification<TProps, TArgs>.Interacted
         {
             add => _interactedHandler += value;
             remove => _interactedHandler -= value;
         }
+
+        /// <inheritdoc/>
+        protected override sealed NotificationInteractedEventArgs<TArgs> CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args)
+            => new(
+                CreateInteractedNotification(args),
+                args.Arguments[InvokedItemIdKey],
+                args.AsDictionary(),
+                args,
+                CreateInteractionData(args));
     }
 }
