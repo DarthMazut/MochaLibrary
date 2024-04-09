@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -16,6 +17,7 @@ namespace MochaCore.Notifications
     {
         private static Dictionary<string, Func<INotificationRoot>> _builders = new();
         private static Dictionary<string, List<INotification>> _notifications = new();
+        private static Dictionary<string, INotificationSharedDataProvider> _dataProviders = new();
 
         /// <summary>
         /// Occurs when any notification associated with the current application has been interacted with by the user.
@@ -32,7 +34,10 @@ namespace MochaCore.Notifications
             }
 
             _builders[id] = factoryDelegate;
-            factoryDelegate.Invoke().NotificationInteracted += (s, e) =>
+
+            INotificationSharedDataProvider sharedDataNotification = factoryDelegate.Invoke();
+            _dataProviders[id] = sharedDataNotification;
+            sharedDataNotification.NotificationInteracted += (s, e) =>
             {
                 NotificationInteractedEventArgs args = e;
                 INotification? existingInstance = _notifications.GetValueOrDefault(id)?.FirstOrDefault(n => n.Id == e.Notification.Id);
@@ -96,6 +101,20 @@ namespace MochaCore.Notifications
 
             return new List<INotification>();
         }
+
+        public static Task<IReadOnlyCollection<INotification>> GetPendingNotifications()
+        {
+            IReadOnlyCollection<INotification> pendingNotifications
+                = _dataProviders.Values.SelectMany(p => p.GetPendingNotifications()).ToList().AsReadOnly();
+
+            // TODO: if retrieved notification's ID is same as notification we're having,
+            // we need to replace this dummy instance with actual one :)
+
+            return Task.FromResult(pendingNotifications);
+        }
+
+        public static Task<IReadOnlyCollection<INotification>> GetPendingNotifications(string id)
+            => Task.FromResult(_dataProviders[id].GetPendingNotifications());
 
         private static Func<INotificationRoot> GetBuilderOrThrow(string id)
         {

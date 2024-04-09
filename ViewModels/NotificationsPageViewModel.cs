@@ -39,6 +39,7 @@ namespace ViewModels
             }
 
             _notification.Schedule(DateTimeOffset.UtcNow + TimeSpan.FromSeconds(5));
+            var pending = NotificationManager.GetPendingNotifications().GetAwaiter().GetResult();
         }
     }
 }
