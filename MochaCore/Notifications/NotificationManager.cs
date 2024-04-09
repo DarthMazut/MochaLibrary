@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,8 +9,7 @@ using System.Threading.Tasks;
 namespace MochaCore.Notifications
 {
     /// <summary>
-    /// Register your notification implementations and retrieve it later via abstraction.
-    /// Manage your notifications.
+    /// Allows for managing and registering notification implementations to be retrieved later via abstraction.
     /// </summary>
     public static class NotificationManager
     {
@@ -24,6 +22,13 @@ namespace MochaCore.Notifications
         /// </summary>
         public static event EventHandler<NotificationInteractedEventArgs>? NotificationInteracted;
 
+        /// <summary>
+        /// Registers factory delegate which allows for creating new instances of <see cref="INotificationRoot"/>
+        /// objects by technology-agnostic side. Use <see cref="RetrieveNotification(string)"/> to obtain new instances,
+        /// created by registered delegate, via abstract <see cref="INotification"/> type.
+        /// </summary>
+        /// <param name="id">Registration identifier.</param>
+        /// <param name="factoryDelegate">A delegate to create new instance of <see cref="INotificationRoot"/> implementation.</param>
         public static void RegisterNotification(string id, Func<INotificationRoot> factoryDelegate)
         {
             _ = factoryDelegate ?? throw new ArgumentNullException(nameof(factoryDelegate));
@@ -51,10 +56,11 @@ namespace MochaCore.Notifications
         }
 
         /// <summary>
-        /// 
+        /// Returns new instance of <see cref="INotification"/> implementation,
+        /// created by factory delegate registered by <see cref="RegisterNotification(string, Func{INotificationRoot})"/> 
+        /// with given id.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Factory delegate identifier.</param>
         public static INotification RetrieveNotification(string id)
         {
             INotification createdNotification = GetBuilderOrThrow(id).Invoke();
@@ -63,12 +69,12 @@ namespace MochaCore.Notifications
         }
 
         /// <summary>
-        /// 
+        /// Returns new instance of <see cref="INotification{T}"/> implementation,
+        /// created by factory delegate registered by <see cref="RegisterNotification(string, Func{INotificationRoot})"/> 
+        /// with given id.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidCastException"></exception>
+        /// <typeparam name="T">Type of notification properties.</typeparam>
+        /// <param name="id">Factory delegate identifier.</param>
         public static INotification<T> RetrieveNotification<T>(string id) where T : new()
         {
             if (GetBuilderOrThrow(id) is Func<NotificationContext, INotification<T>> typedBuilder)
@@ -79,6 +85,11 @@ namespace MochaCore.Notifications
             }
 
             throw new InvalidCastException($"Notification with id={id} was found, but generic parameter was invalid.");
+        }
+
+        public static INotification<TProperties, TArgs> RetrieveNotification<TProperties, TArgs>(string id) where TProperties : new()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -102,19 +113,57 @@ namespace MochaCore.Notifications
             return new List<INotification>();
         }
 
+        /// <summary>
+        /// Returns scheduled notifications, that haven't been displayed yet.
+        /// </summary>
         public static Task<IReadOnlyCollection<INotification>> GetPendingNotifications()
         {
-            IReadOnlyCollection<INotification> pendingNotifications
-                = _dataProviders.Values.SelectMany(p => p.GetPendingNotifications()).ToList().AsReadOnly();
+            List<INotification> notifications = new();
+            foreach ((string id, INotificationSharedDataProvider dataProvider) in _dataProviders)
+            {
+                notifications.AddRange(dataProvider.GetPendingNotifications()
+                    .Select(pn => _notifications[id].FirstOrDefault(n => n.Id == pn.Id) ?? pn)
+                    .ToList());
+            }
 
-            // TODO: if retrieved notification's ID is same as notification we're having,
-            // we need to replace this dummy instance with actual one :)
-
-            return Task.FromResult(pendingNotifications);
+            return Task.FromResult(notifications.AsReadOnly() as IReadOnlyCollection<INotification>);
         }
 
+        /// <summary>
+        /// Returns scheduled notifications, registered by provided <paramref name="id"/>, that haven't
+        /// been displayed yet.
+        /// </summary>
+        /// <param name="id">Registration identifier of the notifications to be retrieved.</param>
         public static Task<IReadOnlyCollection<INotification>> GetPendingNotifications(string id)
-            => Task.FromResult(_dataProviders[id].GetPendingNotifications());
+            => Task.FromResult(_dataProviders[id].GetPendingNotifications()
+                .Select(pn => _notifications[id].FirstOrDefault(n => n.Id == pn.Id) ?? pn)
+                    .ToList().AsReadOnly() as IReadOnlyCollection<INotification>);
+
+        /// <summary>
+        /// Returns notifications that are currently in the Action Center area.
+        /// </summary>
+        public static Task<IReadOnlyCollection<INotification>> GetDisplayedNotifications()
+        {
+            List<INotification> notifications = new();
+            foreach ((string id, INotificationSharedDataProvider dataProvider) in _dataProviders)
+            {
+                notifications.AddRange(dataProvider.GetActionCenterNotifications()
+                    .Select(pn => _notifications[id].FirstOrDefault(n => n.Id == pn.Id) ?? pn)
+                    .ToList());
+            }
+
+            return Task.FromResult(notifications.AsReadOnly() as IReadOnlyCollection<INotification>);
+        }
+
+        /// <summary>
+        /// Returns notifications, registered by provided <paramref name="id"/>, 
+        /// that are currently in the Action Center area.
+        /// </summary>
+        /// <param name="id">Registration identifier of the notifications to be retrieved.</param>
+        public static Task<IReadOnlyCollection<INotification>> GetDisplayedNotifications(string id)
+            => Task.FromResult(_dataProviders[id].GetActionCenterNotifications()
+                .Select(pn => _notifications[id].FirstOrDefault(n => n.Id == pn.Id) ?? pn)
+                .ToList().AsReadOnly() as IReadOnlyCollection<INotification>);
 
         private static Func<INotificationRoot> GetBuilderOrThrow(string id)
         {
