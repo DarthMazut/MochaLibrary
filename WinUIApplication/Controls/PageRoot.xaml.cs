@@ -29,6 +29,8 @@ namespace WinUiApplication.Controls
             DependencyProperty.Register(nameof(Glyph), typeof(string), typeof(PageHeader), new PropertyMetadata(string.Empty));
         public static readonly DependencyProperty InnerContentProperty =
             DependencyProperty.Register(nameof(InnerContent), typeof(object), typeof(PageRoot), new PropertyMetadata(null));
+        public static readonly DependencyProperty VerticalScrollbarVisibilityProperty =
+            DependencyProperty.Register(nameof(VerticalScrollbarVisibility), typeof(ScrollBarVisibility), typeof(PageRoot), new PropertyMetadata(ScrollBarVisibility.Auto));
 
         public string Title
         {
@@ -46,6 +48,12 @@ namespace WinUiApplication.Controls
         {
             get { return (object?)GetValue(InnerContentProperty); }
             set { SetValue(InnerContentProperty, value); }
+        }
+
+        public ScrollBarVisibility VerticalScrollbarVisibility
+        {
+            get { return (ScrollBarVisibility)GetValue(VerticalScrollbarVisibilityProperty); }
+            set { SetValue(VerticalScrollbarVisibilityProperty, value); }
         }
 
         public PageRoot()

@@ -24,8 +24,12 @@
         </Style>
     </UserControl.Resources>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="25">
-        <StackPanel>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="{x:Bind VerticalScrollbarVisibility}" Padding="25">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             <Border Style="{StaticResource HeaderUnderline}">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -36,7 +40,7 @@
                     <TextBlock Grid.Column="1" Text="{x:Bind Glyph}" Style="{StaticResource HeaderIconStyle}"/>
                 </Grid>
             </Border>
-            <ContentPresenter Content="{x:Bind InnerContent}" />
-        </StackPanel>
+            <ContentPresenter Grid.Row="1" Content="{x:Bind InnerContent}" />
+        </Grid>
     </ScrollViewer>
 </UserControl>

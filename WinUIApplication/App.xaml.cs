@@ -17,6 +17,7 @@ using MochaWinUI.Windowing;
 using Model;
 using System;
 using ViewModels;
+using ViewModels.Notifications;
 using ViewModels.Windows;
 using Windows.Storage;
 using WinUiApplication.Dialogs;
