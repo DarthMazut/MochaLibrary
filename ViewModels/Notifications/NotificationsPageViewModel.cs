@@ -20,13 +20,14 @@ namespace ViewModels.Notifications
         {
             Notifications = new()
             {
-                new("abc", NotificationState.Created),
-                new("def", NotificationState.Created),
-                new("ghi", NotificationState.Scheduled),
-                new("jkl", NotificationState.Displayed),
-                new("mno", NotificationState.Displayed),
-                new("prs", NotificationState.Displayed),
-                new("tuw", NotificationState.Interacted),
+                new()
+                { 
+                    Id = "dfdf",
+                    State = NotificationState.Created,
+                    Tag="sdsd",
+                    Title="Dupa",
+                    ScheduledTime = DateTimeOffset.Now
+                },
             };
         }
 

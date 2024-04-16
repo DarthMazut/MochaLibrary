@@ -7,13 +7,15 @@
     xmlns:converters="using:WinUiApplication.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    x:Name="thisControl">
 
     <UserControl.Resources>
         <converters:NotificationStateToColumnIndexConverter x:Key="ColumnConverter" />
 
         <Style x:Key="HeaderBorderBaseStyle" TargetType="Border">
             <Setter Property="Height" Value="50" />
+            <Setter Property="Background" Value="{StaticResource CardBackgroundFillColorDefaultBrush}" />
         </Style>
         <Style x:Key="HeaderBorderStyle" BasedOn="{StaticResource HeaderBorderBaseStyle}" TargetType="Border">
             <Setter Property="BorderThickness" Value="0,0,1,0" />
@@ -24,58 +26,74 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontSize" Value="20" />
         </Style>
+        <Style x:Key="ItemVerticalSplitLineBorder" TargetType="Border">
+            <Setter Property="BorderThickness" Value="0,0,1,0" />
+            <Setter Property="BorderBrush" Value="White" />
+        </Style>
     </UserControl.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Style="{StaticResource HeaderBorderStyle}">
-                <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Created" />
-            </Border>
-            <Border Grid.Column="1" Style="{StaticResource HeaderBorderStyle}">
-                <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Scheduled" />
-            </Border>
-            <Border Grid.Column="2" Style="{StaticResource HeaderBorderStyle}">
-                <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Displayed" />
-            </Border>
-            <Border Grid.Column="3" Style="{StaticResource HeaderBorderBaseStyle}">
-                <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Interacted" />
-            </Border>
-        </Grid>
-        <ListBox Grid.Row="1" ItemsSource="{Binding Notifications}" Background="{x:Bind Background}">
-            <ListBox.Resources>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Padding" Value="0" />
-                </Style>
-            </ListBox.Resources>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" BorderThickness="0,0,1,0" BorderBrush="White"/>
-                        <Border Grid.Column="1" BorderThickness="0,0,1,0" BorderBrush="White"/>
-                        <Border Grid.Column="2" BorderThickness="0,0,1,0" BorderBrush="White"/>
-                        <Border Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" CornerRadius="8" Margin="8" Height="80" Background="LightSteelBlue">
-                            <TextBlock Text="{Binding Text}"/>
-                        </Border>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <!-- HEADER -->
+        <ScrollViewer x:Name="HeaderScrollViewer" HorizontalScrollBarVisibility="Hidden">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="{x:Bind MinColumnWidth}"/>
+                    <ColumnDefinition MinWidth="{x:Bind MinColumnWidth}"/>
+                    <ColumnDefinition MinWidth="{x:Bind MinColumnWidth}"/>
+                    <ColumnDefinition MinWidth="{x:Bind MinColumnWidth}"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Style="{StaticResource HeaderBorderStyle}">
+                    <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Created" />
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource HeaderBorderStyle}">
+                    <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Scheduled" />
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource HeaderBorderStyle}">
+                    <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Displayed" />
+                </Border>
+                <Border Grid.Column="3" Style="{StaticResource HeaderBorderBaseStyle}">
+                    <TextBlock Style="{StaticResource HeaderTextStyle}" Text="Interacted" />
+                </Border>
+            </Grid>
+        </ScrollViewer>
+        <!-- ITEMS -->
+        <ScrollViewer
+            Grid.Row="1"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Auto"
+            ViewChanged="ScrollViewer_ViewChanged">
+            <ListBox
+                ItemsSource="{Binding Notifications}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.HorizontalScrollMode="Disabled"
+                Background="{x:Bind Background}">
+                <ListBox.Resources>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                    </Style>
+                </ListBox.Resources>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="{Binding MinColumnWidth, ElementName=thisControl}"/>
+                                <ColumnDefinition MinWidth="250"/>
+                                <ColumnDefinition MinWidth="250"/>
+                                <ColumnDefinition MinWidth="250"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
+                            <Border Grid.Column="1" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
+                            <Border Grid.Column="2" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
+                            <local:NotificationCard Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" Margin="8" Height="80" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
     </Grid>
 </UserControl>

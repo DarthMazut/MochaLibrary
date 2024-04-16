@@ -8,15 +8,15 @@ namespace ViewModels.Notifications
 {
     public class Notification
     {
-        public Notification(string text, NotificationState state)
-        {
-            Text = text;
-            State = state;
-        }
+        public string? Title { get; init; }
 
-        public string Text { get; }
+        public string? Id { get; init; }
 
-        public NotificationState State { get; }
+        public string? Tag { get; init; }
+
+        public DateTimeOffset ScheduledTime { get; init; }
+
+        public NotificationState State { get; init; }
     }
 
     public enum NotificationState
