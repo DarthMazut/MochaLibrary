@@ -81,15 +81,15 @@
                     <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition MinWidth="{Binding MinColumnWidth, ElementName=thisControl}"/>
-                                <ColumnDefinition MinWidth="250"/>
-                                <ColumnDefinition MinWidth="250"/>
-                                <ColumnDefinition MinWidth="250"/>
+                                <ColumnDefinition Width="*" MinWidth="{Binding MinColumnWidth, ElementName=thisControl}"/>
+                                <ColumnDefinition Width="*" MinWidth="{Binding MinColumnWidth, ElementName=thisControl}"/>
+                                <ColumnDefinition Width="*" MinWidth="{Binding MinColumnWidth, ElementName=thisControl}"/>
+                                <ColumnDefinition Width="*" MinWidth="{Binding MinColumnWidth, ElementName=thisControl}"/>
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="0" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
                             <Border Grid.Column="1" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
                             <Border Grid.Column="2" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
-                            <local:NotificationCard Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" Margin="8" Height="80" />
+                            <local:NotificationCard Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" Margin="8" Height="90" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
