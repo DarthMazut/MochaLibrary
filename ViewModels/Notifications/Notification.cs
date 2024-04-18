@@ -16,6 +16,8 @@ namespace ViewModels.Notifications
 
         public DateTimeOffset ScheduledTime { get; init; }
 
+        public string ScheduledTimeString => ScheduledTime.ToString("HH:mm:ss (dd MMM yyyy)");
+
         public NotificationState State { get; init; }
     }
 

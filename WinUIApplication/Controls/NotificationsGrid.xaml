@@ -90,7 +90,7 @@
                             <Border Grid.Column="0" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
                             <Border Grid.Column="1" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
                             <Border Grid.Column="2" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
-                            <local:NotificationCard Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" Margin="8" Height="90" />
+                            <local:NotificationCard Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" Margin="8" Height="95" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
