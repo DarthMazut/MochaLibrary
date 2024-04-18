@@ -29,6 +29,7 @@ namespace WinUiApplication.Controls
         public NotificationsGrid()
         {
             this.InitializeComponent();
+            HeaderGrid.SizeChanged += (s, e) => ListBox.Width = HeaderGrid.ActualWidth;
         }
 
         private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)

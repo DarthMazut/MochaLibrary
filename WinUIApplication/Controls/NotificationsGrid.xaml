@@ -39,7 +39,7 @@
         </Grid.RowDefinitions>
         <!-- HEADER -->
         <ScrollViewer x:Name="HeaderScrollViewer" HorizontalScrollBarVisibility="Hidden">
-            <Grid>
+            <Grid x:Name="HeaderGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition MinWidth="{x:Bind MinColumnWidth}"/>
                     <ColumnDefinition MinWidth="{x:Bind MinColumnWidth}"/>
@@ -67,6 +67,7 @@
             VerticalScrollBarVisibility="Auto"
             ViewChanged="ScrollViewer_ViewChanged">
             <ListBox
+                x:Name="ListBox"
                 ItemsSource="{Binding Notifications}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 ScrollViewer.HorizontalScrollMode="Disabled"
