@@ -9,10 +9,15 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <Style x:Key="NotificationCardBorder" TargetType="Border">
+        <Style x:Key="NotificationCardButton" TargetType="Button">
             <Setter Property="BorderBrush" Value="SteelBlue" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
         </Style>
         <Style x:Key="NotificationTitleBorder" TargetType="Border">
             <Setter Property="BorderBrush" Value="SteelBlue" />
@@ -37,7 +42,16 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Style="{StaticResource NotificationCardBorder}">
+    <Button Style="{StaticResource NotificationCardButton}">
+        <Button.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.ThemeDictionaries>
+                    <ResourceDictionary x:Key="Default">
+                        <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="AccentFillColorDefaultBrush"/>
+                    </ResourceDictionary>
+                </ResourceDictionary.ThemeDictionaries>
+            </ResourceDictionary>
+        </Button.Resources>
         <Grid Margin="4">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -61,5 +75,5 @@
                 </StackPanel>
             </StackPanel>
         </Grid>
-    </Border>
+    </Button>
 </UserControl>

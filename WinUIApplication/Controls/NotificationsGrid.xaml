@@ -19,7 +19,7 @@
         </Style>
         <Style x:Key="HeaderBorderStyle" BasedOn="{StaticResource HeaderBorderBaseStyle}" TargetType="Border">
             <Setter Property="BorderThickness" Value="0,0,1,0" />
-            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderBrush" Value="{StaticResource ControlStrongStrokeColorDefaultBrush}" />
         </Style>
         <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -28,7 +28,7 @@
         </Style>
         <Style x:Key="ItemVerticalSplitLineBorder" TargetType="Border">
             <Setter Property="BorderThickness" Value="0,0,1,0" />
-            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderBrush" Value="{StaticResource ControlStrongStrokeColorDefaultBrush}" />
         </Style>
     </UserControl.Resources>
 
@@ -66,19 +66,13 @@
             HorizontalScrollBarVisibility="Auto"
             VerticalScrollBarVisibility="Auto"
             ViewChanged="ScrollViewer_ViewChanged">
-            <ListBox
+            <ItemsControl
                 x:Name="ListBox"
                 ItemsSource="{Binding Notifications}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 ScrollViewer.HorizontalScrollMode="Disabled"
                 Background="{x:Bind Background}">
-                <ListBox.Resources>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        <Setter Property="Padding" Value="0" />
-                    </Style>
-                </ListBox.Resources>
-                <ListBox.ItemTemplate>
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -93,8 +87,8 @@
                             <local:NotificationCard Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" Margin="8" Height="95" />
                         </Grid>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </ScrollViewer>
     </Grid>
 </UserControl>
