@@ -74,6 +74,11 @@
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 ScrollViewer.HorizontalScrollMode="Disabled"
                 Background="{x:Bind Background}">
+                <ItemsControl.ItemContainerTransitions>
+                    <TransitionCollection>
+                        <AddDeleteThemeTransition />
+                    </TransitionCollection>
+                </ItemsControl.ItemContainerTransitions>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -86,7 +91,13 @@
                             <Border Grid.Column="0" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
                             <Border Grid.Column="1" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
                             <Border Grid.Column="2" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
-                            <local:NotificationCard Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" Margin="8" Height="95" />
+                            <local:NotificationCard Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" Margin="8" Height="95">
+                                <local:NotificationCard.Transitions>
+                                    <TransitionCollection>
+                                        <RepositionThemeTransition />
+                                    </TransitionCollection>
+                                </local:NotificationCard.Transitions>
+                            </local:NotificationCard>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

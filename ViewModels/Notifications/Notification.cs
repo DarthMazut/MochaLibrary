@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ViewModels.Notifications
 {
-    public class Notification
+    public partial class Notification : ObservableObject
     {
         public string? Title { get; init; }
 
@@ -18,7 +19,8 @@ namespace ViewModels.Notifications
 
         public string ScheduledTimeString => ScheduledTime.ToString("HH:mm:ss (dd MMM yyyy)");
 
-        public NotificationState State { get; init; }
+        [ObservableProperty]
+        private NotificationState _state;
     }
 
     public enum NotificationState
