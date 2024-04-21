@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WinUiApplication.Controls"
     xmlns:converters="using:WinUiApplication.Converters"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -39,7 +40,7 @@
         </Grid.RowDefinitions>
         <!-- HEADER -->
         <ScrollViewer x:Name="HeaderScrollViewer" HorizontalScrollBarVisibility="Hidden">
-            <Grid x:Name="HeaderGrid">
+            <Grid x:Name="HeaderGrid" ui:FrameworkElementExtensions.EnableActualSizeBinding="True">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition MinWidth="{x:Bind MinColumnWidth}"/>
                     <ColumnDefinition MinWidth="{x:Bind MinColumnWidth}"/>
@@ -68,6 +69,7 @@
             ViewChanged="ScrollViewer_ViewChanged">
             <ItemsControl
                 x:Name="ListBox"
+                Width="{Binding ElementName=HeaderGrid, Path=(ui:FrameworkElementExtensions.ActualWidth)}"
                 ItemsSource="{Binding Notifications}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 ScrollViewer.HorizontalScrollMode="Disabled"

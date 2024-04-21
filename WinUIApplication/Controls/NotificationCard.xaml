@@ -4,13 +4,19 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WinUiApplication.Controls"
+    xmlns:converters="using:WinUiApplication.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:Interactions="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:Behaviors="using:CommunityToolkit.WinUI.Behaviors"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     mc:Ignorable="d">
 
     <UserControl.Resources>
+        <StaticResource x:Key="HoverCardBrush" ResourceKey="AccentFillColorDefaultBrush"/>
+        <StaticResource x:Key="PressedCardBrush" ResourceKey="AccentFillColorDisabledBrush"/>
         <Style x:Key="NotificationCardButton" TargetType="Button">
-            <Setter Property="BorderBrush" Value="SteelBlue" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="0" />
@@ -20,7 +26,6 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
         </Style>
         <Style x:Key="NotificationTitleBorder" TargetType="Border">
-            <Setter Property="BorderBrush" Value="SteelBlue" />
             <Setter Property="BorderThickness" Value="0,0,0,1" />
             <Setter Property="Margin" Value="0,0,0,4" />
             <Setter Property="Padding" Value="0,0,0,4" />
@@ -47,7 +52,8 @@
             <ResourceDictionary>
                 <ResourceDictionary.ThemeDictionaries>
                     <ResourceDictionary x:Key="Default">
-                        <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="AccentFillColorDefaultBrush"/>
+                        <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="HoverCardBrush" />
+                        <StaticResource x:Key="ButtonBorderBrushPressed" ResourceKey="PressedCardBrush" />
                     </ResourceDictionary>
                 </ResourceDictionary.ThemeDictionaries>
             </ResourceDictionary>
@@ -57,7 +63,9 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Border Style="{StaticResource NotificationTitleBorder}">
+            <Border Style="{StaticResource NotificationTitleBorder}"
+                    ui:FrameworkElementExtensions.AncestorType="ContentPresenter"
+                    BorderBrush="{Binding (ui:FrameworkElementExtensions.Ancestor).BorderBrush, RelativeSource={RelativeSource Self}}">
                 <TextBlock Text="{Binding Title}" Style="{StaticResource NotificationTitleText}" VerticalAlignment="Center" />
             </Border>
             <StackPanel Grid.Row="1">
