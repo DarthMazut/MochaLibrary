@@ -19,6 +19,7 @@
     <None Remove="Controls\NotificationsGrid.xaml" />
     <None Remove="Controls\PageHeader.xaml" />
     <None Remove="Controls\PageRoot.xaml" />
+    <None Remove="Dialogs\EditNotificationDialog.xaml" />
     <None Remove="Dialogs\EditPictureDialog.xaml" />
     <None Remove="Pages\BindingControlPage.xaml" />
     <None Remove="Pages\BlankPage1.xaml" />
@@ -61,6 +62,11 @@
   <ItemGroup>
     <ProjectReference Include="..\MochaWinUI\MochaWinUI.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Dialogs\EditNotificationDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\NotificationCard.xaml">

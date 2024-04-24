@@ -13,7 +13,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 
-namespace WinUiApplication.Controls
+namespace WinUiApplication.Pages.Notifications
 {
     public sealed partial class NotificationsGrid : UserControl
     {

@@ -15,6 +15,8 @@ namespace ViewModels
         public static Dialog<ICustomDialogModule<DialogProperties>> EditPictureDialog { get; } = new("EditPictureDialog");
 
         public static Dialog<IDialogModule<OpenFileDialogProperties>> SelectFileDialog { get; } = new("SelectFileDialog");
+
+        public static Dialog<IDialogModule<DialogProperties>> EditNotificationDialog { get; } = new("EditNotificationDialog");
     }
 
     public class Dialog<T> where T : IDialogModule

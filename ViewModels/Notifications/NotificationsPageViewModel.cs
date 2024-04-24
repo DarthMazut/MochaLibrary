@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MochaCore.Dialogs;
 using MochaCore.Dispatching;
 using MochaCore.Navigation;
 using MochaCore.Notifications;
@@ -16,38 +17,22 @@ namespace ViewModels.Notifications
     {
         public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
-        public NotificationsPageViewModel()
-        {
-            Notifications = new()
-            {
-                new Notification()
-                {
-                    Title="Dupa",
-                    Id = "dfdf",
-                    State = NotificationState.Created,
-                    Tag="sdsd",
-                    ScheduledTime = DateTimeOffset.Now
-                },
-                new Notification()
-                {
-                    Title="MyNotification",
-                    Id = "123456",
-                    State = NotificationState.Created,
-                    Tag="xyz",
-                    ScheduledTime = DateTimeOffset.Now + TimeSpan.FromHours(2)
-                },
-            };
-
-            _ = Task.Run(async () =>
-            {
-                await Task.Delay(7000);
-                DispatcherManager.GetMainThreadDispatcher().RunOnMainThread(() =>
-                {
-                    Notifications[1].State = NotificationState.Scheduled;
-                });
-            });
-        }
-
         public ObservableCollection<Notification> Notifications { get; } = new();
+
+        [RelayCommand]
+        private async Task AddNotification()
+        {
+            using ICustomDialogModule<DialogProperties> addNotificationDialog 
+                = DialogManager.GetCustomDialog<DialogProperties>(Dialogs.EditNotificationDialog.ID);
+
+            if (await addNotificationDialog.ShowModalAsync(this) is true)
+            {
+                INotification? createdNotification = addNotificationDialog.Properties.CustomProperties["Notification"] as INotification;
+                if (createdNotification is not null)
+                {
+                    Notifications.Add(new Notification(createdNotification));
+                }
+            }
+        }
     }
 }
