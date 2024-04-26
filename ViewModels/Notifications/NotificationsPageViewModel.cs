@@ -27,10 +27,10 @@ namespace ViewModels.Notifications
 
             if (await addNotificationDialog.ShowModalAsync(this) is true)
             {
-                INotification? createdNotification = addNotificationDialog.Properties.CustomProperties["Notification"] as INotification;
+                Notification? createdNotification = addNotificationDialog.Properties.CustomProperties["Notification"] as Notification;
                 if (createdNotification is not null)
                 {
-                    Notifications.Add(new Notification(createdNotification));
+                    Notifications.Add(createdNotification);
                 }
             }
         }

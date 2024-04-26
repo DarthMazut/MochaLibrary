@@ -46,11 +46,11 @@
             <StackPanel Style="{StaticResource SegmentStackPanel}">
                 <StackPanel Style="{StaticResource ItemStackPanel}">
                     <TextBlock Text="Title:" Style="{StaticResource HeaderText}"/>
-                    <TextBox PlaceholderText="Notification title..." />
+                    <TextBox Text="{Binding Title, Mode=TwoWay}" PlaceholderText="Notification title..." />
                 </StackPanel>
                 <StackPanel Style="{StaticResource ItemStackPanel}">
                     <TextBlock Text="Content:" Style="{StaticResource HeaderText}"/>
-                    <TextBox PlaceholderText="Notification content text..." />
+                    <TextBox Text="{Binding Content, Mode=TwoWay}" PlaceholderText="Notification content text..." />
                 </StackPanel>
                 <StackPanel Style="{StaticResource ItemStackPanel}">
                     <TextBlock Text="Image:" Style="{StaticResource HeaderText}"/>
@@ -97,8 +97,8 @@
                 </StackPanel>
                 <StackPanel Style="{StaticResource ItemStackPanel}">
                     <TextBlock Text="Schedule time:" Style="{StaticResource HeaderText}"/>
-                    <TimePicker ClockIdentifier="24HourClock" SelectedTime="{Binding NowTime, Mode=OneTime}" />
-                    <DatePicker SelectedDate="{Binding NowDate, Mode=OneTime}" />
+                    <TimePicker ClockIdentifier="24HourClock" SelectedTime="{Binding Time, Mode=TwoWay}" />
+                    <DatePicker SelectedDate="{Binding Date, Mode=TwoWay}" />
                 </StackPanel>
                 <StackPanel Style="{StaticResource ItemStackPanel}">
                     <TextBlock Text="Schema:" Style="{StaticResource HeaderText}"/>
@@ -114,7 +114,7 @@
                             HeroImageSchemaTemplate="{StaticResource HeroImageNotificationSchemaTemplate}"/>
                     </ContentControl.ContentTemplateSelector>
                 </ContentControl>
-                <CheckBox Content="Schedule on creation"/>
+                <CheckBox IsChecked="{Binding ScheduleOnClose, Mode=TwoWay}" Content="Schedule on creation"/>
             </StackPanel>
         </ScrollViewer>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using MochaCore.Notifications;
 
 namespace ViewModels.Notifications
 {
@@ -12,6 +13,11 @@ namespace ViewModels.Notifications
 
         [ObservableProperty]
         private string? _imageUri;
+
+        public INotification CreateNotification()
+        {
+            throw new NotImplementedException();
+        }
 
         public override string ToString() => "Hero image schema";
     }

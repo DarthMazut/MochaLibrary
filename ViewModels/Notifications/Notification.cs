@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MochaCore.Dispatching;
 using MochaCore.Notifications;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,13 @@ namespace ViewModels.Notifications
         {
             _notification = notification;
             _canMutate = notification.ScheduledTime is not null || notification.IsDisplayed;
+            notification.Interacted += (s, e) =>
+            {
+                DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
+                {
+                    State = NotificationState.Interacted;
+                });
+            };
         }
 
         [ObservableProperty]
@@ -43,6 +51,7 @@ namespace ViewModels.Notifications
             if (!_notification.IsDisplayed)
             {
                 _notification.Schedule(ScheduledTime);
+                State = NotificationState.Scheduled;
             }
         }
     }

@@ -2,6 +2,8 @@
 using CommunityToolkit.Mvvm.Input;
 using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
+using MochaCore.Notifications;
+using MochaCore.Notifications.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +17,19 @@ namespace ViewModels.DialogsVMs
     {
         public CustomDialogControl<DialogProperties> DialogControl { get; } = new();
 
-        public TimeSpan NowTime => TimeSpan.FromHours(NowDate.Hour) + TimeSpan.FromMinutes(NowDate.Minute);
+        public EditNotificationDialogViewModel()
+        {
+            Time = TimeSpan.FromHours(Date.Hour) + TimeSpan.FromMinutes(Date.Minute);
+        }
 
-        public DateTimeOffset NowDate => DateTimeOffset.Now;
+        [ObservableProperty]
+        private TimeSpan _time;
+
+        [ObservableProperty]
+        private DateTimeOffset _date = DateTimeOffset.Now;
+
+        [ObservableProperty]
+        private bool _scheduleOnClose;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanCreate))]
@@ -36,13 +48,29 @@ namespace ViewModels.DialogsVMs
         [RelayCommand(CanExecute = nameof(CanCreate))]
         private void Create()
         {
-            DialogControl.Properties.CustomProperties["Notification"] = SelectedSchema!.CreateNotification();
+            INotification coreNotification = SelectedSchema!.CreateNotification();
+            Notification notification = new(coreNotification)
+            {
+                ScheduledTime = new DateTimeOffset(
+                    Date.Year,
+                    Date.Month,
+                    Date.Day,
+                    0, 0, 0, Date.Offset) + Time
+            };
+
+            DialogControl.Properties.CustomProperties["Notification"] = notification;
+            if (ScheduleOnClose)
+            {
+                notification.ScheduleCommand.Execute(default);
+            }
+
+            DialogControl.Close(true);
         }
 
         [RelayCommand]
         private void Close()
         {
-            DialogControl.Close(default);
+            DialogControl.Close(false);
         }
     }
 }

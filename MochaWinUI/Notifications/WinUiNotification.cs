@@ -334,7 +334,7 @@ namespace MochaWinUI.Notifications
     /// Extends <see cref="WinUiNotification"/> with statically typed properties.
     /// </summary>
     /// <typeparam name="T">Properties type.</typeparam>
-    public abstract class WinUiNotification<T> : WinUiNotification, INotification<T> where T : new()
+    public abstract class WinUiNotification<T> : WinUiNotification, INotificationRoot<T> where T : new()
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="WinUiNotification{T}"/> class.

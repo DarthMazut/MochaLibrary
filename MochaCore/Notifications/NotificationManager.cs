@@ -30,6 +30,12 @@ namespace MochaCore.Notifications
         /// <param name="id">Registration identifier.</param>
         /// <param name="factoryDelegate">A delegate to create new instance of <see cref="INotificationRoot"/> implementation.</param>
         public static void RegisterNotification(string id, Func<INotificationRoot> factoryDelegate)
+            => RegisterNoticationCore(id, factoryDelegate);
+
+        public static void RegisterNotification<T>(string id, Func<INotificationRoot<T>> factoryDelegate) where T : new()
+            => RegisterNoticationCore(id, factoryDelegate);
+
+        private static void RegisterNoticationCore(string id, Func<INotificationRoot> factoryDelegate)
         {
             _ = factoryDelegate ?? throw new ArgumentNullException(nameof(factoryDelegate));
 
@@ -77,9 +83,9 @@ namespace MochaCore.Notifications
         /// <param name="id">Factory delegate identifier.</param>
         public static INotification<T> RetrieveNotification<T>(string id) where T : new()
         {
-            if (GetBuilderOrThrow(id) is Func<NotificationContext, INotification<T>> typedBuilder)
+            if (GetBuilderOrThrow(id) is Func<INotification<T>> typedBuilder)
             {
-                INotification<T> notification = typedBuilder.Invoke(new NotificationContext(id));
+                INotification<T> notification = typedBuilder.Invoke();
                 TrackNotification(id, notification);
                 return notification;
             }

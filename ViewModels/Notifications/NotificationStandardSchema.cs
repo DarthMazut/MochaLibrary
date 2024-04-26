@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
 using MochaCore.Notifications;
+using MochaCore.Notifications.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,17 @@ namespace ViewModels.Notifications
 
         public INotification CreateNotification()
         {
-            throw new NotImplementedException();
+            INotification<SimpleNotificationProperties> notification 
+                = NotificationManager.RetrieveNotification<SimpleNotificationProperties>("SimpleNotification");
+
+            notification.Properties = new SimpleNotificationProperties()
+            {
+                Title = Title,
+                Content = Content,
+                Image = ImageUri
+            };
+
+            return notification;
         }
 
         public override string ToString() => "Standard schema";

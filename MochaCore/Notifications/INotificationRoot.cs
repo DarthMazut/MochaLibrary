@@ -13,4 +13,9 @@ namespace MochaCore.Notifications
     {
 
     }
+
+    public interface INotificationRoot<T> : INotificationRoot, INotification<T> where T : new()
+    {
+
+    }
 }
