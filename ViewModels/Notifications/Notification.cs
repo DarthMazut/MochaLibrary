@@ -14,12 +14,10 @@ namespace ViewModels.Notifications
     {
         private readonly INotification _notification;
 
-        private bool _canMutate;
-
         public Notification(INotification notification)
         {
             _notification = notification;
-            _canMutate = notification.ScheduledTime is not null || notification.IsDisplayed;
+            Timer timer = new(OnTimerTick, default, default, 1000);
             notification.Interacted += (s, e) =>
             {
                 DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
@@ -42,6 +40,15 @@ namespace ViewModels.Notifications
 
         public string ScheduledTimeString => ScheduledTime.ToString("HH:mm:ss (dd MMM yyyy)");
 
+        public string TimeRemaining
+        { 
+            get
+            {
+                TimeSpan timeRemaining = ScheduledTime - DateTimeOffset.Now;
+                return timeRemaining >= TimeSpan.Zero ? timeRemaining.ToString("HH:mm:ss") : " - ";
+            }
+        }
+
         [ObservableProperty]
         private NotificationState _state;
 
@@ -53,6 +60,24 @@ namespace ViewModels.Notifications
                 _notification.Schedule(ScheduledTime);
                 State = NotificationState.Scheduled;
             }
+        }
+
+        partial void OnTagChanged(string? value)
+        {
+            if (!_notification.IsDisplayed)
+            {
+                _notification.Tag = value;
+            }
+        }
+
+        private void OnTimerTick(object? state)
+        {
+            if (_notification.IsDisplayed && !_notification.IsInteracted)
+            {
+                State = NotificationState.Displayed;
+            }
+
+            OnPropertyChanged(nameof(TimeRemaining));
         }
     }
 
