@@ -13,11 +13,12 @@ namespace ViewModels.Notifications
     public partial class Notification : ObservableObject
     {
         private readonly INotification _notification;
+        private readonly Timer _timer;
 
         public Notification(INotification notification)
         {
             _notification = notification;
-            Timer timer = new(OnTimerTick, default, default, 1000);
+            _timer = new(OnTimerTick, default, default, 1000);
             notification.Interacted += (s, e) =>
             {
                 DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
@@ -25,6 +26,12 @@ namespace ViewModels.Notifications
                     State = NotificationState.Interacted;
                 });
             };
+            notification.Disposed += (s, e) =>
+            {
+                _timer.Dispose();
+            };
+            State = ResolveState(notification);
+            ScheduledTime = notification.ScheduledTime ?? DateTimeOffset.Now;
         }
 
         [ObservableProperty]
@@ -45,7 +52,7 @@ namespace ViewModels.Notifications
             get
             {
                 TimeSpan timeRemaining = ScheduledTime - DateTimeOffset.Now;
-                return timeRemaining >= TimeSpan.Zero ? timeRemaining.ToString("HH:mm:ss") : " - ";
+                return timeRemaining >= TimeSpan.Zero ? $"{timeRemaining:hh\\:mm\\:ss}" : " - ";
             }
         }
 
@@ -70,14 +77,25 @@ namespace ViewModels.Notifications
             }
         }
 
+        private NotificationState ResolveState(INotification notification)
+        {
+            if (notification.IsInteracted) { return NotificationState.Interacted; }
+            if (notification.IsDisplayed) { return NotificationState.Displayed; }
+            if (notification.ScheduledTime is not null) { return NotificationState.Scheduled; }
+            return NotificationState.Created;
+        }
+
         private void OnTimerTick(object? state)
         {
-            if (_notification.IsDisplayed && !_notification.IsInteracted)
+            DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
             {
-                State = NotificationState.Displayed;
-            }
+                if (_notification.IsDisplayed && !_notification.IsInteracted)
+                {
+                    State = NotificationState.Displayed;
+                }
 
-            OnPropertyChanged(nameof(TimeRemaining));
+                OnPropertyChanged(nameof(TimeRemaining));
+            });
         }
     }
 

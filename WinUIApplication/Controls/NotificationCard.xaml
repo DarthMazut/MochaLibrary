@@ -81,6 +81,10 @@
                     <TextBlock Grid.Row="2" Text="Scheduled time:" Style="{StaticResource NotificationPropertyHeaderText}"/>
                     <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding ScheduledTimeString}" Style="{StaticResource NotificationPropertyValueText}"/>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" Style="{StaticResource NotificationPropertyStackPanel}">
+                    <TextBlock Grid.Row="2" Text="Remaining time:" Style="{StaticResource NotificationPropertyHeaderText}"/>
+                    <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding TimeRemaining}" Style="{StaticResource NotificationPropertyValueText}"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Button>

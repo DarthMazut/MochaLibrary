@@ -17,7 +17,21 @@ namespace ViewModels.Notifications
     {
         public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
-        public ObservableCollection<Notification> Notifications { get; } = new();
+        [ObservableProperty]
+        private ObservableCollection<Notification> _notifications = new();
+
+        [RelayCommand]
+        private async Task Loaded()
+        {
+            IReadOnlyCollection<INotification> pendingNotifications = await NotificationManager.GetPendingNotifications();
+            IReadOnlyCollection<INotification> displayedNotifications = await NotificationManager.GetDisplayedNotifications();
+            IReadOnlyCollection<INotification> createdNotifications = NotificationManager.GetCreatedNotifications();
+            List<INotification> allNotifications = pendingNotifications.Concat(displayedNotifications).Concat(createdNotifications).ToList();
+            foreach (INotification notification in allNotifications)
+            {
+                Notifications.Add(new Notification(notification));
+            }
+        }
 
         [RelayCommand]
         private async Task AddNotification()
@@ -33,6 +47,11 @@ namespace ViewModels.Notifications
                     Notifications.Add(createdNotification);
                 }
             }
+        }
+
+        private void EnsureCollectionOrder()
+        {
+            Notifications = new ObservableCollection<Notification>(Notifications.OrderBy(n => (int)n.State));
         }
     }
 }

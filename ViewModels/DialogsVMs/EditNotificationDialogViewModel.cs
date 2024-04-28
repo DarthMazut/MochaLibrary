@@ -23,6 +23,12 @@ namespace ViewModels.DialogsVMs
         }
 
         [ObservableProperty]
+        private string? _name;
+
+        [ObservableProperty]
+        private string? _tag;
+
+        [ObservableProperty]
         private TimeSpan _time;
 
         [ObservableProperty]
@@ -51,6 +57,8 @@ namespace ViewModels.DialogsVMs
             INotification coreNotification = SelectedSchema!.CreateNotification();
             Notification notification = new(coreNotification)
             {
+                Title = Name,
+                Tag = Tag,
                 ScheduledTime = new DateTimeOffset(
                     Date.Year,
                     Date.Month,

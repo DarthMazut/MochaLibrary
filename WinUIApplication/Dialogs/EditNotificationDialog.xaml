@@ -89,11 +89,11 @@
             <StackPanel Style="{StaticResource SegmentStackPanel}">
                 <StackPanel Style="{StaticResource ItemStackPanel}">
                     <TextBlock Text="Name:" Style="{StaticResource HeaderText}"/>
-                    <TextBox PlaceholderText="Notification name..." />
+                    <TextBox Text="{Binding Name, Mode=TwoWay}" PlaceholderText="Notification name..." />
                 </StackPanel>
                 <StackPanel Style="{StaticResource ItemStackPanel}">
                     <TextBlock Text="Tag:" Style="{StaticResource HeaderText}"/>
-                    <TextBox PlaceholderText="Notification tag..." />
+                    <TextBox Text="{Binding Tag, Mode=TwoWay}" PlaceholderText="Notification tag..." />
                 </StackPanel>
                 <StackPanel Style="{StaticResource ItemStackPanel}">
                     <TextBlock Text="Schedule time:" Style="{StaticResource HeaderText}"/>

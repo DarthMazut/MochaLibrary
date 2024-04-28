@@ -61,8 +61,8 @@ namespace MochaWinUI.Notifications.Extensions
         /// <inheritdoc/>
         protected override INotification? CreatePendingNotification(ScheduledToastNotification notification)
             => new WinUiSimpleNotification(
-                notification.GetValueByKey(RegistrationIdKey)!,
                 notification.GetValueByKey(NotificationIdKey)!,
+                notification.GetValueByKey(RegistrationIdKey)!,
                 notification.GetValueByKey(TagKey),
                 notification.DeliveryTime,
                 false, false);
@@ -70,8 +70,8 @@ namespace MochaWinUI.Notifications.Extensions
         /// <inheritdoc/>
         protected override INotification CreateDisplayedNotification(ToastNotification notification)
             => new WinUiSimpleNotification(
-                notification.GetValueByKey(RegistrationIdKey)!,
                 notification.GetValueByKey(NotificationIdKey)!,
+                notification.GetValueByKey(RegistrationIdKey)!,
                 notification.GetValueByKey(TagKey),
                 default, true, false);
     }

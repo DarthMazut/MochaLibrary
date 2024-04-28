@@ -128,7 +128,7 @@ namespace MochaCore.Notifications
             foreach ((string id, INotificationSharedDataProvider dataProvider) in _dataProviders)
             {
                 notifications.AddRange(dataProvider.GetPendingNotifications()
-                    .Select(pn => _notifications[id].FirstOrDefault(n => n.Id == pn.Id) ?? pn)
+                    .Select(pn => _notifications.GetValueOrDefault(id)?.FirstOrDefault(n => n.Id == pn.Id) ?? pn)
                     .ToList());
             }
 
@@ -142,7 +142,7 @@ namespace MochaCore.Notifications
         /// <param name="id">Registration identifier of the notifications to be retrieved.</param>
         public static Task<IReadOnlyCollection<INotification>> GetPendingNotifications(string id)
             => Task.FromResult(_dataProviders[id].GetPendingNotifications()
-                .Select(pn => _notifications[id].FirstOrDefault(n => n.Id == pn.Id) ?? pn)
+                .Select(pn => _notifications.GetValueOrDefault(id)?.FirstOrDefault(n => n.Id == pn.Id) ?? pn)
                     .ToList().AsReadOnly() as IReadOnlyCollection<INotification>);
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace MochaCore.Notifications
             foreach ((string id, INotificationSharedDataProvider dataProvider) in _dataProviders)
             {
                 notifications.AddRange(dataProvider.GetActionCenterNotifications()
-                    .Select(pn => _notifications[id].FirstOrDefault(n => n.Id == pn.Id) ?? pn)
+                    .Select(pn => _notifications.GetValueOrDefault(id)?.FirstOrDefault(n => n.Id == pn.Id) ?? pn)
                     .ToList());
             }
 
@@ -168,7 +168,7 @@ namespace MochaCore.Notifications
         /// <param name="id">Registration identifier of the notifications to be retrieved.</param>
         public static Task<IReadOnlyCollection<INotification>> GetDisplayedNotifications(string id)
             => Task.FromResult(_dataProviders[id].GetActionCenterNotifications()
-                .Select(pn => _notifications[id].FirstOrDefault(n => n.Id == pn.Id) ?? pn)
+                .Select(pn => _notifications.GetValueOrDefault(id)?.FirstOrDefault(n => n.Id == pn.Id) ?? pn)
                 .ToList().AsReadOnly() as IReadOnlyCollection<INotification>);
 
         private static Func<INotificationRoot> GetBuilderOrThrow(string id)
