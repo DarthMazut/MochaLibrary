@@ -102,8 +102,12 @@ namespace MochaWinUI.Notifications
 
             if (!wasDisplayed)
             {
-                AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
                 ToastNotificationManager.CreateToastNotifier().ScheduledToastNotificationShowing += NotificationDisplayed;
+            }
+
+            if (!wasInteracted)
+            {
+                AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
             }
         }
 

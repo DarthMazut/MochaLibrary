@@ -18,6 +18,8 @@ namespace ViewModels.Notifications
         public Notification(INotification notification)
         {
             _notification = notification;
+            Title = $"Notification {notification.Id.Split("-").LastOrDefault()}";
+            Tag = notification.Tag;
             _timer = new(OnTimerTick, default, default, 1000);
             notification.Interacted += (s, e) =>
             {

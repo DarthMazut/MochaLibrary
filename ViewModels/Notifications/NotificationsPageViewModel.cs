@@ -26,11 +26,13 @@ namespace ViewModels.Notifications
             IReadOnlyCollection<INotification> pendingNotifications = await NotificationManager.GetPendingNotifications();
             IReadOnlyCollection<INotification> displayedNotifications = await NotificationManager.GetDisplayedNotifications();
             IReadOnlyCollection<INotification> createdNotifications = NotificationManager.GetCreatedNotifications();
-            List<INotification> allNotifications = pendingNotifications.Concat(displayedNotifications).Concat(createdNotifications).ToList();
-            foreach (INotification notification in allNotifications)
-            {
-                Notifications.Add(new Notification(notification));
-            }
+            Notifications = new ObservableCollection<Notification>(pendingNotifications
+                .Concat(displayedNotifications)
+                .Concat(createdNotifications)
+                .DistinctBy(n => n.Id)
+                .Select(n => new Notification(n))
+                .OrderBy(n => (int)n.State)
+                .ToList());
         }
 
         [RelayCommand]
@@ -44,14 +46,10 @@ namespace ViewModels.Notifications
                 Notification? createdNotification = addNotificationDialog.Properties.CustomProperties["Notification"] as Notification;
                 if (createdNotification is not null)
                 {
-                    Notifications.Add(createdNotification);
+                    int targetIndex = Math.Max(Notifications.ToList().FindLastIndex(n => n.State == createdNotification.State), 0);
+                    Notifications.Insert(targetIndex, createdNotification);
                 }
             }
-        }
-
-        private void EnsureCollectionOrder()
-        {
-            Notifications = new ObservableCollection<Notification>(Notifications.OrderBy(n => (int)n.State));
         }
     }
 }

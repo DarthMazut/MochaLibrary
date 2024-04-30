@@ -82,6 +82,20 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid>
+                            <Grid.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Schedule">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE724;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Dispose">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE74D;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </Grid.ContextFlyout>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" MinWidth="{Binding MinColumnWidth, ElementName=thisControl}"/>
                                 <ColumnDefinition Width="*" MinWidth="{Binding MinColumnWidth, ElementName=thisControl}"/>

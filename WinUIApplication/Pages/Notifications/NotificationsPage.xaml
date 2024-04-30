@@ -12,6 +12,14 @@
     xmlns:controls="using:WinUiApplication.Controls"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <Style x:Key="AddNotificationButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+    </Page.Resources>
+
     <controls:PageRoot Title="Notifications" Glyph="&#xE8BD;" VerticalScrollbarVisibility="Disabled">
         <Interactivity:Interaction.Behaviors>
             <Interactions:EventTriggerBehavior EventName="Loaded">
@@ -29,12 +37,10 @@
                 Margin="0,25,0,0"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Left"
-                Background="Transparent"
-                CornerRadius="0"
-                BorderThickness="0"
+                Style="{StaticResource AddNotificationButtonStyle}"
                 Command="{Binding AddNotificationCommand}">
                 <StackPanel Spacing="16" Orientation="Horizontal">
-                    <Border BorderThickness="2" BorderBrush="White" Padding="10">
+                    <Border BorderThickness="2" BorderBrush="{ThemeResource TextBoxBorderThemeBrush}" Padding="10">
                         <FontIcon Glyph="&#xE710;" />
                     </Border>
                     <TextBlock Text="Add notification" VerticalAlignment="Center"/>
@@ -42,5 +48,4 @@
             </Button>
         </Grid>
     </controls:PageRoot>
-    
 </Page>
