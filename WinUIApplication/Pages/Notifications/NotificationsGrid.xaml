@@ -82,20 +82,6 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Grid.ContextFlyout>
-                                <MenuFlyout>
-                                    <MenuFlyoutItem Text="Schedule">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon Glyph="&#xE724;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Dispose">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon Glyph="&#xE74D;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                </MenuFlyout>
-                            </Grid.ContextFlyout>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" MinWidth="{Binding MinColumnWidth, ElementName=thisControl}"/>
                                 <ColumnDefinition Width="*" MinWidth="{Binding MinColumnWidth, ElementName=thisControl}"/>
@@ -106,6 +92,22 @@
                             <Border Grid.Column="1" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
                             <Border Grid.Column="2" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
                             <local:NotificationCard Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" Margin="8">
+                                <local:NotificationCard.ContextFlyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Text="Schedule" Command="{Binding ScheduleCommand}" IsEnabled="{Binding CanSchedule}">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE724;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutItem
+                                            Command="{Binding DataContext.DisposeNotificationCommand, ElementName=thisControl}"
+                                            Text="Dispose">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE74D;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                    </MenuFlyout>
+                                </local:NotificationCard.ContextFlyout>
                                 <local:NotificationCard.Transitions>
                                     <TransitionCollection>
                                         <RepositionThemeTransition />

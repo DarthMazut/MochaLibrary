@@ -36,6 +36,12 @@ namespace ViewModels.Notifications
         }
 
         [RelayCommand]
+        private void DisposeNotification()
+        {
+
+        }
+
+        [RelayCommand]
         private async Task AddNotification()
         {
             using ICustomDialogModule<DialogProperties> addNotificationDialog 

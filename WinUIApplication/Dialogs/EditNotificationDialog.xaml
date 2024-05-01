@@ -118,19 +118,7 @@
             </StackPanel>
         </ScrollViewer>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-            <Button Content="Create" Command="{Binding CreateCommand}" Style="{StaticResource DefaultButtonStyle}">
-                <Button.Resources>
-                    <ResourceDictionary>
-                        <ResourceDictionary.ThemeDictionaries>
-                            <ResourceDictionary x:Key="Default">
-                                <StaticResource x:Key="ButtonBackground" ResourceKey="AccentFillColorDefaultBrush" />
-                                <StaticResource x:Key="ButtonBackgroundPointerOver" ResourceKey="AccentAcrylicBackgroundFillColorDefaultBrush" />
-                                <StaticResource x:Key="ButtonBackgroundPressed" ResourceKey="AccentAcrylicBackgroundFillColorBaseBrush" />
-                            </ResourceDictionary>
-                        </ResourceDictionary.ThemeDictionaries>
-                    </ResourceDictionary>
-                </Button.Resources>
-            </Button>
+            <Button Content="Create" Command="{Binding CreateCommand}" Style="{StaticResource AccentButtonStyle}"/>
             <Button Content="Cancel" Command="{Binding CloseCommand}"/>
         </StackPanel>
     </Grid>

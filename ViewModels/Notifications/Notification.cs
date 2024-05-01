@@ -20,7 +20,7 @@ namespace ViewModels.Notifications
             _notification = notification;
             Title = $"Notification {notification.Id.Split("-").LastOrDefault()}";
             Tag = notification.Tag;
-            _timer = new(OnTimerTick, default, default, 1000);
+            _timer = new Timer(OnTimerTick, default, default, 1000);
             notification.Interacted += (s, e) =>
             {
                 DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
@@ -45,6 +45,8 @@ namespace ViewModels.Notifications
         public string? _tag;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CanSchedule))]
+        [NotifyCanExecuteChangedFor(nameof(ScheduleCommand))]
         private DateTimeOffset _scheduledTime;
 
         public string ScheduledTimeString => ScheduledTime.ToString("HH:mm:ss (dd MMM yyyy)");
@@ -59,9 +61,13 @@ namespace ViewModels.Notifications
         }
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CanSchedule))]
+        [NotifyCanExecuteChangedFor(nameof(ScheduleCommand))]
         private NotificationState _state;
 
-        [RelayCommand]
+        public bool CanSchedule => State == NotificationState.Created && ScheduledTime > DateTimeOffset.Now;
+
+        [RelayCommand(CanExecute = nameof(CanSchedule))]
         private void Schedule()
         {
             if (!_notification.IsDisplayed)
