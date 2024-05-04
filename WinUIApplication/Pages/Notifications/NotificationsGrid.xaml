@@ -100,7 +100,8 @@
                                             </MenuFlyoutItem.Icon>
                                         </MenuFlyoutItem>
                                         <MenuFlyoutItem
-                                            Command="{Binding DataContext.DisposeNotificationCommand, ElementName=thisControl}"
+                                            Command="{Binding DisposeNotificationCommand, ElementName=thisControl}"
+                                            CommandParameter="{Binding}"
                                             Text="Dispose">
                                             <MenuFlyoutItem.Icon>
                                                 <FontIcon Glyph="&#xE74D;" />

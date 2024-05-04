@@ -36,9 +36,10 @@ namespace ViewModels.Notifications
         }
 
         [RelayCommand]
-        private void DisposeNotification()
+        private void DisposeNotification(Notification notification)
         {
-
+            Notifications.Remove(notification);
+            notification.Dispose();
         }
 
         [RelayCommand]

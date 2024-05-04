@@ -12,6 +12,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using System.Windows.Input;
 
 namespace WinUiApplication.Pages.Notifications
 {
@@ -20,12 +21,22 @@ namespace WinUiApplication.Pages.Notifications
         public static readonly DependencyProperty MinColumnWidthProperty =
             DependencyProperty.Register(nameof(MinColumnWidth), typeof(double), typeof(NotificationsGrid), new PropertyMetadata(250d));
 
+        public static readonly DependencyProperty DisposeNotificationCommandProperty =
+            DependencyProperty.Register(nameof(DisposeNotificationCommand), typeof(ICommand), typeof(NotificationsGrid), new PropertyMetadata(0));
+
         public double MinColumnWidth
         {
             get { return (double)GetValue(MinColumnWidthProperty); }
             set { SetValue(MinColumnWidthProperty, value); }
         }
 
+        public ICommand DisposeNotificationCommand
+        {
+            get { return (ICommand)GetValue(DisposeNotificationCommandProperty); }
+            set { SetValue(DisposeNotificationCommandProperty, value); }
+        }
+
+       
         public NotificationsGrid()
         {
             this.InitializeComponent();

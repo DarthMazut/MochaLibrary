@@ -13,14 +13,20 @@ namespace ViewModels.Notifications
     public partial class Notification : ObservableObject
     {
         private readonly INotification _notification;
-        private readonly Timer _timer;
+        private readonly Timer? _timer;
 
         public Notification(INotification notification)
         {
             _notification = notification;
             Title = $"Notification {notification.Id.Split("-").LastOrDefault()}";
             Tag = notification.Tag;
-            _timer = new Timer(OnTimerTick, default, default, 1000);
+            State = ResolveState(notification);
+            ScheduledTime = notification.ScheduledTime ?? DateTimeOffset.Now;
+            if (State != NotificationState.Displayed && State != NotificationState.Interacted)
+            {
+                _timer = new Timer(OnTimerTick, default, default, 1000);
+            }
+
             notification.Interacted += (s, e) =>
             {
                 DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
@@ -28,12 +34,11 @@ namespace ViewModels.Notifications
                     State = NotificationState.Interacted;
                 });
             };
+
             notification.Disposed += (s, e) =>
             {
-                _timer.Dispose();
+                _timer?.Dispose();
             };
-            State = ResolveState(notification);
-            ScheduledTime = notification.ScheduledTime ?? DateTimeOffset.Now;
         }
 
         [ObservableProperty]
@@ -76,6 +81,8 @@ namespace ViewModels.Notifications
                 State = NotificationState.Scheduled;
             }
         }
+
+        public void Dispose() => _notification.Dispose();
 
         partial void OnTagChanged(string? value)
         {
