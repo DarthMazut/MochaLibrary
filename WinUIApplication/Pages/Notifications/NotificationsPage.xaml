@@ -31,7 +31,9 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <local:NotificationsGrid DisposeNotificationCommand="{Binding DisposeNotificationCommand}" />
+            <local:NotificationsGrid
+                ItemsSource="{Binding Notifications}"
+                DisposeNotificationCommand="{Binding DisposeNotificationCommand}" />
             <Button Height="60"
                 Grid.Row="1"
                 Margin="0,25,0,0"

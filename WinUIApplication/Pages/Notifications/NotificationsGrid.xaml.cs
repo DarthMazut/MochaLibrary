@@ -24,6 +24,9 @@ namespace WinUiApplication.Pages.Notifications
         public static readonly DependencyProperty DisposeNotificationCommandProperty =
             DependencyProperty.Register(nameof(DisposeNotificationCommand), typeof(ICommand), typeof(NotificationsGrid), new PropertyMetadata(0));
 
+        public static readonly DependencyProperty ItemsSourceProperty =
+            DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<object>), typeof(NotificationsGrid), new PropertyMetadata(null));
+
         public double MinColumnWidth
         {
             get { return (double)GetValue(MinColumnWidthProperty); }
@@ -36,11 +39,18 @@ namespace WinUiApplication.Pages.Notifications
             set { SetValue(DisposeNotificationCommandProperty, value); }
         }
 
-       
+        public IEnumerable<object> ItemsSource
+        {
+            get { return (IEnumerable<object>)GetValue(ItemsSourceProperty); }
+            set { SetValue(ItemsSourceProperty, value); }
+        }
+
         public NotificationsGrid()
         {
             this.InitializeComponent();
         }
+
+        private Visibility ResolveEmptyCollectionHintVisibility() => ItemsSource.Count() > 0 ? Visibility.Collapsed : Visibility.Visible;
 
         private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
