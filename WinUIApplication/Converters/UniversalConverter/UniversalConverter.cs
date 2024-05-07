@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Shapes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,21 @@ namespace WinUiApplication.Converters.UniversalConverter
 {
     public class UniversalConverter : IValueConverter
     {
-        public List<ConverterRule> ConvertionRules { get; set; } = new();
+        public static List<ITypeInstanceResolver> AvailableTypeInstanceResolvers { get; set; } = new()
+        {
+            new EnumTypeInstanceResolver()
+        };
+
+        public static List<IConverterExpressionHandler> AvailableExpressions { get; set; } = new()
+        {
+            new GreaterThanInputExpression()
+        };
+
+        public List<ConverterRule> Rules { get; set; } = new();
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            ConverterRule? matchRule = ConvertionRules.FirstOrDefault(r => r.CheckValueMatch(value));
+            ConverterRule? matchRule = Rules.FirstOrDefault(r => r.CheckValueMatch(value));
             if (matchRule is not null)
             {
                 return matchRule.Convert(value);
@@ -50,13 +61,15 @@ namespace WinUiApplication.Converters.UniversalConverter
 
             if (InputExpression is not null)
             {
-                ConverterExpression? expression = ConverterExpression.ResolveExpression(InputExpression);
+                IConverterExpressionHandler? expression 
+                    = UniversalConverter.AvailableExpressions.Where(e => e.IsBooleanExpression).FirstOrDefault(e => e.CheckExpressionMatch(InputExpression));
+                
                 if (expression is null)
                 {
                     throw new Exception("Cannot parse expression");
                 }
 
-                return expression.Resolve(value);
+                return expression.CalculateExpression(InputExpression, value, InputType, OutputType) is true;
             }
             
             return true;
@@ -64,87 +77,105 @@ namespace WinUiApplication.Converters.UniversalConverter
 
         public object Convert(object? value)
         {
+            if (Output is string outputString && OutputType is not null && OutputType != typeof(string))
+            {
+                ITypeInstanceResolver? instanceResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(OutputType));
+                if (instanceResolver is null)
+                {
+                    throw new Exception($"Cannot create instance of type {OutputType.Name} from string. Are you missing an {nameof(ITypeInstanceResolver)}?");
+                }
+
+                return instanceResolver.CreateInstance(OutputType, outputString)!;
+            }
+
             if (Output is not null)
             {
                 return Output;
             }
 
-            if (Output is string && OutputType == typeof(string))
-            {
-                // TODO:
-            }
-
             if (OutputExpression is not null)
             {
-                ConverterExpression? expression = ConverterExpression.ResolveExpression(OutputExpression);
+                IConverterExpressionHandler? expression 
+                    = UniversalConverter.AvailableExpressions.FirstOrDefault(e => e.CheckExpressionMatch(OutputExpression));
+
                 if (expression is null)
                 {
                     throw new Exception("Cannot parse expression");
                 }
 
-                return expression.Convert(value);
+                return expression.CalculateExpression(OutputExpression, value, InputType, OutputType)!;
             }
 
             return value!;
         }
     }
 
-    //public abstract class ConverterOutputExpression
-    //{
-    //    private static List<ConverterOutputExpression> _expressions = new()
-    //    {
-            
-    //    };
-
-    //    public static ConverterOutputExpression? ResolveExpression(string expression)
-    //        => _expressions.FirstOrDefault(e => e.Match(expression));
-
-    //    public abstract bool Match(string expression);
-
-        
-
-    //}
-
-    public abstract class ConverterExpression
+    public interface IConverterExpressionHandler
     {
-        // Value
-        // Operator
-        // Constant
+        /// <summary>
+        /// Whether this expression is guaranteed to return <see langword="bool"/>
+        /// </summary>
+        public bool IsBooleanExpression { get; }
 
-        private static List<ConverterExpression> _expressions = new()
-        {
-            new GreaterThanInputExpression()
-        };
+        /// <summary>
+        /// Whether this instance can hanlde given expression.
+        /// </summary>
+        public bool CheckExpressionMatch(string expression);
 
-        public static ConverterExpression? ResolveExpression(string expression)
-            => _expressions.FirstOrDefault(e => e.Match(expression));
-
-        public abstract bool Match(string expression);
-
-        public abstract bool Resolve(object? value);
-
-        public abstract object? Convert(object? value);
+        /// <summary>
+        /// Evaluate expression to <see langword="object?"/>.
+        /// </summary>
+        public object? CalculateExpression(string expression, object? value, Type? inputType, Type? outputType);
     }
 
-    public sealed class GreaterThanInputExpression : ConverterExpression
+    public sealed class GreaterThanInputExpression : IConverterExpressionHandler
     {
-        public override bool Match(string expression)
+        public bool IsBooleanExpression => true;
+
+        public bool CheckExpressionMatch(string expression)
         {
-            // TODO:
+            string[] segments = expression.Split();
+            if (segments.Length != 3) { return false; }
+            if (segments[1] != ">") { return false; }
+
             return true;
         }
 
-        public override bool Resolve(object? value)
+        public object? CalculateExpression(string expression, object? value, Type? inputType, Type? outputType)
         {
+            string[] segments = expression.Split();
+            object constantObject;
+            ITypeInstanceResolver? instanceResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(inputType));
+            if (instanceResolver is not null)
+            {
+                constantObject = instanceResolver.CreateInstance(inputType, segments[2]);
+            }
+            else
+            {
+                constantObject = decimal.Parse(segments[2]);
+            }
+
             if (value is IComparable comparable)
             {
-                return comparable.CompareTo(value) > 0;
+                return comparable.CompareTo(constantObject) > 0;
             }
 
             throw new Exception("Object is not comparable");
         }
+    }
 
-        public override object? Convert(object? value)
+    public interface ITypeInstanceResolver
+    {
+        public bool CheckType(Type type); 
+
+        public object? CreateInstance(Type type, string definition);
+    }
+
+    public class EnumTypeInstanceResolver : ITypeInstanceResolver
+    {
+        public bool CheckType(Type type) => type.IsEnum;
+
+        public object? CreateInstance(Type type, string definition)
         {
             throw new NotImplementedException();
         }
