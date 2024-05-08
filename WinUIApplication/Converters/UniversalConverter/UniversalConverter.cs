@@ -18,7 +18,7 @@ namespace WinUiApplication.Converters.UniversalConverter
 
         public static List<IConverterExpressionHandler> AvailableExpressions { get; set; } = new()
         {
-            new GreaterThanInputExpression()
+            new GreaterThanExpression()
         };
 
         public List<ConverterRule> Rules { get; set; } = new();
@@ -54,6 +54,17 @@ namespace WinUiApplication.Converters.UniversalConverter
 
         public bool CheckValueMatch(object? value)
         {
+            if (Input is string inputString && InputType is not null && InputType != typeof(string))
+            {
+                ITypeInstanceResolver? instanceResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(InputType));
+                if (instanceResolver is null)
+                {
+                    throw new Exception($"Cannot create instance of type {InputType.Name} from string. Are you missing an {nameof(ITypeInstanceResolver)}?");
+                }
+
+                return value?.Equals(instanceResolver.CreateInstance(InputType, inputString)) is true;
+            }
+
             if (Input is not null)
             {
                 return Input.Equals(value);
@@ -69,7 +80,7 @@ namespace WinUiApplication.Converters.UniversalConverter
                     throw new Exception("Cannot parse expression");
                 }
 
-                return expression.CalculateExpression(InputExpression, value, InputType, OutputType) is true;
+                return expression.CalculateExpression(InputExpression, value, InputType) is true;
             }
             
             return true;
@@ -103,7 +114,18 @@ namespace WinUiApplication.Converters.UniversalConverter
                     throw new Exception("Cannot parse expression");
                 }
 
-                return expression.CalculateExpression(OutputExpression, value, InputType, OutputType)!;
+                object? expressionResult = expression.CalculateExpression(OutputExpression, value, InputType)!;
+
+                if (OutputType is not null)
+                {
+                    ITypeInstanceResolver? instanceResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(OutputType));
+                    return instanceResolver?.CreateInstance(OutputType, expressionResult)
+                        ?? throw new Exception($"Cannot create instance of type {OutputType.Name} from string. Are you missing an {nameof(ITypeInstanceResolver)}?");
+                }
+                else
+                {
+                    return expressionResult;
+                }
             }
 
             return value!;
@@ -125,10 +147,35 @@ namespace WinUiApplication.Converters.UniversalConverter
         /// <summary>
         /// Evaluate expression to <see langword="object?"/>.
         /// </summary>
-        public object? CalculateExpression(string expression, object? value, Type? inputType, Type? outputType);
+        public object? CalculateExpression(string expression, object? value, Type? inputType);
+
+        public static object? ResolveMostAccurateConstantType(string constantString, object? value, Type? inputType)
+        {
+            ITypeInstanceResolver? constantTypeResolver;
+
+            if (inputType is not null)
+            {
+                constantTypeResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(inputType));
+                return constantTypeResolver?.CreateInstance(inputType, constantString)
+                    ?? throw new Exception($"Couldn't find {typeof(ITypeInstanceResolver).Name} instance for input type");
+            }
+
+            if ( value is not null)
+            {
+                constantTypeResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(value.GetType()));
+                return constantTypeResolver?.CreateInstance(value.GetType(), constantString);
+            }
+
+            if (double.TryParse(constantString, out double doubleValue))
+            {
+                return doubleValue;
+            }
+
+            return constantString;
+        }
     }
 
-    public sealed class GreaterThanInputExpression : IConverterExpressionHandler
+    public sealed class GreaterThanExpression : IConverterExpressionHandler
     {
         public bool IsBooleanExpression => true;
 
@@ -141,23 +188,14 @@ namespace WinUiApplication.Converters.UniversalConverter
             return true;
         }
 
-        public object? CalculateExpression(string expression, object? value, Type? inputType, Type? outputType)
+        public object? CalculateExpression(string expression, object? value, Type? inputType)
         {
             string[] segments = expression.Split();
-            object constantObject;
-            ITypeInstanceResolver? instanceResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(inputType));
-            if (instanceResolver is not null)
-            {
-                constantObject = instanceResolver.CreateInstance(inputType, segments[2]);
-            }
-            else
-            {
-                constantObject = decimal.Parse(segments[2]);
-            }
+            object? constantParsed = IConverterExpressionHandler.ResolveMostAccurateConstantType(segments[2], value, inputType);
 
             if (value is IComparable comparable)
             {
-                return comparable.CompareTo(constantObject) > 0;
+                return comparable.CompareTo(constantParsed) > 0;
             }
 
             throw new Exception("Object is not comparable");
@@ -168,14 +206,14 @@ namespace WinUiApplication.Converters.UniversalConverter
     {
         public bool CheckType(Type type); 
 
-        public object? CreateInstance(Type type, string definition);
+        public object? CreateInstance(Type type, object definition);
     }
 
     public class EnumTypeInstanceResolver : ITypeInstanceResolver
     {
         public bool CheckType(Type type) => type.IsEnum;
 
-        public object? CreateInstance(Type type, string definition)
+        public object? CreateInstance(Type type, object definition)
         {
             throw new NotImplementedException();
         }
