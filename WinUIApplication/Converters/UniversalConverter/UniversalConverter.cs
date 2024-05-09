@@ -1,5 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Shapes;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,81 +11,53 @@ using System.Threading.Tasks;
 
 namespace WinUiApplication.Converters.UniversalConverter
 {
+    [ContentProperty(Name = "Rules")]
     public class UniversalConverter : IValueConverter
     {
-        public static List<ITypeInstanceResolver> AvailableTypeInstanceResolvers { get; set; } = new()
-        {
-            new EnumTypeInstanceResolver()
-        };
-
-        public static List<IConverterExpressionHandler> AvailableExpressions { get; set; } = new()
-        {
-            new GreaterThanExpression()
-        };
-
-        public List<ConverterRule> Rules { get; set; } = new();
+        public List<ConvertingRule> Rules { get; set; } = new();
 
         public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            ConverterRule? matchRule = Rules.FirstOrDefault(r => r.CheckValueMatch(value));
-            if (matchRule is not null)
-            {
-                return matchRule.Convert(value);
-            }
-
-            return value;
-        }
+            => Rules.FirstOrDefault(r => r.CheckValueMatch(value))?.Convert(value) ?? value;
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotSupportedException();
     }
 
-    public class ConverterRule
+    public class ConvertingRule
     {
-        public object? Input { get; set; }
-
-        public Type? InputType { get; set; }
-
-        public string? InputExpression { get; set; }
+        public object? Condition { get; set; }
         
         public object? Output { get; set; }
 
-        public Type? OutputType { get; set; }
-
-        public string? OutputExpression { get; set; }
-
         public bool CheckValueMatch(object? value)
         {
-            if (Input is string inputString && InputType is not null && InputType != typeof(string))
+            // {x:Type}
+            if (Condition is Type type)
             {
-                ITypeInstanceResolver? instanceResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(InputType));
-                if (instanceResolver is null)
+                return type == value?.GetType();
+            }
+
+            // {c:Expression}
+            if (Condition is IConvertingExpression expression)
+            {
+                if (!expression.IsConditionExpression)
                 {
-                    throw new Exception($"Cannot create instance of type {InputType.Name} from string. Are you missing an {nameof(ITypeInstanceResolver)}?");
+                    throw new Exception($"Not a condition expression.");
                 }
 
-                return value?.Equals(instanceResolver.CreateInstance(InputType, inputString)) is true;
+                return expression.CalculateExpression(value) is true;
             }
 
-            if (Input is not null)
+            // $()
+            if (Condition is string conditionString && conditionString.StartsWith("$(") && conditionString.EndsWith(")"))
             {
-                return Input.Equals(value);
+                IConvertingExpression expression1;
+                expression1.
             }
 
-            if (InputExpression is not null)
-            {
-                IConverterExpressionHandler? expression 
-                    = UniversalConverter.AvailableExpressions.Where(e => e.IsBooleanExpression).FirstOrDefault(e => e.CheckExpressionMatch(InputExpression));
-                
-                if (expression is null)
-                {
-                    throw new Exception("Cannot parse expression");
-                }
+            // exact value
 
-                return expression.CalculateExpression(InputExpression, value, InputType) is true;
-            }
-            
-            return true;
+
         }
 
         public object Convert(object? value)
@@ -106,7 +80,7 @@ namespace WinUiApplication.Converters.UniversalConverter
 
             if (OutputExpression is not null)
             {
-                IConverterExpressionHandler? expression 
+                IConvertingExpression? expression 
                     = UniversalConverter.AvailableExpressions.FirstOrDefault(e => e.CheckExpressionMatch(OutputExpression));
 
                 if (expression is null)
@@ -132,12 +106,12 @@ namespace WinUiApplication.Converters.UniversalConverter
         }
     }
 
-    public interface IConverterExpressionHandler
+    public interface IConvertingExpression
     {
         /// <summary>
         /// Whether this expression is guaranteed to return <see langword="bool"/>
         /// </summary>
-        public bool IsBooleanExpression { get; }
+        public bool IsConditionExpression { get; }
 
         /// <summary>
         /// Whether this instance can hanlde given expression.
@@ -147,37 +121,12 @@ namespace WinUiApplication.Converters.UniversalConverter
         /// <summary>
         /// Evaluate expression to <see langword="object?"/>.
         /// </summary>
-        public object? CalculateExpression(string expression, object? value, Type? inputType);
-
-        public static object? ResolveMostAccurateConstantType(string constantString, object? value, Type? inputType)
-        {
-            ITypeInstanceResolver? constantTypeResolver;
-
-            if (inputType is not null)
-            {
-                constantTypeResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(inputType));
-                return constantTypeResolver?.CreateInstance(inputType, constantString)
-                    ?? throw new Exception($"Couldn't find {typeof(ITypeInstanceResolver).Name} instance for input type");
-            }
-
-            if ( value is not null)
-            {
-                constantTypeResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(value.GetType()));
-                return constantTypeResolver?.CreateInstance(value.GetType(), constantString);
-            }
-
-            if (double.TryParse(constantString, out double doubleValue))
-            {
-                return doubleValue;
-            }
-
-            return constantString;
-        }
+        public object? CalculateExpression(object? value);
     }
 
-    public sealed class GreaterThanExpression : IConverterExpressionHandler
+    public sealed class GreaterThanExpression : IConvertingExpression
     {
-        public bool IsBooleanExpression => true;
+        public bool IsConditionExpression => true;
 
         public bool CheckExpressionMatch(string expression)
         {
@@ -191,7 +140,7 @@ namespace WinUiApplication.Converters.UniversalConverter
         public object? CalculateExpression(string expression, object? value, Type? inputType)
         {
             string[] segments = expression.Split();
-            object? constantParsed = IConverterExpressionHandler.ResolveMostAccurateConstantType(segments[2], value, inputType);
+            object? constantParsed = IConvertingExpression.ResolveMostAccurateConstantType(segments[2], value, inputType);
 
             if (value is IComparable comparable)
             {
