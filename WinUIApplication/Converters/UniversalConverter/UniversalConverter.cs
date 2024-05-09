@@ -14,6 +14,11 @@ namespace WinUiApplication.Converters.UniversalConverter
     [ContentProperty(Name = "Rules")]
     public class UniversalConverter : IValueConverter
     {
+        public static List<IConvertingExpression> Expressions { get; set; } = new()
+        {
+
+        };
+
         public List<ConvertingRule> Rules { get; set; } = new();
 
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -51,58 +56,25 @@ namespace WinUiApplication.Converters.UniversalConverter
             // $()
             if (Condition is string conditionString && conditionString.StartsWith("$(") && conditionString.EndsWith(")"))
             {
-                IConvertingExpression expression1;
-                expression1.
+                IConvertingExpression? parsedExpression = UniversalConverter.Expressions
+                    .Where(e => e.IsConditionExpression)
+                    .FirstOrDefault(e => e.CheckExpressionMatch(conditionString));
+
+                if (parsedExpression is null)
+                {
+                    throw new Exception("Could not find matching expression.");
+                }
+
+                return parsedExpression.CalculateExpression(value) is true;
             }
 
             // exact value
-
-
+            return EqualityComparer<object?>.Default.Equals(value, Condition);
         }
 
         public object Convert(object? value)
         {
-            if (Output is string outputString && OutputType is not null && OutputType != typeof(string))
-            {
-                ITypeInstanceResolver? instanceResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(OutputType));
-                if (instanceResolver is null)
-                {
-                    throw new Exception($"Cannot create instance of type {OutputType.Name} from string. Are you missing an {nameof(ITypeInstanceResolver)}?");
-                }
-
-                return instanceResolver.CreateInstance(OutputType, outputString)!;
-            }
-
-            if (Output is not null)
-            {
-                return Output;
-            }
-
-            if (OutputExpression is not null)
-            {
-                IConvertingExpression? expression 
-                    = UniversalConverter.AvailableExpressions.FirstOrDefault(e => e.CheckExpressionMatch(OutputExpression));
-
-                if (expression is null)
-                {
-                    throw new Exception("Cannot parse expression");
-                }
-
-                object? expressionResult = expression.CalculateExpression(OutputExpression, value, InputType)!;
-
-                if (OutputType is not null)
-                {
-                    ITypeInstanceResolver? instanceResolver = UniversalConverter.AvailableTypeInstanceResolvers.FirstOrDefault(r => r.CheckType(OutputType));
-                    return instanceResolver?.CreateInstance(OutputType, expressionResult)
-                        ?? throw new Exception($"Cannot create instance of type {OutputType.Name} from string. Are you missing an {nameof(ITypeInstanceResolver)}?");
-                }
-                else
-                {
-                    return expressionResult;
-                }
-            }
-
-            return value!;
+            
         }
     }
 
@@ -122,6 +94,8 @@ namespace WinUiApplication.Converters.UniversalConverter
         /// Evaluate expression to <see langword="object?"/>.
         /// </summary>
         public object? CalculateExpression(object? value);
+
+        public IConvertingExpression? FromExpression(string expression);
     }
 
     public sealed class GreaterThanExpression : IConvertingExpression
