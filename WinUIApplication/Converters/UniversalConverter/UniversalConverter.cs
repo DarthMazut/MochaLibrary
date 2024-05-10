@@ -14,12 +14,7 @@ namespace WinUiApplication.Converters.UniversalConverter
     [ContentProperty(Name = nameof(Rules))]
     public class UniversalConverter : IValueConverter
     {
-        public static List<IConvertingExpression> Expressions { get; set; } = new()
-        {
-            new AritmeticComparisionExpression()
-        };
-
-        public List<ConvertingRule> Rules { get; set; } = new();
+        public List<ConvertRule> Rules { get; set; } = new();
 
         public object Convert(object value, Type targetType, object parameter, string language)
             => Rules.FirstOrDefault(r => r.CheckValueMatch(value))?.Convert(value) ?? value;

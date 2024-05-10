@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System.Windows.Input;
+using System.Collections.Specialized;
 
 namespace WinUiApplication.Pages.Notifications
 {
@@ -49,8 +50,6 @@ namespace WinUiApplication.Pages.Notifications
         {
             this.InitializeComponent();
         }
-
-        private Visibility ResolveEmptyCollectionHintVisibility() => ItemsSource.Count() > 0 ? Visibility.Collapsed : Visibility.Visible;
 
         private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {

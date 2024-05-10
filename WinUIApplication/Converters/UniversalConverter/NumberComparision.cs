@@ -8,12 +8,8 @@ using System.Threading.Tasks;
 
 namespace WinUiApplication.Converters.UniversalConverter
 {
-    // Maybe `NumberComparision`
-    public class AritmeticComparisionExpression : MarkupExtension, IConvertingExpression
+    public class NumberComparision : MarkupExtension, IConvertingExpression
     {
-        // <c:ConvertingRule Condition="{c:AritmeticExpression IsGreaterThan=0 IsLesserThan=10}" />
-        // <c:ConvertingRule Condition="$(x > 0 && x < 10)" />
-
         public int? IsEqualTo { get; set; }
 
         public int? IsNotEqualTo { get; set; }
@@ -28,13 +24,13 @@ namespace WinUiApplication.Converters.UniversalConverter
 
         public bool IsConditionExpression => true;
 
-        public object? CalculateExpression(object? value)
+        public virtual object? CalculateExpression(object? value)
         {
             decimal? number = null;
             bool isNumber = Microsoft.VisualBasic.Information.IsNumeric(value);
             if (isNumber)
             {
-                number = (decimal)value!;
+                number = Convert.ToDecimal(value);
             }
 
             if (value is string valueString)
@@ -47,7 +43,7 @@ namespace WinUiApplication.Converters.UniversalConverter
 
             if (number is null)
             {
-                throw new Exception("Cannot resolve value as number");
+                throw new ArgumentException("Cannot resolve value as number");
             }
 
             bool result = true;
@@ -85,19 +81,9 @@ namespace WinUiApplication.Converters.UniversalConverter
             return result;
         }
 
-        public IConvertingExpression? FromExpression(string expression)
-        {
-            // Remove $(...)
-            // Split by &&
-            // For each ... check if has format [x][sign][singleWord]
-
-
-            throw new NotImplementedException();
-        }
-
         protected override object ProvideValue(IXamlServiceProvider serviceProvider)
         {
-            return new AritmeticComparisionExpression()
+            return new NumberComparision()
             {
                 IsEqualTo = IsEqualTo,
                 IsNotEqualTo = IsNotEqualTo,

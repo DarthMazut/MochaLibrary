@@ -14,9 +14,17 @@
 
     <UserControl.Resources>
         <converters:NotificationStateToColumnIndexConverter x:Key="ColumnConverter" />
-        <uc:UniversalConverter x:Key="universalConverter">
-            <uc:ConvertingRule Condition="{uc:AritmeticComparisionExpression IsEqualTo=0, IsLesserOrEqualTo=10}"/>
-            <uc:ConvertingRule Condition="{uc:AritmeticComparisionExpression IsGreaterThan=0}"/>
+        <uc:UniversalConverter x:Key="CollectionCountToVisibilityConverter">
+            <uc:ConvertRule Condition="{uc:CollectionCountComparision IsGreaterThan=0}">
+                <uc:ConvertRule.Output>
+                    <Visibility>Collapsed</Visibility>
+                </uc:ConvertRule.Output>
+            </uc:ConvertRule>
+            <uc:ConvertRule>
+                <uc:ConvertRule.Output>
+                    <Visibility>Visible</Visibility>
+                </uc:ConvertRule.Output>
+            </uc:ConvertRule>
         </uc:UniversalConverter>
 
         <Style x:Key="HeaderBorderBaseStyle" TargetType="Border">
@@ -127,7 +135,7 @@
             </ScrollViewer>
             <TextBlock
                 Text="Nothing to display"
-                Visibility="{x:Bind MinColumnWidth, Mode=OneWay, Converter={StaticResource universalConverter}}"
+                Visibility="{x:Bind ItemsSource, Mode=OneWay, Converter={StaticResource CollectionCountToVisibilityConverter}}"
                 Style="{StaticResource SubtitleTextBlockStyle}"
                 HorizontalAlignment="Center"/>
         </Grid>
