@@ -12,12 +12,23 @@ namespace WinUiApplication.Converters.UniversalConverter
     {
         public override object? CalculateExpression(object? value)
         {
-            if (value is ICollection enumerable)
+            int? count = null;
+            if (value is ICollection collection)
             {
-                int count = enumerable.Count;
-                return base.CalculateExpression(count);
+                count = collection.Count;
+                
             }
 
+            if (value is IEnumerable<object?> enumerable)
+            {
+                count = enumerable.Count();
+            }
+
+            if (count is not null)
+            {
+                return base.CalculateExpression(count);
+            }
+            
             throw new ArgumentException("Cannot resolve value as collection.");
         }
 

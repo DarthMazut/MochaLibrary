@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System.Windows.Input;
 using System.Collections.Specialized;
+using System.Collections;
 
 namespace WinUiApplication.Pages.Notifications
 {
@@ -26,7 +27,7 @@ namespace WinUiApplication.Pages.Notifications
             DependencyProperty.Register(nameof(DisposeNotificationCommand), typeof(ICommand), typeof(NotificationsGrid), new PropertyMetadata(0));
 
         public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<object>), typeof(NotificationsGrid), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(ItemsSource), typeof(ICollection), typeof(NotificationsGrid), new PropertyMetadata(null));
 
         public double MinColumnWidth
         {
@@ -40,9 +41,9 @@ namespace WinUiApplication.Pages.Notifications
             set { SetValue(DisposeNotificationCommandProperty, value); }
         }
 
-        public IEnumerable<object> ItemsSource
+        public ICollection ItemsSource
         {
-            get { return (IEnumerable<object>)GetValue(ItemsSourceProperty); }
+            get { return (ICollection)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
 
