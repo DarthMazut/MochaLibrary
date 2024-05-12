@@ -14,9 +14,9 @@ namespace WinUiApplication.Converters.UniversalConverter
 
         public object? Output { get; set; } = new NoValue();
 
-        public IEnumerable<object?>? Conditions { get; set; } = new List<object?>();
+        public List<ConvertCondition> Conditions { get; set; } = new();
 
-        public IEnumerable<object?>? Outputs { get; set; } = new List<object?>();
+        public List<ConvertOutput> Outputs { get; set; } = new();
 
         public bool CheckValueMatch(object? value)
         {
@@ -26,9 +26,9 @@ namespace WinUiApplication.Converters.UniversalConverter
             }
 
             bool result = true;
-            foreach (object? condition in Conditions)
+            foreach (ConvertCondition condition in Conditions)
             {
-                result = result && CheckSingleCondition(condition, value);
+                result = result && CheckSingleCondition(condition.Condition, value);
             }
 
             return result;
@@ -42,9 +42,9 @@ namespace WinUiApplication.Converters.UniversalConverter
             }
 
             object? convertingValue = value;
-            foreach (object? outputItem in Outputs)
+            foreach (ConvertOutput outputItem in Outputs)
             {
-                convertingValue = ConvertSingleValue(outputItem, convertingValue);
+                convertingValue = ConvertSingleValue(outputItem.Output, convertingValue);
             }
 
             return convertingValue;
@@ -89,5 +89,15 @@ namespace WinUiApplication.Converters.UniversalConverter
 
             return output;
         }
+    }
+
+    public class ConvertCondition
+    {
+        public object? Condition { get; set; }
+    }
+
+    public class ConvertOutput
+    {
+        public object? Output { get; set; }
     }
 }

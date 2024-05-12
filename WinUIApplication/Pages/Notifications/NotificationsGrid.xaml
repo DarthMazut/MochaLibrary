@@ -17,11 +17,13 @@
         <uc:UniversalConverter x:Key="CollectionCountToVisibilityConverter">
             <uc:ConvertRule Condition="{uc:CollectionCountComparision IsGreaterThan=0}" Output="{uc:Collapsed}">
                 <uc:ConvertRule.Conditions>
-                    <uc:CollectionCountComparision IsGreaterThan="0" />
-                    <uc:CollectionCountComparision IsGreaterThan="2" />
+                    <uc:ConvertCondition Condition="{uc:NumberComparision IsGreaterThan=0}" />
+                    <uc:ConvertCondition Condition="{uc:NumberComparision IsGreaterThan=2}" />
                 </uc:ConvertRule.Conditions>
+                <uc:ConvertRule.Outputs>
+                    <uc:ConvertOutput Output="{uc:Collapsed}" />
+                </uc:ConvertRule.Outputs>
             </uc:ConvertRule>
-
             <uc:ConvertRule Output="{uc:Visible}"/>
         </uc:UniversalConverter>
 
