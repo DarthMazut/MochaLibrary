@@ -1,5 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Markup;
+using MochaCore.Utils.Xaml.UniversalConverter;
+using MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +12,21 @@ namespace WinUiApplication.Converters.UniversalConverter
 {
     public class NumberComparision : MarkupExtension, IConvertingExpression
     {
+        private readonly CoreNumberComparision _coreExpression;
+
+        public NumberComparision()
+        {
+            _coreExpression = new CoreNumberComparision()
+            {
+                IsEqualTo = IsEqualTo,
+                IsNotEqualTo = IsNotEqualTo,
+                IsGraterOrEqualTo = IsGraterOrEqualTo,
+                IsGreaterThan = IsGreaterThan,
+                IsLesserOrEqualTo = IsLesserOrEqualTo,
+                IsLesserThan = IsLesserThan
+            };
+        }
+
         public int? IsEqualTo { get; set; }
 
         public int? IsNotEqualTo { get; set; }
@@ -22,64 +39,9 @@ namespace WinUiApplication.Converters.UniversalConverter
 
         public int? IsLesserOrEqualTo { get; set; }
 
-        public bool IsConditionExpression => true;
+        public bool IsConditionExpression => _coreExpression.IsConditionExpression;
 
-        public virtual object? CalculateExpression(object? value)
-        {
-            decimal? number = null;
-            bool isNumber = Microsoft.VisualBasic.Information.IsNumeric(value);
-            if (isNumber)
-            {
-                number = Convert.ToDecimal(value);
-            }
-
-            if (value is string valueString)
-            {
-                if (decimal.TryParse(valueString, out decimal parsedValue))
-                {
-                    number = parsedValue;
-                }
-            }
-
-            if (number is null)
-            {
-                throw new ArgumentException("Cannot resolve value as number");
-            }
-
-            bool result = true;
-
-            if (IsEqualTo is not null)
-            {
-                result = result && number == IsEqualTo;
-            }
-
-            if (IsNotEqualTo is not null)
-            {
-                result = result && number != IsNotEqualTo;
-            }
-
-            if (IsGreaterThan is not null)
-            {
-                result = result && number > IsGreaterThan;
-            }
-
-            if (IsGraterOrEqualTo is not null)
-            {
-                result = result && number >= IsGraterOrEqualTo;
-            }
-
-            if (IsLesserThan is not null)
-            {
-                result = result && number < IsLesserThan;
-            }
-
-            if (IsLesserOrEqualTo is not null)
-            {
-                result = result && number <= IsLesserOrEqualTo;
-            }
-
-            return result;
-        }
+        public virtual object? CalculateExpression(object? value) => _coreExpression.CalculateExpression(value);
 
         protected override object ProvideValue(IXamlServiceProvider serviceProvider)
         {

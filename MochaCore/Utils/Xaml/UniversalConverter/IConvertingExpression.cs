@@ -1,5 +1,9 @@
-﻿namespace WinUiApplication.Converters.UniversalConverter
+﻿namespace MochaCore.Utils.Xaml.UniversalConverter
 {
+    /// <summary>
+    /// Provides abstraction over converting expressions utilized by <i>UniversalConverter</i>
+    /// implementation.
+    /// </summary>
     public interface IConvertingExpression
     {
         /// <summary>
@@ -10,6 +14,7 @@
         /// <summary>
         /// Evaluate expression to <see langword="object?"/>.
         /// </summary>
-        public object? CalculateExpression(object? value);  
+        /// <param name="value">Argument of evaluation.</param>
+        public object? CalculateExpression(object? value);
     }
 }

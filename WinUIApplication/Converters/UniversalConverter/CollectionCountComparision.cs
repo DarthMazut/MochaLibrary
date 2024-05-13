@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
+using MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,27 +11,22 @@ namespace WinUiApplication.Converters.UniversalConverter
 {
     public class CollectionCountComparision : NumberComparision
     {
-        public override object? CalculateExpression(object? value)
+        private readonly CoreCollectionCountComparision _coreExpression;
+
+        public CollectionCountComparision()
         {
-            int? count = null;
-            if (value is ICollection collection)
+            _coreExpression = new CoreCollectionCountComparision()
             {
-                count = collection.Count;
-                
-            }
-
-            if (value is IEnumerable<object?> enumerable)
-            {
-                count = enumerable.Count();
-            }
-
-            if (count is not null)
-            {
-                return base.CalculateExpression(count);
-            }
-            
-            throw new ArgumentException("Cannot resolve value as collection.");
+                IsEqualTo = IsEqualTo,
+                IsNotEqualTo = IsNotEqualTo,
+                IsGraterOrEqualTo = IsGraterOrEqualTo,
+                IsGreaterThan = IsGreaterThan,
+                IsLesserOrEqualTo = IsLesserOrEqualTo,
+                IsLesserThan = IsLesserThan
+            };
         }
+
+        public override object? CalculateExpression(object? value) => _coreExpression.CalculateExpression(value);
 
         protected override object ProvideValue(IXamlServiceProvider serviceProvider)
         {

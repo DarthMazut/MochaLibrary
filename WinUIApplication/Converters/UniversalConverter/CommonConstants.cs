@@ -27,4 +27,9 @@ namespace WinUiApplication.Converters.UniversalConverter
     {
         protected override object ProvideValue(IXamlServiceProvider serviceProvider) => false;
     }
+
+    public class EmptyString : MarkupExtension
+    {
+        protected override object ProvideValue(IXamlServiceProvider serviceProvider) => string.Empty;
+    }
 }
