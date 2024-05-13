@@ -7,26 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinUiApplication.Converters.UniversalConverter
+namespace MochaWinUI.Utils.Xaml.UniversalConverter
 {
     public class CollectionCountComparision : NumberComparision
     {
-        private readonly CoreCollectionCountComparision _coreExpression;
-
-        public CollectionCountComparision()
+        public override object? CalculateExpression(object? value) => new CoreCollectionCountComparision()
         {
-            _coreExpression = new CoreCollectionCountComparision()
-            {
-                IsEqualTo = IsEqualTo,
-                IsNotEqualTo = IsNotEqualTo,
-                IsGraterOrEqualTo = IsGraterOrEqualTo,
-                IsGreaterThan = IsGreaterThan,
-                IsLesserOrEqualTo = IsLesserOrEqualTo,
-                IsLesserThan = IsLesserThan
-            };
-        }
-
-        public override object? CalculateExpression(object? value) => _coreExpression.CalculateExpression(value);
+            IsEqualTo = IsEqualTo,
+            IsNotEqualTo = IsNotEqualTo,
+            IsGraterOrEqualTo = IsGraterOrEqualTo,
+            IsGreaterThan = IsGreaterThan,
+            IsLesserOrEqualTo = IsLesserOrEqualTo,
+            IsLesserThan = IsLesserThan
+        }.CalculateExpression(value);
 
         protected override object ProvideValue(IXamlServiceProvider serviceProvider)
         {

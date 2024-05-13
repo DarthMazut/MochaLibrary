@@ -2,7 +2,6 @@
 using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Utils.Xaml.UniversalConverter;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +9,12 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinUiApplication.Converters.UniversalConverter
+namespace MochaWinUI.Utils.Xaml.UniversalConverter
 {
     [ContentProperty(Name = nameof(Rules))]
     public class UniversalConverter : IValueConverter
     {
-        public List<ConvertRule> Rules { get; set; } = new();
+        public List<CoreRule> Rules { get; set; } = new();
 
         public object Convert(object value, Type targetType, object parameter, string language)
             => Rules.FirstOrDefault(r => r.CheckValueMatch(value))?.Convert(value) ?? value;
@@ -23,4 +22,13 @@ namespace WinUiApplication.Converters.UniversalConverter
         public object ConvertBack(object value, Type targetType, object parameter, string language)
             => throw new NotSupportedException();
     }
+
+    /// <inheritdoc/>
+    public class ConvertingRule : CoreRule { }
+
+    /// <inheritdoc/>
+    public class ConvertingCondition : CoreCondition { }
+
+    /// <inheritdoc/>
+    public class ConvertingOutput : CoreOutput { }
 }

@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WinUiApplication.Controls"
     xmlns:converters="using:WinUiApplication.Converters"
-    xmlns:uc="using:WinUiApplication.Converters.UniversalConverter"
+    xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter"
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -15,16 +15,16 @@
     <UserControl.Resources>
         <converters:NotificationStateToColumnIndexConverter x:Key="ColumnConverter" />
         <uc:UniversalConverter x:Key="CollectionCountToVisibilityConverter">
-            <uc:ConvertRule Condition="{uc:CollectionCountComparision IsGreaterThan=0}" Output="{uc:Collapsed}">
-                <uc:ConvertRule.Conditions>
-                    <uc:ConvertCondition Condition="{uc:NumberComparision IsGreaterThan=0}" />
-                    <uc:ConvertCondition Condition="{uc:NumberComparision IsGreaterThan=2}" />
-                </uc:ConvertRule.Conditions>
-                <uc:ConvertRule.Outputs>
-                    <uc:ConvertOutput Output="{uc:Collapsed}" />
-                </uc:ConvertRule.Outputs>
-            </uc:ConvertRule>
-            <uc:ConvertRule Output="{uc:Visible}"/>
+            <uc:ConvertingRule Condition="{uc:CollectionCountComparision IsGreaterThan=0}" Output="{uc:Collapsed}">
+                <uc:ConvertingRule.Conditions>
+                    <uc:ConvertingCondition Condition="{uc:NumberComparision IsGreaterThan=0}" />
+                    <uc:ConvertingCondition Condition="{uc:NumberComparision IsGreaterThan=2}" />
+                </uc:ConvertingRule.Conditions>
+                <uc:ConvertingRule.Outputs>
+                    <uc:ConvertingOutput Output="{uc:Collapsed}" />
+                </uc:ConvertingRule.Outputs>
+            </uc:ConvertingRule>
+            <uc:ConvertingRule Output="{uc:Visible}"/>
         </uc:UniversalConverter>
 
         <Style x:Key="HeaderBorderBaseStyle" TargetType="Border">

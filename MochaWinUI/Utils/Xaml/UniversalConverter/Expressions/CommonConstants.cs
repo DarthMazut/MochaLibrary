@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinUiApplication.Converters.UniversalConverter
+namespace MochaWinUI.Utils.Xaml.UniversalConverter
 {
     public class Visible : MarkupExtension
     {

@@ -6,7 +6,7 @@ namespace MochaCore.Utils.Xaml.UniversalConverter;
 /// <summary>
 /// Represents a single rule defining how the <i>UniversalConverter</i> should handle specific value(s).
 /// <para>
-/// Each <see cref="ConvertRule"/> consists of two main components: the <b>condition</b> and the <b>output</b>.<br/>
+/// Each <see cref="CoreRule"/> consists of two main components: the <b>condition</b> and the <b>output</b>.<br/>
 /// The condition determines whether the current processed value should be handled by the rule. 
 /// The condition can be:
 /// <list type="bullet">
@@ -30,7 +30,7 @@ namespace MochaCore.Utils.Xaml.UniversalConverter;
 /// </para>
 /// </summary>
 
-public class ConvertRule
+public class CoreRule
 {
     private readonly record struct NoValue;
 
@@ -47,12 +47,12 @@ public class ConvertRule
     /// <summary>
     /// Gets or sets the list of conditions for the current rule.
     /// </summary>
-    public List<ConvertCondition> Conditions { get; set; } = new();
+    public List<CoreCondition> Conditions { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the list of outputs for the current rule.
     /// </summary>
-    public List<ConvertOutput> Outputs { get; set; } = new();
+    public List<CoreOutput> Outputs { get; set; } = new();
 
     /// <summary>
     /// Determines whether the current rule should process the value provided by the <i>UniversalConverter</i>.
@@ -67,7 +67,7 @@ public class ConvertRule
         }
 
         bool result = true;
-        foreach (ConvertCondition condition in Conditions)
+        foreach (CoreCondition condition in Conditions)
         {
             result = result && CheckSingleCondition(condition.Condition, value);
         }
@@ -89,7 +89,7 @@ public class ConvertRule
         }
 
         object? convertingValue = value;
-        foreach (ConvertOutput outputItem in Outputs)
+        foreach (CoreOutput outputItem in Outputs)
         {
             convertingValue = ConvertSingleValue(outputItem.Output, convertingValue);
         }
@@ -139,9 +139,9 @@ public class ConvertRule
 }
 
 /// <summary>
-/// Represents a single condition to be used by the <see cref="ConvertRule.Conditions"/> property.
+/// Represents a single condition to be used by the <see cref="CoreRule.Conditions"/> property.
 /// </summary>
-public class ConvertCondition
+public class CoreCondition
 {
     /// <summary>
     /// Gets or sets the condition encapsulated by this instance.
@@ -150,9 +150,9 @@ public class ConvertCondition
 }
 
 /// <summary>
-/// Represents a single output value or expression to be used by the <see cref="ConvertRule.Outputs"/> property.
+/// Represents a single output value or expression to be used by the <see cref="CoreRule.Outputs"/> property.
 /// </summary>
-public class ConvertOutput
+public class CoreOutput
 {
     /// <summary>
     /// Gets or sets the outptu encapsulated by this instance.
