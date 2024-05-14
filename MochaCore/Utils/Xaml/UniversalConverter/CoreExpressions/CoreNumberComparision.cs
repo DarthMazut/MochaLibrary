@@ -15,32 +15,32 @@ namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
         /// <summary>
         /// Checks whether comparing value is equal to provided number.
         /// </summary>
-        public int? IsEqualTo { get; init; }
+        public double? IsEqualTo { get; init; }
 
         /// <summary>
         /// Checks whether comparing value is not equal to provided number.
         /// </summary>
-        public int? IsNotEqualTo { get; init; }
+        public double? IsNotEqualTo { get; init; }
 
         /// <summary>
         /// Checks whether comparing value is greater than provided number.
         /// </summary>
-        public int? IsGreaterThan { get; init; }
+        public double? IsGreaterThan { get; init; }
 
         /// <summary>
         /// Checks whether comparing value is greater or equal to provided number.
         /// </summary>
-        public int? IsGraterOrEqualTo { get; init; }
+        public double? IsGraterOrEqualTo { get; init; }
 
         /// <summary>
         /// Checks whether comparing value is lesser than provided number.
         /// </summary>
-        public int? IsLesserThan { get; init; }
+        public double? IsLesserThan { get; init; }
 
         /// <summary>
         /// Checks whether comparing value is lesser or equal to provided number.
         /// </summary>
-        public int? IsLesserOrEqualTo { get; init; }
+        public double? IsLesserOrEqualTo { get; init; }
 
         /// <inheritdoc/>
         public bool IsConditionExpression => true;
@@ -48,16 +48,16 @@ namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
         /// <inheritdoc/>
         public virtual object? CalculateExpression(object? value)
         {
-            decimal? number = null;
+            double? number = null;
             bool isNumber = Microsoft.VisualBasic.Information.IsNumeric(value);
             if (isNumber)
             {
-                number = Convert.ToDecimal(value);
+                number = Convert.ToDouble(value);
             }
 
             if (value is string valueString)
             {
-                if (decimal.TryParse(valueString, out decimal parsedValue))
+                if (double.TryParse(valueString, out double parsedValue))
                 {
                     number = parsedValue;
                 }

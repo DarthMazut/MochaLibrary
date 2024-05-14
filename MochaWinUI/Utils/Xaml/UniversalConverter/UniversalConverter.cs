@@ -14,7 +14,7 @@ namespace MochaWinUI.Utils.Xaml.UniversalConverter
     [ContentProperty(Name = nameof(Rules))]
     public class UniversalConverter : IValueConverter
     {
-        public List<CoreRule> Rules { get; set; } = new();
+        public List<ConvertingRule> Rules { get; set; } = new();
 
         public object Convert(object value, Type targetType, object parameter, string language)
             => Rules.FirstOrDefault(r => r.CheckValueMatch(value))?.Convert(value) ?? value;

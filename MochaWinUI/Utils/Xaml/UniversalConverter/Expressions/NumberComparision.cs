@@ -12,17 +12,17 @@ namespace MochaWinUI.Utils.Xaml.UniversalConverter
 {
     public class NumberComparision : MarkupExtension, IConvertingExpression
     {
-        public int? IsEqualTo { get; set; }
+        public double? IsEqualTo { get; set; }
 
-        public int? IsNotEqualTo { get; set; }
+        public double? IsNotEqualTo { get; set; }
 
-        public int? IsGreaterThan { get; set; }
+        public double? IsGreaterThan { get; set; }
 
-        public int? IsGraterOrEqualTo { get; set; }
+        public double? IsGraterOrEqualTo { get; set; }
 
-        public int? IsLesserThan { get; set; }
+        public double? IsLesserThan { get; set; }
 
-        public int? IsLesserOrEqualTo { get; set; }
+        public double? IsLesserOrEqualTo { get; set; }
 
         public bool IsConditionExpression => true;
 

@@ -15,10 +15,10 @@
     <UserControl.Resources>
         <converters:NotificationStateToColumnIndexConverter x:Key="ColumnConverter" />
         <uc:UniversalConverter x:Key="CollectionCountToVisibilityConverter">
-            <uc:ConvertingRule Condition="{uc:CollectionCountComparision IsGreaterThan=0}" Output="{uc:Collapsed}">
+            <uc:ConvertingRule Condition="{uc:CollectionCountComparision IsGreaterThan='0'}" Output="{uc:Collapsed}">
                 <uc:ConvertingRule.Conditions>
-                    <uc:ConvertingCondition Condition="{uc:NumberComparision IsGreaterThan=0}" />
-                    <uc:ConvertingCondition Condition="{uc:NumberComparision IsGreaterThan=2}" />
+                    <uc:ConvertingCondition Condition="{uc:NumberComparision IsGreaterThan='0'}" />
+                    <uc:ConvertingCondition Condition="{uc:NumberComparision IsGreaterThan='2'}" />
                 </uc:ConvertingRule.Conditions>
                 <uc:ConvertingRule.Outputs>
                     <uc:ConvertingOutput Output="{uc:Collapsed}" />
