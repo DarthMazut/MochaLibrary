@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Markup;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Markup;
 using MochaCore.Utils.Xaml.UniversalConverter;
 using MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions;
 using System;
@@ -22,5 +23,11 @@ namespace MochaWinUI.Utils.Xaml.UniversalConverter.Expressions
             Index = Index,
             Operation = Operation
         }.CalculateExpression(value);
+
+        protected override object ProvideValue(IXamlServiceProvider serviceProvider) => new CollectionLookup()
+        {
+            Index = Index,
+            Operation = Operation
+        };
     }
 }
