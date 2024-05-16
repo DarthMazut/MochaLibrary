@@ -53,40 +53,7 @@ namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
         /// <inheritdoc/>
         public virtual object? CalculateExpression(object? value)
         {
-            double? number = null;
-            bool isNumber = Microsoft.VisualBasic.Information.IsNumeric(value);
-            if (isNumber)
-            {
-                number = Convert.ToDouble(value);
-            }
-
-            if (value is string valueString)
-            {
-                if (double.TryParse(valueString, out double parsedValue))
-                {
-                    number = parsedValue;
-                }
-                else
-                {
-                    number = valueString.Length;
-                }
-            }
-
-            if (value is ICollection collection)
-            {
-                number = collection.Count;
-            }
-            else if (value is IEnumerable<object?> enumerable)
-            {
-                number = enumerable.Count();
-            }
-
-            if (value?.GetType().IsEnum == true)
-            {
-                number = (int)value;
-            }
-
-            if (number is null)
+            if (!ExpressionUtils.TryRetrieveNumber(value, out double? number))
             {
                 throw new ArgumentException("Cannot resolve value as number");
             }

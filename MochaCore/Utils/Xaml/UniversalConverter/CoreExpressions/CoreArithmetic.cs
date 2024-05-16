@@ -22,37 +22,37 @@ namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
 
         public object? CalculateExpression(object? value)
         {
-            if(double.TryParse(value.ToString(), out double doubleValue))
+            if (!ExpressionUtils.TryRetrieveNumber(value, out double? doubleValue))
             {
-                if (Multiply is not null)
-                {
-                    doubleValue *= Multiply.Value;
-                }
-
-                if (Divide is not null)
-                {
-                    doubleValue /= Divide.Value;
-                }
-
-                if (Modulo is not null)
-                {
-                    doubleValue %= Modulo.Value;
-                }
-
-                if (Add is not null)
-                {
-                    doubleValue += Add.Value;
-                }
-
-                if (Substract is not null)
-                {
-                    doubleValue -= Substract.Value;
-                }
-
-                return doubleValue;
+                throw new ArgumentException("Cannot resolve value as number");
             }
 
-            throw new ArgumentException("Only numeric value supports arithmetic operations.");
+            if (Multiply is not null)
+            {
+                doubleValue *= Multiply.Value;
+            }
+
+            if (Divide is not null)
+            {
+                doubleValue /= Divide.Value;
+            }
+
+            if (Modulo is not null)
+            {
+                doubleValue %= Modulo.Value;
+            }
+
+            if (Add is not null)
+            {
+                doubleValue += Add.Value;
+            }
+
+            if (Substract is not null)
+            {
+                doubleValue -= Substract.Value;
+            }
+
+            return doubleValue;
         }
     }
 }
