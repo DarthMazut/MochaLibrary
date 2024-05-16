@@ -16,10 +16,10 @@ namespace MochaWinUI.Utils.Xaml.UniversalConverter
     {
         public List<ConvertingRule> Rules { get; set; } = new();
 
-        public object Convert(object value, Type targetType, object parameter, string language)
+        public object Convert(object value, System.Type targetType, object parameter, string language)
             => Rules.FirstOrDefault(r => r.CheckValueMatch(value))?.Convert(value) ?? value;
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        public object ConvertBack(object value, System.Type targetType, object parameter, string language)
             => throw new NotSupportedException();
     }
 

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using UiThickness = Microsoft.UI.Xaml.Thickness;
+
 namespace MochaWinUI.Utils.Xaml.UniversalConverter
 {
     public class Visible : MarkupExtension
@@ -31,5 +33,12 @@ namespace MochaWinUI.Utils.Xaml.UniversalConverter
     public class EmptyString : MarkupExtension
     {
         protected override object ProvideValue(IXamlServiceProvider serviceProvider) => string.Empty;
+    }
+
+    public class Thickness : MarkupExtension
+    {
+        public UiThickness? Value { get; set; }
+
+        protected override object ProvideValue(IXamlServiceProvider serviceProvider) => Value ?? default;
     }
 }

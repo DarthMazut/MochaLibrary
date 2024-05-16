@@ -19,9 +19,11 @@
                 <uc:ConvertingRule.Outputs>
                     <uc:ConvertingOutput Output="{uc:StringTransform SplitBy=' '}" />
                     <uc:ConvertingOutput Output="{uc:CollectionLookup Operation=Last}" />
+                    <uc:ConvertingOutput Output="{uc:Thickness Value='0,5,0,10'}" />
+                    <uc:ConvertingOutput Output="{uc:Type Name='ViewModels.Notifications.Notification'}" />
                 </uc:ConvertingRule.Outputs>
             </uc:ConvertingRule>
-            <uc:ConvertingRule Output="{uc:Visible}"/>
+            <uc:ConvertingRule Output="{uc:Type Name='ViewModels.Notifications.Notification, ViewModels'}"/>
         </uc:UniversalConverter>
 
         <Style x:Key="HeaderBorderBaseStyle" TargetType="Border">

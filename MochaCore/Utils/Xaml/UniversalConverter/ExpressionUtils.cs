@@ -18,7 +18,7 @@ namespace MochaCore.Utils.Xaml.UniversalConverter
             bool isNumber = Microsoft.VisualBasic.Information.IsNumeric(value);
             if (isNumber)
             {
-                number = Convert.ToDouble(value);
+                number = Convert.ToDouble(value); 
             }
 
             if (value is string valueString)
@@ -50,12 +50,23 @@ namespace MochaCore.Utils.Xaml.UniversalConverter
             return number is not null;
         }
 
-        //public static bool TryRetrieveType(object? value, out Type? type)
-        //{
-        //    type = value as Type
-        //        ?? Type.GetType(value as string
-        //        ?? throw new ArgumentException($"{nameof(Type)} must be either {typeof(SystemType)} or {typeof(string)}."))
-        //        ?? throw new ArgumentException($"Provided string does not match any type (?)");
-        //}
+        public static bool TryRetrieveType(object? value, out Type? type)
+        {
+            type = default;
+
+            if (value is Type typeValue)
+            {
+                type = typeValue;
+                return true;
+            }
+
+            if (value is string stringValue)
+            {
+                type = Type.GetType(stringValue);
+                return true;
+            }
+
+            return false;
+        }
     }
 }
