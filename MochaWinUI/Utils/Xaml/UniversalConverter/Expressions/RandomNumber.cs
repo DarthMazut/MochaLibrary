@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MochaWinUI.Utils.Xaml.UniversalConverter.Expressions
+namespace MochaWinUI.Utils.Xaml.UniversalConverter
 {
     public class RandomNumber : MarkupExtension, IConvertingExpression
     {
