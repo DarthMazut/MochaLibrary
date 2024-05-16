@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +8,12 @@ using System.Threading.Tasks;
 namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
 {
     /// <summary>
-    /// Provides a core logic for <i>NumberComparision</i> implementations
-    /// per framework.
+    /// Allows for numeric comparision of processing value. 
+    /// If examined value is collection its length will be evaluated.
+    /// If value is enum it will be converted to its numeric equivalent.
+    /// If value is string it will be either converted to number or its
+    /// length will be evaluated. If no number could be determined from
+    /// processing value an exception will be thrown.
     /// </summary>
     public class CoreNumberComparision : IConvertingExpression
     {
@@ -61,6 +66,24 @@ namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
                 {
                     number = parsedValue;
                 }
+                else
+                {
+                    number = valueString.Length;
+                }
+            }
+
+            if (value is ICollection collection)
+            {
+                number = collection.Count;
+            }
+            else if (value is IEnumerable<object?> enumerable)
+            {
+                number = enumerable.Count();
+            }
+
+            if (value?.GetType().IsEnum == true)
+            {
+                number = (int)value;
             }
 
             if (number is null)
