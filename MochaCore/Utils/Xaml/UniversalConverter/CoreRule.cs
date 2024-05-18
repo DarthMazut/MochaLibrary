@@ -160,7 +160,8 @@ public class CoreCondition
     /// </summary>
     public object? Condition { get; set; }
 
-    //public IConvertingExpression? Projection { get; set; }
+    // TODO:
+    // public IConvertingExpression? Projection { get; set; }
 }
 
 /// <summary>

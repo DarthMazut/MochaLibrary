@@ -8,6 +8,7 @@ using SystemType = System.Type;
 
 namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
 {
+    // TODO: if type is specified but Value is not this should try to parese processing value into enum value.
     public class CoreEnum : IConvertingExpression
     {
         /// <summary>
