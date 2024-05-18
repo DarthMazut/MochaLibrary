@@ -33,6 +33,7 @@ namespace MochaCore.Utils.Xaml.UniversalConverter;
 public class CoreRule
 {
     private readonly record struct NoValue;
+    private record ConditionCheckResult(bool ConditionCheck, object? ProjectedValue);
 
     /// <summary>
     /// Gets or sets the condition for current rule.
@@ -63,13 +64,22 @@ public class CoreRule
     {
         if (Condition is not NoValue)
         {
-            return CheckSingleCondition(Condition, value);
+            if (Condition is IConvertingExpression expression && !expression.IsConditionExpression)
+            {
+                throw new ArgumentException($"Only condition expression is allowed when defining {nameof(Condition)} parameter. " +
+                    $"If condtition projection is required use {nameof(Conditions)} property.");
+            }
+
+            return CheckSingleCondition(Condition, value).ConditionCheck;
         }
 
         bool result = true;
+        object? projectedValue = value;
         foreach (CoreCondition condition in Conditions)
         {
-            result = result && CheckSingleCondition(condition.Condition, value);
+            ConditionCheckResult checkResult = CheckSingleCondition(condition.Condition, projectedValue);
+            result = result && checkResult.ConditionCheck;
+            projectedValue = checkResult.ProjectedValue;
         }
 
         return result;
@@ -97,30 +107,57 @@ public class CoreRule
         return convertingValue;
     }
 
-    private bool CheckSingleCondition(object? condition, object? value)
+    private ConditionCheckResult CheckSingleCondition(object? condition, object? value)
     {
         if (condition is NoValue)
         {
-            return true;
+            return new ConditionCheckResult(true, value);
         }
 
         if (condition is Type type)
         {
-            return type == value?.GetType();
+            return new ConditionCheckResult(type == value?.GetType(), value);
         }
 
         if (condition is IConvertingExpression expression)
         {
-            if (!expression.IsConditionExpression)
+            if (expression.IsConditionExpression)
             {
-                throw new Exception($"Not a condition expression.");
+                return new ConditionCheckResult(expression.CalculateExpression(value) is true, value);
             }
-
-            return expression.CalculateExpression(value) is true;
+            else
+            {
+                return new ConditionCheckResult(true, expression.CalculateExpression(value));
+            }
         }
 
-        return EqualityComparer<object?>.Default.Equals(value, condition);
+        return new ConditionCheckResult(EqualityComparer<object?>.Default.Equals(value, condition), value);
     }
+
+    //private bool CheckSingleCondition(object? condition, object? value)
+    //{
+    //    if (condition is NoValue)
+    //    {
+    //        return true;
+    //    }
+
+    //    if (condition is Type type)
+    //    {
+    //        return type == value?.GetType();
+    //    }
+
+    //    if (condition is IConvertingExpression expression)
+    //    {
+    //        if (!expression.IsConditionExpression)
+    //        {
+    //            throw new Exception($"Not a condition expression.");
+    //        }
+
+    //        return expression.CalculateExpression(value) is true;
+    //    }
+
+    //    return EqualityComparer<object?>.Default.Equals(value, condition);
+    //}
 
     private object? ConvertSingleValue(object? output, object? value)
     {
