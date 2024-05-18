@@ -1,4 +1,5 @@
 ﻿using MochaCore.Utils.Xaml.UniversalConverter;
+using MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,30 @@ namespace MochaTests.UniversalConverter
 {
     public class ConvertingRuleTests
     {
-        public ConvertingRuleTests()
+        private readonly List<string> _items = new()
+        {
+            "some test string",
+            "first second third",
+            "some other string here"
+        };
+
+        [Fact]
+        public void Test()
         {
             CoreRule rule = new()
             {
-
+                Conditions = new List<CoreCondition>()
+                {
+                    new() { Condition = new CoreCollectionLookup() { Index = 1 } },
+                    new() { Condition = new CoreStringTransform() { SplitBy = " " } },
+                    new() { Condition = new CoreCollectionLookup() { Index = 1 } },
+                    new() { Condition = new CoreNumberComparision() { IsGreaterThan = 3 } },
+                    new() { Condition = new CoreNumberComparision() { IsLesserThan = 10 } }
+                }
             };
-            
+
+            bool isMatch = rule.CheckValueMatch(_items);
+            Assert.True(isMatch);
         }
     }
 }

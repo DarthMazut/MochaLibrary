@@ -16,6 +16,9 @@
         <converters:NotificationStateToColumnIndexConverter x:Key="ColumnConverter" />
         <uc:UniversalConverter x:Key="CollectionCountToVisibilityConverter">
             <uc:ConvertingRule Condition="{uc:CollectionCountComparision IsGreaterThan='0'}" Output="{uc:Collapsed}">
+                <!--<uc:ConvertingRule.Conditions>
+                    <uc:ConvertingCondition Projection=""/>
+                </uc:ConvertingRule.Conditions>-->
                 <uc:ConvertingRule.Outputs>
                     <uc:ConvertingOutput Output="{uc:StringTransform SplitBy=' '}" />
                     <uc:ConvertingOutput Output="{uc:CollectionLookup Operation=Last}" />

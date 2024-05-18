@@ -134,31 +134,6 @@ public class CoreRule
         return new ConditionCheckResult(EqualityComparer<object?>.Default.Equals(value, condition), value);
     }
 
-    //private bool CheckSingleCondition(object? condition, object? value)
-    //{
-    //    if (condition is NoValue)
-    //    {
-    //        return true;
-    //    }
-
-    //    if (condition is Type type)
-    //    {
-    //        return type == value?.GetType();
-    //    }
-
-    //    if (condition is IConvertingExpression expression)
-    //    {
-    //        if (!expression.IsConditionExpression)
-    //        {
-    //            throw new Exception($"Not a condition expression.");
-    //        }
-
-    //        return expression.CalculateExpression(value) is true;
-    //    }
-
-    //    return EqualityComparer<object?>.Default.Equals(value, condition);
-    //}
-
     private object? ConvertSingleValue(object? output, object? value)
     {
         if (output is NoValue)
@@ -184,6 +159,8 @@ public class CoreCondition
     /// Gets or sets the condition encapsulated by this instance.
     /// </summary>
     public object? Condition { get; set; }
+
+    //public IConvertingExpression? Projection { get; set; }
 }
 
 /// <summary>
