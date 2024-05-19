@@ -24,9 +24,6 @@ namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
 
         public int? InsertIndex { get; init; }
 
-        // public string? Interpolation { get; init; }
-        // {uc:StringTransform Interpolation='Some interpolated string $1 value $2'}
-
         public bool IsConditionExpression => false;
 
         public object? CalculateExpression(object? value)
