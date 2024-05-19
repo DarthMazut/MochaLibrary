@@ -23,6 +23,8 @@ namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
         /// </summary>
         public object? Value { get; init; }
 
+        // TODO: add static type
+
         public bool IsConditionExpression => false;
 
         public object? CalculateExpression(object? value)

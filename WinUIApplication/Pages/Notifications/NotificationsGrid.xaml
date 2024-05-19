@@ -24,6 +24,7 @@
                     <uc:ConvertingOutput Output="{uc:CollectionLookup Operation=Last}" />
                     <uc:ConvertingOutput Output="{uc:Thickness Value='0,5,0,10'}" />
                     <uc:ConvertingOutput Output="{uc:Type Name='ViewModels.Notifications.Notification'}" />
+                    <uc:ConvertingOutput Output="{uc:StringCheck CheckOperation=}" />
                 </uc:ConvertingRule.Outputs>
             </uc:ConvertingRule>
             <uc:ConvertingRule Output="{uc:Visible}"/>
