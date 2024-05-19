@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using SystemType = System.Type;
-
 namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
 {
     /// <summary>
@@ -19,7 +17,7 @@ namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
         /// <summary>
         /// The type of the enumeration value to be returned.
         /// </summary>
-        public SystemType? Type { get; init; }
+        public Type? Type { get; init; }
 
         /// <summary>
         /// Fully qualified type name of the enumeration value to be returned.
@@ -41,8 +39,8 @@ namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
                 throw new ArgumentException($"Type must be specified. Provide value for either {nameof(Type)} or {nameof(TypeName)} properties.");
             }
 
-            SystemType enumType = Type
-                ?? SystemType.GetType(TypeName!) 
+            Type enumType = Type
+                ?? Type.GetType(TypeName!) 
                 ?? throw new ArgumentException($"Provided string does not match any type (?)");
 
             string? valueString = Value?.ToString() ?? value?.ToString() ?? null;
