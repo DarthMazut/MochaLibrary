@@ -17,29 +17,37 @@ namespace MochaTests.UniversalConverter
         };
 
         [Fact]
-        public void Test()
+        public void ShouldReturnFormatedString_WhenCollectionIsProvided()
         {
             CoreStringInterpolation stringInterpolation = new()
             {
-                String = "This test {0} test test {1} test"
+                String = "A B {0} C D {1} E"
             };
 
             object? result = stringInterpolation.CalculateExpression(_values);
 
-            Assert.Equal("This test Value 1 test test Value 2 test", result);  
+            Assert.Equal("A B Value 1 C D Value 2 E", result);  
         }
 
         [Fact]
-        public void Test2()
+        public void ShouldReturnFormatedString_WhenValueIsProvided()
         {
             CoreStringInterpolation stringInterpolation = new()
             {
-                String = "This test {0} test test"
+                String = "A B {0} C D"
             };
 
             object? result = stringInterpolation.CalculateExpression(20d);
 
-            Assert.Equal("This test 20 test test", result);
+            Assert.Equal("A B 20 C D", result);
+        }
+
+        [Fact]
+        public void ShouldThrow_WhenNoStringProvided()
+        {
+            CoreStringInterpolation stringInterpolation = new() { };
+
+            Assert.Throws<ArgumentException>(() => stringInterpolation.CalculateExpression(default));
         }
     }
 }
