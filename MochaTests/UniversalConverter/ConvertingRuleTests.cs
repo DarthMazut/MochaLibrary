@@ -24,9 +24,9 @@ namespace MochaTests.UniversalConverter
             {
                 Conditions = new List<CoreCondition>()
                 {
-                    new() { Condition = new CoreCollectionLookup() { Index = 1 } },
-                    new() { Condition = new CoreStringTransform() { SplitBy = " " } },
-                    new() { Condition = new CoreCollectionLookup() { Index = 1 } },
+                    new() { Projection = new CoreCollectionLookup() { Index = 1 } },
+                    new() { Projection = new CoreStringTransform() { SplitBy = " " } },
+                    new() { Projection = new CoreCollectionLookup() { Index = 1 } },
                     new() { Condition = new CoreNumberComparision() { IsGreaterThan = 3 } },
                     new() { Condition = new CoreNumberComparision() { IsLesserThan = 10 } }
                 }

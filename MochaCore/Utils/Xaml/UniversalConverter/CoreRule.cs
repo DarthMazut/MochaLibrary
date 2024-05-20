@@ -70,14 +70,14 @@ public class CoreRule
                     $"If condtition projection is required use {nameof(Conditions)} property.");
             }
 
-            return CheckSingleCondition(Condition, value).ConditionCheck;
+            return CheckSingleCondition(Condition, null, value).ConditionCheck;
         }
 
         bool result = true;
         object? projectedValue = value;
         foreach (CoreCondition condition in Conditions)
         {
-            ConditionCheckResult checkResult = CheckSingleCondition(condition.Condition, projectedValue);
+            ConditionCheckResult checkResult = CheckSingleCondition(condition.Condition, condition.Projection, projectedValue);
             result = result && checkResult.ConditionCheck;
             projectedValue = checkResult.ProjectedValue;
         }
@@ -107,8 +107,13 @@ public class CoreRule
         return convertingValue;
     }
 
-    private ConditionCheckResult CheckSingleCondition(object? condition, object? value)
+    private ConditionCheckResult CheckSingleCondition(object? condition, IConvertingExpression? projection, object? value)
     {
+        if (projection is not null)
+        {
+            return new ConditionCheckResult(true, projection.CalculateExpression(value));
+        }
+
         if (condition is NoValue)
         {
             return new ConditionCheckResult(true, value);
@@ -127,7 +132,7 @@ public class CoreRule
             }
             else
             {
-                return new ConditionCheckResult(true, expression.CalculateExpression(value));
+                throw new ArgumentException("Only condition expressions are allowed.");
             }
         }
 
@@ -160,8 +165,10 @@ public class CoreCondition
     /// </summary>
     public object? Condition { get; set; }
 
-    // TODO:
-    // public IConvertingExpression? Projection { get; set; }
+    /// <summary>
+    /// Gets or sets projection expression encapsulated by this instance.
+    /// </summary>
+    public IConvertingExpression? Projection { get; set; }
 }
 
 /// <summary>
