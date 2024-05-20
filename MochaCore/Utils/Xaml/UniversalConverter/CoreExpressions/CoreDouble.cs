@@ -19,7 +19,7 @@ namespace MochaCore.Utils.Xaml.UniversalConverter.CoreExpressions
                 return Value;
             }
 
-            if (double.TryParse(value.ToString(), out double doubleValue))
+            if (ExpressionUtils.TryRetrieveNumber(value, out double? doubleValue))
             {
                 return doubleValue;
             }

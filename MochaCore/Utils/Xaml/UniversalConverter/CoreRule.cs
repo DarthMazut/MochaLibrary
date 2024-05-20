@@ -64,12 +64,6 @@ public class CoreRule
     {
         if (Condition is not NoValue)
         {
-            if (Condition is IConvertingExpression expression && !expression.IsConditionExpression)
-            {
-                throw new ArgumentException($"Only condition expression is allowed when defining {nameof(Condition)} parameter. " +
-                    $"If condtition projection is required use {nameof(Conditions)} property.");
-            }
-
             return CheckSingleCondition(Condition, null, value).ConditionCheck;
         }
 
@@ -119,11 +113,6 @@ public class CoreRule
             return new ConditionCheckResult(true, value);
         }
 
-        if (condition is Type type)
-        {
-            return new ConditionCheckResult(type == value?.GetType(), value);
-        }
-
         if (condition is IConvertingExpression expression)
         {
             if (expression.IsConditionExpression)
@@ -132,8 +121,13 @@ public class CoreRule
             }
             else
             {
-                throw new ArgumentException("Only condition expressions are allowed.");
+                condition = expression.CalculateExpression(value);
             }
+        }
+
+        if (condition is Type type)
+        {
+            return new ConditionCheckResult(type == value?.GetType(), value);
         }
 
         return new ConditionCheckResult(EqualityComparer<object?>.Default.Equals(value, condition), value);

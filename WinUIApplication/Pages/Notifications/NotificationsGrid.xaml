@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WinUiApplication.Controls"
+    xmlns:notifications="using:ViewModels.Notifications"
     xmlns:converters="using:WinUiApplication.Converters"
     xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter"
     xmlns:ui="using:CommunityToolkit.WinUI"
@@ -12,20 +13,15 @@
     mc:Ignorable="d"
     x:Name="thisControl">
 
+    <!-- should uc:Double be uc:Number ? -->
+    
     <UserControl.Resources>
-        <converters:NotificationStateToColumnIndexConverter x:Key="ColumnConverter" />
-        <uc:UniversalConverter x:Key="CollectionCountToVisibilityConverter">
-            <uc:ConvertingRule Condition="{uc:NumberComparision IsGreaterThan='0'}" Output="{uc:Collapsed}">
-                <!--<uc:ConvertingRule.Conditions>
-                    <uc:ConvertingCondition Projection=""/>
-                </uc:ConvertingRule.Conditions>-->
-                <uc:ConvertingRule.Outputs>
-                    <uc:ConvertingOutput Output="{uc:StringTransform SplitBy=' '}" />
-                    <uc:ConvertingOutput Output="{uc:CollectionLookup Operation=Last}" />
-                    <uc:ConvertingOutput Output="{uc:Thickness Value='0,5,0,10'}" />
-                    <uc:ConvertingOutput Output="{uc:Type Name='ViewModels.Notifications.Notification'}" />
-                </uc:ConvertingRule.Outputs>
-            </uc:ConvertingRule>
+        <!--<converters:NotificationStateToColumnIndexConverter x:Key="ColumnConverter" />-->
+        <uc:UniversalConverter x:Key="ColumnConverter">
+            <uc:ConvertingRule Output="{uc:Double}" />
+        </uc:UniversalConverter>
+        <uc:UniversalConverter x:Key="CountToVisibilityConverter">
+            <uc:ConvertingRule Condition="{uc:NumberComparision IsGreaterThan='0'}" Output="{uc:Collapsed}"/>
             <uc:ConvertingRule Output="{uc:Visible}"/>
         </uc:UniversalConverter>
 
@@ -137,7 +133,7 @@
             </ScrollViewer>
             <TextBlock
                 Text="Nothing to display"
-                Visibility="{Binding ItemsSource, ElementName=thisControl, Converter={StaticResource CollectionCountToVisibilityConverter}}"
+                Visibility="{Binding ItemsSource.Count, ElementName=thisControl, Converter={StaticResource CountToVisibilityConverter}}"
                 Style="{StaticResource SubtitleTextBlockStyle}"
                 HorizontalAlignment="Center"/>
         </Grid>
