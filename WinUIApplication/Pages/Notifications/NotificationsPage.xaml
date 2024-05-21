@@ -8,11 +8,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:Interactions="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter"
     mc:Ignorable="d"
     xmlns:controls="using:WinUiApplication.Controls"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
+        <uc:UniversalConverter x:Key="CollectionCountToBooleanConverter">
+            <uc:ConvertingRule Output="{uc:NumberComparision IsEqualTo=0}"/>
+        </uc:UniversalConverter>
         <Style x:Key="AddNotificationButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="CornerRadius" Value="0" />
@@ -42,12 +46,17 @@
                 Style="{StaticResource AddNotificationButtonStyle}"
                 Command="{Binding AddNotificationCommand}">
                 <StackPanel Spacing="16" Orientation="Horizontal">
-                    <Border BorderThickness="2" BorderBrush="{ThemeResource TextBoxBorderThemeBrush}" Padding="10">
+                    <Border x:Name="AddNotificationBorder" BorderThickness="2" BorderBrush="{ThemeResource TextBoxBorderThemeBrush}" Padding="10">
                         <FontIcon Glyph="&#xE710;" />
                     </Border>
                     <TextBlock Text="Add notification" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
+            <TeachingTip
+                Title="Click here to create new notifications..."
+                PreferredPlacement="TopRight"
+                IsOpen="{Binding Notifications.Count, Converter={StaticResource CollectionCountToBooleanConverter}}"
+                Target="{Binding ElementName=AddNotificationBorder}"/>
         </Grid>
     </controls:PageRoot>
 </Page>

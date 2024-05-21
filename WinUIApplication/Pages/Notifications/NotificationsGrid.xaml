@@ -135,7 +135,8 @@
                 Text="Nothing to display"
                 Visibility="{Binding ItemsSource.Count, ElementName=thisControl, Converter={StaticResource CountToVisibilityConverter}}"
                 Style="{StaticResource SubtitleTextBlockStyle}"
-                HorizontalAlignment="Center"/>
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"/>
         </Grid>
     </Grid>
 </UserControl>
