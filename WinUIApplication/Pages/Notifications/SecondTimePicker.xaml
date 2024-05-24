@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="WinUiApplication.Pages.Notifications.SecondTimePicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUiApplication.Pages.Notifications"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:numberformatting="using:Windows.Globalization.NumberFormatting"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <numberformatting:DecimalFormatter x:Key="NumberFormater" IntegerDigits="2" FractionDigits="0"/>
+        <SolidColorBrush x:Key="TextControlBackgroundPointerOver">Red</SolidColorBrush>
+    </UserControl.Resources>
+
+    <Grid>
+        <StackPanel>
+            <TextBlock>
+                <Run Text="Current time: " />
+                <Run Text="#value" />
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Spacing="2">
+                <NumberBox PlaceholderText="HH" Maximum="23" Minimum="0" NumberFormatter="{StaticResource NumberFormater}" />
+                <TextBlock Text=":" VerticalAlignment="Center"/>
+                <NumberBox PlaceholderText="MM" Maximum="59" Minimum="0" />
+                <TextBlock Text=":" VerticalAlignment="Center"/>
+                <NumberBox PlaceholderText="SS" Maximum="59" Minimum="0" />
+            </StackPanel>
+        </StackPanel>
+        <!--<Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>-->
+    </Grid>
+</UserControl>

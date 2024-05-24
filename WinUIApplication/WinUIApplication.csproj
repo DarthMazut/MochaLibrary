@@ -27,6 +27,7 @@
     <None Remove="Pages\DispatcherPage.xaml" />
     <None Remove="Pages\EditPersonPage.xaml" />
     <None Remove="Pages\NotificationsPage.xaml" />
+    <None Remove="Pages\Notifications\SecondTimePicker.xaml" />
     <None Remove="Pages\PeoplePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
     <None Remove="Pages\WindowingPage.xaml" />
@@ -62,6 +63,11 @@
   <ItemGroup>
     <ProjectReference Include="..\MochaWinUI\MochaWinUI.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\Notifications\SecondTimePicker.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Dialogs\EditNotificationDialog.xaml">
