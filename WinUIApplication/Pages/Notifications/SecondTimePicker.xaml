@@ -9,8 +9,20 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <numberformatting:DecimalFormatter x:Key="NumberFormater" IntegerDigits="2" FractionDigits="0"/>
-        <SolidColorBrush x:Key="TextControlBackgroundPointerOver">Red</SolidColorBrush>
+        <numberformatting:DecimalFormatter x:Key="NumberFormater" IntegerDigits="2" FractionDigits="0">
+            <numberformatting:DecimalFormatter.NumberRounder>
+                <numberformatting:SignificantDigitsNumberRounder RoundingAlgorithm="None"/>
+            </numberformatting:DecimalFormatter.NumberRounder>
+        </numberformatting:DecimalFormatter>
+
+        <SolidColorBrush x:Key="TextControlBackground">Transparent</SolidColorBrush>
+        <StaticResource x:Key="TextControlBackgroundFocused" ResourceKey="AccentFillColorSecondaryBrush" />
+        <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
+        <Style x:Key="NumberBoxStyle" TargetType="NumberBox">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="56" />
+            <Setter Property="CornerRadius" Value="0" />
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -20,11 +32,11 @@
                 <Run Text="#value" />
             </TextBlock>
             <StackPanel Orientation="Horizontal" Spacing="2">
-                <NumberBox PlaceholderText="HH" Maximum="23" Minimum="0" NumberFormatter="{StaticResource NumberFormater}" />
+                <NumberBox PlaceholderText="HH" Maximum="23" Minimum="0" NumberFormatter="{StaticResource NumberFormater}" Style="{StaticResource NumberBoxStyle}"/>
                 <TextBlock Text=":" VerticalAlignment="Center"/>
-                <NumberBox PlaceholderText="MM" Maximum="59" Minimum="0" />
+                <NumberBox PlaceholderText="MM" Maximum="59" Minimum="0" NumberFormatter="{StaticResource NumberFormater}" Style="{StaticResource NumberBoxStyle}"/>
                 <TextBlock Text=":" VerticalAlignment="Center"/>
-                <NumberBox PlaceholderText="SS" Maximum="59" Minimum="0" />
+                <NumberBox PlaceholderText="SS" Maximum="59" Minimum="0" NumberFormatter="{StaticResource NumberFormater}" Style="{StaticResource NumberBoxStyle}"/>
             </StackPanel>
         </StackPanel>
         <!--<Grid.ColumnDefinitions>
