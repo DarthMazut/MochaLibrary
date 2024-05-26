@@ -102,7 +102,7 @@ namespace MochaWinUI.Notifications
 
             if (!wasDisplayed)
             {
-                ToastNotificationManager.CreateToastNotifier().ScheduledToastNotificationShowing += NotificationDisplayed;
+                ToastNotificationManager.GetDefault().CreateToastNotifier().ScheduledToastNotificationShowing += NotificationDisplayed;
             }
 
             if (!wasInteracted)

@@ -59,11 +59,11 @@ namespace ViewModels.DialogsVMs
             {
                 Title = Name,
                 Tag = Tag,
-                ScheduledTime = new DateTimeOffset(
-                    Date.Year,
-                    Date.Month,
-                    Date.Day,
-                    0, 0, 0, Date.Offset) + Time
+                ScheduledTime = Date//new DateTimeOffset(
+                    //Date.Year,
+                    //Date.Month,
+                    //Date.Day,
+                    //0, 0, 0, Date.Offset) + Time
             };
 
             DialogControl.Properties.CustomProperties["Notification"] = notification;

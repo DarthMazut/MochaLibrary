@@ -31,25 +31,34 @@
         <StackPanel>
             <TextBlock>
                 <Run Text="Current time: " />
-                <Run x:Name="xe_CurrentTimeText" Text="#value" />
+                <Run x:Name="xe_CurrentTimeText" />
             </TextBlock>
             <StackPanel Orientation="Horizontal" Spacing="2">
-                <NumberBox Maximum="23" Minimum="0" NumberFormatter="{StaticResource NumberFormater}" Style="{StaticResource NumberBoxStyle}"/>
+                <NumberBox
+                    x:Name="xe_HourNumber"
+                    Maximum="23"
+                    Minimum="0"
+                    ValueChanged="TimeValueChanged"
+                    NumberFormatter="{StaticResource NumberFormater}"
+                    Style="{StaticResource NumberBoxStyle}"/>
                 <TextBlock Text=":" VerticalAlignment="Center"/>
-                <NumberBox Maximum="59" Minimum="0" NumberFormatter="{StaticResource NumberFormater}" Style="{StaticResource NumberBoxStyle}"/>
+                <NumberBox
+                    x:Name="xe_MinuteNumber"
+                    Maximum="59"
+                    Minimum="0"
+                    ValueChanged="TimeValueChanged"
+                    NumberFormatter="{StaticResource NumberFormater}"
+                    Style="{StaticResource NumberBoxStyle}"/>
                 <TextBlock Text=":" VerticalAlignment="Center"/>
-                <NumberBox Maximum="59" Minimum="0" NumberFormatter="{StaticResource NumberFormater}" Style="{StaticResource NumberBoxStyle}"/>
+                <NumberBox
+                    x:Name="xe_SecondNumber"
+                    Maximum="59"
+                    Minimum="0"
+                    ValueChanged="TimeValueChanged"
+                    NumberFormatter="{StaticResource NumberFormater}"
+                    Style="{StaticResource NumberBoxStyle}"/>
+                <FontIcon Glyph="&#xE783;" Foreground="{StaticResource SystemFillColorCriticalBrush}" ToolTipService.ToolTip="Selected time is in the past."/>
             </StackPanel>
         </StackPanel>
-        <!--<Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>-->
     </Grid>
 </UserControl>

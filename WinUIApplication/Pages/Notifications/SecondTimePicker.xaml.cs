@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -22,17 +23,90 @@ namespace WinUiApplication.Pages.Notifications
 {
     public sealed partial class SecondTimePicker : UserControl
     {
-        private CancellationTokenSource? _timerTaskCts;
+        public static readonly DependencyProperty SelectedTimeProperty =
+            DependencyProperty.Register(nameof(SelectedTime), typeof(DateTimeOffset), typeof(SecondTimePicker), new PropertyMetadata(0, SelectedTimeChanged));
+
+        public DateTimeOffset SelectedTime
+        {
+            get { return (DateTimeOffset)GetValue(SelectedTimeProperty); }
+            set { SetValue(SelectedTimeProperty, value); }
+        }
+
+        private static void SelectedTimeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DateTimeOffset now = (DateTimeOffset)e.NewValue;
+            ((SecondTimePicker)d).xe_HourNumber.Value = now.Hour;
+            ((SecondTimePicker)d).xe_MinuteNumber.Value = now.Minute;
+            ((SecondTimePicker)d).xe_SecondNumber.Value = now.Second;
+        }
 
         public SecondTimePicker()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+            Unloaded += (s, e) =>
+            {
+                TimerTick -= OnInternalTimerTick;
+            };
 
-            ActivateTimeer();
-            Unloaded += (s, e) => DeactivateTimer();
+            TimerTick += OnInternalTimerTick;
         }
 
-        private void ActivateTimeer()
+        private void OnInternalTimerTick(object? sender, EventArgs e)
+        {
+            _ = DispatcherQueue.TryEnqueue(() =>
+            {
+                xe_CurrentTimeText.Text = DateTimeOffset.Now.ToString("HH:mm:ss");
+            });
+        }
+
+        private void TimeValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            if (double.IsNaN(xe_HourNumber.Value) || double.IsNaN(xe_MinuteNumber.Value) || double.IsNaN(xe_SecondNumber.Value))
+            {
+                xe_HourNumber.Value = SelectedTime.Hour;
+                xe_MinuteNumber.Value = SelectedTime.Minute;
+                xe_SecondNumber.Value = SelectedTime.Second;
+                return;
+            }
+
+            SelectedTime = new DateTimeOffset(
+                SelectedTime.Year,
+                SelectedTime.Month,
+                SelectedTime.Day,
+                (int)xe_HourNumber.Value,
+                (int)xe_MinuteNumber.Value,
+                (int)xe_SecondNumber.Value,
+                SelectedTime.Offset);
+        }
+
+        #region SHARED_TIMER
+
+        private static CancellationTokenSource? _timerTaskCts;
+
+        private static event EventHandler? _timerTick;
+        private static event EventHandler? TimerTick
+        {
+            add
+            {
+                if (_timerTick is null)
+                {
+                    StartTimer();
+                }
+
+                _timerTick += value;
+            }
+
+            remove
+            {
+                _timerTick -= value;
+                if (_timerTick is null)
+                {
+                    StopTimer();
+                }
+            }
+        }
+
+        private static void StartTimer()
         {
             if (_timerTaskCts is null)
             {
@@ -43,21 +117,19 @@ namespace WinUiApplication.Pages.Notifications
                 {
                     while (cts.IsCancellationRequested == false)
                     {
-                        _ = DispatcherQueue.TryEnqueue(() =>
-                        {
-                            xe_CurrentTimeText.Text = DateTimeOffset.Now.ToString("HH:mm:ss");
-                        });
-
+                        _timerTick?.Invoke(null, EventArgs.Empty);
                         await Task.Delay(100);
                     }
                 }, _timerTaskCts.Token);
-            }      
+            }
         }
 
-        private void DeactivateTimer()
+        private static void StopTimer()
         {
             _timerTaskCts?.Cancel();
             _timerTaskCts = null;
         }
+
+        #endregion
     }
 }

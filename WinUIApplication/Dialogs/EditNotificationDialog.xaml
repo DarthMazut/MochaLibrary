@@ -98,7 +98,7 @@
                 <StackPanel Style="{StaticResource ItemStackPanel}">
                     <TextBlock Text="Schedule time:" Style="{StaticResource HeaderText}"/>
                     <!--<TimePicker ClockIdentifier="24HourClock" SelectedTime="{Binding Time, Mode=TwoWay}" />-->
-                    <notifications:SecondTimePicker />
+                    <notifications:SecondTimePicker SelectedTime="{Binding Date, Mode=TwoWay}" />
                     <DatePicker SelectedDate="{Binding Date, Mode=TwoWay}" />
                 </StackPanel>
                 <StackPanel Style="{StaticResource ItemStackPanel}">
