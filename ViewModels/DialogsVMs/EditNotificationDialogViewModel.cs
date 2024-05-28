@@ -17,11 +17,6 @@ namespace ViewModels.DialogsVMs
     {
         public CustomDialogControl<DialogProperties> DialogControl { get; } = new();
 
-        public EditNotificationDialogViewModel()
-        {
-            Time = TimeSpan.FromHours(Date.Hour) + TimeSpan.FromMinutes(Date.Minute);
-        }
-
         [ObservableProperty]
         private string? _name;
 
@@ -29,10 +24,7 @@ namespace ViewModels.DialogsVMs
         private string? _tag;
 
         [ObservableProperty]
-        private TimeSpan _time;
-
-        [ObservableProperty]
-        private DateTimeOffset _date = DateTimeOffset.Now;
+        private DateTimeOffset _date = DateTimeOffset.Now.AddMinutes(1);
 
         [ObservableProperty]
         private bool _scheduleOnClose;
@@ -59,12 +51,13 @@ namespace ViewModels.DialogsVMs
             {
                 Title = Name,
                 Tag = Tag,
-                ScheduledTime = Date//new DateTimeOffset(
-                    //Date.Year,
-                    //Date.Month,
-                    //Date.Day,
-                    //0, 0, 0, Date.Offset) + Time
+                ScheduledTime = Date
             };
+
+            if (string.IsNullOrWhiteSpace(notification.Title))
+            {
+                notification.Title = $"Notification {notification.Id.Split("-").LastOrDefault() ?? "?"}";
+            }
 
             DialogControl.Properties.CustomProperties["Notification"] = notification;
             if (ScheduleOnClose)
