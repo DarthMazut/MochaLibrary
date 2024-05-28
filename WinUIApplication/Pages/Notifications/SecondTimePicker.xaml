@@ -57,7 +57,7 @@
                     ValueChanged="TimeValueChanged"
                     NumberFormatter="{StaticResource NumberFormater}"
                     Style="{StaticResource NumberBoxStyle}"/>
-                <FontIcon Glyph="&#xE783;" Foreground="{StaticResource SystemFillColorCriticalBrush}" ToolTipService.ToolTip="Selected time is in the past."/>
+                <FontIcon x:Name="xe_TimeWarning" Glyph="&#xE783;" Foreground="{StaticResource SystemFillColorCriticalBrush}" ToolTipService.ToolTip="Selected time is in the past."/>
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -24,7 +24,7 @@ namespace WinUiApplication.Pages.Notifications
     public sealed partial class SecondTimePicker : UserControl
     {
         public static readonly DependencyProperty SelectedTimeProperty =
-            DependencyProperty.Register(nameof(SelectedTime), typeof(DateTimeOffset), typeof(SecondTimePicker), new PropertyMetadata(0, SelectedTimeChanged));
+            DependencyProperty.Register(nameof(SelectedTime), typeof(DateTimeOffset), typeof(SecondTimePicker), new PropertyMetadata(default, SelectedTimeChanged));
 
         public DateTimeOffset SelectedTime
         {
@@ -38,6 +38,8 @@ namespace WinUiApplication.Pages.Notifications
             ((SecondTimePicker)d).xe_HourNumber.Value = now.Hour;
             ((SecondTimePicker)d).xe_MinuteNumber.Value = now.Minute;
             ((SecondTimePicker)d).xe_SecondNumber.Value = now.Second;
+
+            ((SecondTimePicker)d).UpdateTimeWarning();
         }
 
         public SecondTimePicker()
@@ -56,6 +58,7 @@ namespace WinUiApplication.Pages.Notifications
             _ = DispatcherQueue.TryEnqueue(() =>
             {
                 xe_CurrentTimeText.Text = DateTimeOffset.Now.ToString("HH:mm:ss");
+                UpdateTimeWarning();
             });
         }
 
@@ -78,6 +81,12 @@ namespace WinUiApplication.Pages.Notifications
                 (int)xe_SecondNumber.Value,
                 SelectedTime.Offset);
         }
+
+        private void UpdateTimeWarning()
+        {
+            xe_TimeWarning.Visibility = SelectedTime <= DateTimeOffset.Now ? Visibility.Visible : Visibility.Collapsed;
+        }
+
 
         #region SHARED_TIMER
 
