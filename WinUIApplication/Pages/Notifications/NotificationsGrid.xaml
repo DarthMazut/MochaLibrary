@@ -102,7 +102,11 @@
                                 <Border Grid.Column="0" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
                                 <Border Grid.Column="1" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
                                 <Border Grid.Column="2" Style="{StaticResource ItemVerticalSplitLineBorder}"/>
-                                <local:NotificationCard Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}" Margin="8">
+                                <local:NotificationCard
+                                    Grid.Column="{Binding State, Converter={StaticResource ColumnConverter}}"
+                                    Command="{Binding DataContext.EditNotificationCommand, ElementName=thisControl}"
+                                    CommandParameter="{Binding}"
+                                    Margin="8">
                                     <local:NotificationCard.ContextFlyout>
                                         <MenuFlyout>
                                             <MenuFlyoutItem Text="Schedule" Command="{Binding ScheduleCommand}" IsEnabled="{Binding CanSchedule}">
@@ -110,10 +114,7 @@
                                                     <FontIcon Glyph="&#xE724;" />
                                                 </MenuFlyoutItem.Icon>
                                             </MenuFlyoutItem>
-                                            <MenuFlyoutItem
-                                    Command="{Binding DisposeNotificationCommand, ElementName=thisControl}"
-                                    CommandParameter="{Binding}"
-                                    Text="Dispose">
+                                            <MenuFlyoutItem Text="Dispose" Command="{Binding DisposeNotificationCommand, ElementName=thisControl}" CommandParameter="{Binding}">
                                                 <MenuFlyoutItem.Icon>
                                                     <FontIcon Glyph="&#xE74D;" />
                                                 </MenuFlyoutItem.Icon>

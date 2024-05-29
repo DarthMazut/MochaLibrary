@@ -17,6 +17,11 @@ namespace ViewModels.DialogsVMs
     {
         public CustomDialogControl<DialogProperties> DialogControl { get; } = new();
 
+        public EditNotificationDialogViewModel()
+        {
+            
+        }
+
         [ObservableProperty]
         private string? _name;
 

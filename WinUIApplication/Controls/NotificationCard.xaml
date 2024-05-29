@@ -11,7 +11,8 @@
     xmlns:Interactions="using:Microsoft.Xaml.Interactions.Core"
     xmlns:Behaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:ui="using:CommunityToolkit.WinUI"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    x:Name="thisControl">
 
     <UserControl.Resources>
         <StaticResource x:Key="HoverCardBrush" ResourceKey="AccentFillColorDefaultBrush"/>
@@ -47,7 +48,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Button Style="{StaticResource NotificationCardButton}">
+    <Button Command="{Binding Command, ElementName=thisControl}" CommandParameter="{Binding CommandParameter, ElementName=thisControl}" Style="{StaticResource NotificationCardButton}">
         <Button.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.ThemeDictionaries>
