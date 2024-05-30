@@ -19,7 +19,7 @@ namespace ViewModels.DialogsVMs
 
         public EditNotificationDialogViewModel()
         {
-            
+            DialogControl.SubscribeOnDialogOpened(DialogOpened);
         }
 
         [ObservableProperty]
@@ -45,8 +45,18 @@ namespace ViewModels.DialogsVMs
             new NotificationHeroImageSchema()
         };
 
-        public bool CanCreate => SelectedSchema is not null;
+        private bool _isEditMode;
+        public bool IsEditMode
+        {
+            get => _isEditMode;
+            private set
+            {
+                _isEditMode = value;
+                OnPropertyChanged(nameof(IsEditMode));
+            }
+        }
 
+        public bool CanCreate => SelectedSchema is not null;
 
         [RelayCommand(CanExecute = nameof(CanCreate))]
         private void Create()
@@ -77,6 +87,24 @@ namespace ViewModels.DialogsVMs
         private void Close()
         {
             DialogControl.Close(false);
+        }
+
+        private void DialogOpened()
+        {
+            if (DialogControl.Properties.CustomProperties.TryGetValue("Notification", out object? propertyValue))
+            {
+                IsEditMode = true;
+            }
+        }
+
+        private void CreateNotification()
+        {
+
+        }
+
+        private void ApplyChanges()
+        {
+
         }
     }
 }

@@ -9,6 +9,7 @@
     xmlns:nvm="using:ViewModels.Notifications"
     xmlns:dvm="using:ViewModels.DialogsVMs"
     xmlns:ui="using:CommunityToolkit.WinUI"
+    xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -17,6 +18,13 @@
     </ContentDialog.DataContext>
 
     <ContentDialog.Resources>
+        <uc:UniversalConverter x:Key="ConfirmButtonTextConverter">
+            <uc:ConvertingRule Condition="{uc:True}" Output="Apply"/>
+            <uc:ConvertingRule Output="Create"/>
+        </uc:UniversalConverter>
+        <uc:UniversalConverter x:Key="Negation">
+            <uc:ConvertingRule Output="{uc:Negate}"/>
+        </uc:UniversalConverter>
         <x:Double x:Key="ContentDialogMinWidth">400</x:Double>
         <x:Double x:Key="ContentDialogMaxWidth">400</x:Double>
         <x:Double x:Key="ContentDialogMinHeight">184</x:Double>
@@ -103,6 +111,7 @@
                 <StackPanel Style="{StaticResource ItemStackPanel}">
                     <TextBlock Text="Schema:" Style="{StaticResource HeaderText}"/>
                     <ComboBox
+                        IsEnabled="{Binding IsEditMode, Converter={StaticResource Negation}}"
                         PlaceholderText="Pick a notification template..."
                         SelectedItem="{Binding SelectedSchema, Mode=TwoWay}"
                         ItemsSource="{Binding NotificationSchemas}"/>
@@ -118,7 +127,7 @@
             </StackPanel>
         </ScrollViewer>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-            <Button Content="Create" Command="{Binding CreateCommand}" Style="{StaticResource AccentButtonStyle}"/>
+            <Button Content="{Binding IsEditMode, Converter={StaticResource ConfirmButtonTextConverter}}" Command="{Binding CreateCommand}" Style="{StaticResource AccentButtonStyle}"/>
             <Button Content="Cancel" Command="{Binding CloseCommand}"/>
         </StackPanel>
     </Grid>
