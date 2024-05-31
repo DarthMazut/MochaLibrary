@@ -42,10 +42,10 @@ namespace ViewModels.Notifications
 
         public INotification CreateNotification()
         {
-            INotification<SimpleNotificationProperties> notification 
-                = NotificationManager.RetrieveNotification<SimpleNotificationProperties>("SimpleNotification");
+            INotification<GeneralNotificationProperties> notification 
+                = NotificationManager.RetrieveNotification<GeneralNotificationProperties>("SimpleNotification");
 
-            notification.Properties = new SimpleNotificationProperties()
+            notification.Properties = new GeneralNotificationProperties()
             {
                 Title = Title,
                 Content = Content,

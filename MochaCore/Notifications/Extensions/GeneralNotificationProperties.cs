@@ -9,7 +9,7 @@ namespace MochaCore.Notifications.Extensions
     /// <summary>
     /// Provides properties for basic notification.
     /// </summary>
-    public class SimpleNotificationProperties
+    public class GeneralNotificationProperties
     {
         /// <summary>
         /// Notification header text. If set to <see langword="null"/> won't be visible.
@@ -25,5 +25,15 @@ namespace MochaCore.Notifications.Extensions
         /// Specifies notification image. If set to <see langword="null"/> won't be visible. 
         /// </summary>
         public string? Image { get; set; }
+
+        /// <summary>
+        /// Specifies the text for the left notification button.
+        /// </summary>
+        public string? LeftButton { get; set; }
+
+        /// <summary>
+        /// Specifies the text for the right notification button.
+        /// </summary>
+        public string? RightButton { get; set; }
     }
 }

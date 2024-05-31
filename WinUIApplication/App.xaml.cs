@@ -52,7 +52,7 @@ namespace WinUiApplication
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            NotificationManager.RegisterNotification("SimpleNotification", new Func<INotificationRoot<SimpleNotificationProperties>>(() => new WinUiSimpleNotification("SimpleNotification")));
+            NotificationManager.RegisterNotification("SimpleNotification", new Func<INotificationRoot<GeneralNotificationProperties>>(() => new WinUiGeneralNotification("SimpleNotification")));
 
             WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow()));
             WindowManager.RegisterWindow("TestWindow", () => new WindowModule<GenericWindowProperties>(new TestWindow(), new TestWindowViewModel()));
