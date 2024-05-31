@@ -60,6 +60,38 @@ namespace ViewModels.DialogsVMs
 
         [RelayCommand(CanExecute = nameof(CanCreate))]
         private void Create()
+        {   
+            if (IsEditMode)
+            {
+                ApplyChanges();
+            }
+            else
+            {
+                CreateNotification();
+            }
+
+            DialogControl.Close(true);
+        }
+
+        [RelayCommand]
+        private void Close()
+        {
+            DialogControl.Close(false);
+        }
+
+        private void DialogOpened()
+        {
+            if (DialogControl.Properties.CustomProperties.TryGetValue("Notification", out object? propertyValue))
+            {
+                IsEditMode = true;
+                Notification notification = (propertyValue as Notification)!;
+                Name = notification.Title;
+                Tag = notification.Tag;
+                Date = notification.ScheduledTime;
+            }
+        }
+
+        private void CreateNotification()
         {
             INotification coreNotification = SelectedSchema!.CreateNotification();
             Notification notification = new(coreNotification)
@@ -79,27 +111,6 @@ namespace ViewModels.DialogsVMs
             {
                 notification.ScheduleCommand.Execute(default);
             }
-
-            DialogControl.Close(true);
-        }
-
-        [RelayCommand]
-        private void Close()
-        {
-            DialogControl.Close(false);
-        }
-
-        private void DialogOpened()
-        {
-            if (DialogControl.Properties.CustomProperties.TryGetValue("Notification", out object? propertyValue))
-            {
-                IsEditMode = true;
-            }
-        }
-
-        private void CreateNotification()
-        {
-
         }
 
         private void ApplyChanges()
