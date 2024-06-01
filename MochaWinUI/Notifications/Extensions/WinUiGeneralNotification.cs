@@ -15,7 +15,7 @@ namespace MochaWinUI.Notifications.Extensions
     {
         public WinUiGeneralNotification(string registrationId) : base(registrationId) { }
 
-        public WinUiGeneralNotification(NotificationCreationData creationData) : base(creationData) { }
+        protected WinUiGeneralNotification(NotificationCreationData creationData) : base(creationData) { }
 
         /// <inheritdoc/>
         protected override string CreateNotificationDefinition()
@@ -52,10 +52,8 @@ namespace MochaWinUI.Notifications.Extensions
             return builder.BuildNotification().Payload;
         }
 
+        /// <inheritdoc/>
         protected override INotification CreateForExistingNotification(NotificationCreationData creationData)
-        {
-            var n = new WinUiGeneralNotification(creationData);
-            n.Properties
-        }
+            => new WinUiGeneralNotification(creationData);
     }
 }
