@@ -1,4 +1,5 @@
 ﻿using Microsoft.Windows.AppNotifications;
+using MochaCore.Notifications;
 using MochaWinUI.Notifications.Extensions;
 using System;
 using System.Collections.Generic;
@@ -33,18 +34,26 @@ namespace MochaWinUI.Notifications
             WasInteracted = true;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotificationCreationData"/> class.
+        /// </summary>
+        /// <param name="dataSource">The data source used to create the current object.</param>
         public NotificationCreationData(ToastNotification dataSource)
         {
             DisplayedDataSource = dataSource;
             NotificationId = dataSource.GetValueByKey(WinUiNotification.NotificationIdKey)!;
             RegistrationId = dataSource.GetValueByKey(WinUiNotification.RegistrationIdKey)!;
             Tag = dataSource.GetValueByKey(WinUiNotification.TagKey);
-            // TODO: link ticket here
+            // https://github.com/DarthMazut/MochaLibrary/issues/19
             ScheduledTime = default;
             WasDisplayed = true;
             WasInteracted = false;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotificationCreationData"/> class.
+        /// </summary>
+        /// <param name="dataSource">The data source used to create the current object.</param>
         public NotificationCreationData(ScheduledToastNotification dataSource)
         {
             PendingDataSource = dataSource;
@@ -56,31 +65,52 @@ namespace MochaWinUI.Notifications
             WasInteracted = false;
         }
 
-        /*
-         *         /// <param name="notificationId">The unique identifier for the notification.</param>
-        /// <param name="registrationId">The identifier assigned during registration with the <see cref="NotificationManager"/>.</param>
-        /// <param name="tag">An optional tag associated with the notification.</param>
-        /// <param name="scheduledTime">The scheduled time for the notification.</param>
-        /// <param name="wasDisplayed">Whether this notification was already displayed and so cannot be scheduled again.</param>
-        /// <param name="wasInteracted">Whether this notification was already interacted by the user.</param>
-         */
-
+        /// <summary>
+        /// The unique identifier for the notification.
+        /// </summary>
         public string NotificationId { get; }
 
+        /// <summary>
+        /// The identifier assigned during registration with the <see cref="NotificationManager"/>.
+        /// </summary>
         public string RegistrationId { get; }
 
+        /// <summary>
+        /// An optional tag associated with the notification.
+        /// </summary>
         public string? Tag { get; }
 
+        /// <summary>
+        /// The scheduled time for the notification.
+        /// </summary>
         public DateTimeOffset ScheduledTime { get; }
 
+        /// <summary>
+        /// Whether this notification was already displayed and so cannot be scheduled again.
+        /// </summary>
         public bool WasDisplayed { get; }
 
+        /// <summary>
+        /// Whether this notification was already interacted by the user.
+        /// </summary>
         public bool WasInteracted { get; }
 
+        /// <summary>
+        /// Returns the object that is the data source for the current instance, 
+        /// or <see langword="null"/> if an object of this type was not such a source.
+        /// </summary>
         public AppNotificationActivatedEventArgs? InteractedDataSource { get; }
 
+        /// <summary>
+        /// Returns the object that is the data source for the current instance, 
+        /// or <see langword="null"/> if an object of this type was not such a source.
+        /// </summary>
         public ToastNotification? DisplayedDataSource { get; }
 
+        /// <summary>
+        /// Returns the object that is the data source for the current instance, 
+        /// or <see langword="null"/> if an object of this type was not such a source.
+        /// </summary>
         public ScheduledToastNotification? PendingDataSource { get; }
     }
 }
