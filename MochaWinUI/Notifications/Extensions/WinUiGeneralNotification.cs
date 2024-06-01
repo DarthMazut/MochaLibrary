@@ -11,10 +11,23 @@ using Windows.UI.Notifications;
 
 namespace MochaWinUI.Notifications.Extensions
 {
+    /// <summary>
+    /// Provides implementation of general notification for WinUI.
+    /// </summary>
     public class WinUiGeneralNotification : WinUiNotification<GeneralNotificationProperties>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WinUiGeneralNotification"/> class.
+        /// </summary>
+        /// <param name="registrationId">
+        /// The identifier assigned during registration with the <see cref="NotificationManager"/>
+        /// </param>
         public WinUiGeneralNotification(string registrationId) : base(registrationId) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WinUiGeneralNotification"/> class.
+        /// </summary>
+        /// <param name="creationData"></param>
         protected WinUiGeneralNotification(NotificationCreationData creationData) : base(creationData) { }
 
         /// <inheritdoc/>
