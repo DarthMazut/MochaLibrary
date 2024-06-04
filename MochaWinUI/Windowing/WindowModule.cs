@@ -297,7 +297,7 @@ namespace MochaWinUI.Windowing
             if (window.Content is FrameworkElement rootElement)
             {
                 windowContext = rootElement.DataContext;
-                if (windowContext is not null or IBaseWindowAware)
+                if (windowContext is not (null or IBaseWindowAware))
                 {
                     throw new InvalidOperationException($"The data context provided in {window.GetType()} was not of type {typeof(IBaseWindowAware)}");
                 }

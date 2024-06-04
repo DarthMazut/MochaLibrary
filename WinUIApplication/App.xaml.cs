@@ -1,22 +1,30 @@
 ﻿using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppNotifications;
 using MochaCore.Behaviours;
 using MochaCore.Dialogs;
 using MochaCore.Dispatching;
 using MochaCore.Navigation;
+using MochaCore.Notifications;
+using MochaCore.Notifications.Extensions;
 using MochaCore.Settings;
 using MochaCore.Windowing;
 using MochaWinUI.Dialogs;
 using MochaWinUI.Dispatching;
 using MochaWinUI.Navigation;
+using MochaWinUI.Notifications;
+using MochaWinUI.Notifications.Extensions;
 using MochaWinUI.Settings;
 using MochaWinUI.Windowing;
 using Model;
+using System;
 using ViewModels;
+using ViewModels.Notifications;
 using ViewModels.Windows;
 using Windows.Storage;
 using WinUiApplication.Dialogs;
 using WinUiApplication.Pages;
+using WinUiApplication.Pages.Notifications;
 using WinUiApplication.Windows;
 
 namespace WinUiApplication
@@ -44,7 +52,9 @@ namespace WinUiApplication
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
+            NotificationManager.RegisterNotification("SimpleNotification", new Func<INotificationRoot<GeneralNotificationProperties>>(() => new WinUiGeneralNotification("SimpleNotification")));
+
+            WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow()));
             WindowManager.RegisterWindow("TestWindow", () => new WindowModule<GenericWindowProperties>(new TestWindow(), new TestWindowViewModel()));
 
             INavigationService mainNavigationService = NavigationManager.AddNavigationService(
@@ -58,6 +68,7 @@ namespace WinUiApplication
                     .WithModule<BindingControlPage, BindingControlPageViewModel>()
                     .WithModule<WindowingPage, WindowingPageViewModel>()
                     .WithModule<DispatcherPage, DispatchingPageViewModel>()
+                    .WithModule<NotificationsPage, NotificationsPageViewModel>()
                     .WithInitialId(ViewModels.Pages.BlankPage1.Id));
 
             IBaseWindowModule mainWindowModule = WindowManager.RetrieveBaseWindow("MainWindow");
@@ -66,6 +77,7 @@ namespace WinUiApplication
             DialogManager.DefineDialog(ViewModels.Dialogs.MoreInfoDialog.ID, () => new StandardMessageDialogModule(_mainWindow));
             DialogManager.DefineDialog(ViewModels.Dialogs.EditPictureDialog.ID, () => new ContentDialogModule(_mainWindow, new EditPictureDialog()));
             DialogManager.DefineDialog(ViewModels.Dialogs.SelectFileDialog.ID, () => new OpenFileDialogModule(_mainWindow) { DialogIdentifier = "test"});
+            DialogManager.DefineDialog(ViewModels.Dialogs.EditNotificationDialog.ID, () => new ContentDialogModule(_mainWindow, new EditNotificationDialog()));
 
             SettingsManager.Register(ApplicationSettings.SettingsName, new ApplicationSettingsSectionProvider<ApplicationSettings>("appSettings"));
 

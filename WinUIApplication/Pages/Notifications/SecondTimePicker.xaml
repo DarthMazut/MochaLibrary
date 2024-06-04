@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="WinUiApplication.Pages.Notifications.SecondTimePicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUiApplication.Pages.Notifications"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:numberformatting="using:Windows.Globalization.NumberFormatting"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <numberformatting:DecimalFormatter x:Key="NumberFormater" IntegerDigits="2" FractionDigits="0">
+            <numberformatting:DecimalFormatter.NumberRounder>
+                <numberformatting:IncrementNumberRounder Increment="1"/>
+            </numberformatting:DecimalFormatter.NumberRounder>
+        </numberformatting:DecimalFormatter>
+
+        <SolidColorBrush x:Key="TextControlBackground">Transparent</SolidColorBrush>
+        <StaticResource x:Key="TextControlBackgroundFocused" ResourceKey="ControlSolidFillColorDefaultBrush" />
+        <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
+        <Style x:Key="NumberBoxStyle" TargetType="NumberBox">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <StackPanel>
+            <TextBlock>
+                <Run Text="Current time: " />
+                <Run x:Name="xe_CurrentTimeText" />
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Spacing="2">
+                <NumberBox
+                    x:Name="xe_HourNumber"
+                    Maximum="23"
+                    Minimum="0"
+                    ValueChanged="TimeValueChanged"
+                    NumberFormatter="{StaticResource NumberFormater}"
+                    Style="{StaticResource NumberBoxStyle}"/>
+                <TextBlock Text=":" VerticalAlignment="Center"/>
+                <NumberBox
+                    x:Name="xe_MinuteNumber"
+                    Maximum="59"
+                    Minimum="0"
+                    ValueChanged="TimeValueChanged"
+                    NumberFormatter="{StaticResource NumberFormater}"
+                    Style="{StaticResource NumberBoxStyle}"/>
+                <TextBlock Text=":" VerticalAlignment="Center"/>
+                <NumberBox
+                    x:Name="xe_SecondNumber"
+                    Maximum="59"
+                    Minimum="0"
+                    ValueChanged="TimeValueChanged"
+                    NumberFormatter="{StaticResource NumberFormater}"
+                    Style="{StaticResource NumberBoxStyle}"/>
+                <FontIcon x:Name="xe_TimeWarning" Glyph="&#xE783;" Foreground="{StaticResource SystemFillColorCriticalBrush}" ToolTipService.ToolTip="Selected time is in the past."/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

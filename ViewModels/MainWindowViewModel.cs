@@ -1,10 +1,14 @@
-﻿using MochaCore.Navigation;
+﻿using MochaCore.Dispatching;
+using MochaCore.Dispatching.Extensions.DI;
+using MochaCore.Navigation;
+using MochaCore.Notifications;
 using MochaCore.Utils;
 using MochaCore.Windowing;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +33,11 @@ public class MainWindowViewModel : BindableBase, IWindowAware
     {
         NavigationServices.MainNavigationService.CurrentModuleChanged += HandleNavigationRequest;
         NavigationServices.MainNavigationService.Initialize();
+
+        NotificationManager.NotificationInteracted += (s, e) =>
+        {
+
+        };
     }
 
     public bool IsSettingsInvoked

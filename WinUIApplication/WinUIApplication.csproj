@@ -15,14 +15,19 @@
   <ItemGroup>
     <None Remove="Controls\BindingControlSubPage.xaml" />
     <None Remove="Controls\FilterTab.xaml" />
+    <None Remove="Controls\NotificationCard.xaml" />
+    <None Remove="Controls\NotificationsGrid.xaml" />
     <None Remove="Controls\PageHeader.xaml" />
     <None Remove="Controls\PageRoot.xaml" />
+    <None Remove="Dialogs\EditNotificationDialog.xaml" />
     <None Remove="Dialogs\EditPictureDialog.xaml" />
     <None Remove="Pages\BindingControlPage.xaml" />
     <None Remove="Pages\BlankPage1.xaml" />
     <None Remove="Pages\BlankPage3.xaml" />
     <None Remove="Pages\DispatcherPage.xaml" />
     <None Remove="Pages\EditPersonPage.xaml" />
+    <None Remove="Pages\NotificationsPage.xaml" />
+    <None Remove="Pages\Notifications\SecondTimePicker.xaml" />
     <None Remove="Pages\PeoplePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
     <None Remove="Pages\WindowingPage.xaml" />
@@ -41,9 +46,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.230822000" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240404000" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
@@ -57,6 +63,31 @@
   <ItemGroup>
     <ProjectReference Include="..\MochaWinUI\MochaWinUI.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\Notifications\SecondTimePicker.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Dialogs\EditNotificationDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\NotificationCard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\NotificationsGrid.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\NotificationsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\DispatcherPage.xaml">

@@ -46,7 +46,7 @@ namespace MochaCore.Windowing
             get
             {
                 InitializationGuard();
-                ModuleTypeGuard(typeof(IWindowModule));
+                ModuleTypeGuard<IWindowModule>();
                 return (IWindowModule)_module!;
             }
         }
@@ -77,7 +77,7 @@ namespace MochaCore.Windowing
             get
             {
                 InitializationGuard();
-                ModuleTypeGuard(typeof(IWindowStateAware));
+                ModuleTypeGuard<IWindowStateAware>();
                 return ((IWindowStateAware)_module!).WindowState;
             }
         }
@@ -114,7 +114,7 @@ namespace MochaCore.Windowing
         public void Hide()
         {
             InitializationGuard();
-            ModuleTypeGuard(typeof(IHideWindow));
+            ModuleTypeGuard<IHideWindow>();
             ((IHideWindow)_module!).Hide();
         }
 
@@ -134,7 +134,7 @@ namespace MochaCore.Windowing
         public void Maximize()
         {
             InitializationGuard();
-            ModuleTypeGuard(typeof(IMaximizeWindow));
+            ModuleTypeGuard<IMaximizeWindow>();
             ((IMaximizeWindow)_module!).Maximize();
         }
 
@@ -154,7 +154,7 @@ namespace MochaCore.Windowing
         public void Minimize()
         {
             InitializationGuard();
-            ModuleTypeGuard(typeof(IMinimizeWindow));
+            ModuleTypeGuard<IMinimizeWindow>();
             ((IMinimizeWindow)_module!).Minimize();
         }
 
@@ -174,7 +174,7 @@ namespace MochaCore.Windowing
         public void Restore()
         {
             InitializationGuard();
-            ModuleTypeGuard(typeof(IRestoreWindow));
+            ModuleTypeGuard<IRestoreWindow>();
             ((IRestoreWindow)_module!).Restore();
         }
 
@@ -250,15 +250,16 @@ namespace MochaCore.Windowing
             }
         }
 
+
         /// <summary>
         /// Throws an <see cref="InvalidOperationException"/> if related module is not of provided type.
         /// </summary>
-        /// <param name="type">Type of module to be checked against.</param>
-        protected void ModuleTypeGuard(Type type)
+        /// <typeparam name="T">Type of module to be checked against.</typeparam>
+        protected void ModuleTypeGuard<T>()
         {
-            if (_module?.GetType() != type)
+            if (_module is not T)
             {
-                throw new InvalidOperationException($"Associated module was expected to be of type {type}, but it's not.");
+                throw new InvalidOperationException($"Associated module was expected to be of type {typeof(T)}, but it's not.");
             }
         }
 
@@ -315,7 +316,7 @@ namespace MochaCore.Windowing
             get
             {
                 InitializationGuard();
-                ModuleTypeGuard(typeof(IBaseWindowModule<T>));
+                ModuleTypeGuard<IBaseWindowModule<T>>();
                 return ((IBaseWindowModule<T>)Module).Properties;
             }
         }
@@ -325,7 +326,7 @@ namespace MochaCore.Windowing
             get
             {
                 InitializationGuard();
-                ModuleTypeGuard(typeof(IBaseWindowModule<T>));
+                ModuleTypeGuard<IBaseWindowModule<T>>();
                 return (IBaseWindowModule<T>)Module;
             }
         }
@@ -335,7 +336,7 @@ namespace MochaCore.Windowing
             get
             {
                 InitializationGuard();
-                ModuleTypeGuard(typeof(IWindowModule<T>));
+                ModuleTypeGuard<IWindowModule<T>>();
                 return (IWindowModule<T>)Module;
             }
         }
