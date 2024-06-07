@@ -7,20 +7,42 @@ using System.Threading.Tasks;
 namespace MochaCore.Dialogs
 {
     /// <summary>
-    /// Extends <see cref="IDialogModule{T}"/> with possibility to work with <see cref="IDataContextDialog{T}"/> as DataContext.
+    /// Extends <see cref="IDialogModule{T}"/> with possibility to work with <see cref="IDataContextDialog"/> as DataContext.
     /// </summary>
-    /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
-    public interface IDataContextDialogModule<T> : IDialogModule<T> where T : DialogProperties, new()
+    public interface IDataContextDialogModule : IDialogModule
     {
         /// <summary>
-        /// Returns a reference to <see cref="IDialog"/> object which acts as a DataContext for dialog represented by this module. 
+        /// Returns a reference to <see cref="IDataContextDialog"/> object which acts as a DataContext for dialog represented by this module.
         /// </summary>
-        IDataContextDialog<T>? DataContext { get; }
+        public IDataContextDialog? DataContext { get; }
 
         /// <summary>
         /// Allows to assign new *DataContext* for this module.
         /// </summary>
         /// <param name="dataContext">DataContext to be assigned.</param>
-        void SetDataContext(IDataContextDialog<T>? dataContext);
+        public void SetDataContext(IDataContextDialog? dataContext);
+    }
+
+    /// <summary>
+    /// Extends <see cref="IDialogModule{T}"/> with possibility to work with <see cref="IDataContextDialog{T}"/> as DataContext.
+    /// </summary>
+    /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
+    public interface IDataContextDialogModule<T> : IDataContextDialogModule, IDialogModule<T> where T : new()
+    {
+        /// <inheritdoc/>
+        IDataContextDialog? IDataContextDialogModule.DataContext => DataContext;
+
+        /// <summary>
+        /// Returns a reference to <see cref="IDataContextDialog{T}"/> object which acts as a DataContext for dialog represented by this module. 
+        /// </summary>
+        public new IDataContextDialog<T>? DataContext { get; }
+
+        void IDataContextDialogModule.SetDataContext(IDataContextDialog? dataContext) => SetDataContext(dataContext);
+
+        /// <summary>
+        /// Allows to assign new *DataContext* for this module.
+        /// </summary>
+        /// <param name="dataContext">DataContext to be assigned.</param>
+        public void SetDataContext(IDataContextDialog<T>? dataContext);
     }
 }

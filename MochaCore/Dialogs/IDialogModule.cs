@@ -47,7 +47,7 @@ namespace MochaCore.Dialogs
     /// Exposes methods and properties for interaction with technology-independent dialog representation.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
-    public interface IDialogModule<T> : IDialogModule where T : DialogProperties, new()
+    public interface IDialogModule<T> : IDialogModule where T : new()
     {
         /// <summary>
         /// Statically typed properties object which serves for configuration of this module.

@@ -6,16 +6,28 @@ using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs
 {
+    public interface ICustomDialogModule : IDataContextDialogModule, IDialogClose, IDialogOpened, IDialogClosing
+    {
+        /// <inheritdoc/>
+        IDataContextDialog IDataContextDialogModule.DataContext => DataContext;
+
+        public new ICustomDialog DataContext { get; }
+
+        void IDataContextDialogModule.SetDataContext(IDataContextDialog? dataContext) => SetDataContext(dataContext);
+
+        public new void SetDataContext(ICustomDialog dataContext);
+    }
+
     /// <summary>
     /// Extends <see cref="IDialogModule{T}"/> with possibility to work with <see cref="ICustomDialog{T}"/> as DataContext.
     /// Provides <see cref="IDialogClose.Close"/> method, as well as <see cref="IDialogOpened.Opened"/> 
     /// and <see cref="IDialogClosing.Closing"/> events.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
-    public interface ICustomDialogModule<T> : IDataContextDialogModule<T>, IDialogClose, IDialogOpened, IDialogClosing where T : DialogProperties, new()
+    public interface ICustomDialogModule<T> : ICustomDialogModule, IDataContextDialogModule<T> where T : new()
     {
         /// <summary>
-        /// Returns a reference to <see cref="IDialog"/> object which acts as a DataContext for dialog represented by this module. 
+        /// Returns a reference to <see cref="ICustomDialog{T}"/> object which acts as a DataContext for dialog represented by this module. 
         /// </summary>
         new ICustomDialog<T>? DataContext { get; }
 
@@ -25,12 +37,10 @@ namespace MochaCore.Dialogs
         /// <param name="dataContext">DataContext to be assigned.</param>
         void SetDataContext(ICustomDialog<T>? dataContext);
 
+        /// <inheritdoc/>
         IDataContextDialog<T> IDataContextDialogModule<T>.DataContext => DataContext!;
 
-        void IDataContextDialogModule<T>.SetDataContext(IDataContextDialog<T>? dataContext)
-        {
-            SetDataContext(dataContext);
-        }
+        /// <inheritdoc/>
+        void IDataContextDialogModule<T>.SetDataContext(IDataContextDialog<T>? dataContext) => SetDataContext(dataContext);
     }
-
 }

@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MochaCore.Windowing.WindowControl">
+    <Position X="12.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CxAIECBQAAgAAAAIEAECQAgAFAABAAQQUAoALACCAig=</HashCode>
+      <FileName>Windowing\WindowControl.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.258" />
+  </Class>
+  <Class Name="MochaCore.Windowing.WindowControl&lt;T&gt;">
+    <Position X="9.25" Y="13.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAEAAAAAAAAAAAAEAAQAAADAAA=</HashCode>
+      <FileName>Windowing\WindowControl.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="MochaCore.Windowing.IBaseWindowControl">
+    <Position X="4.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AQAIEAAAAAAAAAAIAAAAAAgAEAABAAQQAAAALACCAAA=</HashCode>
+      <FileName>Windowing\IBaseWindowControl.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MochaCore.Windowing.IBaseWindowControl&lt;T&gt;">
+    <Position X="1.25" Y="5.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAQCAACAAA=</HashCode>
+      <FileName>Windowing\IBaseWindowControl.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MochaCore.Windowing.IClosingWindow">
+    <Position X="13" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Windowing\IClosingWindow.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MochaCore.Windowing.IHideWindow">
+    <Position X="19.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Windowing\IHideWindow.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MochaCore.Windowing.IMaximizeWindow">
+    <Position X="6.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAA=</HashCode>
+      <FileName>Windowing\IMaximizeWindow.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MochaCore.Windowing.IMinimizeWindow">
+    <Position X="8.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Windowing\IMinimizeWindow.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MochaCore.Windowing.IRestoreWindow">
+    <Position X="15.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Windowing\IRestoreWindow.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MochaCore.Windowing.IWindowControl">
+    <Position X="4.5" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Windowing\IWindowControl.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MochaCore.Windowing.IWindowControl&lt;T&gt;">
+    <Position X="2.75" Y="10.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Windowing\IWindowControl.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MochaCore.Windowing.IWindowStateAware">
+    <Position X="10.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>Windowing\IWindowStateAware.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MochaCore.Windowing.IWindowStateChanged">
+    <Position X="17.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Windowing\IWindowStateChanged.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
