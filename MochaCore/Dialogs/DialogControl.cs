@@ -26,8 +26,10 @@ namespace MochaCore.Dialogs
 
     public class DialogControl<T> : DialogControl, ICustomDialogControl<T> where T : new()
     {
-        public new ICustomDialogModule<T> Module { get; }
+        IDataContextDialogModule IDataContextDialogControl.Module => throw new NotImplementedException();
 
-        IDataContextDialogModule<T> IDataContextDialogControl<T>.Module => throw new NotImplementedException();
+        //IDataContextDialogModule<T> IDataContextDialogControl<T>.Module => throw new NotImplementedException();
+
+        public new ICustomDialogModule<T> Module => throw new NotImplementedException();     
     }
 }

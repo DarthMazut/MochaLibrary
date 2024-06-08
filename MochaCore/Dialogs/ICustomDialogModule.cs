@@ -15,7 +15,7 @@ namespace MochaCore.Dialogs
 
         void IDataContextDialogModule.SetDataContext(IDataContextDialog? dataContext) => SetDataContext(dataContext);
 
-        public new void SetDataContext(ICustomDialog dataContext);
+        public new void SetDataContext(ICustomDialog? dataContext);
     }
 
     /// <summary>

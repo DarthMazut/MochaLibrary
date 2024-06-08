@@ -7,6 +7,11 @@ using MochaCore.Dialogs;
 
 namespace MochaWinUI.Dialogs
 {
+    public class TestModule<T> : ICustomDialogModule<T> where T : new()
+    {
+
+    }
+
     /// <summary>
     /// Provides base implementation for WinUI 3 <see cref="ContentDialog"/>-based modules.
     /// </summary>
