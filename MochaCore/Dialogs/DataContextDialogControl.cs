@@ -10,7 +10,7 @@ namespace MochaCore.Dialogs
     /// Exposes API for dialog interaction.
     /// </summary>
     /// <typeparam name="TProperties">The type of the dialog properties object associated with related dialog module.</typeparam>
-    public class DataContextDialogControl<TProperties> : IDisposable where TProperties : DialogProperties, new()
+    public class DataContextDialogControl<TProperties> : IDisposable where TProperties : new()
     {
         private bool _isInitialized;
         private IDataContextDialogModule<TProperties>? _dialogModule;

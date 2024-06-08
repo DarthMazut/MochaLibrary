@@ -8,15 +8,18 @@ namespace MochaCore.Dialogs
 {
     public interface IDataContextDialogControl
     {
-        public bool IsInitialized { get; }
+        public object View { get; }
 
         public IDataContextDialogModule Module { get; }
 
-        public object View { get; }
+        public bool IsInitialized { get; }
     }
 
     public interface IDataContextDialogControl<T> : IDataContextDialogControl where T : new()
     {
-        public IDataContextDialogModule<T> Module { get; }
+        /// <inheritdoc/>
+        IDataContextDialogModule IDataContextDialogControl.Module => Module;
+
+        public new IDataContextDialogModule<T> Module { get; }
     }
 }
