@@ -17,9 +17,6 @@ namespace MochaCore.Dialogs
 
     public interface IDataContextDialogControl<T> : IDataContextDialogControl where T : new()
     {
-        /// <inheritdoc/>
-        IDataContextDialogModule IDataContextDialogControl.Module => Module;
-
         public new IDataContextDialogModule<T> Module { get; }
     }
 }

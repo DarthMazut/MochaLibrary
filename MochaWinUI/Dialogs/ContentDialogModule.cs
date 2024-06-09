@@ -7,16 +7,93 @@ using MochaCore.Dialogs;
 
 namespace MochaWinUI.Dialogs
 {
+    public class TestModule : ICustomDialogModule
+    {
+        public ICustomDialog? DataContext => throw new NotImplementedException();
+
+        public object? View => throw new NotImplementedException();
+
+        public event EventHandler Opening;
+        public event EventHandler Closed;
+        public event EventHandler Disposed;
+        public event EventHandler Opened;
+        public event EventHandler<CancelEventArgs> Closing;
+
+        public void Close(bool? result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDataContext(ICustomDialog? dataContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool?> ShowModalAsync(object host)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class TestModule<T> : ICustomDialogModule<T> where T : new()
     {
+        public ICustomDialog<T>? DataContext => throw new NotImplementedException();
 
+        public T Properties { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public object? View => throw new NotImplementedException();
+
+        //ICustomDialog? ICustomDialogModule.DataContext => throw new NotImplementedException();
+
+        //IDataContextDialog? IDataContextDialogModule.DataContext => throw new NotImplementedException();
+
+        public event EventHandler Opened;
+        public event EventHandler<CancelEventArgs> Closing;
+        public event EventHandler Opening;
+        public event EventHandler Closed;
+        public event EventHandler Disposed;
+
+        public void Close(bool? result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDataContext(ICustomDialog<T>? dataContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDataContext(ICustomDialog? dataContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDataContext(IDataContextDialog? dataContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool?> ShowModalAsync(object host)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
     /// Provides base implementation for WinUI 3 <see cref="ContentDialog"/>-based modules.
     /// </summary>
     /// <typeparam name="T">Type of <see cref="Properties"/> object.</typeparam>
-    public class ContentDialogModule<T> : ICustomDialogModule<T> where T : DialogProperties, new()
+    public class ContentDialogModule<T> : ICustomDialogModule<T> where T : new()
     {
         private bool _wasClosed;
         private bool? _manualCloseResult;

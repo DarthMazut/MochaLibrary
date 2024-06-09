@@ -18,8 +18,6 @@ namespace MochaCore.Dialogs
     {
         IDataContextDialogModule<T> IDataContextDialogControl<T>.Module => Module;
 
-        //ICustomDialogModule ICustomDialogControl.Module => Module;
-
         public new ICustomDialogModule<T> Module { get; }
     }
 }
