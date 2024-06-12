@@ -37,8 +37,6 @@ namespace MochaCore.Dialogs
         /// </summary>
         public new IDataContextDialog<T>? DataContext { get; }
 
-        void IDataContextDialogModule.SetDataContext(IDataContextDialog? dataContext) => SetDataContext(dataContext);
-
         /// <summary>
         /// Allows to assign new *DataContext* for this module.
         /// </summary>

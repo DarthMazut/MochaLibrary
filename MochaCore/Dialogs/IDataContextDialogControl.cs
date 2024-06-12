@@ -13,6 +13,8 @@ namespace MochaCore.Dialogs
         public IDataContextDialogModule Module { get; }
 
         public bool IsInitialized { get; }
+
+        public bool TryClose();
     }
 
     public interface IDataContextDialogControl<T> : IDataContextDialogControl where T : new()
