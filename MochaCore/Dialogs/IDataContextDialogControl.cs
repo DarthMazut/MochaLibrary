@@ -39,5 +39,7 @@ namespace MochaCore.Dialogs
         public new IDataContextDialogModule<T> Module { get; }
 
         public T Properties { get; }
+
+        public void Customize(Action<T> customizeDelegate);
     }
 }

@@ -1,235 +1,195 @@
-﻿using System;
+﻿using MochaCore.Utils;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs
 {
-    /*
-    /// <summary>
-    /// Exposes API for dialog interaction.
-    /// </summary>
-    /// <typeparam name="TProperties">The type of the dialog properties object associated with related dialog module.</typeparam>
-    public class DataContextDialogControl<TProperties> : IDisposable where TProperties : new()
+    public class DataContextDialogControl : IDataContextDialogControl, IDialogControlInitialize
     {
         private bool _isInitialized;
-        private IDataContextDialogModule<TProperties>? _dialogModule;
-        protected Action? _onDialogOpenedDelegate;
-        protected Func<Task>? _onDialogOpenedAsyncDelegate;
-        protected Action? _onDialogClosingDelegate;
-        protected Func<Task>? _onDialogClosingAsyncDelegate;
+        private IDataContextDialogModule? _module;
+        private List<LazySubscription> _subscriptionDelegates = new();
 
-        /// <summary>
-        /// Determines whether the <see cref="DataContextDialogControl{TProperties}"/> instance has
-        /// been initialized and is ready for full interaction.
-        /// </summary>
+        /// <inheritdoc/>
+        public object View => Module.View!;
+
+        /// <inheritdoc/>
+        public IDataContextDialogModule Module
+        {
+            get
+            {
+                InitializationGuard();
+                return _module!;
+            }
+        }
+
+        /// <inheritdoc/>
         public bool IsInitialized => _isInitialized;
 
-        /// <summary>
-        /// Returns the related <see cref="IDataContextDialogModule{TProperties}"/> object.
-        /// </summary>
-        public IDataContextDialogModule<TProperties> Module
-        {
-            get
-            {
-                InitializationGuard();
-                return _dialogModule!;
-            }
-        }
+        /// <inheritdoc/>
+        public event EventHandler? Closed;
 
-        /// <summary>
-        /// Technology-specific dialog object which is represented by related <see cref="IDataContextDialogModule{T}"/>.
-        /// </summary>
-        public object View
-        {
-            get
-            {
-                InitializationGuard();
-                return _dialogModule!;
-            }
-        }
+        /// <inheritdoc/>
+        public event EventHandler? Disposed;
 
-        /// <summary>
-        /// Returns statically typed properties which allows for configuration of related 
-        /// <see cref="IDataContextDialogModule{T}"/> object.
-        /// </summary>
-        public TProperties Properties 
-        {   
-            get
-            {
-                InitializationGuard();
-                return _dialogModule!.Properties;
-            } 
-        }
+        /// <inheritdoc/>
+        public event EventHandler? Opening;
 
-        /// <summary>
-        /// Should be called only once by <see cref="IDataContextDialogModule{T}"/> related to this instance.
-        /// Throws <see cref="InvalidOperationException"/> if this instance has been already initialized.
-        /// </summary>
-        /// <param name="dialogModule"><see cref="IDataContextDialogModule{T}"/> or it's descendant, which is related to this instance.</param>
-        public virtual void Initialize(IDataContextDialogModule<TProperties> dialogModule)
-        {
-            if (_isInitialized)
-            {
-                throw new InvalidOperationException($"{nameof(Initialize)} has been called but DialogControl is already initialized.");
-            }
+        /// <inheritdoc/>
+        public event EventHandler? Initialized;
 
-            _dialogModule = dialogModule;
-            if (_dialogModule is IDialogOpened dialogOpened)
-            {
-                dialogOpened.Opened += OnDialogOpenedInternal;
-            }
-
-            if (_dialogModule is IDialogClosing dialogClosing)
-            {
-                dialogClosing.Closing += OnDialogClosingInternal;
-            }
-
-            _isInitialized = true;
-        }
-
-        /// <summary>
-        /// Attempts to subscribe to the <see cref="IDialogOpened.Opened"/> event of the related <see cref="IDataContextDialogModule{T}"/>.
-        /// Returns <see langword="true"/> if the dialog supports opening event and the subscription was successful,
-        /// or <see langword="false"/> if the dialog does not support opening event.
-        /// </summary>
-        /// <param name="subscribingFunction">The delegate to be executed when the dialog is opened.</param>
-        public bool TrySubscribeOnDialogOpened(Action subscribingFunction)
-        {
-            if (_dialogModule is IDialogOpened)
-            {
-                _onDialogOpenedDelegate = subscribingFunction;
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Attempts to subscribe to the <see cref="IDialogOpened.Opened"/> event of the related <see cref="IDataContextDialogModule{T}"/>.
-        /// Returns <see langword="true"/> if the dialog supports opening event and the subscription was successful,
-        /// or <see langword="false"/> if the dialog does not support opening event.
-        /// </summary>
-        /// <param name="subscribingFunction">The asynchronous delegate to be executed when the dialog is opened.</param>
-        public bool TrySubscribeOnDialogOpened(Func<Task> subscribingFunction)
-        {
-            if (_dialogModule is IDialogOpened)
-            {
-                _onDialogOpenedAsyncDelegate = subscribingFunction;
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Attempts to subscribe to the <see cref="IDialogClosing.Closing"/> event of the related <see cref="IDataContextDialogModule{T}"/>.
-        /// Returns <see langword="true"/> if the dialog supports closing event and the subscription was successful,
-        /// or <see langword="false"/> if the dialog does not support closing event.
-        /// </summary>
-        /// <param name="subscribingFunction">The delegate to be executed when the dialog is closing.</param>
-        public bool TrySubscribeOnDialogClosing(Action subscribingFunction)
-        {
-            if (_dialogModule is IDialogClosing)
-            {
-                _onDialogClosingDelegate = subscribingFunction;
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Attempts to subscribe to the <see cref="IDialogClosing.Closing"/> event of the related <see cref="IDataContextDialogModule{T}"/>.
-        /// Returns <see langword="true"/> if the dialog supports closing event and the subscription was successful,
-        /// or <see langword="false"/> if the dialog does not support closing event.
-        /// </summary>
-        /// <param name="subscribingFunction">The asynchronous delegate to be executed when the dialog is closing.</param>
-        public bool TrySubscribeOnDialogClosing(Func<Task> subscribingFunction)
-        {
-            if (_dialogModule is IDialogClosing)
-            {
-                _onDialogClosingAsyncDelegate = subscribingFunction;
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Attempts to close the related <see cref="IDataContextDialogModule{T}"/> if it is currently open. 
-        /// Returns <see langword="true"/> if the dialog supports closing (regardless of whether the dialog was
-        /// actually closed by calling this method), or <see langword="false"/> if it does not support closing.
-        /// Throws an <see cref="InvalidOperationException"/> if DialogControl hasn't been initialized at the time this
-        /// method was invoked.
-        /// </summary>
-        /// <param name="result">Determines the result of dialog interaction.</param>
+        /// <inheritdoc/>
         public bool TryClose(bool? result)
         {
-            InitializationGuard();
-            if (_dialogModule is IDialogClose closable)
+            // TODO: should TryClose throw if module is not initialized?
+            // Try* feels like it shouldn't throw, but this is for safe
+            // calling method which may not be exposed by module, not
+            // sure this should protect from not-initialized exception...
+
+            if (Module is IDialogClose dialogClose)
             {
-                closable.Close(result);
+                dialogClose.Close(result);
                 return true;
             }
 
             return false;
         }
 
-        /// <summary>
-        /// Prevents memory leaks by disposing things that need to be disposed.
-        /// </summary>
-        public void Dispose()
+        /// <inheritdoc/>
+        public IDisposable TrySubscribeDialogClosing(EventHandler<CancelEventArgs> closingHandler)
+            => TrySubscribeDialogClosing(closingHandler, null);
+
+        /// <inheritdoc/>
+        public IDisposable TrySubscribeDialogClosing(EventHandler<CancelEventArgs> closingHandler, Action<IDataContextDialogModule>? featureUnavailableHandler)
+            => DeferSubscription(closingHandler, featureUnavailableHandler, nameof(IDialogClosing.Closing));
+
+        /// <inheritdoc/>
+        public IDisposable TrySubscribeDialogOpened(EventHandler openedHandler)
+            => TrySubscribeDialogOpened(openedHandler, null);
+
+        /// <inheritdoc/>
+        public IDisposable TrySubscribeDialogOpened(EventHandler openedHandler, Action<IDataContextDialogModule>? featureUnavailableHandler)
+            => DeferSubscription(openedHandler, featureUnavailableHandler, nameof(IDialogOpened.Opened));
+
+        /// <inheritdoc/>
+        void IDialogControlInitialize.Initialize(IDataContextDialogModule module) => InitializeCore(module);
+
+        protected IDisposable DeferSubscription(Delegate eventHandler, Delegate? featureUnavailableHandler, string eventName)
         {
-            if (_isInitialized && _dialogModule is IDialogOpened dialogOpened)
+            LazySubscription subscription = new(eventHandler, featureUnavailableHandler, eventName);
+            _subscriptionDelegates.Add(subscription);
+            if (IsInitialized && _module is not null)
             {
-                dialogOpened.Opened -= OnDialogOpenedInternal;
+                subscription.SubscribeOrExecute(_module);
             }
 
-            if (_isInitialized && _dialogModule is IDialogOpened dialogClosing)
-            {
-                dialogClosing.Opened -= OnDialogClosingInternal;
-            }
-
-            _dialogModule = null;
-            _onDialogOpenedDelegate = null;
-            _onDialogOpenedAsyncDelegate = null;
-            _onDialogClosingDelegate = null;
-            _onDialogClosingAsyncDelegate = null;
-
-            GC.SuppressFinalize(this);
+            return subscription;
         }
 
         /// <summary>
-        /// Ensures that the DialogControl has been initialized before allowing a method to be executed.
-        /// If the DialogControl is not initialized, an <see cref="InvalidOperationException"/> is thrown.
+        /// Contains core logic for initialization.
+        /// </summary>
+        protected void InitializeCore(IDataContextDialogModule module)
+        {
+            if (IsInitialized)
+            {
+                throw new InvalidOperationException($"{GetType().Name} has been already initialized");
+            }
+
+            _module = module;
+
+            InitializeOverride();
+
+            _isInitialized = true;
+            Initialized?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void InitializeOverride()
+        {
+            _module!.Opening += ModuleOpening;
+            _module!.Closed += ModuleClosed;
+            _module!.Disposed += ModuleDisposed;
+            _subscriptionDelegates.ForEach(d => d.SubscribeOrExecute(_module));
+        }
+
+        /// <summary>
+        /// Contains core logic of uninitialization.
+        /// </summary>
+        protected void UninitializeCore()
+        {
+            UninitializeOverride();
+
+            _module = null;
+            _isInitialized = false;
+        }
+
+        protected virtual void UninitializeOverride()
+        {
+            _module!.Opening -= ModuleOpening;
+            _module!.Closed -= ModuleClosed;
+            _module!.Disposed -= ModuleDisposed;
+            _subscriptionDelegates.ForEach(d => d.Dispose());
+        }
+
+        private void ModuleOpening(object? sender, EventArgs e) => Opening?.Invoke(this, EventArgs.Empty);
+
+        private void ModuleClosed(object? sender, EventArgs e) => Closed?.Invoke(this, EventArgs.Empty);
+
+        private void ModuleDisposed(object? sender, EventArgs e)
+        {
+            if (IsInitialized)
+            {
+                UninitializeCore();
+            }
+
+            Disposed?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Throws an <see cref="InvalidOperationException"/> if current object isn't initialized.
         /// </summary>
         protected void InitializationGuard()
         {
-            if (IsInitialized is false) 
+            if (!IsInitialized)
             {
-                throw new InvalidOperationException("Operation cannot be completed because DialogControl isn't initialized at this time.");
-            }
-        }
-
-        private async void OnDialogOpenedInternal(object? sender, EventArgs e)
-        {
-            _onDialogOpenedDelegate?.Invoke();
-            if(_onDialogOpenedAsyncDelegate is not null)
-            {
-                await _onDialogOpenedAsyncDelegate.Invoke();
-            }
-        }
-
-        private async void OnDialogClosingInternal(object? sender, EventArgs e)
-        {
-            _onDialogClosingDelegate?.Invoke();
-            if (_onDialogClosingAsyncDelegate is not null)
-            {
-                await _onDialogClosingAsyncDelegate.Invoke();
+                throw new InvalidOperationException($"{GetType().Name} was not initialized.");
             }
         }
     }
-    */
+
+    public class DataContextDialogControl<T> : DataContextDialogControl, IDataContextDialogControl<T>, IDialogControlInitialize where T : new()
+    {
+        private IDataContextDialogModule<T>? _module;
+
+        /// <inheritdoc/>
+        public new IDataContextDialogModule<T> Module
+        {
+            get
+            {
+                InitializationGuard();
+                return _module!;
+            }
+        }
+
+        /// <inheritdoc/>
+        public T Properties => Module.Properties;
+
+        /// <inheritdoc/>
+        void IDialogControlInitialize.Initialize(IDataContextDialogModule module)
+        {
+            if (module is IDataContextDialogModule<T> typedModule)
+            {
+                _module = typedModule;
+                InitializeCore(module);
+            }
+            else
+            {
+                throw new InvalidOperationException($"{typeof(DataContextDialogControl<T>)} cannot be initialized with module which is not {nameof(IDataContextDialogModule<T>)}");
+            }
+        }
+    }
 }
