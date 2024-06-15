@@ -11,6 +11,6 @@ namespace MochaCore.Dialogs
         /// <summary>
         /// Fires when dialog is about to close.
         /// </summary>
-        event EventHandler<CancelEventArgs> Closing;
+        event EventHandler<CancelEventArgs>? Closing;
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs
 {
+    /*
     /// <summary>
     /// Exposes API for dialog interaction.
     /// </summary>
@@ -230,4 +231,5 @@ namespace MochaCore.Dialogs
             }
         }
     }
+    */
 }

@@ -1,31 +1,30 @@
-﻿using System;
+﻿using MochaCore.Utils;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs
 {
-    public class DialogControl : ICustomDialogControl, IDialogControlInitialize
+    public class DataContextDialogControl : IDataContextDialogControl, IDialogControlInitialize
     {
         private bool _isInitialized;
         private IDataContextDialogModule? _module;
-
-        public DialogControl()
-        {
-
-        }
-
-        public ICustomDialogModule Module => throw new NotImplementedException();
+        private List<LazySubscription> _subscriptionDelegates = new();
 
         /// <inheritdoc/>
-        public object View
+        public object View => Module.View!;
+
+        /// <inheritdoc/>
+        public IDataContextDialogModule Module
         {
             get
             {
                 InitializationGuard();
-                return _module!.View;
+                return _module!;
             }
         }
 
@@ -45,49 +44,110 @@ namespace MochaCore.Dialogs
         public event EventHandler? Initialized;
 
         /// <inheritdoc/>
-        public event EventHandler Opened;
-
-        /// <inheritdoc/>
-        public event EventHandler<CancelEventArgs> Closing;
-
-        public void Close(bool? result)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool TryClose(bool? result)
         {
-            throw new NotImplementedException();
+            // TODO: should TryClose throw if module is not initialized?
+            // Try* feels like it shouldn't throw, but this is for safe
+            // calling method which may not be exposed by module, not
+            // sure this should protect from not-initialized exception...
+
+            if (Module is IDialogClose dialogClose)
+            {
+                dialogClose.Close(result);
+                return true;
+            }
+
+            return false;
         }
 
+        /// <inheritdoc/>
         public IDisposable TrySubscribeDialogClosing(EventHandler<CancelEventArgs> closingHandler)
-        {
-            throw new NotImplementedException();
-        }
+            => TrySubscribeDialogClosing(closingHandler, null);
 
+        /// <inheritdoc/>
+        public IDisposable TrySubscribeDialogClosing(EventHandler<CancelEventArgs> closingHandler, Action<IDataContextDialogModule>? featureUnavailableHandler)
+            => DeferSubscription(closingHandler, featureUnavailableHandler, nameof(IDialogClosing.Closing));
+
+        /// <inheritdoc/>
         public IDisposable TrySubscribeDialogOpened(EventHandler openedHandler)
+            => TrySubscribeDialogOpened(openedHandler, null);
+
+        /// <inheritdoc/>
+        public IDisposable TrySubscribeDialogOpened(EventHandler openedHandler, Action<IDataContextDialogModule>? featureUnavailableHandler)
+            => DeferSubscription(openedHandler, featureUnavailableHandler, nameof(IDialogOpened.Opened));
+
+        /// <inheritdoc/>
+        void IDialogControlInitialize.Initialize(IDataContextDialogModule module) => InitializeCore(module);
+
+        protected IDisposable DeferSubscription(Delegate eventHandler, Delegate? featureUnavailableHandler, string eventName)
         {
-            throw new NotImplementedException();
+            LazySubscription subscription = new(eventHandler, featureUnavailableHandler, eventName);
+            _subscriptionDelegates.Add(subscription);
+            if (IsInitialized && _module is not null)
+            {
+                subscription.SubscribeOrExecute(_module);
+            }
+
+            return subscription;
         }
 
-        public IDisposable TrySubscribeDialogOpened(EventHandler openedHandler, Action<IDataContextDialogModule> featureUnavailableHandler)
+        /// <summary>
+        /// Contains core logic for initialization.
+        /// </summary>
+        protected void InitializeCore(IDataContextDialogModule module)
         {
-            throw new NotImplementedException();
-        }
+            if (IsInitialized)
+            {
+                throw new InvalidOperationException($"{GetType().Name} has been already initialized");
+            }
 
-        public IDisposable TrySubscriveDialogClosing(EventHandler<CancelEventArgs> closingHandler, Action<IDataContextDialogModule> featureUnavailableHandler)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IDialogControlInitialize.Initialize(IDataContextDialogModule module)
-        {
             _module = module;
 
-            InitializeCore();
+            InitializeOverride();
 
             _isInitialized = true;
             Initialized?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void InitializeOverride()
+        {
+            _module!.Opening += ModuleOpening;
+            _module!.Closed += ModuleClosed;
+            _module!.Disposed += ModuleDisposed;
+            _subscriptionDelegates.ForEach(d => d.SubscribeOrExecute(_module));
+        }
+
+        /// <summary>
+        /// Contains core logic of uninitialization.
+        /// </summary>
+        protected void UninitializeCore()
+        {
+            UninitializeOverride();
+
+            _module = null;
+            _isInitialized = false;
+        }
+
+        protected virtual void UninitializeOverride()
+        {
+            _module!.Opening -= ModuleOpening;
+            _module!.Closed -= ModuleClosed;
+            _module!.Disposed -= ModuleDisposed;
+            _subscriptionDelegates.ForEach(d => d.Dispose());
+        }
+
+        private void ModuleOpening(object? sender, EventArgs e) => Opening?.Invoke(this, EventArgs.Empty);
+
+        private void ModuleClosed(object? sender, EventArgs e) => Closed?.Invoke(this, EventArgs.Empty);
+
+        private void ModuleDisposed(object? sender, EventArgs e)
+        {     
+            if (IsInitialized)
+            {
+                UninitializeCore();
+            }
+
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -95,37 +155,130 @@ namespace MochaCore.Dialogs
         /// </summary>
         protected void InitializationGuard()
         {
-            if (!_isInitialized)
+            if (!IsInitialized)
             {
                 throw new InvalidOperationException($"{GetType().Name} was not initialized.");
             }
         }
+    }
 
-        /// <summary>
-        /// Throws an <see cref="InvalidOperationException"/> if related module is not of provided type.
-        /// </summary>
-        /// <typeparam name="T">Type of module to be checked against.</typeparam>
-        protected void ModuleTypeGuard<T>()
+    public class DataContextDialogControl<T> : DataContextDialogControl, IDataContextDialogControl<T>, IDialogControlInitialize where T : new()
+    {
+        private IDataContextDialogModule<T>? _module;
+
+        /// <inheritdoc/>
+        public new IDataContextDialogModule<T> Module
         {
-            if (_module is not T)
+            get
             {
-                throw new InvalidOperationException($"Associated module was expected to be of type {typeof(T)}, but it's not.");
+                InitializationGuard();
+                return _module!;
             }
         }
 
-        private void InitializeCore()
+        /// <inheritdoc/>
+        public T Properties => Module.Properties;
+
+        /// <inheritdoc/>
+        void IDialogControlInitialize.Initialize(IDataContextDialogModule module)
         {
-            _module!.Opening += ModuleOpening;
-            _module!.Closed += ModuleClosed;
-            _module!.Disposed += ModuleDisposed;
-            //_subscriptionDelegates.ForEach(d => d.SubscribeOrExecute(_module));
+            if (module is IDataContextDialogModule<T> typedModule)
+            {
+                _module = typedModule;
+                InitializeCore(module);
+            }
+            else
+            {
+                throw new InvalidOperationException($"{typeof(DataContextDialogControl<T>)} cannot be initialized with module which is not {nameof(IDataContextDialogModule<T>)}");
+            }         
         }
     }
 
-    public class DialogControl<T> : DialogControl, ICustomDialogControl<T> where T : new()
+    public class CustomDialogControl : DataContextDialogControl, ICustomDialogControl, IDialogControlInitialize
     {
-        public ICustomDialogModule<T> Module => throw new NotImplementedException();
+        private ICustomDialogModule? _module;
 
-        public T Properties { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        /// <inheritdoc/>
+        public new ICustomDialogModule Module
+        {
+            get
+            {
+                InitializationGuard();
+                return _module!;
+            }
+        }
+
+        /// <inheritdoc/>
+        public event EventHandler? Opened;
+
+        /// <inheritdoc/>
+        public event EventHandler<CancelEventArgs>? Closing;
+
+        /// <inheritdoc/>
+        public void Close(bool? result) => Module.Close(result);
+
+        void IDialogControlInitialize.Initialize(IDataContextDialogModule module)
+        {
+            if (module is ICustomDialogModule typedModule)
+            {
+                _module = typedModule;
+                InitializeCore(module);
+            }
+            else
+            {
+                throw new InvalidOperationException($"{typeof(CustomDialogControl)} cannot be initialized with module which is not {nameof(ICustomDialogModule)}");
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void InitializeOverride()
+        {
+            base.InitializeOverride();
+            _module!.Opened += ModuleOpened;
+            _module!.Closing += ModuleClosing;
+        }
+
+        /// <inheritdoc/>
+        protected override void UninitializeOverride()
+        {
+            base.UninitializeOverride();
+            _module!.Opened -= ModuleOpened;
+            _module!.Closing -= ModuleClosing;
+        }
+
+        private void ModuleClosing(object? sender, CancelEventArgs e) => Closing?.Invoke(this, e);
+
+        private void ModuleOpened(object? sender, EventArgs e) => Opened?.Invoke(this, e);
+    }
+
+    public class CustomDialogControl<T> : CustomDialogControl, ICustomDialogControl<T>, IDialogControlInitialize where T : new()
+    {
+        private ICustomDialogModule<T>? _module;
+
+        /// <inheritdoc/>
+        public new ICustomDialogModule<T> Module
+        {
+            get
+            {
+                InitializationGuard();
+                return _module!;
+            }
+        }
+
+        /// <inheritdoc/>
+        public T Properties => Module.Properties;
+
+        void IDialogControlInitialize.Initialize(IDataContextDialogModule module)
+        {
+            if (module is ICustomDialogModule<T> typedModule)
+            {
+                _module = typedModule;
+                InitializeCore(module);
+            }
+            else
+            {
+                throw new InvalidOperationException($"{typeof(CustomDialogControl<T>)} cannot be initialized with module which is not {nameof(ICustomDialogModule<T>)}");
+            }
+        }
     }
 }

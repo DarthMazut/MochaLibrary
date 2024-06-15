@@ -27,17 +27,17 @@ namespace MochaCore.Dialogs
 
         public IDisposable TrySubscribeDialogOpened(EventHandler openedHandler);
 
-        public IDisposable TrySubscribeDialogOpened(EventHandler openedHandler, Action<IDataContextDialogModule> featureUnavailableHandler);
+        public IDisposable TrySubscribeDialogOpened(EventHandler openedHandler, Action<IDataContextDialogModule>? featureUnavailableHandler);
 
         public IDisposable TrySubscribeDialogClosing(EventHandler<CancelEventArgs> closingHandler);
 
-        public IDisposable TrySubscriveDialogClosing(EventHandler<CancelEventArgs> closingHandler, Action<IDataContextDialogModule> featureUnavailableHandler);
+        public IDisposable TrySubscribeDialogClosing(EventHandler<CancelEventArgs> closingHandler, Action<IDataContextDialogModule>? featureUnavailableHandler);
     }
 
     public interface IDataContextDialogControl<T> : IDataContextDialogControl where T : new()
     {
         public new IDataContextDialogModule<T> Module { get; }
 
-        public T Properties { get; set; }
+        public T Properties { get; }
     }
 }

@@ -10,6 +10,6 @@ namespace MochaCore.Dialogs
         /// <summary>
         /// Fires right after the dialog opens.
         /// </summary>
-        event EventHandler Opened;
+        event EventHandler? Opened;
     }
 }

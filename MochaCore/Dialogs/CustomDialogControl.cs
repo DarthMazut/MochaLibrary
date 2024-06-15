@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs
 {
+    /*
     /// <summary>
     /// Exposes API for interaction with <see cref="ICustomDialogModule{T}"/>.
     /// </summary>
@@ -91,4 +92,5 @@ namespace MochaCore.Dialogs
             _typedModule.Close(result);
         }
     }
+    */
 }
