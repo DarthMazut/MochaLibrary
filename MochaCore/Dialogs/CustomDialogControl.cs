@@ -66,6 +66,7 @@ namespace MochaCore.Dialogs
 
     public class CustomDialogControl<T> : CustomDialogControl, ICustomDialogControl<T>, IDialogControlInitialize where T : new()
     {
+        private readonly List<Action<T>> _customizeDelegates = new();
         private ICustomDialogModule<T>? _module;
 
         /// <inheritdoc/>
@@ -81,12 +82,16 @@ namespace MochaCore.Dialogs
         /// <inheritdoc/>
         public T Properties => Module.Properties;
 
+        /// <inheritdoc/>
+        public void Customize(Action<T> customizeDelegate) => _customizeDelegates.Add(customizeDelegate);
+
         void IDialogControlInitialize.Initialize(IDataContextDialogModule module)
         {
             if (module is ICustomDialogModule<T> typedModule)
             {
                 _module = typedModule;
                 InitializeCore(module);
+                _customizeDelegates.ForEach(d => d.Invoke(Properties));
             }
             else
             {
