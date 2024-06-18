@@ -7,6 +7,61 @@ using MochaCore.Dialogs;
 
 namespace MochaWinUI.Dialogs
 {
+    public class ContentDialogModule : ICustomDialogModule
+    {
+        private readonly ContentDialog _view;
+        private IDataContextDialog? _dataContext;
+
+        public ContentDialogModule(ContentDialog contentDialog, IDataContextDialog? dataContext)
+        {
+            _view = contentDialog;
+            _dataContext = dataContext;
+        }
+
+        public object? View => _view;
+
+        public ICustomDialog? DataContext => _dataContext;
+
+        public event EventHandler Opening;
+
+        public event EventHandler Closed;
+
+        public event EventHandler Disposed;
+
+        public event EventHandler? Opened;
+
+        public event EventHandler<CancelEventArgs>? Closing;
+
+        public void Close(bool? result)
+        {
+            _view.Hide();
+        }
+
+        // Cannot set dataContext where already initialized, ok?
+
+        public void SetDataContext(ICustomDialog? dataContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDataContext(IDataContextDialog? dataContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool?> ShowModalAsync(object host)
+        {
+            return (await _view.ShowAsync()) is ContentDialogResult.Primary;
+            
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /*
     /// <summary>
     /// Provides base implementation for WinUI 3 <see cref="ContentDialog"/>-based modules.
     /// </summary>
@@ -276,4 +331,5 @@ namespace MochaWinUI.Dialogs
         /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         public ContentDialogModule(Window mainWindow, ContentDialog view, ICustomDialog<DialogProperties>? dataContext, DialogProperties properties) : base(mainWindow, view, dataContext, properties) { }
     }
+    */
 }
