@@ -27,23 +27,23 @@ namespace MochaCore.Dialogs
         /// The object which hosts this dialog while being shown.
         /// <para>You should pass '<see langword="this"/>' here.</para>
         /// </param>
-        Task<bool?> ShowModalAsync(object host);
+        Task<bool?> ShowModalAsync(object? host);
 
         /// <summary>
         /// Fires whenever dialog is about to be opened.
         /// </summary>
-        event EventHandler Opening;
+        event EventHandler? Opening;
 
         /// <summary>
         /// Fires whenever dialog closes.
         /// </summary>
-        event EventHandler Closed;
+        event EventHandler? Closed;
 
         /// <summary>
         /// Fires when dialog is done.
         /// <para><c>"Comrade soldier, you're done!"</c></para>
         /// </summary>
-        event EventHandler Disposed;
+        event EventHandler? Disposed;
     }
 
     /// <summary>

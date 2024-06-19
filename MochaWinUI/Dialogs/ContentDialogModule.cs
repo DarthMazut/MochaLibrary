@@ -20,7 +20,7 @@ namespace MochaWinUI.Dialogs
 
         public object? View => _view;
 
-        public ICustomDialog? DataContext => _dataContext;
+        public ICustomDialog? DataContext => throw new NotImplementedException();
 
         public event EventHandler Opening;
 
@@ -41,12 +41,12 @@ namespace MochaWinUI.Dialogs
 
         public void SetDataContext(ICustomDialog? dataContext)
         {
-            throw new NotImplementedException();
+            _dataContext = dataContext;
         }
 
         public void SetDataContext(IDataContextDialog? dataContext)
         {
-            throw new NotImplementedException();
+            _dataContext = dataContext;
         }
 
         public async Task<bool?> ShowModalAsync(object host)
@@ -55,9 +55,48 @@ namespace MochaWinUI.Dialogs
             
         }
 
+        // It should be configurable, whether disposing a module should also
+        // dispose DataContext
+
         public void Dispose()
         {
-            throw new NotImplementedException();
+            if (_dataContext is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+
+            DisposeDialog?.Invoke(this);
+            _view.DataContext = null;
+            _dataContext = null;
+            _view.Opened -= DialogOpened;
+            _view.Closing -= DialogClosing;
+
+            GC.SuppressFinalize(this);
+            Disposed?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual bool? HandleResult(ContentDialogResult result) => result switch
+        {
+            ContentDialogResult.None => null,
+            ContentDialogResult.Primary => true,
+            ContentDialogResult.Secondary => false,
+            _ => throw new NotImplementedException(),
+        };
+
+        protected virtual XamlRoot FindParent(object? host)
+        {
+            if (host is UIElement uiElement)
+            {
+                return uiElement.XamlRoot;
+            }
+
+
+
+        }
+
+        protected virtual void DisposeCore()
+        {
+
         }
     }
 
