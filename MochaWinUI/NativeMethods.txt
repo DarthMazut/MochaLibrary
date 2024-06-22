@@ -1,2 +1,4 @@
-﻿SetParent
-ShowWindow
+﻿EnumWindows
+GetWindowThreadProcessId
+GetWindow
+GetCurrentThreadId

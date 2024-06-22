@@ -11,13 +11,10 @@ namespace MochaCore.Dialogs
     /// </summary>
     public interface IDialogModule : IDisposable
     {
-        // TODO: Why View is nullable? Are there any cases that module does not
-        // contain technology-specyfic dialog object?
-
         /// <summary>
         /// Technology-specific dialog object which is represented by this module.
         /// </summary>
-        object? View { get; }
+        object View { get; }
 
         /// <summary>
         /// Asynchronously opens a dialog represented by this instance in modal mode. 

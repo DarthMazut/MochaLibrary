@@ -8,12 +8,7 @@ namespace MochaCore.Dialogs
 {
     public interface ICustomDialogModule : IDataContextDialogModule, IDialogClose, IDialogOpened, IDialogClosing
     {
-        /// <inheritdoc/>
-        IDataContextDialog? IDataContextDialogModule.DataContext => DataContext;
 
-        public new ICustomDialog? DataContext { get; }
-
-        public void SetDataContext(ICustomDialog? dataContext);
     }
 
     /// <summary>
@@ -24,21 +19,6 @@ namespace MochaCore.Dialogs
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
     public interface ICustomDialogModule<T> : ICustomDialogModule, IDataContextDialogModule<T> where T : new()
     {
-        IDataContextDialog? IDataContextDialogModule.DataContext => DataContext;
 
-        IDataContextDialog<T>? IDataContextDialogModule<T>.DataContext => DataContext;
-
-        ICustomDialog? ICustomDialogModule.DataContext => DataContext;
-
-        /// <summary>
-        /// Returns a reference to <see cref="ICustomDialog{T}"/> object which acts as a DataContext for dialog represented by this module. 
-        /// </summary>
-        public new ICustomDialog<T>? DataContext { get; }
-
-        /// <summary>
-        /// Allows to assign new *DataContext* for this module.
-        /// </summary>
-        /// <param name="dataContext">DataContext to be assigned.</param>
-        public void SetDataContext(ICustomDialog<T>? dataContext);
     }
 }

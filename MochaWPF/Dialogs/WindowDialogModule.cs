@@ -11,6 +11,7 @@ using Application = System.Windows.Application;
 
 namespace MochaWPF.Dialogs
 {
+    /*
     /// <summary>
     /// Provides standard implementation of <see cref="ICustomDialogModule{T}"/> for WPF <see cref="Window"/> object.
     /// </summary>
@@ -218,4 +219,5 @@ namespace MochaWPF.Dialogs
         /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         public WindowDialogModule(Window dialogWindow, ICustomDialog<DialogProperties> dataContext, DialogProperties properties) : base(dialogWindow, dataContext, properties) { }
     }
+    */
 }

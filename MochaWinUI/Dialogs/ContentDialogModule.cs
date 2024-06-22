@@ -1,73 +1,108 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MochaCore.Dialogs;
+using Windows.UI.Core;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using WinRT;
+using WinRT.Interop;
 
 namespace MochaWinUI.Dialogs
 {
     public class ContentDialogModule : ICustomDialogModule
     {
-        private readonly ContentDialog _view;
+        protected readonly ContentDialog _view;
         private IDataContextDialog? _dataContext;
+        private bool _isDialogOpen;
+        private bool _isDisposed;
+        private bool _isManualResult;
+        private bool? _manualResult;
 
         public ContentDialogModule(ContentDialog contentDialog, IDataContextDialog? dataContext)
         {
             _view = contentDialog;
             _dataContext = dataContext;
+
+            _view.Opened += DialogOpened;
+            _view.Closing += DialogClosing;
         }
 
-        public object? View => _view;
+        /// <inheritdoc/>
+        public object View => _view;
 
-        public ICustomDialog? DataContext => throw new NotImplementedException();
+        /// <inheritdoc/>
+        public IDataContextDialog? DataContext => _dataContext;
 
-        public event EventHandler Opening;
+        /// <inheritdoc/>
+        public event EventHandler? Opening;
 
-        public event EventHandler Closed;
+        /// <inheritdoc/>
+        public event EventHandler? Closed;
 
-        public event EventHandler Disposed;
+        /// <inheritdoc/>
+        public event EventHandler? Disposed;
 
+        /// <inheritdoc/>
         public event EventHandler? Opened;
 
+        /// <inheritdoc/>
         public event EventHandler<CancelEventArgs>? Closing;
 
+        /// <inheritdoc/>
         public void Close(bool? result)
         {
+            _isManualResult = true;
+            _manualResult = result;
             _view.Hide();
         }
 
-        // Cannot set dataContext where already initialized, ok?
-
-        public void SetDataContext(ICustomDialog? dataContext)
-        {
-            _dataContext = dataContext;
-        }
-
+        // TODO: Cannot set dataContext where already initialized, ok?
+        /// <inheritdoc/>
         public void SetDataContext(IDataContextDialog? dataContext)
         {
+            ThrowIfOpened();
+            ThrowIfDisposed();
+
             _dataContext = dataContext;
         }
 
-        public async Task<bool?> ShowModalAsync(object host)
+        /// <inheritdoc/>
+        public async Task<bool?> ShowModalAsync(object? host)
         {
-            return (await _view.ShowAsync()) is ContentDialogResult.Primary;
-            
+            ApplyPropertiesOverride();
+            // TODO: Should we assign if already assign from previous call?
+            // Should we allow antoher calls?
+            // Shouldn't be one instance per call?
+            _view.DataContext = _dataContext;
+            _view.XamlRoot = FindParent(host);
+            InitializeDataContext(_dataContext);
+            Opening?.Invoke(this, EventArgs.Empty);
+            ContentDialogResult rawResult = await DisplayDialog(_view);
+            bool? typedResult = HandleResult(rawResult);
+            Closed?.Invoke(this, EventArgs.Empty);
+            return typedResult;
         }
 
-        // It should be configurable, whether disposing a module should also
-        // dispose DataContext
-
+        /// <inheritdoc/>
         public void Dispose()
         {
+            // TODO: It should be configurable, whether disposing a module should also
+            // dispose DataContext
+
             if (_dataContext is IDisposable disposable)
             {
                 disposable.Dispose();
             }
 
-            DisposeDialog?.Invoke(this);
+            DisposeCore();
             _view.DataContext = null;
-            _dataContext = null;
             _view.Opened -= DialogOpened;
             _view.Closing -= DialogClosing;
 
@@ -75,13 +110,18 @@ namespace MochaWinUI.Dialogs
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual bool? HandleResult(ContentDialogResult result) => result switch
+        protected virtual void ApplyPropertiesOverride() { }
+
+        protected virtual void InitializeDataContext(IDataContextDialog? dataContext)
         {
-            ContentDialogResult.None => null,
-            ContentDialogResult.Primary => true,
-            ContentDialogResult.Secondary => false,
-            _ => throw new NotImplementedException(),
-        };
+            if (dataContext is IDataContextDialog baseDialog)
+            {
+                if (baseDialog.DialogControl is IDialogControlInitialize dialogInitialize)
+                {
+                    dialogInitialize.Initialize(this);
+                }
+            }
+        }
 
         protected virtual XamlRoot FindParent(object? host)
         {
@@ -90,15 +130,64 @@ namespace MochaWinUI.Dialogs
                 return uiElement.XamlRoot;
             }
 
-
-
+            throw new NotImplementedException($"The current implementation of {GetType().Name} was unable to locate " +
+                $"the xaml root for the dialog it was supposed to display. Please try providing your own " +
+                $"implementation of the {nameof(FindParent)} method.");
         }
 
-        protected virtual void DisposeCore()
+        protected virtual Task<ContentDialogResult> DisplayDialog(ContentDialog view) => view.ShowAsync().AsTask();
+
+        protected virtual bool? HandleResult(ContentDialogResult result)
         {
+            if (_isManualResult)
+            {
+                _isManualResult = false;
+                return _manualResult;
+            }
 
+            return result switch
+            {
+                ContentDialogResult.None => null,
+                ContentDialogResult.Primary => true,
+                ContentDialogResult.Secondary => false,
+                _ => throw new NotImplementedException(),
+            };
         }
+
+        protected virtual void DisposeCore() { }
+
+        private void DialogClosing(ContentDialog sender, ContentDialogClosingEventArgs e)
+        {
+            CancelEventArgs args = new();
+            Closing?.Invoke(this, args);
+            e.Cancel = args.Cancel;
+        }
+
+        private void DialogOpened(ContentDialog sender, ContentDialogOpenedEventArgs e) => Opened?.Invoke(this, EventArgs.Empty);
+
+        private void ThrowIfOpened()
+            => throw new InvalidOperationException("Cannot perform the operation because the dialog is opened.");
+
+        private void ThrowIfDisposed()
+            => throw new InvalidOperationException("Cannot perform the operation because the module has already been disposed.");
     }
+
+    public class ContentDialogModule<T> : ContentDialogModule, ICustomDialogModule<T> where T : new()
+    {
+        public ContentDialogModule(ContentDialog contentDialog, IDataContextDialog? dataContext, T properties) : base(contentDialog, dataContext)
+        {
+            Properties = properties;
+        }
+
+        /// <inheritdoc/>
+        public T Properties { get; set; }
+
+        protected virtual void ApplyProperties(T properties, ContentDialog dialog) { }
+
+        /// <inheritdoc/>
+        protected override sealed void ApplyPropertiesOverride() => ApplyProperties(Properties, _view);
+    }
+
 
     /*
     /// <summary>

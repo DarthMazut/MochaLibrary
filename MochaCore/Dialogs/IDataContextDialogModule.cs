@@ -29,18 +29,6 @@ namespace MochaCore.Dialogs
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
     public interface IDataContextDialogModule<T> : IDataContextDialogModule, IDialogModule<T> where T : new()
     {
-        /// <inheritdoc/>
-        IDataContextDialog? IDataContextDialogModule.DataContext => DataContext;
-
-        /// <summary>
-        /// Returns a reference to <see cref="IDataContextDialog{T}"/> object which acts as a DataContext for dialog represented by this module. 
-        /// </summary>
-        public new IDataContextDialog<T>? DataContext { get; }
-
-        /// <summary>
-        /// Allows to assign new *DataContext* for this module.
-        /// </summary>
-        /// <param name="dataContext">DataContext to be assigned.</param>
-        public void SetDataContext(IDataContextDialog<T>? dataContext);
+        
     }
 }

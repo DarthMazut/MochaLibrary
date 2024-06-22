@@ -4,6 +4,7 @@ using MochaCore.Dialogs.Extensions;
 
 namespace MochaWinUI.Dialogs
 {
+    /*
     public class StandardMessageDialogModule : ContentDialogModule<StandardMessageDialogProperties>
     {
         public StandardMessageDialogModule(Window mainWindow) : base(mainWindow, new ContentDialog(), null, new StandardMessageDialogProperties()) { }
@@ -19,4 +20,5 @@ namespace MochaWinUI.Dialogs
             view.CloseButtonText = properties?.CancelButtonText;
         }
     }
+    */
 }

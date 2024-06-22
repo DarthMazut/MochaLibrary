@@ -5,11 +5,13 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using MochaWinUI.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -26,6 +28,11 @@ namespace WinUiApplicationX
         public MainWindow()
         {
             this.InitializeComponent();
+            this.Activated += async (s, e) =>
+            {
+                await Task.Delay(5000);
+                var result = Test.TryRetrieveAppMainWindow();
+            };
         }
     }
 }
