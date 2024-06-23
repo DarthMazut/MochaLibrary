@@ -28,11 +28,6 @@ namespace WinUiApplicationX
         public MainWindow()
         {
             this.InitializeComponent();
-            this.Activated += async (s, e) =>
-            {
-                await Task.Delay(5000);
-                var result = Test.TryRetrieveAppMainWindow();
-            };
         }
     }
 }

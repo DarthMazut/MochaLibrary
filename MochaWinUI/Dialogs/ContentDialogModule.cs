@@ -1,21 +1,15 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.UI;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MochaCore.Dialogs;
-using Windows.UI.Core;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using WinRT;
-using WinRT.Interop;
 
 namespace MochaWinUI.Dialogs
 {
+    /// <summary>
+    /// Provides implementation of <see cref="ICustomDialogModule"/> for WinUI3 <see cref="ContentDialog"/>.
+    /// </summary>
     public class ContentDialogModule : ICustomDialogModule
     {
         protected readonly ContentDialog _view;
@@ -25,11 +19,25 @@ namespace MochaWinUI.Dialogs
         private bool _isManualResult;
         private bool? _manualResult;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule"/> class.
+        /// </summary>
+        /// <param name="contentDialog">Technology-specific representation of this dialog module</param>
+        public ContentDialogModule(ContentDialog contentDialog) : this(contentDialog, null) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule"/> class.
+        /// </summary>
+        /// <param name="contentDialog">Technology-specific representation of this dialog module</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by *DataBinding* mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="IDataContextDialog"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
         public ContentDialogModule(ContentDialog contentDialog, IDataContextDialog? dataContext)
         {
             _view = contentDialog;
-            _dataContext = dataContext;
-
+            _dataContext = SelectDataContext(contentDialog, dataContext);
             _view.Opened += DialogOpened;
             _view.Closing += DialogClosing;
         }
@@ -63,7 +71,6 @@ namespace MochaWinUI.Dialogs
             _view.Hide();
         }
 
-        // TODO: Cannot set dataContext where already initialized, ok?
         /// <inheritdoc/>
         public void SetDataContext(IDataContextDialog? dataContext)
         {
@@ -77,15 +84,12 @@ namespace MochaWinUI.Dialogs
         public async Task<bool?> ShowModalAsync(object? host)
         {
             ApplyPropertiesOverride();
-            // TODO: Should we assign if already assign from previous call?
-            // Should we allow antoher calls?
-            // Shouldn't be one instance per call?
-            _view.DataContext = _dataContext;
+            AssignDataContextIfRequired();
             _view.XamlRoot = FindParent(host);
             InitializeDataContext(_dataContext);
             Opening?.Invoke(this, EventArgs.Empty);
             ContentDialogResult rawResult = await DisplayDialog(_view);
-            bool? typedResult = HandleResult(rawResult);
+            bool? typedResult = HandleResultCore(rawResult);
             Closed?.Invoke(this, EventArgs.Empty);
             return typedResult;
         }
@@ -112,6 +116,12 @@ namespace MochaWinUI.Dialogs
 
         protected virtual void ApplyPropertiesOverride() { }
 
+        /// <summary>
+        /// Initializes a *DialogControl* object associated with the given dataContext
+        /// by calling the <see cref="IDialogControlInitialize.Initialize(IDataContextDialogModule)"/>
+        /// method.
+        /// </summary>
+        /// <param name="dataContext">The data context associated with the current instance.</param>
         protected virtual void InitializeDataContext(IDataContextDialog? dataContext)
         {
             if (dataContext is IDataContextDialog baseDialog)
@@ -123,6 +133,13 @@ namespace MochaWinUI.Dialogs
             }
         }
 
+        /// <summary>
+        /// Returns the <see cref="XamlRoot"/> for a technology-specific dialog object.
+        /// Throws an exception if the XamlRoot could not be found.
+        /// </summary>
+        /// <param name="host">The host object for which to find the parent XamlRoot.</param>
+        /// <returns>The <see cref="XamlRoot"/> associated with the given host object.</returns>
+        /// <exception cref="NotImplementedException">Thrown if the XamlRoot could not be found for the provided host object.</exception>
         protected virtual XamlRoot FindParent(object? host)
         {
             if (host is UIElement uiElement)
@@ -130,14 +147,65 @@ namespace MochaWinUI.Dialogs
                 return uiElement.XamlRoot;
             }
 
+            if (host is Window window)
+            {
+                return window.Content.XamlRoot;
+            }
+
             throw new NotImplementedException($"The current implementation of {GetType().Name} was unable to locate " +
                 $"the xaml root for the dialog it was supposed to display. Please try providing your own " +
                 $"implementation of the {nameof(FindParent)} method.");
         }
 
+        /// <summary>
+        /// Defines how the technology-specific dialog object represented by this module should be displayed.
+        /// </summary>
+        /// <param name="view">The actual dialog object to be displayed.</param>
         protected virtual Task<ContentDialogResult> DisplayDialog(ContentDialog view) => view.ShowAsync().AsTask();
 
-        protected virtual bool? HandleResult(ContentDialogResult result)
+        /// <summary>
+        /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
+        /// </summary>
+        /// <param name="result">Technology-specific <see cref="ContentDialog"/> result object.</param>
+        protected virtual bool? HandleResult(ContentDialogResult result) => result switch
+        {
+            ContentDialogResult.None => null,
+            ContentDialogResult.Primary => true,
+            ContentDialogResult.Secondary => false,
+            _ => throw new NotImplementedException(),
+        };
+
+        /// <summary>
+        /// Allows to define additional code to be invoked while this module is being disposed.
+        /// </summary>
+        protected virtual void DisposeCore() { }
+
+        private IDataContextDialog? SelectDataContext(ContentDialog contentDialog, IDataContextDialog? dataContext)
+        {
+            if (dataContext is not null)
+            {
+                return dataContext;
+            }
+
+            if (contentDialog.DataContext is null)
+            {
+                return null;
+            }
+
+            return contentDialog.DataContext is IDataContextDialog typedContext
+                ? typedContext
+                : throw new ArgumentException($"DataContext assigned to technology-specific dialog object must be of type {nameof(IDataContextDialog)}", nameof(dataContext));
+        }
+
+        private void AssignDataContextIfRequired()
+        {
+            if (_view.DataContext != _dataContext)
+            {
+                _view.DataContext = _dataContext;
+            }
+        }
+
+        private bool? HandleResultCore(ContentDialogResult result)
         {
             if (_isManualResult)
             {
@@ -145,16 +213,8 @@ namespace MochaWinUI.Dialogs
                 return _manualResult;
             }
 
-            return result switch
-            {
-                ContentDialogResult.None => null,
-                ContentDialogResult.Primary => true,
-                ContentDialogResult.Secondary => false,
-                _ => throw new NotImplementedException(),
-            };
+            return HandleResult(result);
         }
-
-        protected virtual void DisposeCore() { }
 
         private void DialogClosing(ContentDialog sender, ContentDialogClosingEventArgs e)
         {
@@ -174,6 +234,16 @@ namespace MochaWinUI.Dialogs
 
     public class ContentDialogModule<T> : ContentDialogModule, ICustomDialogModule<T> where T : new()
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule"/> class.
+        /// </summary>
+        /// <param name="contentDialog">Technology-specific representation of this dialog module</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by *DataBinding* mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="IDataContextDialog"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
+        /// <param name="properties"></param>
         public ContentDialogModule(ContentDialog contentDialog, IDataContextDialog? dataContext, T properties) : base(contentDialog, dataContext)
         {
             Properties = properties;
@@ -182,6 +252,11 @@ namespace MochaWinUI.Dialogs
         /// <inheritdoc/>
         public T Properties { get; set; }
 
+        /// <summary>
+        /// Customizes view object based on <see cref="Properties"/>.
+        /// </summary>
+        /// <param name="properties">Properties object which serves as a source for customization.</param>
+        /// <param name="dialog">View object to be customized.</param>
         protected virtual void ApplyProperties(T properties, ContentDialog dialog) { }
 
         /// <inheritdoc/>

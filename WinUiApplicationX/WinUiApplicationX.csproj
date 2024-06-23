@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MochaWinUI\MochaWinUI.csproj" />
+    <ProjectReference Include="..\ViewModelsX\ViewModelsX.csproj" />
   </ItemGroup>
 
   <!--

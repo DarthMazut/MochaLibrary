@@ -4,21 +4,22 @@ using MochaCore.Dialogs.Extensions;
 
 namespace MochaWinUI.Dialogs
 {
-    /*
+
     public class StandardMessageDialogModule : ContentDialogModule<StandardMessageDialogProperties>
     {
-        public StandardMessageDialogModule(Window mainWindow) : base(mainWindow, new ContentDialog(), null, new StandardMessageDialogProperties()) { }
-
         // How about ctor with StandardMessageDialogProperties ?
 
-        protected override void ApplyPropertiesCore(StandardMessageDialogProperties? properties, ContentDialog view)
+        public StandardMessageDialogModule() : base(new ContentDialog(), null, new StandardMessageDialogProperties()) { }
+
+        /// <inheritdoc/>
+        protected override void ApplyProperties(StandardMessageDialogProperties properties, ContentDialog dialog)
         {
-            view.Title = properties.Title;
-            view.Content = properties.Message;
-            view.PrimaryButtonText = properties.ConfirmationButtonText;
-            view.SecondaryButtonText = properties?.DeclineButtonText;
-            view.CloseButtonText = properties?.CancelButtonText;
+            dialog.Title = properties.Title;
+            dialog.Content = properties.Message;
+            dialog.PrimaryButtonText = properties.ConfirmationButtonText;
+            dialog.SecondaryButtonText = properties?.DeclineButtonText;
+            dialog.CloseButtonText = properties?.CancelButtonText;
         }
     }
-    */
+
 }

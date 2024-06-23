@@ -9,14 +9,6 @@
     mc:Ignorable="d">
 
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <ToggleSwitch
-            MaxWidth="10"
-            OffContent="Do work"
-            OnContent="Working"
-            IsOn="True" />
-        <ProgressRing
-            IsActive="True"
-            Width="155"
-            Height="155"/>
+        <Button Content="Click me" Command="{Binding ClickCommand}"/>
     </StackPanel>
 </Window>
