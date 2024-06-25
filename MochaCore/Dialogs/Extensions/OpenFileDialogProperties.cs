@@ -9,7 +9,7 @@ namespace MochaCore.Dialogs.Extensions
     /// <summary>
     /// Provides a set of properties used to customize dialogs for file opening. 
     /// </summary>
-    public class OpenFileDialogProperties : DialogProperties
+    public class OpenFileDialogProperties
     {
         /// <summary>
         /// Title of dialog window.

@@ -10,7 +10,7 @@ namespace MochaCore.Dialogs.Extensions
     /// <summary>
     /// Provides a set of properties used to customize dialogs for folder browsing.
     /// </summary>
-    public class BrowseFolderDialogProperties : DialogProperties
+    public class BrowseFolderDialogProperties
     {
         /// <summary>
         /// Title of dialog window.

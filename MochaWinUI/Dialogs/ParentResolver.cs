@@ -15,13 +15,28 @@ namespace MochaWinUI.Dialogs
     /// </summary>
     public static class ParentResolver
     {
+        public static XamlRoot? FindParentXamlRoot(object? host)
+        {
+            if (host is UIElement uiElement)
+            {
+                return uiElement.XamlRoot;
+            }
+
+            if (host is Window window)
+            {
+                return window.Content.XamlRoot;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Searches for <see cref="XamlRoot"/> of given object. 
         /// Returns <see langword="null"/> if no such could be found.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="host">Object whose parent <see cref="XamlRoot"/> is to be found.</param>
-        public static XamlRoot? FindParentXamlRoot<T>(object host) where T : DialogProperties, new()
+        public static XamlRoot? FindParentXamlRoot<T>(object host) where T : new()
         {
             if (host is INavigationParticipant navigatable)
             {
@@ -53,7 +68,7 @@ namespace MochaWinUI.Dialogs
         /// </summary>
         /// <typeparam name="T">Type of statically typed properties of dialog module which initiated search process.</typeparam>
         /// <param name="host">Object whose parent is to be found.</param>
-        public static Window? FindParentWindow<T>(object host) where T : DialogProperties, new()
+        public static Window? FindParentWindow<T>(object host) where T : new()
         {
             if (host is INavigationParticipant navigatable)
             {

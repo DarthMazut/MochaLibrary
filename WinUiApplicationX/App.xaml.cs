@@ -49,9 +49,11 @@ namespace WinUiApplicationX
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             DialogManager.DefineDialog("StdDialog", () => new StandardMessageDialogModule());
+            
             WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
 
             IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
+            DialogManager.DefineDialog("OpenDialog", () => new OpenFileDialogModule(mainWindow.View as Window));
             mainWindow.Open();
 
             //m_window = new MainWindow();

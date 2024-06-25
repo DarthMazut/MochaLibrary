@@ -16,21 +16,21 @@ namespace MochaCore.Dialogs.Extensions.DI
         /// </summary>
         /// <typeparam name="T">Type of properties object used by created dialog.</typeparam>
         /// <param name="id">Specifies the dialog identifier.</param>
-        IDialogModule<T> Create<T>(string id) where T : DialogProperties, new();
+        IDialogModule<T> Create<T>(string id) where T : new();
 
         /// <summary>
         /// Returns new instacne of <see cref="IDataContextDialogModule{T}"/> corresponding to given identifier.
         /// </summary>
         /// <typeparam name="T">Type of properties object used by created dialog.</typeparam>
         /// <param name="id">Dialog identifier.</param>
-        IDataContextDialogModule<T> CreateDataContextModule<T>(string id) where T : DialogProperties, new();
+        IDataContextDialogModule<T> CreateDataContextModule<T>(string id) where T : new();
 
         /// <summary>
         /// Returns new instacne of <see cref="ICustomDialogModule{T}"/> corresponding to given identifier.
         /// </summary>
         /// <typeparam name="T">Type of properties object used by created dialog.</typeparam>
         /// <param name="id">Dialog identifier.</param>
-        ICustomDialogModule<T> CreateCustomModule<T>(string id) where T : DialogProperties, new();
+        ICustomDialogModule<T> CreateCustomModule<T>(string id) where T : new();
 
         /// <summary>
         /// Returns a collection of currently open <see cref="IDialogModule"/> with given ID.

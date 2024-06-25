@@ -9,7 +9,7 @@ namespace MochaCore.Dialogs.Extensions
     /// <summary>
     /// Provides standard properties for customization of file save dialog.
     /// </summary>
-    public class SaveFileDialogProperties : DialogProperties
+    public class SaveFileDialogProperties
     {
         /// <summary>
         /// Dialog title.
