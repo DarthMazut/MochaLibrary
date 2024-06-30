@@ -40,6 +40,10 @@ namespace MochaWinUI.Dialogs
             _dataContext = SelectDataContext(contentDialog, dataContext);
             _view.Opened += DialogOpened;
             _view.Closing += DialogClosing;
+
+            FindParent = FindParentCore;
+            HandleResult = HandleResultCore;
+            DisposeModule = DisposeModuleCore;
         }
 
         /// <inheritdoc/>
@@ -62,6 +66,34 @@ namespace MochaWinUI.Dialogs
 
         /// <inheritdoc/>
         public event EventHandler<CancelEventArgs>? Closing;
+
+        /// <summary>
+        /// Returns the <see cref="XamlRoot"/> for a technology-specific dialog object.
+        /// Throws an exception if the XamlRoot could not be found.
+        /// <para>
+        /// Use this delagate to avoiding subcalssing only for overriding <see cref="FindParentCore(object?)"/>.
+        /// Setting this delegate overrides default <see cref="FindParentCore(object?)"/> implementation.
+        /// </para>
+        /// </summary>
+        public Func<object?, XamlRoot> FindParent { get; init; }
+
+        /// <summary>
+        /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
+        /// <para>
+        /// Use this delagate to avoiding subcalssing only for overriding <see cref="HandleResultCore(ContentDialogResult)"/>.
+        /// Setting this delegate overrides default<see cref="HandleResultCore(ContentDialogResult)"/> implementation.
+        /// </para>
+        /// </summary>
+        public Func<ContentDialogResult, bool?> HandleResult { get; init; }
+
+        /// <summary>
+        /// Allows to define additional code to be invoked while this module is being disposed.
+        /// <para>
+        /// Use this delagate to avoiding subcalssing only for overriding <see cref="DisposeModuleCore"/>.
+        /// Setting this delegate overrides default <see cref="DisposeModuleCore"/> implementation.
+        /// </para>
+        /// </summary>
+        public Action<ContentDialogModule> DisposeModule { get; init; }
 
         /// <inheritdoc/>
         public void Close(bool? result)
@@ -105,7 +137,7 @@ namespace MochaWinUI.Dialogs
                 disposable.Dispose();
             }
 
-            DisposeCore();
+            DisposeModule(this);
             _view.DataContext = null;
             _view.Opened -= DialogOpened;
             _view.Closing -= DialogClosing;
@@ -140,7 +172,7 @@ namespace MochaWinUI.Dialogs
         /// <param name="host">The host object for which to find the parent XamlRoot.</param>
         /// <returns>The <see cref="XamlRoot"/> associated with the given host object.</returns>
         /// <exception cref="NotImplementedException">Thrown if the XamlRoot could not be found for the provided host object.</exception>
-        protected virtual XamlRoot FindParent(object? host)
+        protected virtual XamlRoot FindParentCore(object? host)
         {
             if (host is UIElement uiElement)
             {
@@ -167,7 +199,7 @@ namespace MochaWinUI.Dialogs
         /// Translates technology-specific dialog result object into technology-independent <see langword="bool?"/> value.
         /// </summary>
         /// <param name="result">Technology-specific <see cref="ContentDialog"/> result object.</param>
-        protected virtual bool? HandleResult(ContentDialogResult result) => result switch
+        protected virtual bool? HandleResultCore(ContentDialogResult result) => result switch
         {
             ContentDialogResult.None => null,
             ContentDialogResult.Primary => true,
@@ -178,7 +210,7 @@ namespace MochaWinUI.Dialogs
         /// <summary>
         /// Allows to define additional code to be invoked while this module is being disposed.
         /// </summary>
-        protected virtual void DisposeCore() { }
+        protected virtual void DisposeModuleCore(ContentDialogModule module) { }
 
         private IDataContextDialog? SelectDataContext(ContentDialog contentDialog, IDataContextDialog? dataContext)
         {
@@ -205,7 +237,7 @@ namespace MochaWinUI.Dialogs
             }
         }
 
-        private bool? HandleResultCore(ContentDialogResult result)
+        private bool? HandleResultBase(ContentDialogResult result)
         {
             if (_isManualResult)
             {
@@ -234,6 +266,23 @@ namespace MochaWinUI.Dialogs
 
     public class ContentDialogModule<T> : ContentDialogModule, ICustomDialogModule<T> where T : new()
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule"/> class.
+        /// </summary>
+        /// <param name="contentDialog">Technology-specific representation of this dialog module</param>
+        public ContentDialogModule(ContentDialog contentDialog) : this(contentDialog, null, new()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialogModule"/> class.
+        /// </summary>
+        /// <param name="contentDialog">Technology-specific representation of this dialog module</param>
+        /// <param name="dataContext">
+        /// A dialog logic bound to view object by *DataBinding* mechanism.
+        /// Passing <see langword="null"/> means that the DataContext from the provided view object will be used, 
+        /// as long as it's of type <see cref="IDataContextDialog"/>. Otherwise, the DataContext will be <see langword="null"/>. 
+        /// </param>
+        public ContentDialogModule(ContentDialog contentDialog, IDataContextDialog? dataContext) : this(contentDialog, dataContext, new()) { }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentDialogModule"/> class.
         /// </summary>
