@@ -18,22 +18,11 @@ namespace ViewModelsX
         [RelayCommand]
         private async Task Click()
         {
-            IDialogModule<OpenFileDialogProperties> openDialog = DialogManager.GetDialog<OpenFileDialogProperties>("OpenDialog");
-            openDialog.ShowModalAsync(WindowControl.View);
+            ICustomDialogModule<MyDialogProperties> customDialogModule
+                = DialogManager.GetCustomDialog<MyDialogProperties>("CustomDialog");
 
-            //ICustomDialogModule<StandardMessageDialogProperties> stdDialog 
-            //    = DialogManager.GetCustomDialog<StandardMessageDialogProperties>("StdDialog");
+            bool? result = await customDialogModule.ShowModalAsync(null);
 
-            //stdDialog.Properties.Title = "Title";
-            //stdDialog.Properties.Message = "Hello World!";
-            //stdDialog.Properties.CancelButtonText = "Cancel";
-
-            //bool? dialogResult = await stdDialog.ShowModalAsync(WindowControl.View);
-
-            //if (dialogResult == true)
-            //{
-            //    WindowControl.Minimize();
-            //}
         }
     }
 }

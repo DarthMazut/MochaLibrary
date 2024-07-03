@@ -15,6 +15,13 @@ namespace MochaCore.Windowing
         private static readonly Dictionary<string, Func<IBaseWindowModule>> _builders = new();
         private static readonly Dictionary<string, List<IBaseWindowModule>> _createdModules = new();
 
+        // How about special method for main window?
+        // var mainWindow = WindowManager.RegisterMainWindow(() => new WindowModule(new MainWindow(), new MainWindowViewModel()));
+        // OR
+        // var mainWindow = WindowManager.RegisterMainWindow<MainWindow>();
+        // THEN
+        // var mainWindow = WindowManager.RetrieveMainWindow(); // always same instance if open
+
         /// <summary>
         /// Registers <see cref="IBaseWindowModule"/> builder delegate.
         /// </summary>

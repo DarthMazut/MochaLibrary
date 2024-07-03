@@ -12,7 +12,7 @@ namespace MochaWinUI.Dialogs
         public StandardMessageDialogModule() : base(new ContentDialog(), null, new StandardMessageDialogProperties()) { }
 
         /// <inheritdoc/>
-        protected override void ApplyProperties(StandardMessageDialogProperties properties, ContentDialog dialog)
+        protected override void ApplyPropertiesCore(StandardMessageDialogProperties properties, ContentDialog dialog)
         {
             dialog.Title = properties.Title;
             dialog.Content = properties.Message;

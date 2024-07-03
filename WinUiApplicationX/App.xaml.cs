@@ -31,8 +31,6 @@ namespace WinUiApplicationX
     /// </summary>
     public partial class App : Application
     {
-        //private Window m_window;
-
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -48,16 +46,19 @@ namespace WinUiApplicationX
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            DialogManager.DefineDialog("StdDialog", () => new StandardMessageDialogModule());
-            
             WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
-  
             IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
-            DialogManager.DefineDialog("OpenDialog", () => new OpenFileDialogModule(mainWindow.View as Window));
-            mainWindow.Open();
 
-            //m_window = new MainWindow();
-            //m_window.Activate();
+            DialogManager.DefineDialog("CustomDialog", () => new ContentDialogModule<MyDialogProperties>(
+                new ContentDialog(),
+                new DialogViewModel())
+            {
+                FindParent = (o) => (mainWindow.View as MainWindow).Content.XamlRoot
+            });
+            DialogManager.DefineDialog("StdDialog", () => new StandardMessageDialogModule());
+            DialogManager.DefineDialog("OpenDialog", () => new OpenFileDialogModule(mainWindow.View as Window));
+
+            mainWindow.Open();
         }
 
         

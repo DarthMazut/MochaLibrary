@@ -23,6 +23,12 @@ namespace MochaCore.Dialogs
         public new ICustomDialogControl<T> DialogControl { get; }
 
         /// <inheritdoc/>
+        IDataContextDialogControl IDataContextDialog.DialogControl => DialogControl;
+
+        /// <inheritdoc/>
         IDataContextDialogControl<T> IDataContextDialog<T>.DialogControl => DialogControl;
+
+        /// <inheritdoc/>
+        ICustomDialogControl ICustomDialog.DialogControl => DialogControl; 
     }
 }
