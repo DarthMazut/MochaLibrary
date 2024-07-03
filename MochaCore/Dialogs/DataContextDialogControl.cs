@@ -12,7 +12,8 @@ namespace MochaCore.Dialogs
     {
         private readonly List<LazySubscription> _subscriptionDelegates = new();
         private bool _isInitialized;
-        private IDataContextDialogModule? _module;
+
+        protected IDataContextDialogModule? _module;
 
         /// <inheritdoc/>
         public object View => Module.View!;
@@ -164,7 +165,6 @@ namespace MochaCore.Dialogs
     public class DataContextDialogControl<T> : DataContextDialogControl, IDataContextDialogControl<T>, IDialogControlInitialize where T : new()
     {
         private readonly List<Action<T>> _customizationDelegates = new();
-        private IDataContextDialogModule<T>? _module;
 
         /// <inheritdoc/>
         public new IDataContextDialogModule<T> Module
@@ -172,7 +172,7 @@ namespace MochaCore.Dialogs
             get
             {
                 InitializationGuard();
-                return _module!;
+                return (IDataContextDialogModule<T>)_module!;
             }
         }
 

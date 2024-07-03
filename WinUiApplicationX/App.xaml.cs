@@ -50,7 +50,7 @@ namespace WinUiApplicationX
             IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
 
             DialogManager.DefineDialog("CustomDialog", () => new ContentDialogModule<MyDialogProperties>(
-                new ContentDialog(),
+                new MyDialog(),
                 new DialogViewModel())
             {
                 FindParent = (o) => (mainWindow.View as MainWindow).Content.XamlRoot

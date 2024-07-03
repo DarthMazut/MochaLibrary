@@ -9,15 +9,13 @@ namespace MochaCore.Dialogs
 {
     public class CustomDialogControl : DataContextDialogControl, ICustomDialogControl, IDialogControlInitialize
     {
-        private ICustomDialogModule? _module;
-
         /// <inheritdoc/>
         public new ICustomDialogModule Module
         {
             get
             {
                 InitializationGuard();
-                return _module!;
+                return (ICustomDialogModule)_module!;
             }
         }
 
@@ -47,16 +45,16 @@ namespace MochaCore.Dialogs
         protected override void InitializeOverride()
         {
             base.InitializeOverride();
-            _module!.Opened += ModuleOpened;
-            _module!.Closing += ModuleClosing;
+            ((ICustomDialogModule)_module!).Opened += ModuleOpened;
+            ((ICustomDialogModule)_module!).Closing += ModuleClosing;
         }
 
         /// <inheritdoc/>
         protected override void UninitializeOverride()
         {
             base.UninitializeOverride();
-            _module!.Opened -= ModuleOpened;
-            _module!.Closing -= ModuleClosing;
+            Module!.Opened -= ModuleOpened;
+            Module!.Closing -= ModuleClosing;
         }
 
         private void ModuleClosing(object? sender, CancelEventArgs e) => Closing?.Invoke(this, e);
@@ -67,7 +65,6 @@ namespace MochaCore.Dialogs
     public class CustomDialogControl<T> : CustomDialogControl, ICustomDialogControl<T>, IDialogControlInitialize where T : new()
     {
         private readonly List<Action<T>> _customizeDelegates = new();
-        private ICustomDialogModule<T>? _module;
 
         /// <inheritdoc/>
         public new ICustomDialogModule<T> Module
@@ -75,7 +72,7 @@ namespace MochaCore.Dialogs
             get
             {
                 InitializationGuard();
-                return _module!;
+                return (ICustomDialogModule<T>)_module!;
             }
         }
 

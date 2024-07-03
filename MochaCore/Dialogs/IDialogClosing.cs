@@ -8,6 +8,8 @@ namespace MochaCore.Dialogs
     /// </summary>
     public interface IDialogClosing
     {
+        // TODO: how can I obtain result invoked while closing?
+
         /// <summary>
         /// Fires when dialog is about to close.
         /// </summary>
