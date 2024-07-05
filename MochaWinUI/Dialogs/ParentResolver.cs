@@ -1,6 +1,9 @@
 ﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using MochaCore.Dialogs;
 using MochaCore.Navigation;
+using MochaCore.Windowing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +13,25 @@ using System.Threading.Tasks;
 namespace MochaWinUI.Dialogs
 {
     /// <summary>
-    /// Provides a default algorithms for searching parent <see cref="XamlRoot"/> 
-    /// and parent <see cref="Window"/> for given object.
+    /// Provides a default algorithms for searching parents of given element.
     /// </summary>
     public static class ParentResolver
     {
+        /// <summary>
+        /// Searches for <see cref="XamlRoot"/> of given object. 
+        /// Returns <see langword="null"/> if no such could be found.
+        /// </summary>
+        /// <param name="host">Object whose parent <see cref="XamlRoot"/> is to be found.</param>
         public static XamlRoot? FindParentXamlRoot(object? host)
         {
             if (host is UIElement uiElement)
             {
                 return uiElement.XamlRoot;
+            }
+
+            if (host is ContentDialog dialog)
+            {
+                return dialog.XamlRoot;
             }
 
             if (host is Window window)
@@ -31,58 +43,22 @@ namespace MochaWinUI.Dialogs
         }
 
         /// <summary>
-        /// Searches for <see cref="XamlRoot"/> of given object. 
-        /// Returns <see langword="null"/> if no such could be found.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="host">Object whose parent <see cref="XamlRoot"/> is to be found.</param>
-        public static XamlRoot? FindParentXamlRoot<T>(object host) where T : new()
-        {
-            if (host is INavigationParticipant navigatable)
-            {
-                if (navigatable.Navigator.Module.View is UIElement element)
-                {
-                    return element.XamlRoot;
-                }
-            }
-
-            if (host is IDataContextDialog<T> dialogBackend)
-            {
-                if (dialogBackend.DialogControl.View is UIElement element)
-                {
-                    return element.XamlRoot;
-                }
-            }
-
-            if (host is Window window)
-            {
-                return window.Content?.XamlRoot;
-            }
-
-            return null;
-        }
-
-        /// <summary>
         /// Searches for parent <see cref="Window"/> of provided object.
         /// Returns <see langword="null"/> if no such could be found.
         /// </summary>
-        /// <typeparam name="T">Type of statically typed properties of dialog module which initiated search process.</typeparam>
         /// <param name="host">Object whose parent is to be found.</param>
-        public static Window? FindParentWindow<T>(object host) where T : new()
+        public static Window? FindParentWindow(object? host)
         {
-            if (host is INavigationParticipant navigatable)
+            // Navigation - UiElement
+            // Dialogs - ContentDialog
+            // Windowing - .Content.XamlRoot
+
+            if (host is UIElement uiElement)
             {
-                object? hostView = navigatable.Navigator.Module.View;
-                UIElement? topElement = FindTopElement(hostView);
-                return FindWindowWithContent(topElement);
+                return FindWindowWithContent(FindTopElement(uiElement));
             }
 
-            if (host is IDataContextDialog<T> dialogBackend)
-            {
-                return dialogBackend.DialogControl?.View as Window;
-            }
-
-            return host as Window;
+            return null;
         }
 
         private static Window? FindWindowWithContent(UIElement? topElement)
@@ -92,9 +68,9 @@ namespace MochaWinUI.Dialogs
                 return null;
             }
 
-            foreach (IDialogModule dialog in DialogManager.GetOpenedDialogs())
+            foreach (IBaseWindowModule windowModule in WindowManager.GetOpenedModules())
             {
-                if (dialog.View is Window window)
+                if (windowModule.View is Window window)
                 {
                     if (window.Content == topElement)
                     {
@@ -106,6 +82,30 @@ namespace MochaWinUI.Dialogs
             return null;
         }
 
+        //f(e)
+        //{
+        //    if (e.Parent is FE)
+        //    {
+        //        f(e.Parent)
+        //    }
+        //    else
+        //    {
+        //        return e;
+        //    }
+        //}
+
+        /*
+         * f(e) {
+         *  prevElement = e;
+         *  while (e is FE) {
+         *      prevElement = e;
+         *      e = e.Parent;
+         *  }
+         *  
+         *  return prevElement
+         * }
+         */
+
         private static FrameworkElement? FindTopElement(object? root)
         {
             if (root is null)
@@ -116,12 +116,12 @@ namespace MochaWinUI.Dialogs
             object currentElement = root;
             while (currentElement is FrameworkElement element)
             {
-                if (element.Parent is DependencyObject)
+                if (VisualTreeHelper.GetParent(element) is DependencyObject)
                 {
                     return element;
                 }
 
-                currentElement = element.Parent;
+                currentElement = VisualTreeHelper.GetParent(element);
             }
 
             return null;

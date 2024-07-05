@@ -24,7 +24,6 @@ namespace ViewModelsX
         [RelayCommand]
         private void Primary()
         {
-
         }
     }
 }
