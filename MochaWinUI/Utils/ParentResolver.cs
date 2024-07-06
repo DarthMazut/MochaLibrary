@@ -9,8 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
-namespace MochaWinUI.Dialogs
+namespace MochaWinUI.Utils
 {
     /// <summary>
     /// Provides a default algorithms for searching parents of given element.
@@ -29,11 +30,6 @@ namespace MochaWinUI.Dialogs
                 return uiElement.XamlRoot;
             }
 
-            if (host is ContentDialog dialog)
-            {
-                return dialog.XamlRoot;
-            }
-
             if (host is Window window)
             {
                 return window.Content.XamlRoot;
@@ -49,13 +45,14 @@ namespace MochaWinUI.Dialogs
         /// <param name="host">Object whose parent is to be found.</param>
         public static Window? FindParentWindow(object? host)
         {
-            // Navigation - UiElement
-            // Dialogs - ContentDialog
-            // Windowing - .Content.XamlRoot
-
             if (host is UIElement uiElement)
             {
                 return FindWindowWithContent(FindTopElement(uiElement));
+            }
+
+            if (host is Window window)
+            {
+                return window;
             }
 
             return null;
@@ -82,46 +79,16 @@ namespace MochaWinUI.Dialogs
             return null;
         }
 
-        //f(e)
-        //{
-        //    if (e.Parent is FE)
-        //    {
-        //        f(e.Parent)
-        //    }
-        //    else
-        //    {
-        //        return e;
-        //    }
-        //}
-
-        /*
-         * f(e) {
-         *  prevElement = e;
-         *  while (e is FE) {
-         *      prevElement = e;
-         *      e = e.Parent;
-         *  }
-         *  
-         *  return prevElement
-         * }
-         */
-
         private static FrameworkElement? FindTopElement(object? root)
         {
-            if (root is null)
+            if (root is FrameworkElement currentElement)
             {
-                return null;
-            }
-
-            object currentElement = root;
-            while (currentElement is FrameworkElement element)
-            {
-                if (VisualTreeHelper.GetParent(element) is DependencyObject)
+                while (VisualTreeHelper.GetParent(currentElement) is FrameworkElement parentElement)
                 {
-                    return element;
+                    currentElement = parentElement;
                 }
 
-                currentElement = VisualTreeHelper.GetParent(element);
+                return currentElement;
             }
 
             return null;

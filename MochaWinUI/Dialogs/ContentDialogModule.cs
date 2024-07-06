@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MochaCore.Dialogs;
+using MochaWinUI.Utils;
 
 namespace MochaWinUI.Dialogs
 {
@@ -184,19 +185,16 @@ namespace MochaWinUI.Dialogs
         /// <exception cref="NotImplementedException">Thrown if the XamlRoot could not be found for the provided host object.</exception>
         protected virtual XamlRoot FindParentCore(object? host)
         {
-            if (host is UIElement uiElement)
+            if (ParentResolver.FindParentXamlRoot(host) is XamlRoot foundRoot)
             {
-                return uiElement.XamlRoot;
+                return foundRoot;
             }
 
-            if (host is Window window)
-            {
-                return window.Content.XamlRoot;
-            }
-
-            throw new NotImplementedException($"The current implementation of {GetType().Name} was unable to locate " +
-                $"the xaml root for the dialog it was supposed to display. Please try providing your own " +
-                $"implementation of the {nameof(FindParent)} method.");
+            throw new NotImplementedException(
+                $"The default implementation of {GetType().Name} could not resolve the parent of the provided object. " +
+                $"In this case, you need to provide your own implementation of {nameof(FindParent)} either by supplying a custom " +
+                $"{nameof(FindParent)} delegate or by subclassing {GetType().Name} and overriding the FindParentCore method."
+            );
         }
 
         /// <summary>
