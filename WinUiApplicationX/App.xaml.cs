@@ -51,16 +51,11 @@ namespace WinUiApplicationX
 
             DialogManager.DefineDialog("CustomDialog", () => new ContentDialogModule<MyDialogProperties>(
                 new MyDialog(),
-                new DialogViewModel())
-            {
-                FindParent = (o) => (mainWindow.View as MainWindow).Content.XamlRoot
-            });
+                new DialogViewModel()));
             DialogManager.DefineDialog("StdDialog", () => new StandardMessageDialogModule());
-            DialogManager.DefineDialog("OpenDialog", () => new OpenFileDialogModule(mainWindow.View as Window));
+            DialogManager.DefineDialog("OpenDialog", () => new OpenFileDialogModule());
 
             mainWindow.Open();
-        }
-
-        
+        }     
     }
 }

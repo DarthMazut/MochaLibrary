@@ -19,23 +19,20 @@ namespace MochaWinUI.Dialogs
         /// <summary>
         /// Initializes a new instance of the <see cref="SaveFileDialogModule"/> class.
         /// </summary>
-        /// <param name="mainWindow">Main application window.</param>
-        public SaveFileDialogModule(Window mainWindow) : base(mainWindow, new SaveFileDialogProperties(), new FileSavePicker()) { }
+        public SaveFileDialogModule() : base(new SaveFileDialogProperties(), new FileSavePicker()) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SaveFileDialogModule"/> class.
         /// </summary>
-        /// <param name="mainWindow">Main application window.</param>
         /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
-        public SaveFileDialogModule(Window mainWindow, SaveFileDialogProperties properties) : base(mainWindow, properties, new FileSavePicker()) { }
+        public SaveFileDialogModule(SaveFileDialogProperties properties) : base(properties, new FileSavePicker()) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SaveFileDialogModule"/> class.
         /// </summary>
-        /// <param name="mainWindow">Main application window.</param>
         /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         /// <param name="view">Technology-specific dialog object.</param>
-        public SaveFileDialogModule(Window mainWindow, SaveFileDialogProperties properties, FileSavePicker view) : base(mainWindow, properties, view) { }
+        public SaveFileDialogModule(SaveFileDialogProperties properties, FileSavePicker view) : base(properties, view) { }
 
         /// <inheritdoc/>
         protected override void ApplyPropertiesCore(FileSavePicker dialog, SaveFileDialogProperties properties)

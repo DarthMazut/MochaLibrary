@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
+using MochaWinUI.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,32 +19,27 @@ namespace MochaWinUI.Dialogs
     /// </summary>
     public class OpenFileDialogModule : IDialogModule<OpenFileDialogProperties>
     {
-        private Window _mainWindow;
         private FileOpenPicker _view;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenFileDialogModule"/> class.
         /// </summary>
-        /// <param name="mainWindow">Application main window.</param>
-        public OpenFileDialogModule(Window mainWindow) : this(mainWindow, new OpenFileDialogProperties(), new FileOpenPicker()) { }
+        public OpenFileDialogModule() : this(new OpenFileDialogProperties(), new FileOpenPicker()) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenFileDialogModule"/> class.
         /// </summary>
-        /// <param name="mainWindow">Application main window.</param>
         /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
-        public OpenFileDialogModule(Window mainWindow, OpenFileDialogProperties properties) : this(mainWindow, properties, new FileOpenPicker()) { }
+        public OpenFileDialogModule(OpenFileDialogProperties properties) : this(properties, new FileOpenPicker()) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpenFileDialogModule"/> class.
         /// </summary>
-        /// <param name="mainWindow">Application main window.</param>
         /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         /// <param name="view">Technology-specific dialog object.</param>
-        public OpenFileDialogModule(Window mainWindow, OpenFileDialogProperties properties, FileOpenPicker view)
+        public OpenFileDialogModule(OpenFileDialogProperties properties, FileOpenPicker view)
         {
             _view = view;
-            _mainWindow = mainWindow;
             Properties = properties;
 
             ApplyProperties = ApplyPropertiesCore;
@@ -56,7 +52,7 @@ namespace MochaWinUI.Dialogs
         }
 
         /// <inheritdoc/>
-        public object? View => _view;
+        public object View => _view;
 
         /// <inheritdoc/>
         public OpenFileDialogProperties Properties { get; set; }
@@ -100,7 +96,7 @@ namespace MochaWinUI.Dialogs
         /// <summary>
         /// Handles the process of search for parent <see cref="Window"/> for technology-specific dialog object.
         /// </summary>
-        public Func<object, Window> FindParent { get; set; }
+        public Func<object?, Window> FindParent { get; set; }
 
         /// <summary>
         /// Allows for providing a custom code to be executed while this object is being disposed of.
@@ -122,7 +118,7 @@ namespace MochaWinUI.Dialogs
         }
 
         /// <inheritdoc/>
-        public async Task<bool?> ShowModalAsync(object host)
+        public async Task<bool?> ShowModalAsync(object? host)
         {
             ApplyProperties.Invoke(_view, Properties);
             Opening?.Invoke(this, EventArgs.Empty);
@@ -228,11 +224,18 @@ namespace MochaWinUI.Dialogs
         /// Tries to find technology-specific parent of provided technology-independent element.
         /// </summary>
         /// <param name="host">Technology-independent element, which technology-specific parent is to be found.</param>
-        protected virtual Window FindParentCore(object host)
+        protected virtual Window FindParentCore(object? host)
         {
-            // This has to be done after windowing API is released.
-            // Nothing can be done at this point. 
-            return _mainWindow;
+            if (ParentResolver.FindParentWindow(host) is Window foundWindow)
+            {
+                return foundWindow;
+            }
+
+            throw new NotImplementedException(
+                $"The default implementation of {GetType().Name} could not resolve the parent of the provided object. " +
+                $"In this case, you need to provide your own implementation of {nameof(FindParent)} either by supplying a custom " +
+                $"{nameof(FindParent)} delegate or by subclassing {GetType().Name} and overriding the {nameof(FindParentCore)} method."
+            );
         }
 
         /// <summary>

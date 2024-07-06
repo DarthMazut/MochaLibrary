@@ -193,7 +193,7 @@ namespace MochaWinUI.Dialogs
             throw new NotImplementedException(
                 $"The default implementation of {GetType().Name} could not resolve the parent of the provided object. " +
                 $"In this case, you need to provide your own implementation of {nameof(FindParent)} either by supplying a custom " +
-                $"{nameof(FindParent)} delegate or by subclassing {GetType().Name} and overriding the FindParentCore method."
+                $"{nameof(FindParent)} delegate or by subclassing {GetType().Name} and overriding the {nameof(FindParentCore)} method."
             );
         }
 
