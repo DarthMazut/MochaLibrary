@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class DataContextDialogControl : IDataContextDialogControl, IDialogControlInitialize
     {
         private readonly List<LazySubscription> _subscriptionDelegates = new();
@@ -92,7 +95,7 @@ namespace MochaCore.Dialogs
         }
 
         /// <summary>
-        /// Contains core logic for initialization.
+        /// Contains basic logic for initialization.
         /// </summary>
         protected void InitializeCore(IDataContextDialogModule module)
         {
@@ -109,6 +112,9 @@ namespace MochaCore.Dialogs
             Initialized?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Contains overridable core logic for initialization.
+        /// </summary>
         protected virtual void InitializeOverride()
         {
             _module!.Opening += ModuleOpening;
@@ -118,7 +124,7 @@ namespace MochaCore.Dialogs
         }
 
         /// <summary>
-        /// Contains core logic of uninitialization.
+        /// Contains basic logic for uninitialization.
         /// </summary>
         protected void UninitializeCore()
         {
@@ -128,6 +134,9 @@ namespace MochaCore.Dialogs
             _isInitialized = false;
         }
 
+        /// <summary>
+        /// Contains overridable core logic for uninitialization.
+        /// </summary>
         protected virtual void UninitializeOverride()
         {
             _module!.Opening -= ModuleOpening;

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class CustomDialogControl : DataContextDialogControl, ICustomDialogControl, IDialogControlInitialize
     {
         /// <inheritdoc/>
@@ -28,6 +31,7 @@ namespace MochaCore.Dialogs
         /// <inheritdoc/>
         public void Close(bool? result) => Module.Close(result);
 
+        /// <inheritdoc/>
         void IDialogControlInitialize.Initialize(IDataContextDialogModule module)
         {
             if (module is ICustomDialogModule typedModule)
@@ -82,6 +86,7 @@ namespace MochaCore.Dialogs
         /// <inheritdoc/>
         public void Customize(Action<T> customizeDelegate) => _customizeDelegates.Add(customizeDelegate);
 
+        /// <inheritdoc/>
         void IDialogControlInitialize.Initialize(IDataContextDialogModule module)
         {
             if (module is ICustomDialogModule<T> typedModule)

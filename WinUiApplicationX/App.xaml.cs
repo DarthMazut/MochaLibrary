@@ -56,6 +56,6 @@ namespace WinUiApplicationX
             DialogManager.DefineDialog("OpenDialog", () => new OpenFileDialogModule());
 
             mainWindow.Open();
-        }     
+        }
     }
 }
