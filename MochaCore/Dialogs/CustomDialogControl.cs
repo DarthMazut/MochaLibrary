@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MochaCore.Dialogs
 {
     /// <summary>
-    /// 
+    /// Provides API for managing related <see cref="ICustomDialogModule"/>.
     /// </summary>
     public class CustomDialogControl : DataContextDialogControl, ICustomDialogControl, IDialogControlInitialize
     {
@@ -66,6 +66,10 @@ namespace MochaCore.Dialogs
         private void ModuleOpened(object? sender, EventArgs e) => Opened?.Invoke(this, e);
     }
 
+    /// <summary>
+    /// Provides API for managing related <see cref="ICustomDialogModule{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The statically typed properties object associated with the related dialog module.</typeparam>
     public class CustomDialogControl<T> : CustomDialogControl, ICustomDialogControl<T>, IDialogControlInitialize where T : new()
     {
         private readonly List<Action<T>> _customizeDelegates = new();

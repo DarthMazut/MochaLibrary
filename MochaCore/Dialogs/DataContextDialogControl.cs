@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace MochaCore.Dialogs
 {
     /// <summary>
-    /// 
+    /// Provides API for managing related <see cref="IDataContextDialogModule"/>.
     /// </summary>
     public class DataContextDialogControl : IDataContextDialogControl, IDialogControlInitialize
     {
@@ -49,10 +49,7 @@ namespace MochaCore.Dialogs
         /// <inheritdoc/>
         public bool TryClose(bool? result)
         {
-            // TODO: should TryClose throw if module is not initialized?
-            // Try* feels like it shouldn't throw, but this is for safe
-            // calling method which may not be exposed by module, not
-            // sure this should protect from not-initialized exception...
+            InitializationGuard();
 
             if (Module is IDialogClose dialogClose)
             {
@@ -171,6 +168,10 @@ namespace MochaCore.Dialogs
         }
     }
 
+    /// <summary>
+    /// Provides API for managing related <see cref="IDataContextDialogModule{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The statically typed properties object associated with the related dialog module.</typeparam>
     public class DataContextDialogControl<T> : DataContextDialogControl, IDataContextDialogControl<T>, IDialogControlInitialize where T : new()
     {
         private readonly List<Action<T>> _customizationDelegates = new();

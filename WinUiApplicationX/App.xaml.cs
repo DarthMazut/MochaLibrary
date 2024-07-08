@@ -7,8 +7,10 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Dialogs;
+using MochaCore.Navigation;
 using MochaCore.Windowing;
 using MochaWinUI.Dialogs;
+using MochaWinUI.Navigation;
 using MochaWinUI.Windowing;
 using System;
 using System.Collections.Generic;
@@ -49,11 +51,11 @@ namespace WinUiApplicationX
             WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
             IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
 
-            DialogManager.DefineDialog("CustomDialog", () => new ContentDialogModule<MyDialogProperties>(
+            DialogManager.RegisterDialog("CustomDialog", () => new ContentDialogModule<MyDialogProperties>(
                 new MyDialog(),
                 new DialogViewModel()));
-            DialogManager.DefineDialog("StdDialog", () => new StandardMessageDialogModule());
-            DialogManager.DefineDialog("OpenDialog", () => new OpenFileDialogModule());
+            DialogManager.RegisterDialog("StdDialog", () => new StandardMessageDialogModule());
+            DialogManager.RegisterDialog("OpenDialog", () => new OpenFileDialogModule());
 
             mainWindow.Open();
         }

@@ -2,6 +2,9 @@
 
 namespace MochaCore.Dialogs
 {
+    /// <summary>
+    /// Marks implementing class as data context for <see cref="ICustomDialogModule"/>.
+    /// </summary>
     public interface ICustomDialog : IDataContextDialog
     {
         /// <inheritdoc/>
@@ -11,8 +14,7 @@ namespace MochaCore.Dialogs
     }
 
     /// <summary> 
-    /// Marks implementing class as dialog logic (DataContext) for 
-    /// <see cref="ICustomDialogModule{T}"/> implementations.
+    /// Marks implementing class as data context for <see cref="ICustomDialogModule{T}"/>.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed parameters for the associated dialog.</typeparam>
     public interface ICustomDialog<T> : ICustomDialog, IDataContextDialog<T> where T : new()

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace MochaCore.Dialogs
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface ICustomDialogModule : IDataContextDialogModule, IDialogClose, IDialogOpened, IDialogClosing
     {
 
