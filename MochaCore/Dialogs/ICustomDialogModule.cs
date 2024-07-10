@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace MochaCore.Dialogs
 {
     /// <summary>
-    /// 
+    /// Extends <see cref="IDataContextDialogModule"/> with <see cref="IDialogClose.Close(bool?)"/> method
+    /// and <see cref="IDialogOpened.Opened"/> and <see cref="IDialogClosing.Closing"/> events.
     /// </summary>
     public interface ICustomDialogModule : IDataContextDialogModule, IDialogClose, IDialogOpened, IDialogClosing
     {
@@ -15,9 +16,8 @@ namespace MochaCore.Dialogs
     }
 
     /// <summary>
-    /// Extends <see cref="IDialogModule{T}"/> with possibility to work with <see cref="ICustomDialog{T}"/> as DataContext.
-    /// Provides <see cref="IDialogClose.Close"/> method, as well as <see cref="IDialogOpened.Opened"/> 
-    /// and <see cref="IDialogClosing.Closing"/> events.
+    /// Extends <see cref="IDataContextDialogModule"/> with <see cref="IDialogClose.Close(bool?)"/> method
+    /// and <see cref="IDialogOpened.Opened"/> and <see cref="IDialogClosing.Closing"/> events.
     /// </summary>
     /// <typeparam name="T">Specifies statically typed properties for the associated dialog.</typeparam>
     public interface ICustomDialogModule<T> : ICustomDialogModule, IDataContextDialogModule<T> where T : new()
