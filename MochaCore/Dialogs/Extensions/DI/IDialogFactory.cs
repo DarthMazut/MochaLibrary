@@ -12,36 +12,53 @@ namespace MochaCore.Dialogs.Extensions.DI
     public interface IDialogFactory
     {
         /// <summary>
-        /// Returns new instance of <see cref="IDialogModule{T}"/> corresponding to given indetifier.
+        /// Retrieves a new instance of the <see cref="IDialogModule"/> implementation corresponding to the provided identifier.
         /// </summary>
-        /// <typeparam name="T">Type of properties object used by created dialog.</typeparam>
-        /// <param name="id">Specifies the dialog identifier.</param>
-        IDialogModule<T> Create<T>(string id) where T : new();
+        /// <param name="id">The identifier of the dialog module to retrieve.</param>
+        IDialogModule RetrieveDialog(string id);
 
         /// <summary>
-        /// Returns new instacne of <see cref="IDataContextDialogModule{T}"/> corresponding to given identifier.
+        /// Retrieves a new instance of the <see cref="IDialogModule{T}"/> implementation corresponding to the provided identifier.
         /// </summary>
-        /// <typeparam name="T">Type of properties object used by created dialog.</typeparam>
-        /// <param name="id">Dialog identifier.</param>
-        IDataContextDialogModule<T> CreateDataContextModule<T>(string id) where T : new();
+        /// <typeparam name="T">Type of statycially typed properties object used for customization of retrieved module.</typeparam>
+        /// <param name="id">The identifier of the dialog module to retrieve.</param>
+        IDialogModule<T> RetrieveDialog<T>(string id) where T : new();
 
         /// <summary>
-        /// Returns new instacne of <see cref="ICustomDialogModule{T}"/> corresponding to given identifier.
+        /// Retrieves a new instance of the <see cref="IDataContextDialogModule"/> implementation corresponding to the provided identifier.
         /// </summary>
-        /// <typeparam name="T">Type of properties object used by created dialog.</typeparam>
-        /// <param name="id">Dialog identifier.</param>
-        ICustomDialogModule<T> CreateCustomModule<T>(string id) where T : new();
+        /// <param name="id">The identifier of the dialog module to retrieve.</param>
+        IDataContextDialogModule RetrieveDataContextDialog(string id);
 
         /// <summary>
-        /// Returns a collection of currently open <see cref="IDialogModule"/> with given ID.
+        /// Retrieves a new instance of the <see cref="IDataContextDialogModule{T}"/> implementation corresponding to the provided identifier.
         /// </summary>
-        /// <param name="id">Specifies the dialog identifier.</param>
-        List<IDialogModule> GetOpenedDialogs(string id);
+        /// <typeparam name="T">Type of statycially typed properties object used for customization of retrieved module.</typeparam>
+        /// <param name="id">The identifier of the dialog module to retrieve.</param>
+        IDataContextDialogModule<T> RetrieveDataContextDialog<T>(string id) where T : new();
 
         /// <summary>
-        /// Returns a collection of all currently open <see cref="IDialogModule"/>.
+        /// Retrieves a new instance of the <see cref="ICustomDialogModule"/> implementation corresponding to the provided identifier.
         /// </summary>
-        List<IDialogModule> GetOpenedDialogs();
+        /// <param name="id">The identifier of the dialog module to retrieve.</param>
+        ICustomDialogModule RetrieveCustomDialog(string id);
 
+        /// <summary>
+        /// Retrieves a new instance of the <see cref="ICustomDialogModule{T}"/> implementation corresponding to the provided identifier.
+        /// </summary>
+        /// <typeparam name="T">Type of statycially typed properties object used for customization of retrieved module.</typeparam>
+        /// <param name="id">The identifier of the dialog module to retrieve.</param>
+        ICustomDialogModule<T> RetrieveCustomDialog<T>(string id) where T : new();
+
+        /// <summary>
+        /// Retrieves a read-only collection of all <see cref="IDialogModule"/> objects that have been opened but not yet disposed.
+        /// </summary>
+        IReadOnlyCollection<IDialogModule> GetOpenedDialogs();
+
+        /// <summary>
+        /// Retrieves a read-only collection of all <see cref="IDialogModule"/> objects with provided ID that have been opened but not yet disposed.
+        /// </summary>
+        /// <param name="id">The ID of the modules to be included.</param>
+        IReadOnlyCollection<IDialogModule> GetOpenedDialogs(string id);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -75,10 +76,28 @@ namespace MochaCore.Dialogs
             => (ICustomDialogModule<T>)GetBaseDialog(id);
 
         /// <summary>
-        /// Retrieves an instance of registered <see cref="IDialogModule"/> type by its identifier.
+        /// Returns a collection of all <see cref="IDialogModule"/>, which has been opened but not yet disposed.
         /// </summary>
-        /// <param name="id">Identifier of registered dialog to be retrieved.</param>
-        public static IDialogModule GetBaseDialog(string id)
+        public static IReadOnlyCollection<IDialogModule> GetOpenedDialogs()
+        {
+            return _activeDialogs.Where(kvp => kvp.Value.Any()).SelectMany(kvp => kvp.Value).ToImmutableList();
+        }
+
+        /// <summary>
+        /// Returns a collection of references to opened dialogs, which hasn't been disposed yet.
+        /// </summary>
+        /// <param name="id">Identifier of specific dialog.</param>
+        public static IReadOnlyCollection<IDialogModule> GetOpenedDialogs(string id)
+        {
+            if (_activeDialogs.ContainsKey(id))
+            {
+                return _activeDialogs[id].ToImmutableList();
+            }
+
+            return new List<IDialogModule>().ToImmutableList();
+        }
+
+        private static IDialogModule GetBaseDialog(string id)
         {
             if (_dialogsDictionary.ContainsKey(id))
             {
@@ -88,28 +107,6 @@ namespace MochaCore.Dialogs
             {
                 throw new ArgumentException($"Couldn't find dialog with ID {id}. Make sure ID is correct and dialog is defined.");
             }
-        }
-
-        /// <summary>
-        /// Returns a collection of references to opened dialogs, which hasn't been disposed yet.
-        /// </summary>
-        /// <param name="id">Identifier of specific dialog.</param>
-        public static List<IDialogModule> GetOpenedDialogs(string id)
-        {
-            if (_activeDialogs.ContainsKey(id))
-            {
-                return _activeDialogs[id];
-            }
-
-            return new List<IDialogModule>();
-        }
-
-        /// <summary>
-        /// Returns a collection of all <see cref="IDialogModule"/>, which has been opened but not yet disposed.
-        /// </summary>
-        public static List<IDialogModule> GetOpenedDialogs()
-        {
-            return _activeDialogs.Where(kvp => kvp.Value.Any()).SelectMany(kvp => kvp.Value).ToList();
         }
 
         private static IDialogModule HandleCreateDialog(string id)

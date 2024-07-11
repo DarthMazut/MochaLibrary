@@ -11,22 +11,40 @@ namespace MochaCore.Dialogs.Extensions.DI
     /// </summary>
     public class DialogFactory : IDialogFactory
     {
-        /// <inheritdoc/>
-        public IDialogModule<T> Create<T>(string id) where T : new()
-            => DialogManager.GetDialog<T>(id);
+        public ICustomDialogModule RetrieveCustomDialog(string id)
+        {
+            throw new NotImplementedException();
+        }
 
-        /// <inheritdoc/>
-        public IDataContextDialogModule<T> CreateDataContextModule<T>(string id) where T : new()
-            => DialogManager.GetDataContextDialog<T>(id);
+        public ICustomDialogModule<T> RetrieveCustomDialog<T>(string id) where T : new()
+        {
+            throw new NotImplementedException();
+        }
 
-        /// <inheritdoc/>
-        public ICustomDialogModule<T> CreateCustomModule<T>(string id) where T : new()
-            => DialogManager.GetCustomDialog<T>(id);
+        public IDataContextDialogModule RetrieveDataContextDialog(string id)
+        {
+            throw new NotImplementedException();
+        }
 
-        /// <inheritdoc/>
-        public List<IDialogModule> GetOpenedDialogs(string id) => DialogManager.GetOpenedDialogs(id);
+        public IDataContextDialogModule<T> RetrieveDataContextDialog<T>(string id) where T : new()
+        {
+            throw new NotImplementedException();
+        }
 
-        /// <inheritdoc/>
-        public List<IDialogModule> GetOpenedDialogs() => DialogManager.GetOpenedDialogs();
+        public IDialogModule RetrieveDialog(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDialogModule<T> RetrieveDialog<T>(string id) where T : new()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IReadOnlyCollection<IDialogModule> GetOpenedDialogs()
+            => DialogManager.GetOpenedDialogs();
+
+        public IReadOnlyCollection<IDialogModule> GetOpenedDialogs(string id)
+            => DialogManager.GetOpenedDialogs(id);
     }
 }
