@@ -8,7 +8,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button Content="Click me" Command="{Binding ClickCommand}"/>
-    </StackPanel>
+    <NavigationView
+        IsSettingsVisible="False">
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="Dupa"/>
+        </NavigationView.MenuItems>
+    </NavigationView>
 </Window>
