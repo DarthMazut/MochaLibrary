@@ -11,39 +11,35 @@ namespace MochaCore.Dialogs.Extensions.DI
     /// </summary>
     public class DialogFactory : IDialogFactory
     {
+        /// <inheritdoc/>
         public ICustomDialogModule RetrieveCustomDialog(string id)
-        {
-            throw new NotImplementedException();
-        }
+            => DialogManager.RetrieveCustomDialog(id);
 
+        /// <inheritdoc/>
         public ICustomDialogModule<T> RetrieveCustomDialog<T>(string id) where T : new()
-        {
-            throw new NotImplementedException();
-        }
+            => DialogManager.RetrieveCustomDialog<T>(id);
 
+        /// <inheritdoc/>
         public IDataContextDialogModule RetrieveDataContextDialog(string id)
-        {
-            throw new NotImplementedException();
-        }
+            => DialogManager.RetrieveDataContextDialog(id);
 
+        /// <inheritdoc/>
         public IDataContextDialogModule<T> RetrieveDataContextDialog<T>(string id) where T : new()
-        {
-            throw new NotImplementedException();
-        }
+             => DialogManager.RetrieveDataContextDialog<T>(id);
 
+        /// <inheritdoc/>
         public IDialogModule RetrieveDialog(string id)
-        {
-            throw new NotImplementedException();
-        }
+            => DialogManager.RetrieveDialog(id);
 
+        /// <inheritdoc/>
         public IDialogModule<T> RetrieveDialog<T>(string id) where T : new()
-        {
-            throw new NotImplementedException();
-        }
+            => DialogManager.RetrieveDialog<T>(id);
 
+        /// <inheritdoc/>
         public IReadOnlyCollection<IDialogModule> GetOpenedDialogs()
             => DialogManager.GetOpenedDialogs();
-
+        
+        /// <inheritdoc/>
         public IReadOnlyCollection<IDialogModule> GetOpenedDialogs(string id)
             => DialogManager.GetOpenedDialogs(id);
     }

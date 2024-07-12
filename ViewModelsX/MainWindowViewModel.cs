@@ -39,7 +39,7 @@ namespace ViewModelsX
             //bool? dialogResult = await stdDialogModule.ShowModalAsync(WindowControl.View);
 
             IDialogModule<OpenFileDialogProperties> openFileDialogModule
-                = DialogManager.GetDialog<OpenFileDialogProperties>("OpenDialog");
+                = DialogManager.RetrieveDialog<OpenFileDialogProperties>("OpenDialog");
 
             openFileDialogModule.Properties.Title = "My dialog title xD";
             openFileDialogModule.Properties.TrySetInitialDirectory(Environment.SpecialFolder.Desktop);

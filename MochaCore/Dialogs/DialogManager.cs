@@ -35,7 +35,7 @@ namespace MochaCore.Dialogs
         /// Retrieves a new instance of <see cref="IDialogModule"/> registered by the provided identifier.
         /// </summary>
         /// <param name="id">Identifier of the registered <see cref="IDialogModule"/> to be retrieved.</param>
-        public static IDialogModule GetDialog(string id)
+        public static IDialogModule RetrieveDialog(string id)
             => GetBaseDialog(id);
 
         /// <summary>
@@ -43,14 +43,14 @@ namespace MochaCore.Dialogs
         /// </summary>
         /// <typeparam name="T">The statically typed properties object associated with the module.</typeparam>
         /// <param name="id">Identifier of the registered <see cref="IDialogModule{T}"/> to be retrieved.</param>
-        public static IDialogModule<T> GetDialog<T>(string id) where T : new()
+        public static IDialogModule<T> RetrieveDialog<T>(string id) where T : new()
             => (IDialogModule<T>)GetBaseDialog(id);
 
         /// <summary>
         /// Retrieves a new instance of <see cref="IDataContextDialogModule"/> registered by the provided identifier.
         /// </summary>
         /// <param name="id">Identifier of the registered <see cref="IDataContextDialogModule"/> to be retrieved.</param>
-        public static IDataContextDialogModule GetDataContextDialog(string id)
+        public static IDataContextDialogModule RetrieveDataContextDialog(string id)
             => (IDataContextDialogModule)GetBaseDialog(id);
 
         /// <summary>
@@ -58,21 +58,21 @@ namespace MochaCore.Dialogs
         /// </summary>
         /// <typeparam name="T">The statically typed properties object associated with the module.</typeparam>
         /// <param name="id">Identifier of the registered <see cref="IDataContextDialogModule{T}"/> to be retrieved.</param>
-        public static IDataContextDialogModule<T> GetDataContextDialog<T>(string id) where T : new()
+        public static IDataContextDialogModule<T> RetrieveDataContextDialog<T>(string id) where T : new()
             => (IDataContextDialogModule<T>)GetBaseDialog(id);
 
         /// <summary>
         /// Retrieves a new instance of <see cref="ICustomDialogModule"/> registered by the provided identifier.
         /// </summary>
         /// <param name="id">Identifier of the registered <see cref="ICustomDialogModule"/> to be retrieved.</param>
-        public static ICustomDialogModule GetCustomDialog(string id) => (ICustomDialogModule)GetBaseDialog(id);
+        public static ICustomDialogModule RetrieveCustomDialog(string id) => (ICustomDialogModule)GetBaseDialog(id);
 
         /// <summary>
         /// Retrieves a new instance of <see cref="ICustomDialogModule{T}"/> registered by the provided identifier.
         /// </summary>
         /// <typeparam name="T">The statically typed properties object associated with the module.</typeparam>
         /// <param name="id">Identifier of the registered <see cref="ICustomDialogModule{T}"/> to be retrieved.</param>
-        public static ICustomDialogModule<T> GetCustomDialog<T>(string id) where T :  new()
+        public static ICustomDialogModule<T> RetrieveCustomDialog<T>(string id) where T :  new()
             => (ICustomDialogModule<T>)GetBaseDialog(id);
 
         /// <summary>
