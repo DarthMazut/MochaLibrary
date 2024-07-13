@@ -9,6 +9,6 @@ namespace WinUiApplicationX.Utils.Xaml
 {
     public class MenuPagesExtension : MarkupExtension
     {
-        protected override object ProvideValue() => ViewModelsX.Pages.GetMenuPages();
+        protected override object ProvideValue() => ViewModelsX.AppPages.GetMenuPages();
     }
 }

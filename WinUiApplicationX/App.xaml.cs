@@ -18,10 +18,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using ViewModelsX;
+using ViewModelsX.Pages;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using WinUiApplicationX.Pages;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -48,16 +50,19 @@ namespace WinUiApplicationX
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            INavigationService mainNavigationService = NavigationManager.AddNavigationService(NavigationServices.MainNavigationServiceId, new WinUiNavigationService()
+                .WithModule<HomePage, HomePageViewModel>(AppPages.HomePage.Id)
+                .WithModule<DialogsPage, DialogsPageViewModel>(AppPages.DialogsPage.Id)
+                .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
+                .WithInitialId(AppPages.HomePage.Id));
+
             WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
             IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
 
-            DialogManager.RegisterDialog("CustomDialog", () => new ContentDialogModule<MyDialogProperties>(
-                new MyDialog(),
-                new DialogViewModel()));
-            DialogManager.RegisterDialog("StdDialog", () => new StandardMessageDialogModule());
-            DialogManager.RegisterDialog("OpenDialog", () => new OpenFileDialogModule());
+            
 
             mainWindow.Open();
+            mainNavigationService.Initialize();
         }
     }
 }

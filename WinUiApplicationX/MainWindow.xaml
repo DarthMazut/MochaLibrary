@@ -6,20 +6,36 @@
     xmlns:local="using:WinUiApplicationX"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter"
     xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
+    xmlns:controls="using:WinUiApplicationX.Controls"
     mc:Ignorable="d">
 
     <Grid>
         <Grid.Resources>
+            <uc:UniversalConverter x:Key="BoolToVisibilityConverter">
+                <uc:ConvertingRule Condition="{uc:True}" Output="{uc:Visible}"/>
+                <uc:ConvertingRule Output="{uc:Collapsed}" />
+            </uc:UniversalConverter>
+            <uc:UniversalConverter x:Key="NegateBoolToVisibilityConverter">
+                <uc:ConvertingRule Condition="{uc:True}" Output="{uc:Collapsed}"/>
+                <uc:ConvertingRule Output="{uc:Visible}" />
+            </uc:UniversalConverter>
             <DataTemplate x:Key="MenuItemTemplate">
                 <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
             </DataTemplate>
         </Grid.Resources>
-        <NavigationView
-            IsSettingsVisible="False"
+        <controls:NavigationViewEx
+            Visibility="{Binding IsFullScreen, Converter={StaticResource NegateBoolToVisibilityConverter}}"
             MenuItemsSource="{utils:MenuPages}"
-            MenuItemTemplate="{StaticResource MenuItemTemplate}">
-            
-        </NavigationView>
+            MenuItemTemplate="{StaticResource MenuItemTemplate}"
+            SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
+            IsSettingsInvoked="{Binding IsSettingsInvoked, Mode=TwoWay}"
+            Command="{Binding NavigationInvokedCommand}">
+            <Frame Content="{Binding PageContent}"/>
+        </controls:NavigationViewEx>
+        <Frame
+            Visibility="{Binding IsFullScreen, Converter={StaticResource BoolToVisibilityConverter}}"
+            />
     </Grid>
 </Window>

@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
+using MochaCore.Navigation;
 using MochaCore.Windowing;
 using System;
 using System.Collections.Generic;
@@ -15,41 +16,48 @@ namespace ViewModelsX
     {
         public IWindowControl WindowControl { get; } = new WindowControl();
 
-        [RelayCommand]
-        private async Task Click()
+        public MainWindowViewModel()
         {
-            //ICustomDialogModule<MyDialogProperties> customDialogModule
-            //    = DialogManager.GetCustomDialog<MyDialogProperties>("CustomDialog");
+            NavigationServices.MainNavigationService.CurrentModuleChanged += HandleNavigation;
+        }
 
-            //bool? result = await customDialogModule.ShowModalAsync(WindowControl.View);
+        [ObservableProperty]
+        private bool _isFullScreen;
 
-            //ICustomDialogModule<StandardMessageDialogProperties> stdDialogModule =
-            //    DialogManager.GetCustomDialog<StandardMessageDialogProperties>("StdDialog");
+        [ObservableProperty]
+        private AppPage? _selectedPage;
 
-            //stdDialogModule.Properties = new StandardMessageDialogProperties()
-            //{
-            //    ConfirmationButtonText = "Confirm",
-            //    CancelButtonText = "Cancel",
-            //    DeclineButtonText = "Decline",
-            //    Title = "Msg title",
-            //    Message = "Hello there?",
-            //    Icon = StandardMessageDialogIcons.Error
-            //};
+        [ObservableProperty]
+        private bool _isSettingsInvoked;
 
-            //bool? dialogResult = await stdDialogModule.ShowModalAsync(WindowControl.View);
+        [ObservableProperty]
+        private object? _pageContent;
 
-            IDialogModule<OpenFileDialogProperties> openFileDialogModule
-                = DialogManager.RetrieveDialog<OpenFileDialogProperties>("OpenDialog");
+        [ObservableProperty]
+        private object? _fullScreenPageContent;
 
-            openFileDialogModule.Properties.Title = "My dialog title xD";
-            openFileDialogModule.Properties.TrySetInitialDirectory(Environment.SpecialFolder.Desktop);
-            openFileDialogModule.Properties.Filters = new List<ExtensionFilter>()
+        [RelayCommand]
+        private async Task NavigationInvoked()
+        {
+            IRemoteNavigator remoteNavigator = Navigator.CreateProxy(NavigationServices.MainNavigationServiceId, this);
+            if (IsSettingsInvoked)
             {
-                new ExtensionFilter("Image", "jpg"),
-                new ExtensionFilter("Executable", "exe")
-            };
+                await remoteNavigator.NavigateAsync(AppPages.SettingsPage.Id);
+            }
+            else if (SelectedPage is not null)
+            {
+                await remoteNavigator.NavigateAsync(SelectedPage.Id);
+            }
+            else
+            {
+                throw new Exception("SelectedPage was null while settings item was not invoked. This should not happen!");
+            }
+            
+        }
 
-            bool? result = await openFileDialogModule.ShowModalAsync(WindowControl.View);
+        private void HandleNavigation(object? sender, CurrentNavigationModuleChangedEventArgs e)
+        {
+            PageContent = e.CurrentModule.View;
         }
     }
 }
