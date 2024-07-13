@@ -6,12 +6,20 @@
     xmlns:local="using:WinUiApplicationX"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
     mc:Ignorable="d">
 
-    <NavigationView
-        IsSettingsVisible="False">
-        <NavigationView.MenuItems>
-            <NavigationViewItem Content="Dupa"/>
-        </NavigationView.MenuItems>
-    </NavigationView>
+    <Grid>
+        <Grid.Resources>
+            <DataTemplate x:Key="MenuItemTemplate">
+                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+            </DataTemplate>
+        </Grid.Resources>
+        <NavigationView
+            IsSettingsVisible="False"
+            MenuItemsSource="{utils:MenuPages}"
+            MenuItemTemplate="{StaticResource MenuItemTemplate}">
+            
+        </NavigationView>
+    </Grid>
 </Window>
