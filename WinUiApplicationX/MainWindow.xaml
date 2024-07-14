@@ -22,8 +22,15 @@
                 <uc:ConvertingRule Output="{uc:Visible}" />
             </uc:UniversalConverter>
             <DataTemplate x:Key="MenuItemTemplate">
-                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                <NavigationViewItem Content="{Binding Name}">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="{Binding Glyph}" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </DataTemplate>
+            <TransitionCollection x:Key="NavigationTransition">
+                <PopupThemeTransition />
+            </TransitionCollection>
         </Grid.Resources>
         <controls:NavigationViewEx
             Visibility="{Binding IsFullScreen, Converter={StaticResource NegateBoolToVisibilityConverter}}"
@@ -32,10 +39,11 @@
             SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
             IsSettingsInvoked="{Binding IsSettingsInvoked, Mode=TwoWay}"
             Command="{Binding NavigationInvokedCommand}">
-            <Frame Content="{Binding PageContent}"/>
+            <Frame Content="{Binding PageContent}" ContentTransitions="{StaticResource NavigationTransition}"/>
         </controls:NavigationViewEx>
         <Frame
             Visibility="{Binding IsFullScreen, Converter={StaticResource BoolToVisibilityConverter}}"
-            Content="{Binding FullScreenPageContent}"/>
+            Content="{Binding FullScreenPageContent}"
+            ContentTransitions="{StaticResource NavigationTransition}"/>
     </Grid>
 </Window>
