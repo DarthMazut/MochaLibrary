@@ -19,6 +19,7 @@ namespace ViewModelsX
         public MainWindowViewModel()
         {
             NavigationServices.MainNavigationService.CurrentModuleChanged += HandleNavigation;
+            NavigationServices.MainNavigationService.Initialize();
         }
 
         [ObservableProperty]
@@ -39,25 +40,21 @@ namespace ViewModelsX
         [RelayCommand]
         private async Task NavigationInvoked()
         {
-            IRemoteNavigator remoteNavigator = Navigator.CreateProxy(NavigationServices.MainNavigationServiceId, this);
-            if (IsSettingsInvoked)
-            {
-                await remoteNavigator.NavigateAsync(AppPages.SettingsPage.Id);
-            }
-            else if (SelectedPage is not null)
-            {
-                await remoteNavigator.NavigateAsync(SelectedPage.Id);
-            }
-            else
-            {
-                throw new Exception("SelectedPage was null while settings item was not invoked. This should not happen!");
-            }
-            
+            string? targetId = IsSettingsInvoked ? AppPages.SettingsPage.Id : SelectedPage?.Id;
+            await Navigator.CreateProxy(NavigationServices.MainNavigationServiceId,this)
+                .NavigateAsync(
+                    targetId ??
+                    throw new Exception("SelectedPage was null while settings item was not invoked. This should not happen!"));
         }
 
         private void HandleNavigation(object? sender, CurrentNavigationModuleChangedEventArgs e)
         {
-            PageContent = e.CurrentModule.View;
+            AppPage currentPage = AppPages.GetById(e.CurrentModule.Id);
+            IsSettingsInvoked = currentPage == AppPages.SettingsPage ? true : false;
+            SelectedPage = currentPage.IsMenuPage ? currentPage : SelectedPage;
+            IsFullScreen = currentPage.IsFullScreen;
+            PageContent = currentPage.IsFullScreen ? null : e.CurrentModule.View;
+            FullScreenPageContent = currentPage.IsFullScreen ? e.CurrentModule.View : null;
         }
     }
 }

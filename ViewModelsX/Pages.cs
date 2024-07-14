@@ -43,9 +43,11 @@ namespace ViewModelsX
 
         public static AppPage SettingsPage => _pages[nameof(SettingsPage)];
 
+        public static AppPage GetById(string id) => _pages[id];
+
         public static IReadOnlyCollection<AppPage> AsCollection() => [.. _pages.Values];
 
-        public static IReadOnlyCollection<AppPage> GetMenuPages() => _pages.Values.Where(p => p.IsMenuPage).ToImmutableList();
+        public static IReadOnlyCollection<AppPage> GetMenuPages() => _pages.Values.Where(p => p.IsMenuPage).ToImmutableList(); 
     }
 
     public record AppPage(string Id)

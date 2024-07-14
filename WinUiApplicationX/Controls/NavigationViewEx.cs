@@ -12,7 +12,7 @@ namespace WinUiApplicationX.Controls
     public class NavigationViewEx : NavigationView
     {
         public static readonly DependencyProperty IsSettingsInvokedProperty =
-            DependencyProperty.Register(nameof(IsSettingsInvoked), typeof(bool), typeof(NavigationViewEx), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsSettingsInvoked), typeof(bool), typeof(NavigationViewEx), new PropertyMetadata(false, IsSettingsInvokedChanged));
 
         public static readonly DependencyProperty CommandProperty =
             DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(NavigationViewEx), new PropertyMetadata(null));
@@ -39,6 +39,14 @@ namespace WinUiApplicationX.Controls
             IsSettingsInvoked = e.IsSettingsInvoked;
             await Task.Yield();
             Command?.Execute(default);
+        }
+
+        private static void IsSettingsInvokedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is NavigationViewEx navigationView)
+            {
+                navigationView.IsSettingsInvoked = e.NewValue is true;
+            }
         }
     }
 }

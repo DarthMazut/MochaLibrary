@@ -50,19 +50,15 @@ namespace WinUiApplicationX
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            INavigationService mainNavigationService = NavigationManager.AddNavigationService(NavigationServices.MainNavigationServiceId, new WinUiNavigationService()
+            WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
+
+            NavigationManager.AddNavigationService(NavigationServices.MainNavigationServiceId, new WinUiNavigationService()
                 .WithModule<HomePage, HomePageViewModel>(AppPages.HomePage.Id)
                 .WithModule<DialogsPage, DialogsPageViewModel>(AppPages.DialogsPage.Id)
                 .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                 .WithInitialId(AppPages.HomePage.Id));
 
-            WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
-            IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
-
-            
-
-            mainWindow.Open();
-            mainNavigationService.Initialize();
+            WindowManager.RetrieveWindow("MainWindow").Open();
         }
     }
 }

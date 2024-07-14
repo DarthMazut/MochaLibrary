@@ -36,6 +36,6 @@
         </controls:NavigationViewEx>
         <Frame
             Visibility="{Binding IsFullScreen, Converter={StaticResource BoolToVisibilityConverter}}"
-            />
+            Content="{Binding FullScreenPageContent}"/>
     </Grid>
 </Window>
