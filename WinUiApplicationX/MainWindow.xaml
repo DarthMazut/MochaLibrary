@@ -33,12 +33,14 @@
             </TransitionCollection>
         </Grid.Resources>
         <controls:NavigationViewEx
+            IsBackEnabled="True"
             Visibility="{Binding IsFullScreen, Converter={StaticResource NegateBoolToVisibilityConverter}}"
             MenuItemsSource="{utils:MenuPages}"
             MenuItemTemplate="{StaticResource MenuItemTemplate}"
             SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
             IsSettingsInvoked="{Binding IsSettingsInvoked, Mode=TwoWay}"
-            Command="{Binding NavigationInvokedCommand}">
+            Command="{Binding NavigationInvokedCommand}"
+            BackCommand="{Binding NavigationBackCommand}">
             <Frame Content="{Binding PageContent}" ContentTransitions="{StaticResource NavigationTransition}"/>
         </controls:NavigationViewEx>
         <Frame

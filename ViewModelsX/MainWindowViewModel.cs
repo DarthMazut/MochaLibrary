@@ -47,6 +47,12 @@ namespace ViewModelsX
                     throw new Exception("SelectedPage was null while settings item was not invoked. This should not happen!"));
         }
 
+        [RelayCommand]
+        private Task NavigationBack()
+        {
+            return Navigator.CreateProxy(NavigationServices.MainNavigationServiceId, this).NavigateBackAsync();
+        }
+
         private void HandleNavigation(object? sender, CurrentNavigationModuleChangedEventArgs e)
         {
             AppPage currentPage = AppPages.GetById(e.CurrentModule.Id);
