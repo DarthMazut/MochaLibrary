@@ -11,20 +11,11 @@ namespace WinUiApplicationX.Controls
 {
     public class NavigationViewEx : NavigationView
     {
-        public static readonly DependencyProperty IsSettingsInvokedProperty =
-            DependencyProperty.Register(nameof(IsSettingsInvoked), typeof(bool), typeof(NavigationViewEx), new PropertyMetadata(false, IsSettingsInvokedChanged));
-
         public static readonly DependencyProperty CommandProperty =
             DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(NavigationViewEx), new PropertyMetadata(null));
 
         public static readonly DependencyProperty BackCommandProperty =
             DependencyProperty.Register(nameof(BackCommand), typeof(ICommand), typeof(NavigationViewEx), new PropertyMetadata(null));
-
-        public bool IsSettingsInvoked
-        {
-            get => (bool)GetValue(IsSettingsInvokedProperty);
-            set => SetValue(IsSettingsInvokedProperty, value);
-        }
 
         public ICommand Command
         {
@@ -52,7 +43,6 @@ namespace WinUiApplicationX.Controls
 
         private async void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs e)
         {
-            IsSettingsInvoked = e.IsSettingsInvoked;
             await Task.Yield();
             Command?.Execute(default);
         }
@@ -60,17 +50,6 @@ namespace WinUiApplicationX.Controls
         private void OnBackInvoked(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
             BackCommand?.Execute(default);
-        }
-
-        private static void IsSettingsInvokedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is NavigationViewEx navigationView)
-            {
-                if (e.NewValue is true)
-                {
-                    navigationView.SelectedItem = navigationView.SettingsItem;
-                }
-            }
         }
     }
 }

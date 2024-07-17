@@ -14,13 +14,20 @@ namespace ViewModelsX
 {
     public partial class MainWindowViewModel : ObservableObject, IWindowAware
     {
+        private readonly IRemoteNavigator _mainNavigator;
+
         public IWindowControl WindowControl { get; } = new WindowControl();
 
         public MainWindowViewModel()
         {
+            _mainNavigator = Navigator.CreateProxy(NavigationServices.MainNavigationServiceId, this);
+
             NavigationServices.MainNavigationService.CurrentModuleChanged += HandleNavigation;
             NavigationServices.MainNavigationService.Initialize();
         }
+
+        [ObservableProperty]
+        private bool _canGoBack;
 
         [ObservableProperty]
         private bool _isFullScreen;
@@ -29,35 +36,22 @@ namespace ViewModelsX
         private AppPage? _selectedPage;
 
         [ObservableProperty]
-        private bool _isSettingsInvoked;
-
-        [ObservableProperty]
         private object? _pageContent;
 
         [ObservableProperty]
         private object? _fullScreenPageContent;
 
         [RelayCommand]
-        private async Task NavigationInvoked()
-        {
-            string? targetId = IsSettingsInvoked ? AppPages.SettingsPage.Id : SelectedPage?.Id;
-            await Navigator.CreateProxy(NavigationServices.MainNavigationServiceId,this)
-                .NavigateAsync(
-                    targetId ??
-                    throw new Exception("SelectedPage was null while settings item was not invoked. This should not happen!"));
-        }
+        private Task NavigationInvoked() => _mainNavigator.NavigateAsync(SelectedPage!.Id);
 
         [RelayCommand]
-        private Task NavigationBack()
-        {
-            return Navigator.CreateProxy(NavigationServices.MainNavigationServiceId, this).NavigateBackAsync();
-        }
+        private Task NavigationBack() => _mainNavigator.NavigateBackAsync();
 
         private void HandleNavigation(object? sender, CurrentNavigationModuleChangedEventArgs e)
         {
+            CanGoBack = _mainNavigator.CanNavigateBack;
             AppPage currentPage = AppPages.GetById(e.CurrentModule.Id);
-            IsSettingsInvoked = currentPage == AppPages.SettingsPage ? true : false;
-            SelectedPage = currentPage.IsMenuPage ? currentPage : SelectedPage;
+            SelectedPage = currentPage;
             IsFullScreen = currentPage.IsFullScreen;
             PageContent = currentPage.IsFullScreen ? null : e.CurrentModule.View;
             FullScreenPageContent = currentPage.IsFullScreen ? e.CurrentModule.View : null;

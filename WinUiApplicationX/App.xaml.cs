@@ -8,10 +8,13 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Dialogs;
 using MochaCore.Navigation;
+using MochaCore.Settings;
 using MochaCore.Windowing;
 using MochaWinUI.Dialogs;
 using MochaWinUI.Navigation;
+using MochaWinUI.Settings;
 using MochaWinUI.Windowing;
+using ModelX;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,6 +60,8 @@ namespace WinUiApplicationX
                 .WithModule<DialogsPage, DialogsPageViewModel>(AppPages.DialogsPage.Id)
                 .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                 .WithInitialId(AppPages.HomePage.Id));
+
+            SettingsManager.Register("Settings", new ApplicationSettingsSectionProvider<Settings>());
 
             WindowManager.RetrieveWindow("MainWindow").Open();
         }
