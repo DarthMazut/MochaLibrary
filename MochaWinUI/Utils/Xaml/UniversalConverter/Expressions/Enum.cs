@@ -15,18 +15,18 @@ namespace MochaWinUI.Utils.Xaml.UniversalConverter
         /// <summary>
         /// The type of the enumeration value to be returned.
         /// </summary>
-        public System.Type? Type { get; init; }
+        public System.Type? Type { get; set; }
 
         /// <summary>
         /// Fully qualified type name of the enumeration value to be returned.
         /// </summary>
-        public string? TypeName { get; init; }
+        public string? TypeName { get; set; }
 
         /// <summary>
         /// The value of the enumeration to be returned.
         /// Can be either name (<see cref="string"/>) or integer value.
         /// </summary>
-        public object? Value { get; init; }
+        public object? Value { get; set; }
 
         public bool IsConditionExpression => false;
 

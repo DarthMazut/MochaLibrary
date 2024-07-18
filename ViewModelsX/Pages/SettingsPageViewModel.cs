@@ -15,7 +15,8 @@ namespace ViewModelsX.Pages
     {
         public INavigator Navigator => MochaCore.Navigation.Navigator.Create();
 
-        public string Title => "Hello there: Settings Page";
+        [ObservableProperty]
+        private bool _isSwitched;
 
         [RelayCommand]
         private async Task Test()
@@ -25,7 +26,7 @@ namespace ViewModelsX.Pages
 
             await settingsSection.UpdateAsync(s =>
             {
-                s.MyTextSetting = "dupa";
+                
             });
         }
     }

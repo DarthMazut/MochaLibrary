@@ -33,12 +33,6 @@ namespace WinUiApplicationX.Controls
         {
             this.ItemInvoked += OnItemInvoked;
             this.BackRequested += OnBackInvoked;
-            this.RegisterPropertyChangedCallback(SelectedItemProperty, OnSelectedItemChanged);
-        }
-
-        private void OnSelectedItemChanged(DependencyObject sender, DependencyProperty dp)
-        {
-            
         }
 
         private async void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs e)

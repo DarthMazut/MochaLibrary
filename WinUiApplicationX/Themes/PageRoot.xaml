@@ -1,0 +1,33 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:WinUiApplicationX.Controls">
+
+    <Style TargetType="controls:PageRoot">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:PageRoot">
+                    <Grid Margin="0,0,0,8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid Margin="14,8,14,0" Padding="0,0,0,8" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource FocusStrokeColorOuterBrush}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock FontSize="36" Text="{TemplateBinding Title}"/>
+                            <FontIcon Grid.Column="1" FontSize="36" HorizontalAlignment="Right" Glyph="{TemplateBinding Glyph}" />
+                        </Grid>
+                        <ScrollViewer Grid.Row="1" Margin="14,0,0,0" Padding="0,0,14,0">
+                            <ContentPresenter Content="{TemplateBinding Content}"/>
+                        </ScrollViewer>
+                        <ContentPresenter Margin="14,0,14,0" Grid.Row="2" Content="{TemplateBinding Footer}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

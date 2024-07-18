@@ -6,15 +6,31 @@
     xmlns:local="using:WinUiApplicationX.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:WinUiApplicationX.Controls"
+    xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
+    xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter"
+    xmlns:settings="using:ModelX"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            FontSize="16"
-            Text="{Binding Title}"/>
-        <Button Content="Click" Command="{Binding TestCommand}"/>
-    </StackPanel>
+    <Page.Resources>
+        <uc:UniversalConverter x:Key="SettingOptionToStringConverter">
+            <uc:ConvertingRule
+                Condition="{uc:Enum Type=settings:SettingsOptionType, Value=Option1Enum}"
+                Output="Option 1"/>
+            <uc:ConvertingRule
+                Condition="{uc:Enum Type=settings:SettingsOptionType, Value=Option2Enum}"
+                Output="Option 2"/>
+            <uc:ConvertingRule
+                Condition="{uc:Enum Type=settings:SettingsOptionType, Value=Option3Enum}"
+                Output="Option 3"/>
+        </uc:UniversalConverter>
+    </Page.Resources>
+    
+    <controls:PageRoot Title="Settings" Glyph="{utils:PageIconProvider PageId=SettingsPage}">
+        <StackPanel Margin="0,14,0,0">
+            <ToggleSwitch Header="Switch alpha" />
+            <ComboBox  />
+        </StackPanel>
+    </controls:PageRoot>
 </Page>
