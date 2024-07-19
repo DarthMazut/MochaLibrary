@@ -11,6 +11,8 @@ namespace ModelX
 
         public string? Text { get; set; }
 
+        public string? CryptoText { get; set; }
+
         public async Task FillValuesAsync(string serializedData)
         {
             Settings? settings = await Task.Run(() => JsonSerializer.Deserialize<Settings>(serializedData));
@@ -19,6 +21,7 @@ namespace ModelX
                 Switch1 = settings.Switch1;
                 OptionType = settings.OptionType;
                 Text = settings.Text;
+                CryptoText = settings.CryptoText;
             }
         }
 
