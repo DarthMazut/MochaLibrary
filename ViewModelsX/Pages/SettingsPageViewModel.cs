@@ -11,23 +11,75 @@ using System.Threading.Tasks;
 
 namespace ViewModelsX.Pages
 {
-    public partial class SettingsPageViewModel : ObservableObject, INavigationParticipant
+    public partial class SettingsPageViewModel : ObservableObject, INavigationParticipant, IOnNavigatedToAsync
     {
-        public INavigator Navigator => MochaCore.Navigation.Navigator.Create();
+        private readonly ISettingsSectionProvider<Settings> _settingsProvider;
+
+        public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
+
+        public SettingsPageViewModel()
+        {
+            _settingsProvider = SettingsManager.Retrieve<Settings>("Settings");
+        }
 
         [ObservableProperty]
         private bool _isSwitched;
 
-        [RelayCommand]
-        private async Task Test()
-        {
-            ISettingsSectionProvider<Settings> settingsSection = SettingsManager.Retrieve<Settings>("Settings");
-            Settings settings = await settingsSection.LoadAsync();
+        [ObservableProperty]
+        private SettingsOptionType _dropDownSelectedItem = SettingsOptionType.Option1Enum;
 
-            await settingsSection.UpdateAsync(s =>
+        [ObservableProperty]
+        private string? _text;
+
+        public async Task OnNavigatedToAsync(OnNavigatedToEventArgs e)
+        {
+            try
             {
-                
-            });
+                Settings settings = await _settingsProvider.LoadAsync(LoadingMode.FromOriginalSource);
+                IsSwitched = settings.Switch1;
+                DropDownSelectedItem = settings.OptionType;
+                Text = settings.Text;
+            }
+            catch (IOException)
+            {
+                // TODO: handle
+                throw;
+            }
         }
+
+        [RelayCommand]
+        private async Task Save()
+        {
+            try
+            {
+                await _settingsProvider.UpdateAsync(s =>
+                {
+                    s.Switch1 = IsSwitched;
+                    s.OptionType = DropDownSelectedItem;
+                    s.Text = Text;
+                }, LoadingMode.FromOriginalSource, SavingMode.ToOriginalSource);
+            }
+            catch (IOException)
+            {
+                // TODO: handle
+                throw;
+            }
+        }
+
+        [RelayCommand]
+        private async Task Restore()
+        {
+            try
+            {
+                await _settingsProvider.RestoreDefaultsAsync(SavingMode.ToOriginalSource);
+            }
+            catch (IOException)
+            {
+                // TODO: handle
+                throw;
+            }
+        }
+
+
     }
 }

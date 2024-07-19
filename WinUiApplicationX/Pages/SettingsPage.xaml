@@ -24,13 +24,31 @@
             <uc:ConvertingRule
                 Condition="{uc:Enum Type=settings:SettingsOptionType, Value=Option3Enum}"
                 Output="Option 3"/>
+            <uc:ConvertingRule Output="Option 4"/>
         </uc:UniversalConverter>
+        <DataTemplate x:Key="DropDownItemTemplate">
+            <TextBlock>
+                <TextBlock.Text>
+                    <Binding Converter="{StaticResource SettingOptionToStringConverter}" />
+                </TextBlock.Text>
+            </TextBlock>
+        </DataTemplate>
     </Page.Resources>
     
     <controls:PageRoot Title="Settings" Glyph="{utils:PageIconProvider PageId=SettingsPage}">
-        <StackPanel Margin="0,14,0,0">
-            <ToggleSwitch Header="Switch alpha" />
-            <ComboBox  />
+        <StackPanel Margin="0,14,0,0" Spacing="8">
+            <ToggleSwitch Header="Switch alpha" IsOn="{Binding IsSwitched, Mode=TwoWay}" />
+            <ComboBox
+                Header="Select option"
+                SelectedItem="{Binding DropDownSelectedItem, Mode=TwoWay}"
+                ItemsSource="{utils:EnumValues Type=settings:SettingsOptionType}"
+                ItemTemplate="{StaticResource DropDownItemTemplate}"
+                />
+            <TextBox Text="{Binding Text, Mode=TwoWay}" MinHeight="90" AcceptsReturn="True"/>
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Button Content="Save settings" Command="{Binding SaveCommand}"/>
+                <Button Content="Restore defaults" Command="{Binding RestoreCommand}"/>
+            </StackPanel>
         </StackPanel>
     </controls:PageRoot>
 </Page>
