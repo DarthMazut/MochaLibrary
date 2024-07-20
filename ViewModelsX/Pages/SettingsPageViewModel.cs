@@ -96,7 +96,7 @@ namespace ViewModelsX.Pages
                 return;
             }
 
-            CryptoText = await DecryptTextAsync(CryptoText, Password);
+            CryptoText = Decrypt(CryptoText, Password);
         }
 
         [RelayCommand]
@@ -107,39 +107,67 @@ namespace ViewModelsX.Pages
                 return;
             }
 
-            string encryptedText = await EncryptTextAsync(CryptoText, Password);
+            string encryptedText = Encrypt(CryptoText, Password);
             await _settingsProvider.UpdateAsync(s => s.CryptoText = encryptedText);
         }
 
-        private static async Task<string> EncryptTextAsync(string plainText, string password)
+        public static string Encrypt(string plainText, string password)
         {
-            using Aes aes = Aes.Create();
-            using Rfc2898DeriveBytes keyGenerator = new(password, Encoding.UTF8.GetBytes("SaltIsGoodForYou"), 1000, HashAlgorithmName.SHA1);
-            aes.Key = keyGenerator.GetBytes(32);
-            aes.IV = keyGenerator.GetBytes(16);
+            using (Aes aes = Aes.Create())
+            {
+                // Derive a key and IV from the password
+                using (Rfc2898DeriveBytes keyGenerator = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes("SaltIsGoodForYou")))
+                {
+                    aes.Key = keyGenerator.GetBytes(32); // AES-256 key
+                    aes.IV = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+                }
 
-            using MemoryStream memoryStream = new();
-            memoryStream.Write(aes.IV, 0, aes.IV.Length);
-            using CryptoStream cryptoStream = new(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
-            using StreamWriter streamWriter = new(cryptoStream);
-            await streamWriter.WriteAsync(plainText);
-            return Convert.ToBase64String(memoryStream.ToArray());
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter streamWriter = new StreamWriter(cryptoStream))
+                        {
+                            streamWriter.Write(plainText);
+                        }
+                    }
+                    return Convert.ToBase64String(memoryStream.ToArray());
+                }
+            }
         }
 
-        private static Task<string> DecryptTextAsync(string cipherText, string password)
+        public static string Decrypt(string cipherText, string password)
         {
-            using Aes aes = Aes.Create();
-            using Rfc2898DeriveBytes keyGenerator = new(password, Encoding.UTF8.GetBytes("SaltIsGoodForYou"), 1000, HashAlgorithmName.SHA1);
+            try
+            {
+                using (Aes aes = Aes.Create())
+                {
+                    // Derive a key and IV from the password
+                    using (Rfc2898DeriveBytes keyGenerator = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes("SaltIsGoodForYou")))
+                    {
+                        aes.Key = keyGenerator.GetBytes(32); // AES-256 key
+                        aes.IV = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];  // AES block size is 16 bytes
+                    }
 
-            aes.Key = keyGenerator.GetBytes(32);
-            aes.IV = keyGenerator.GetBytes(16);
-
-            using MemoryStream memoryStream = new(Convert.FromBase64String(cipherText));
-            using CryptoStream cryptoStream = new(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-            using StreamReader streamReader = new(cryptoStream);
-            return streamReader.ReadToEndAsync();
+                    using (MemoryStream memoryStream = new MemoryStream(Convert.FromBase64String(cipherText)))
+                    {
+                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read))
+                        {
+                            using (StreamReader streamReader = new StreamReader(cryptoStream))
+                            {
+                                return streamReader.ReadToEnd();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (CryptographicException)
+            {
+                // Return corrupted data
+                byte[] corruptedBytes = Convert.FromBase64String(cipherText);
+                string corruptedString = Encoding.UTF8.GetString(corruptedBytes);
+                return corruptedString;
+            }
         }
-
-
     }
 }
