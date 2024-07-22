@@ -1,5 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MochaCore.Dialogs;
+using MochaCore.Dialogs.Extensions;
+using MochaCore.Events;
+using MochaCore.Events.Extensions;
 using MochaCore.Navigation;
 using MochaCore.Settings;
 using ModelX;
@@ -8,19 +12,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ViewModelsX.Pages
 {
-    public partial class SettingsPageViewModel : ObservableObject, INavigationParticipant, IOnNavigatedToAsync
+    public partial class SettingsPageViewModel : ObservableObject, INavigationParticipant, IOnNavigatedToAsync, IOnNavigatingFromAsync
     {
         private readonly ISettingsSectionProvider<Settings> _settingsProvider;
+        private readonly IEventProvider<AppClosingEventArgs> _appClosingEventProvider;
 
         public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
         public SettingsPageViewModel()
         {
             _settingsProvider = SettingsManager.Retrieve<Settings>("Settings");
+            _appClosingEventProvider = AppEventManager.RequestEventProvider<AppClosingEventArgs>("AppClosing");
+
+            _appClosingEventProvider.Event += ApplicationClosing;
         }
 
         [ObservableProperty]
@@ -46,13 +55,40 @@ namespace ViewModelsX.Pages
                 IsSwitched = settings.Switch1;
                 DropDownSelectedItem = settings.OptionType;
                 Text = settings.Text;
-                CryptoText = settings.CryptoText;
             }
             catch (IOException)
             {
                 // TODO: handle
                 throw;
             }
+        }
+
+        public async Task OnNavigatingFromAsync(OnNavigatingFromEventArgs e)
+        {
+            if (await CheckSettingsChanged())
+            {
+                using IDialogModule<StandardMessageDialogProperties> dialog
+                    = DialogManager.RetrieveDialog<StandardMessageDialogProperties>("MessageDialog");
+
+                dialog.Properties = new()
+                {
+                    Title = "Discard changes?",
+                    Message = "Changes were made to the current settings, but no \"Save\" button was pressed." +
+                    "\n\nDo you want to leave anyway and discard the changes?",
+                    ConfirmationButtonText = "Leave & discard changes",
+                    DeclineButtonText = "Stay on current page"
+                };
+
+                bool? result = await dialog.ShowModalAsync(Navigator.Module.View);
+
+                if (result is not true)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
+            _appClosingEventProvider.Event -= ApplicationClosing;
         }
 
         [RelayCommand]
@@ -88,86 +124,40 @@ namespace ViewModelsX.Pages
             }
         }
 
-        [RelayCommand]
-        private async Task Decrypt()
+        private async Task<bool?> PromptDiscardIfRequired()
         {
-            if (CryptoText is null || Password is null)
+            if (await CheckSettingsChanged())
             {
-                return;
+                using IDialogModule<StandardMessageDialogProperties> dialog
+                    = DialogManager.RetrieveDialog<StandardMessageDialogProperties>("MessageDialog");
+
+                dialog.Properties = new()
+                {
+                    Title = "Discard changes?",
+                    Message = "Changes were made to the current settings, but no \"Save\" button was pressed." +
+                    "\n\nDo you want to leave anyway and discard the changes?",
+                    ConfirmationButtonText = "Leave & discard changes",
+                    DeclineButtonText = "Stay on current page"
+                };
+
+                return await dialog.ShowModalAsync(Navigator.Module.View);
             }
 
-            CryptoText = Decrypt(CryptoText, Password);
+            return;
         }
 
-        [RelayCommand]
-        private async Task Encrypt()
+        private async Task<bool> CheckSettingsChanged()
         {
-            if (CryptoText is null || Password is null)
-            {
-                return;
-            }
-
-            string encryptedText = Encrypt(CryptoText, Password);
-            await _settingsProvider.UpdateAsync(s => s.CryptoText = encryptedText);
+            Settings currentSettings = await _settingsProvider.LoadAsync();
+            return
+                currentSettings.Switch1 != IsSwitched ||
+                currentSettings.OptionType != DropDownSelectedItem ||
+                currentSettings.Text != Text;
         }
 
-        public static string Encrypt(string plainText, string password)
+        private void ApplicationClosing(object? sender, AppClosingEventArgs e)
         {
-            using (Aes aes = Aes.Create())
-            {
-                // Derive a key and IV from the password
-                using (Rfc2898DeriveBytes keyGenerator = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes("SaltIsGoodForYou")))
-                {
-                    aes.Key = keyGenerator.GetBytes(32); // AES-256 key
-                    aes.IV = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-                }
-
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter streamWriter = new StreamWriter(cryptoStream))
-                        {
-                            streamWriter.Write(plainText);
-                        }
-                    }
-                    return Convert.ToBase64String(memoryStream.ToArray());
-                }
-            }
-        }
-
-        public static string Decrypt(string cipherText, string password)
-        {
-            try
-            {
-                using (Aes aes = Aes.Create())
-                {
-                    // Derive a key and IV from the password
-                    using (Rfc2898DeriveBytes keyGenerator = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes("SaltIsGoodForYou")))
-                    {
-                        aes.Key = keyGenerator.GetBytes(32); // AES-256 key
-                        aes.IV = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];  // AES block size is 16 bytes
-                    }
-
-                    using (MemoryStream memoryStream = new MemoryStream(Convert.FromBase64String(cipherText)))
-                    {
-                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read))
-                        {
-                            using (StreamReader streamReader = new StreamReader(cryptoStream))
-                            {
-                                return streamReader.ReadToEnd();
-                            }
-                        }
-                    }
-                }
-            }
-            catch (CryptographicException)
-            {
-                // Return corrupted data
-                byte[] corruptedBytes = Convert.FromBase64String(cipherText);
-                string corruptedString = Encoding.UTF8.GetString(corruptedBytes);
-                return corruptedString;
-            }
+            
         }
     }
 }

@@ -49,20 +49,6 @@
                 <Button Content="Save settings" Command="{Binding SaveCommand}"/>
                 <Button Content="Restore defaults" Command="{Binding RestoreCommand}"/>
             </StackPanel>
-            <Border Margin="0,20,0,20" BorderThickness="1" BorderBrush="Orange" Height="1"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Password:" VerticalAlignment="Center"/>
-                <TextBox Grid.Column="1" Text="{Binding Password, Mode=TwoWay}" Width="400"/>
-            </Grid>
-            <TextBox AcceptsReturn="True" Text="{Binding CryptoText, Mode=TwoWay}" MinHeight="90"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button Content="Decrypt" Command="{Binding DecryptCommand}"/>
-                <Button Content="Save &amp; encrypt" Command="{Binding EncryptCommand}"/>
-            </StackPanel>
         </StackPanel>
     </controls:PageRoot>
 </Page>

@@ -7,10 +7,12 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Dialogs;
+using MochaCore.Events;
 using MochaCore.Navigation;
 using MochaCore.Settings;
 using MochaCore.Windowing;
 using MochaWinUI.Dialogs;
+using MochaWinUI.Events;
 using MochaWinUI.Navigation;
 using MochaWinUI.Settings;
 using MochaWinUI.Windowing;
@@ -61,9 +63,13 @@ namespace WinUiApplicationX
                 .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                 .WithInitialId(AppPages.HomePage.Id));
 
+            DialogManager.RegisterDialog("MessageDialog", () => new StandardMessageDialogModule());
+
             SettingsManager.Register("Settings", new ApplicationSettingsSectionProvider<Settings>());
 
-            WindowManager.RetrieveWindow("MainWindow").Open();
+            IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
+            AppEventManager.IncludeEventProvider("AppClosing", new AppClosingEventProvider((Window)mainWindow.View));
+            mainWindow.Open();
         }
     }
 }
