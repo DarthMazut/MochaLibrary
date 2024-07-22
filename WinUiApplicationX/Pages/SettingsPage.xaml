@@ -44,10 +44,19 @@
                 ItemsSource="{utils:EnumValues Type=settings:SettingsOptionType}"
                 ItemTemplate="{StaticResource DropDownItemTemplate}"
                 />
-            <TextBox Text="{Binding Text, Mode=TwoWay}" MinHeight="90" AcceptsReturn="True"/>
+            <TextBox Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinHeight="90" AcceptsReturn="True"/>
             <StackPanel Orientation="Horizontal" Spacing="12">
                 <Button Content="Save settings" Command="{Binding SaveCommand}"/>
-                <Button Content="Restore defaults" Command="{Binding RestoreCommand}"/>
+                <Button Content="Restore defaults">
+                    <Button.Flyout>
+                        <Flyout x:Name="xe_RestoreDefaultsFlyout">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Settings will be restored to default values. Proceed?" />
+                                <Button Click="RestoreDefaultsClicked" Command="{Binding RestoreCommand}" Content="Restore defaults" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
             </StackPanel>
         </StackPanel>
     </controls:PageRoot>

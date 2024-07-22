@@ -27,5 +27,7 @@ namespace WinUiApplicationX.Pages
         {
             this.InitializeComponent();
         }
+
+        private void RestoreDefaultsClicked(object sender, RoutedEventArgs e) => xe_RestoreDefaultsFlyout.Hide();
     }
 }

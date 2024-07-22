@@ -29,7 +29,7 @@ namespace ViewModelsX.Pages
             _settingsProvider = SettingsManager.Retrieve<Settings>("Settings");
             _appClosingEventProvider = AppEventManager.RequestEventProvider<AppClosingEventArgs>("AppClosing");
 
-            _appClosingEventProvider.Event += ApplicationClosing;
+            _appClosingEventProvider.SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(ApplicationClosing));
         }
 
         [ObservableProperty]
@@ -67,20 +67,7 @@ namespace ViewModelsX.Pages
         {
             if (await CheckSettingsChanged())
             {
-                using IDialogModule<StandardMessageDialogProperties> dialog
-                    = DialogManager.RetrieveDialog<StandardMessageDialogProperties>("MessageDialog");
-
-                dialog.Properties = new()
-                {
-                    Title = "Discard changes?",
-                    Message = "Changes were made to the current settings, but no \"Save\" button was pressed." +
-                    "\n\nDo you want to leave anyway and discard the changes?",
-                    ConfirmationButtonText = "Leave & discard changes",
-                    DeclineButtonText = "Stay on current page"
-                };
-
-                bool? result = await dialog.ShowModalAsync(Navigator.Module.View);
-
+                bool? result = await PromptDiscardDialog();
                 if (result is not true)
                 {
                     e.Cancel = true;
@@ -88,7 +75,7 @@ namespace ViewModelsX.Pages
                 }
             }
 
-            _appClosingEventProvider.Event -= ApplicationClosing;
+            _appClosingEventProvider.UnsubscribeAsync(ApplicationClosing);
         }
 
         [RelayCommand]
@@ -103,10 +90,9 @@ namespace ViewModelsX.Pages
                     s.Text = Text;
                 }, LoadingMode.FromOriginalSource, SavingMode.ToOriginalSource);
             }
-            catch (IOException)
+            catch (IOException ex)
             {
-                // TODO: handle
-                throw;
+                await PromptSomethingWentWrong(ex);
             }
         }
 
@@ -115,35 +101,47 @@ namespace ViewModelsX.Pages
         {
             try
             {
-                await _settingsProvider.RestoreDefaultsAsync(SavingMode.ToOriginalSource);
+                Settings settings =  await _settingsProvider.RestoreDefaultsAsync(SavingMode.ToOriginalSource);
+                IsSwitched = settings.Switch1;
+                DropDownSelectedItem = settings.OptionType;
+                Text = settings.Text;
             }
-            catch (IOException)
+            catch (IOException ex)
             {
-                // TODO: handle
-                throw;
+                await PromptSomethingWentWrong(ex);
             }
         }
 
-        private async Task<bool?> PromptDiscardIfRequired()
+        private Task PromptSomethingWentWrong(Exception ex)
         {
-            if (await CheckSettingsChanged())
-            {
-                using IDialogModule<StandardMessageDialogProperties> dialog
+            using IDialogModule<StandardMessageDialogProperties> dialog
                     = DialogManager.RetrieveDialog<StandardMessageDialogProperties>("MessageDialog");
 
-                dialog.Properties = new()
-                {
-                    Title = "Discard changes?",
-                    Message = "Changes were made to the current settings, but no \"Save\" button was pressed." +
-                    "\n\nDo you want to leave anyway and discard the changes?",
-                    ConfirmationButtonText = "Leave & discard changes",
-                    DeclineButtonText = "Stay on current page"
-                };
+            dialog.Properties = new()
+            {
+                Title = "Something went wrong",
+                Message = ex.Message,
+                ConfirmationButtonText = "Oh no!",
+            };
 
-                return await dialog.ShowModalAsync(Navigator.Module.View);
-            }
+            return dialog.ShowModalAsync(Navigator.Module.View);
+        }
 
-            return;
+        private Task<bool?> PromptDiscardDialog()
+        {
+            using IDialogModule<StandardMessageDialogProperties> dialog
+                    = DialogManager.RetrieveDialog<StandardMessageDialogProperties>("MessageDialog");
+
+            dialog.Properties = new()
+            {
+                Title = "Discard changes?",
+                Message = "Changes were made to the current settings, but no \"Save\" button was pressed." +
+                "\n\nDo you want to leave anyway and discard the changes?",
+                ConfirmationButtonText = "Leave & discard changes",
+                DeclineButtonText = "Stay on current page"
+            };
+
+            return dialog.ShowModalAsync(Navigator.Module.View);
         }
 
         private async Task<bool> CheckSettingsChanged()
@@ -155,9 +153,16 @@ namespace ViewModelsX.Pages
                 currentSettings.Text != Text;
         }
 
-        private void ApplicationClosing(object? sender, AppClosingEventArgs e)
+        private async Task ApplicationClosing(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> collection)
         {
-            
+            if (await CheckSettingsChanged())
+            {
+                bool? result = await PromptDiscardDialog();
+                if (result is not true)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }
