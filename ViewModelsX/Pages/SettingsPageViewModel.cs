@@ -19,47 +19,48 @@ namespace ViewModelsX.Pages
 {
     public partial class SettingsPageViewModel : ObservableObject, INavigationParticipant, IOnNavigatedToAsync, IOnNavigatingFromAsync
     {
-        private readonly ISettingsSectionProvider<Settings> _settingsProvider;
+        private readonly ISettingsSectionProvider<PizzaRecipe> _settingsProvider;
         private readonly IEventProvider<AppClosingEventArgs> _appClosingEventProvider;
 
         public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
         public SettingsPageViewModel()
         {
-            _settingsProvider = SettingsManager.Retrieve<Settings>("Settings");
+            _settingsProvider = SettingsManager.Retrieve<PizzaRecipe>("Settings");
             _appClosingEventProvider = AppEventManager.RequestEventProvider<AppClosingEventArgs>("AppClosing");
 
             _appClosingEventProvider.SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(ApplicationClosing));
         }
 
         [ObservableProperty]
-        private bool _isSwitched;
+        private PizzaStyle _pizzaStyle;
 
         [ObservableProperty]
-        private SettingsOptionType _dropDownSelectedItem = SettingsOptionType.Option1Enum;
+        private bool _isThickCrust;
 
         [ObservableProperty]
-        private string? _text;
-
-        [ObservableProperty]
-        private string? _password;
-
-        [ObservableProperty]
-        private string? _cryptoText;
+        private FlourType _flourType;
 
         public async Task OnNavigatedToAsync(OnNavigatedToEventArgs e)
         {
             try
             {
-                Settings settings = await _settingsProvider.LoadAsync(LoadingMode.FromOriginalSource);
-                IsSwitched = settings.Switch1;
-                DropDownSelectedItem = settings.OptionType;
-                Text = settings.Text;
+                PizzaRecipe settings = await _settingsProvider.LoadAsync(LoadingMode.FromOriginalSource);
+                PizzaStyle = settings.Style;
+                IsThickCrust = settings.IsThickCrust;
+                FlourType = settings.FlourType;
+                //Flour = settings.Flour;
+                //Water = settings.Water;
+                //Yeast = settings.Yeast;
+                //Salt = settings.Salt;
+                //Toppings = settings.Toppings;
+                //BakingTemp = settings.BakingTemp;
+                //Rating = settings.Rating;
+                //Notes = settings.Notes;
             }
-            catch (IOException)
+            catch (IOException ex)
             {
-                // TODO: handle
-                throw;
+                await PromptSomethingWentWrong(ex);
             }
         }
 
@@ -85,9 +86,18 @@ namespace ViewModelsX.Pages
             {
                 await _settingsProvider.UpdateAsync(s =>
                 {
-                    s.Switch1 = IsSwitched;
-                    s.OptionType = DropDownSelectedItem;
-                    s.Text = Text;
+                    s.Style = PizzaStyle;
+                    s.IsThickCrust = IsThickCrust;
+                    s.FlourType = FlourType;
+                    //s.Flour = Flour;
+                    //s.Water = Water;
+                    //s.Yeast = Yeast;
+                    //s.Salt = Salt;
+                    //s.Toppings = Toppings;
+                    //s.BakingTemp = BakingTemp;
+                    //s.Rating = Rating;
+                    //s.Notes = Notes;
+
                 }, LoadingMode.FromOriginalSource, SavingMode.ToOriginalSource);
             }
             catch (IOException ex)
@@ -101,10 +111,18 @@ namespace ViewModelsX.Pages
         {
             try
             {
-                Settings settings =  await _settingsProvider.RestoreDefaultsAsync(SavingMode.ToOriginalSource);
-                IsSwitched = settings.Switch1;
-                DropDownSelectedItem = settings.OptionType;
-                Text = settings.Text;
+                PizzaRecipe settings =  await _settingsProvider.RestoreDefaultsAsync(SavingMode.ToOriginalSource);
+                PizzaStyle = settings.Style;
+                IsThickCrust = settings.IsThickCrust;
+                FlourType = settings.FlourType;
+                //Flour = settings.Flour;
+                //Water = settings.Water;
+                //Yeast = settings.Yeast;
+                //Salt = settings.Salt;
+                //Toppings = settings.Toppings;
+                //BakingTemp = settings.BakingTemp;
+                //Rating = settings.Rating;
+                //Notes = settings.Notes;
             }
             catch (IOException ex)
             {
@@ -146,11 +164,19 @@ namespace ViewModelsX.Pages
 
         private async Task<bool> CheckSettingsChanged()
         {
-            Settings currentSettings = await _settingsProvider.LoadAsync();
+            PizzaRecipe currentSettings = await _settingsProvider.LoadAsync();
             return
-                currentSettings.Switch1 != IsSwitched ||
-                currentSettings.OptionType != DropDownSelectedItem ||
-                currentSettings.Text != Text;
+                currentSettings.Style != PizzaStyle ||
+                currentSettings.IsThickCrust != IsThickCrust ||
+                currentSettings.FlourType != FlourType;
+                //currentSettings.Flour != Flour;
+                //currentSettings.Water != Water;
+                //currentSettings.Yeast != Yeast;
+                //currentSettings.Salt != Salt;
+                //currentSettings.Toppings != Toppings;
+                //currentSettings.BakingTemp != BakingTemp;
+                //currentSettings.Rating != Rating;
+                //currentSettings.Notes != Notes;
         }
 
         private async Task ApplicationClosing(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> collection)

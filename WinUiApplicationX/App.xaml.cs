@@ -65,7 +65,7 @@ namespace WinUiApplicationX
 
             DialogManager.RegisterDialog("MessageDialog", () => new StandardMessageDialogModule());
 
-            SettingsManager.Register("Settings", new ApplicationSettingsSectionProvider<Settings>());
+            SettingsManager.Register("Settings", new ApplicationSettingsSectionProvider<PizzaRecipe>());
 
             IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
             AppEventManager.IncludeEventProvider("AppClosing", new AppClosingEventProvider((Window)mainWindow.View));
