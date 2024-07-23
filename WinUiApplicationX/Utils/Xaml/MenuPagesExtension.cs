@@ -11,14 +11,11 @@ namespace WinUiApplicationX.Utils.Xaml
 {
     public class MenuPagesExtension : MarkupExtension
     {
-        protected override object ProvideValue() => AppPages.GetMenuPages();
+        protected override object ProvideValue() => AppPages.GetMenuPages(MenuPlacement.Top);
     }
 
     public class FooterMenuPagesExtension : MarkupExtension
     {
-        protected override object ProvideValue() => new AppPage[]
-        {
-            AppPages.SettingsPage
-        }.ToImmutableArray();
+        protected override object ProvideValue() => AppPages.GetMenuPages(MenuPlacement.Footer);
     }
 }

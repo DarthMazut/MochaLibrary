@@ -42,7 +42,11 @@ namespace ViewModelsX
         private object? _fullScreenPageContent;
 
         [RelayCommand]
-        private Task NavigationInvoked() => _mainNavigator.NavigateAsync(SelectedPage!.Id);
+        private async Task NavigationInvoked()
+        {
+            NavigationResultData navigationResult = await _mainNavigator.NavigateAsync(SelectedPage!.Id);
+            HandleNavigationCancelled(navigationResult);
+        }
 
         [RelayCommand]
         private Task NavigationBack() => _mainNavigator.NavigateBackAsync();
@@ -55,6 +59,30 @@ namespace ViewModelsX
             IsFullScreen = currentPage.IsFullScreen;
             PageContent = currentPage.IsFullScreen ? null : e.CurrentModule.View;
             FullScreenPageContent = currentPage.IsFullScreen ? e.CurrentModule.View : null;
+        }
+
+        // When current page rejects navigation request, the item selected on view side
+        // has already changed. In order to synchronize we need to select last selected
+        // menu page.
+        // Other solution (better) would be to subscribe to PreviewItemInvoked, set e.Handled = true
+        // and invoke command, but this is impossible since there is no PreviewItemInvoked nor
+        // a way to cancel selection change after any menu item has been invoked.
+        private void HandleNavigationCancelled(NavigationResultData navigationResult)
+        {
+            if (navigationResult.Result == NavigationResult.RejectedByCurrent)
+            {
+                IReadOnlyNavigationStack<INavigationStackItem> navigationHistory = _mainNavigator.Service.NavigationHistory;
+                string? previousMenuId = navigationHistory
+                    .Select(i => i.Module.Id)
+                    .Take(navigationHistory.CurrentIndex + 1)
+                    .LastOrDefault(id => AppPages.GetMenuPages()
+                        .Any(p => p.Id == id));
+
+                if (previousMenuId is not null)
+                {
+                    SelectedPage = AppPages.GetById(previousMenuId);
+                }
+            }
         }
     }
 }

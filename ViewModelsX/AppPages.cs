@@ -32,7 +32,8 @@ namespace ViewModelsX
                 {
                     Name = "Settings",
                     Glyph = "\uE713",
-                    IsMenuPage = false
+                    IsMenuPage = true,
+                    MenuPlacement = MenuPlacement.Footer
                 }
             }
         };
@@ -47,7 +48,10 @@ namespace ViewModelsX
 
         public static IReadOnlyCollection<AppPage> AsCollection() => [.. _pages.Values];
 
-        public static IReadOnlyCollection<AppPage> GetMenuPages() => _pages.Values.Where(p => p.IsMenuPage).ToImmutableList(); 
+        public static IReadOnlyCollection<AppPage> GetMenuPages() => _pages.Values.Where(p => p.IsMenuPage).ToImmutableList();
+
+        public static IReadOnlyCollection<AppPage> GetMenuPages(MenuPlacement placement)
+            => _pages.Values.Where(p => p.IsMenuPage && p.MenuPlacement == placement).ToImmutableList();
     }
 
     public record AppPage(string Id)
@@ -56,8 +60,16 @@ namespace ViewModelsX
 
         public string Glyph { get; init; } = string.Empty;
 
-        public bool IsMenuPage { get; init; } = false;
+        public bool IsMenuPage { get; init; }
 
-        public bool IsFullScreen { get; init; } = false;
+        public MenuPlacement MenuPlacement { get; init; }
+
+        public bool IsFullScreen { get; init; }
+    }
+
+    public enum MenuPlacement
+    {
+        Top,
+        Footer
     }
 }

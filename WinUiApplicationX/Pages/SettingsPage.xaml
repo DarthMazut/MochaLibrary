@@ -10,6 +10,7 @@
     xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
     xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter"
     xmlns:settings="using:ModelX"
+    xmlns:g="using:Windows.Globalization.NumberFormatting"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -30,6 +31,15 @@
             <uc:ConvertingRule
                 Condition="{uc:Enum Type=settings:FlourType, Value=ZeroZero}"
                 Output="00"/>
+            <uc:ConvertingRule
+                Condition="{uc:Enum Type=settings:FlourType, Value=AllPurpose}"
+                Output="All purpose"/>
+            <uc:ConvertingRule
+                Condition="{uc:Enum Type=settings:FlourType, Value=WholeWheat}"
+                Output="Whole wheat"/>
+            <uc:ConvertingRule
+                Condition="{uc:Enum Type=settings:FlourType, Value=Bread}"
+                Output="Bread"/>
             <uc:ConvertingRule Output="!! MISSING TRANSLATION !!"/>
         </uc:UniversalConverter>
         <DataTemplate x:Key="DropDownItemTemplate">
@@ -46,6 +56,11 @@
                 </RadioButton.Content>
             </RadioButton>
         </DataTemplate>
+        <Style x:Key="NumberBoxStyle" TargetType="NumberBox">
+            <Setter Property="SpinButtonPlacementMode" Value="Compact" />
+            <Setter Property="MaxWidth" Value="120" />
+            <Setter Property="Minimum" Value="0" />
+        </Style>
     </Page.Resources>
     
     <controls:PageRoot Title="Settings" Glyph="{utils:PageIconProvider PageId=SettingsPage}">
@@ -61,14 +76,17 @@
                 ItemsSource="{utils:EnumValues Type=settings:FlourType}"
                 ItemTemplate="{StaticResource RadioItemTemplate}"
                 SelectedItem="{Binding FlourType, Mode=TwoWay}"/>
-
+            <NumberBox Header="Flour weight [g]:" Value="{Binding Flour, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}"  SmallChange="1" LargeChange="50" />
+            <NumberBox Header="Water weight [g]:" Value="{Binding Water, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}"  SmallChange="1" LargeChange="50" />
+            <NumberBox Header="Yeast weight [g]:" Value="{Binding Yeast, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}"  SmallChange="0.1" LargeChange="1" />
+            <NumberBox Header="Salt weight [g]:" Value="{Binding Salt, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}"  x:Name="xe_NumberBox" SmallChange="0.1" LargeChange="1" />
 
             <!--
             <TextBox Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinHeight="90" AcceptsReturn="True"/>-->
         </StackPanel>
         <controls:PageRoot.Footer>
-            <StackPanel Orientation="Horizontal" Spacing="12">
-                <Button Content="Save settings" Command="{Binding SaveCommand}"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,12" Spacing="12">
+                <Button Content="Save settings" Command="{Binding SaveCommand}" Style="{StaticResource AccentButtonStyle}"/>
                 <Button Content="Restore defaults">
                     <Button.Flyout>
                         <Flyout x:Name="xe_RestoreDefaultsFlyout">

@@ -35,10 +35,9 @@ namespace WinUiApplicationX.Controls
             this.BackRequested += OnBackInvoked;
         }
 
-        private async void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs e)
+        private void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs e)
         {
-            await Task.Yield();
-            Command?.Execute(default);
+            DispatcherQueue.TryEnqueue(() => Command?.Execute(default));
         }
 
         private void OnBackInvoked(NavigationView sender, NavigationViewBackRequestedEventArgs args)

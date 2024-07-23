@@ -41,6 +41,18 @@ namespace ViewModelsX.Pages
         [ObservableProperty]
         private FlourType _flourType;
 
+        [ObservableProperty]
+        private double _flour;
+
+        [ObservableProperty]
+        private double _water;
+
+        [ObservableProperty]
+        private double _yeast;
+
+        [ObservableProperty]
+        private double _salt;
+
         public async Task OnNavigatedToAsync(OnNavigatedToEventArgs e)
         {
             try
@@ -49,10 +61,10 @@ namespace ViewModelsX.Pages
                 PizzaStyle = settings.Style;
                 IsThickCrust = settings.IsThickCrust;
                 FlourType = settings.FlourType;
-                //Flour = settings.Flour;
-                //Water = settings.Water;
-                //Yeast = settings.Yeast;
-                //Salt = settings.Salt;
+                Flour = settings.Flour;
+                Water = settings.Water;
+                Yeast = settings.Yeast;
+                Salt = settings.Salt;
                 //Toppings = settings.Toppings;
                 //BakingTemp = settings.BakingTemp;
                 //Rating = settings.Rating;
@@ -89,10 +101,10 @@ namespace ViewModelsX.Pages
                     s.Style = PizzaStyle;
                     s.IsThickCrust = IsThickCrust;
                     s.FlourType = FlourType;
-                    //s.Flour = Flour;
-                    //s.Water = Water;
-                    //s.Yeast = Yeast;
-                    //s.Salt = Salt;
+                    s.Flour = Flour;
+                    s.Water = Water;
+                    s.Yeast = Yeast;
+                    s.Salt = Salt;
                     //s.Toppings = Toppings;
                     //s.BakingTemp = BakingTemp;
                     //s.Rating = Rating;
@@ -115,10 +127,10 @@ namespace ViewModelsX.Pages
                 PizzaStyle = settings.Style;
                 IsThickCrust = settings.IsThickCrust;
                 FlourType = settings.FlourType;
-                //Flour = settings.Flour;
-                //Water = settings.Water;
-                //Yeast = settings.Yeast;
-                //Salt = settings.Salt;
+                Flour = settings.Flour;
+                Water = settings.Water;
+                Yeast = settings.Yeast;
+                Salt = settings.Salt;
                 //Toppings = settings.Toppings;
                 //BakingTemp = settings.BakingTemp;
                 //Rating = settings.Rating;
@@ -168,11 +180,11 @@ namespace ViewModelsX.Pages
             return
                 currentSettings.Style != PizzaStyle ||
                 currentSettings.IsThickCrust != IsThickCrust ||
-                currentSettings.FlourType != FlourType;
-                //currentSettings.Flour != Flour;
-                //currentSettings.Water != Water;
-                //currentSettings.Yeast != Yeast;
-                //currentSettings.Salt != Salt;
+                currentSettings.FlourType != FlourType ||
+                currentSettings.Flour != Flour ||
+                currentSettings.Water != Water ||
+                currentSettings.Yeast != Yeast ||
+                currentSettings.Salt != Salt;
                 //currentSettings.Toppings != Toppings;
                 //currentSettings.BakingTemp != BakingTemp;
                 //currentSettings.Rating != Rating;
