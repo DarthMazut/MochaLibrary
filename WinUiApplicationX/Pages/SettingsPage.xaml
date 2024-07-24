@@ -42,9 +42,17 @@
                 Output="Bread"/>
             <uc:ConvertingRule Output="!! MISSING TRANSLATION !!"/>
         </uc:UniversalConverter>
+        
         <Style x:Key="HeaderStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="18" />
         </Style>
+        <Style x:Key="NumberBoxStyle" TargetType="NumberBox">
+            <Setter Property="SpinButtonPlacementMode" Value="Compact" />
+            <Setter Property="MaxWidth" Value="120" />
+            <Setter Property="Minimum" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        
         <DataTemplate x:Key="HeaderTemplate">
             <TextBlock Text="{Binding}" Style="{StaticResource HeaderStyle}"/>
         </DataTemplate>
@@ -62,11 +70,14 @@
                 </RadioButton.Content>
             </RadioButton>
         </DataTemplate>
-        <Style x:Key="NumberBoxStyle" TargetType="NumberBox">
-            <Setter Property="SpinButtonPlacementMode" Value="Compact" />
-            <Setter Property="MaxWidth" Value="120" />
-            <Setter Property="Minimum" Value="0" />
-        </Style>
+        <DataTemplate x:Key="GridViewItemTemplate">
+            <GridViewItem HorizontalContentAlignment="Left" Width="240">
+                <GridViewItem.Resources>
+                    <ListViewItemPresenterCheckMode x:Key="GridViewItemCheckMode">Inline</ListViewItemPresenterCheckMode>
+                </GridViewItem.Resources>
+                <TextBlock Text="{Binding}" Margin="14,0,0,0"/>
+            </GridViewItem>
+        </DataTemplate>
     </Page.Resources>
     
     <controls:PageRoot Title="Settings" Glyph="{utils:PageIconProvider PageId=SettingsPage}">
@@ -89,17 +100,22 @@
                 ItemsSource="{utils:EnumValues Type=settings:FlourType}"
                 ItemTemplate="{StaticResource RadioItemTemplate}"
                 SelectedItem="{Binding FlourType, Mode=TwoWay}"/>
-            <TextBlock Text="Basic ingredients" Style="{StaticResource HeaderStyle}"/>
             <StackPanel HorizontalAlignment="Left" Spacing="8">
+                <TextBlock Text="Basic ingredients" Style="{StaticResource HeaderStyle}"/>
                 <NumberBox Header="Flour weight [g]:" Value="{Binding Flour, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}" SmallChange="1" LargeChange="50" />
                 <NumberBox Header="Water weight [g]:" Value="{Binding Water, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}" SmallChange="1" LargeChange="50" />
                 <NumberBox Header="Yeast weight [g]:" Value="{Binding Yeast, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}" SmallChange="0.05" LargeChange="1" x:Name="xe_YeastNumberBox"/>
                 <NumberBox Header="Salt weight [g]:" Value="{Binding Salt, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}" SmallChange="0.1" LargeChange="1" x:Name="xe_SaltNumberBox"/>
             </StackPanel>
             <TextBlock Text="Toppings" Style="{StaticResource HeaderStyle}"/>
-            
-            <!--
-            <TextBox Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinHeight="90" AcceptsReturn="True"/>-->
+            <controls:GridViewEx
+                HorizontalAlignment="Left"
+                MaxWidth="980"
+                SelectionMode="Multiple"
+                SelectedItemsEx="{Binding SelectedToppings, Mode=TwoWay}"
+                ItemTemplate="{StaticResource GridViewItemTemplate}"
+                ItemsSource="{utils:EnumValues Type=settings:Topping}">
+            </controls:GridViewEx>
         </StackPanel>
         <controls:PageRoot.Footer>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,12" Spacing="12">

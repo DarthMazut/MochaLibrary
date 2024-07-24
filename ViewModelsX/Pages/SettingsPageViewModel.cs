@@ -9,6 +9,7 @@ using MochaCore.Settings;
 using ModelX;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -52,6 +53,9 @@ namespace ViewModelsX.Pages
 
         [ObservableProperty]
         private double _salt;
+
+        [ObservableProperty]
+        private ObservableCollection<Topping> _selectedToppings = [];
 
         public async Task OnNavigatedToAsync(OnNavigatedToEventArgs e)
         {
