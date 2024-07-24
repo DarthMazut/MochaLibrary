@@ -13,7 +13,7 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Grid Margin="14,8,14,0" Padding="0,0,0,8" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource FocusStrokeColorOuterBrush}">
+                        <Grid Margin="14,8,14,8" Padding="0,0,0,8" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource FocusStrokeColorOuterBrush}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>

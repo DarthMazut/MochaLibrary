@@ -42,6 +42,12 @@
                 Output="Bread"/>
             <uc:ConvertingRule Output="!! MISSING TRANSLATION !!"/>
         </uc:UniversalConverter>
+        <Style x:Key="HeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18" />
+        </Style>
+        <DataTemplate x:Key="HeaderTemplate">
+            <TextBlock Text="{Binding}" Style="{StaticResource HeaderStyle}"/>
+        </DataTemplate>
         <DataTemplate x:Key="DropDownItemTemplate">
             <TextBlock>
                 <TextBlock.Text>
@@ -64,23 +70,34 @@
     </Page.Resources>
     
     <controls:PageRoot Title="Settings" Glyph="{utils:PageIconProvider PageId=SettingsPage}">
-        <StackPanel Margin="0,14,0,0" Spacing="8">
+        <StackPanel Spacing="24">
             <ComboBox
                 Header="Pizza style:"
+                HeaderTemplate="{StaticResource HeaderTemplate}"
                 SelectedItem="{Binding PizzaStyle, Mode=TwoWay}"
                 ItemsSource="{utils:EnumValues Type=settings:PizzaStyle}"
                 ItemTemplate="{StaticResource DropDownItemTemplate}"/>
-            <ToggleSwitch Header="Crust:" OnContent="Thick" OffContent="Thin" IsOn="{Binding IsThickCrust, Mode=TwoWay}" />
+            <ToggleSwitch
+                Header="Crust:"
+                HeaderTemplate="{StaticResource HeaderTemplate}"
+                OnContent="Thick"
+                OffContent="Thin"
+                IsOn="{Binding IsThickCrust, Mode=TwoWay}" />
             <RadioButtons
                 Header="Flour type:"
+                HeaderTemplate="{StaticResource HeaderTemplate}"
                 ItemsSource="{utils:EnumValues Type=settings:FlourType}"
                 ItemTemplate="{StaticResource RadioItemTemplate}"
                 SelectedItem="{Binding FlourType, Mode=TwoWay}"/>
-            <NumberBox Header="Flour weight [g]:" Value="{Binding Flour, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}"  SmallChange="1" LargeChange="50" />
-            <NumberBox Header="Water weight [g]:" Value="{Binding Water, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}"  SmallChange="1" LargeChange="50" />
-            <NumberBox Header="Yeast weight [g]:" Value="{Binding Yeast, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}"  SmallChange="0.1" LargeChange="1" />
-            <NumberBox Header="Salt weight [g]:" Value="{Binding Salt, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}"  x:Name="xe_NumberBox" SmallChange="0.1" LargeChange="1" />
-
+            <TextBlock Text="Basic ingredients" Style="{StaticResource HeaderStyle}"/>
+            <StackPanel HorizontalAlignment="Left" Spacing="8">
+                <NumberBox Header="Flour weight [g]:" Value="{Binding Flour, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}" SmallChange="1" LargeChange="50" />
+                <NumberBox Header="Water weight [g]:" Value="{Binding Water, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}" SmallChange="1" LargeChange="50" />
+                <NumberBox Header="Yeast weight [g]:" Value="{Binding Yeast, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}" SmallChange="0.05" LargeChange="1" x:Name="xe_YeastNumberBox"/>
+                <NumberBox Header="Salt weight [g]:" Value="{Binding Salt, Mode=TwoWay}" Style="{StaticResource NumberBoxStyle}" SmallChange="0.1" LargeChange="1" x:Name="xe_SaltNumberBox"/>
+            </StackPanel>
+            <TextBlock Text="Toppings" Style="{StaticResource HeaderStyle}"/>
+            
             <!--
             <TextBox Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinHeight="90" AcceptsReturn="True"/>-->
         </StackPanel>

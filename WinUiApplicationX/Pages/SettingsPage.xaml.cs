@@ -27,18 +27,27 @@ namespace WinUiApplicationX.Pages
         public SettingsPage()
         {
             this.InitializeComponent();
-            //IncrementNumberRounder rounder = new IncrementNumberRounder();
-            //rounder.Increment = 0.1;
-            //rounder.RoundingAlgorithm = RoundingAlgorithm.RoundHalfUp;
-
-            //DecimalFormatter formatter = new DecimalFormatter();
-            //formatter.IntegerDigits = 1;
-            //formatter.FractionDigits = 2;
-            //formatter.NumberRounder = rounder;
-            //xe_NumberBox.NumberFormatter = formatter;
+            SetupFormatter(xe_YeastNumberBox, 0.05);
+            SetupFormatter(xe_SaltNumberBox, 0.1);
 
         }
 
         private void RestoreDefaultsClicked(object sender, RoutedEventArgs e) => xe_RestoreDefaultsFlyout.Hide();
+
+        // This won't work when specified in XAML style. Most likely XAML parser is broken here:
+        // https://github.com/microsoft/microsoft-ui-xaml/issues/9365
+        private void SetupFormatter(NumberBox numberBox, double increment)
+        {
+            numberBox.NumberFormatter = new DecimalFormatter()
+            {
+                IntegerDigits = 1,
+                FractionDigits = 2,
+                NumberRounder = new IncrementNumberRounder()
+                {
+                    Increment = increment,
+                    RoundingAlgorithm = RoundingAlgorithm.RoundHalfUp
+                }
+            };
+        }
     }
 }
