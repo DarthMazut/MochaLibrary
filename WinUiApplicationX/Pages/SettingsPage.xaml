@@ -116,6 +116,25 @@
                 ItemTemplate="{StaticResource GridViewItemTemplate}"
                 ItemsSource="{utils:EnumValues Type=settings:Topping}">
             </controls:GridViewEx>
+            <Slider
+                HorizontalAlignment="Left"
+                Header="Baking temperature: [°C]"
+                Minimum="180"
+                Maximum="500"
+                Value="{Binding BakingTemp, Mode=TwoWay}"
+                Width="400"/>
+            <TextBlock Text="Rating:" Style="{StaticResource HeaderStyle}"/>
+            <RatingControl
+                Margin="0,-14,0,0"
+                HorizontalAlignment="Left"
+                Value="{Binding Rating, Mode=TwoWay}"
+                IsClearEnabled="False"/>
+            <TextBlock Text="Notes:" Style="{StaticResource HeaderStyle}"/>
+            <TextBox
+                Margin="0,-10,0,0"
+                Height="200"
+                AcceptsReturn="True"
+                Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
         <controls:PageRoot.Footer>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,12" Spacing="12">

@@ -7,14 +7,7 @@ using MochaCore.Events.Extensions;
 using MochaCore.Navigation;
 using MochaCore.Settings;
 using ModelX;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace ViewModelsX.Pages
 {
@@ -57,6 +50,15 @@ namespace ViewModelsX.Pages
         [ObservableProperty]
         private ObservableCollection<Topping> _selectedToppings = [];
 
+        [ObservableProperty]
+        private int _bakingTemp;
+
+        [ObservableProperty]
+        private double _rating;
+
+        [ObservableProperty]
+        private string? _notes;
+
         public async Task OnNavigatedToAsync(OnNavigatedToEventArgs e)
         {
             try
@@ -70,9 +72,9 @@ namespace ViewModelsX.Pages
                 Yeast = settings.Yeast;
                 Salt = settings.Salt;
                 SelectedToppings = [..settings.Toppings];
-                //BakingTemp = settings.BakingTemp;
-                //Rating = settings.Rating;
-                //Notes = settings.Notes;
+                BakingTemp = settings.BakingTemp;
+                Rating = settings.Rating;
+                Notes = settings.Notes;
             }
             catch (IOException ex)
             {
@@ -110,9 +112,9 @@ namespace ViewModelsX.Pages
                     s.Yeast = Yeast;
                     s.Salt = Salt;
                     s.Toppings = [..SelectedToppings];
-                    //s.BakingTemp = BakingTemp;
-                    //s.Rating = Rating;
-                    //s.Notes = Notes;
+                    s.BakingTemp = BakingTemp;
+                    s.Rating = Rating;
+                    s.Notes = Notes;
 
                 }, LoadingMode.FromOriginalSource, SavingMode.ToOriginalSource);
             }
@@ -136,9 +138,9 @@ namespace ViewModelsX.Pages
                 Yeast = settings.Yeast;
                 Salt = settings.Salt;
                 SelectedToppings = [..settings.Toppings];
-                //BakingTemp = settings.BakingTemp;
-                //Rating = settings.Rating;
-                //Notes = settings.Notes;
+                BakingTemp = settings.BakingTemp;
+                Rating = settings.Rating;
+                Notes = settings.Notes;
             }
             catch (IOException ex)
             {
@@ -189,10 +191,10 @@ namespace ViewModelsX.Pages
                 currentSettings.Water != Water ||
                 currentSettings.Yeast != Yeast ||
                 currentSettings.Salt != Salt ||
-                currentSettings.Toppings.SequenceEqual(SelectedToppings) == false;
-                //currentSettings.BakingTemp != BakingTemp;
-                //currentSettings.Rating != Rating;
-                //currentSettings.Notes != Notes;
+                currentSettings.Toppings.SequenceEqual(SelectedToppings) == false ||
+                currentSettings.BakingTemp != BakingTemp ||
+                currentSettings.Rating != Rating ||
+                currentSettings.Notes != Notes;
         }
 
         private async Task ApplicationClosing(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> collection)

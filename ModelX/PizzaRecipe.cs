@@ -21,7 +21,7 @@ namespace ModelX
 
         public List<Topping> Toppings { get; set; } = [];
 
-        public double BakingTemp { get; set; }
+        public int BakingTemp { get; set; }
 
         public double Rating { get; set; }
 
