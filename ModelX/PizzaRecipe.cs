@@ -47,6 +47,37 @@ namespace ModelX
         }
 
         public Task<string> SerializeAsync() => Task.Run(() => JsonSerializer.Serialize(this));
+
+        public override bool Equals(object? obj)
+            => obj is PizzaRecipe recipe &&
+                   Style == recipe.Style &&
+                   IsThickCrust == recipe.IsThickCrust &&
+                   FlourType == recipe.FlourType &&
+                   Flour == recipe.Flour &&
+                   Water == recipe.Water &&
+                   Yeast == recipe.Yeast &&
+                   Salt == recipe.Salt &&
+                   EqualityComparer<List<Topping>>.Default.Equals(Toppings, recipe.Toppings) &&
+                   BakingTemp == recipe.BakingTemp &&
+                   Rating == recipe.Rating &&
+                   Notes == recipe.Notes;
+
+        public override int GetHashCode()
+        {
+            HashCode hash = new();
+            hash.Add(Style);
+            hash.Add(IsThickCrust);
+            hash.Add(FlourType);
+            hash.Add(Flour);
+            hash.Add(Water);
+            hash.Add(Yeast);
+            hash.Add(Salt);
+            hash.Add(Toppings);
+            hash.Add(BakingTemp);
+            hash.Add(Rating);
+            hash.Add(Notes);
+            return hash.ToHashCode();
+        }
     }
 
     public enum PizzaStyle
