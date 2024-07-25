@@ -69,7 +69,7 @@ namespace ViewModelsX.Pages
                 Water = settings.Water;
                 Yeast = settings.Yeast;
                 Salt = settings.Salt;
-                //Toppings = settings.Toppings;
+                SelectedToppings = [..settings.Toppings];
                 //BakingTemp = settings.BakingTemp;
                 //Rating = settings.Rating;
                 //Notes = settings.Notes;
@@ -109,7 +109,7 @@ namespace ViewModelsX.Pages
                     s.Water = Water;
                     s.Yeast = Yeast;
                     s.Salt = Salt;
-                    //s.Toppings = Toppings;
+                    s.Toppings = [..SelectedToppings];
                     //s.BakingTemp = BakingTemp;
                     //s.Rating = Rating;
                     //s.Notes = Notes;
@@ -135,7 +135,7 @@ namespace ViewModelsX.Pages
                 Water = settings.Water;
                 Yeast = settings.Yeast;
                 Salt = settings.Salt;
-                //Toppings = settings.Toppings;
+                SelectedToppings = [..settings.Toppings];
                 //BakingTemp = settings.BakingTemp;
                 //Rating = settings.Rating;
                 //Notes = settings.Notes;
@@ -188,8 +188,8 @@ namespace ViewModelsX.Pages
                 currentSettings.Flour != Flour ||
                 currentSettings.Water != Water ||
                 currentSettings.Yeast != Yeast ||
-                currentSettings.Salt != Salt;
-                //currentSettings.Toppings != Toppings;
+                currentSettings.Salt != Salt ||
+                currentSettings.Toppings.SequenceEqual(SelectedToppings) == false;
                 //currentSettings.BakingTemp != BakingTemp;
                 //currentSettings.Rating != Rating;
                 //currentSettings.Notes != Notes;
