@@ -137,9 +137,9 @@
                 Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
         <controls:PageRoot.Footer>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,12" Spacing="12">
-                <Button Content="Save settings" Command="{Binding SaveCommand}" Style="{StaticResource AccentButtonStyle}"/>
-                <Button Content="Restore defaults">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,16" Spacing="12">
+                <Button Content="Save settings" Command="{Binding SaveCommand}" IsEnabled="{Binding IsSaveEnabled}" Style="{StaticResource AccentButtonStyle}"/>
+                <Button Content="Restore defaults" IsEnabled="{Binding IsRestoreEnabled}">
                     <Button.Flyout>
                         <Flyout x:Name="xe_RestoreDefaultsFlyout">
                             <StackPanel Spacing="12">

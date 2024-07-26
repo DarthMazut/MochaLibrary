@@ -57,7 +57,7 @@ namespace ModelX
                    Water == recipe.Water &&
                    Yeast == recipe.Yeast &&
                    Salt == recipe.Salt &&
-                   EqualityComparer<List<Topping>>.Default.Equals(Toppings, recipe.Toppings) &&
+                   Toppings.SequenceEqual(recipe.Toppings) &&
                    BakingTemp == recipe.BakingTemp &&
                    Rating == recipe.Rating &&
                    Notes == recipe.Notes;

@@ -8,6 +8,8 @@ using MochaCore.Navigation;
 using MochaCore.Settings;
 using ModelX;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace ViewModelsX.Pages
 {
@@ -16,13 +18,15 @@ namespace ViewModelsX.Pages
         private readonly ISettingsSectionProvider<PizzaRecipe> _settingsProvider;
         private readonly IEventProvider<AppClosingEventArgs> _appClosingEventProvider;
 
+        private PizzaRecipe? _currentSettings;
+
         public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
         public SettingsPageViewModel()
         {
             _settingsProvider = SettingsManager.Retrieve<PizzaRecipe>("Settings");
+            
             _appClosingEventProvider = AppEventManager.RequestEventProvider<AppClosingEventArgs>("AppClosing");
-
             _appClosingEventProvider.SubscribeAsync(new AsyncEventHandler<AppClosingEventArgs>(ApplicationClosing));
         }
 
@@ -59,22 +63,19 @@ namespace ViewModelsX.Pages
         [ObservableProperty]
         private string? _notes;
 
+        [ObservableProperty]
+        private bool _isSaveEnabled;
+
+        [ObservableProperty]
+        private bool _isRestoreEnabled;
+
         public async Task OnNavigatedToAsync(OnNavigatedToEventArgs e)
         {
             try
             {
-                PizzaRecipe settings = await _settingsProvider.LoadAsync(LoadingMode.FromOriginalSource);
-                PizzaStyle = settings.Style;
-                IsThickCrust = settings.IsThickCrust;
-                FlourType = settings.FlourType;
-                Flour = settings.Flour;
-                Water = settings.Water;
-                Yeast = settings.Yeast;
-                Salt = settings.Salt;
-                SelectedToppings = [..settings.Toppings];
-                BakingTemp = settings.BakingTemp;
-                Rating = settings.Rating;
-                Notes = settings.Notes;
+                PizzaRecipe settings = await _settingsProvider.LoadAsync();
+                _currentSettings = settings;
+                AssignValues(settings);
             }
             catch (IOException ex)
             {
@@ -84,7 +85,7 @@ namespace ViewModelsX.Pages
 
         public async Task OnNavigatingFromAsync(OnNavigatingFromEventArgs e)
         {
-            if (await CheckSettingsChanged())
+            if (CheckSettingsChanged())
             {
                 bool? result = await PromptDiscardDialog();
                 if (result is not true)
@@ -97,26 +98,32 @@ namespace ViewModelsX.Pages
             _appClosingEventProvider.UnsubscribeAsync(ApplicationClosing);
         }
 
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            UpdateIsEnabled();
+        }
+
+        partial void OnSelectedToppingsChanged(ObservableCollection<Topping>? oldValue, ObservableCollection<Topping> newValue)
+        {
+            if (oldValue is not null)
+            {
+                oldValue.CollectionChanged -= ToppingsCollectionChanged;
+            }
+
+            newValue.CollectionChanged += ToppingsCollectionChanged;
+        }
+
+        private void ToppingsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => UpdateIsEnabled();
+
         [RelayCommand]
         private async Task Save()
         {
             try
             {
-                await _settingsProvider.UpdateAsync(s =>
-                {
-                    s.Style = PizzaStyle;
-                    s.IsThickCrust = IsThickCrust;
-                    s.FlourType = FlourType;
-                    s.Flour = Flour;
-                    s.Water = Water;
-                    s.Yeast = Yeast;
-                    s.Salt = Salt;
-                    s.Toppings = [..SelectedToppings];
-                    s.BakingTemp = BakingTemp;
-                    s.Rating = Rating;
-                    s.Notes = Notes;
-
-                }, LoadingMode.FromOriginalSource, SavingMode.ToOriginalSource);
+                _currentSettings = CreateSettings();
+                await _settingsProvider.SaveAsync(_currentSettings);
+                UpdateIsEnabled();
             }
             catch (IOException ex)
             {
@@ -129,23 +136,20 @@ namespace ViewModelsX.Pages
         {
             try
             {
-                PizzaRecipe settings =  await _settingsProvider.RestoreDefaultsAsync(SavingMode.ToOriginalSource);
-                PizzaStyle = settings.Style;
-                IsThickCrust = settings.IsThickCrust;
-                FlourType = settings.FlourType;
-                Flour = settings.Flour;
-                Water = settings.Water;
-                Yeast = settings.Yeast;
-                Salt = settings.Salt;
-                SelectedToppings = [..settings.Toppings];
-                BakingTemp = settings.BakingTemp;
-                Rating = settings.Rating;
-                Notes = settings.Notes;
+                _currentSettings = await _settingsProvider.RestoreDefaultsAsync(SavingMode.ToOriginalSource);
+                AssignValues(_currentSettings);
+                UpdateIsEnabled();
             }
             catch (IOException ex)
             {
                 await PromptSomethingWentWrong(ex);
             }
+        }
+
+        private void UpdateIsEnabled()
+        {
+            IsSaveEnabled = CheckSettingsChanged();
+            IsRestoreEnabled = !CreateSettings().Equals(new PizzaRecipe());
         }
 
         private Task PromptSomethingWentWrong(Exception ex)
@@ -180,26 +184,41 @@ namespace ViewModelsX.Pages
             return dialog.ShowModalAsync(Navigator.Module.View);
         }
 
-        private async Task<bool> CheckSettingsChanged()
+        private bool CheckSettingsChanged() => _currentSettings?.Equals(CreateSettings()) == false;
+
+        private void AssignValues(PizzaRecipe recipe)
         {
-            PizzaRecipe currentSettings = await _settingsProvider.LoadAsync();
-            return
-                currentSettings.Style != PizzaStyle ||
-                currentSettings.IsThickCrust != IsThickCrust ||
-                currentSettings.FlourType != FlourType ||
-                currentSettings.Flour != Flour ||
-                currentSettings.Water != Water ||
-                currentSettings.Yeast != Yeast ||
-                currentSettings.Salt != Salt ||
-                currentSettings.Toppings.SequenceEqual(SelectedToppings) == false ||
-                currentSettings.BakingTemp != BakingTemp ||
-                currentSettings.Rating != Rating ||
-                currentSettings.Notes != Notes;
+            PizzaStyle = recipe.Style;
+            IsThickCrust = recipe.IsThickCrust;
+            FlourType = recipe.FlourType;
+            Flour = recipe.Flour;
+            Water = recipe.Water;
+            Yeast = recipe.Yeast;
+            Salt = recipe.Salt;
+            SelectedToppings = [.. recipe.Toppings];
+            BakingTemp = recipe.BakingTemp;
+            Rating = recipe.Rating;
+            Notes = recipe.Notes;
         }
+
+        private PizzaRecipe CreateSettings() => new()
+        {
+            Style = PizzaStyle,
+            IsThickCrust = IsThickCrust,
+            FlourType = FlourType,
+            Flour = Flour,
+            Water = Water,
+            Yeast = Yeast,
+            Salt = Salt,
+            Toppings = [.. SelectedToppings],
+            BakingTemp = BakingTemp,
+            Rating = Rating,
+            Notes = Notes
+        };
 
         private async Task ApplicationClosing(AppClosingEventArgs e, IReadOnlyCollection<AsyncEventHandler> collection)
         {
-            if (await CheckSettingsChanged())
+            if (CheckSettingsChanged())
             {
                 bool? result = await PromptDiscardDialog();
                 if (result is not true)
