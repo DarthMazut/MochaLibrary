@@ -3,28 +3,40 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:WinUiApplicationX.Controls">
 
+    <Thickness x:Key="PageRootPadding">8</Thickness>
+    <Thickness x:Key="PageRootHeaderPadding">0,0,0,8</Thickness>
+    <Thickness x:Key="PageRootHeaderMargin">0,0,0,24</Thickness>
+    <Thickness x:Key="PageRootHeaderBorderThickness">0,0,0,1</Thickness>
+    <Thickness x:Key="PageRootScrollViewerPadding">0,0,16,0</Thickness>
+    <StaticResource x:Key="PageRootHeaderBorderBorderBrush" ResourceKey="FocusStrokeColorOuterBrush"/>
+    <x:Double x:Key="PageRootHeaderFontSize">36</x:Double>
+
     <Style TargetType="controls:PageRoot">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:PageRoot">
-                    <Grid Margin="0,0,0,8">
+                    <Grid Margin="{StaticResource PageRootPadding}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Grid Margin="14,8,14,8" Padding="0,0,0,8" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource FocusStrokeColorOuterBrush}">
+                        <Grid
+                            Padding="{StaticResource PageRootHeaderPadding}"
+                            Margin="{StaticResource PageRootHeaderMargin}"
+                            BorderThickness="{StaticResource PageRootHeaderBorderThickness}"
+                            BorderBrush="{ThemeResource PageRootHeaderBorderBorderBrush}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock FontSize="36" Text="{TemplateBinding Title}"/>
-                            <FontIcon Grid.Column="1" FontSize="36" HorizontalAlignment="Right" Glyph="{TemplateBinding Glyph}" />
+                            <TextBlock FontSize="{StaticResource PageRootHeaderFontSize}" Text="{TemplateBinding Title}"/>
+                            <FontIcon Grid.Column="1" FontSize="{StaticResource PageRootHeaderFontSize}" HorizontalAlignment="Right" Glyph="{TemplateBinding Glyph}" />
                         </Grid>
-                        <ScrollViewer Grid.Row="1" Margin="14,0,0,0" Padding="0,0,14,0">
+                        <ScrollViewer Grid.Row="1" Padding="{StaticResource PageRootScrollViewerPadding}">
                             <ContentPresenter Content="{TemplateBinding Content}"/>
                         </ScrollViewer>
-                        <ContentPresenter Margin="14,0,14,0" Grid.Row="2" Content="{TemplateBinding Footer}"/>
+                        <ContentPresenter Grid.Row="2" Content="{TemplateBinding Footer}"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
