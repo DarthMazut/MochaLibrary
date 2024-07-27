@@ -10,6 +10,7 @@ using ModelX;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using ViewModelsX.Dialogs;
 
 namespace ViewModelsX.Pages
 {
@@ -156,10 +157,9 @@ namespace ViewModelsX.Pages
             IsRestoreEnabled = !CreateSettings().Equals(new PizzaRecipe());
         }
 
-        private Task PromptSomethingWentWrong(Exception ex)
+        private async Task PromptSomethingWentWrong(Exception ex)
         {
-            using IDialogModule<StandardMessageDialogProperties> dialog
-                    = DialogManager.RetrieveDialog<StandardMessageDialogProperties>("MessageDialog");
+            using ICustomDialogModule<StandardMessageDialogProperties> dialog = AppDialogs.StandardMessageDialog.Module;
 
             dialog.Properties = new()
             {
@@ -168,14 +168,12 @@ namespace ViewModelsX.Pages
                 ConfirmationButtonText = "Oh no!",
             };
 
-            return dialog.ShowModalAsync(Navigator.Module.View);
+            await dialog.ShowModalAsync(Navigator.Module.View);
         }
 
-        private Task<bool?> PromptDiscardDialog()
+        private async Task<bool?> PromptDiscardDialog()
         {
-            using IDialogModule<StandardMessageDialogProperties> dialog
-                    = DialogManager.RetrieveDialog<StandardMessageDialogProperties>("MessageDialog");
-
+            using ICustomDialogModule<StandardMessageDialogProperties> dialog = AppDialogs.StandardMessageDialog.Module;
             dialog.Properties = new()
             {
                 Title = "Discard changes?",
@@ -185,7 +183,9 @@ namespace ViewModelsX.Pages
                 CancelButtonText = "Cancel"
             };
 
-            return dialog.ShowModalAsync(Navigator.Module.View);
+
+            // `return await` is necessary for the dialog to Dispose() at proper moment.
+            return await dialog.ShowModalAsync(Navigator.Module.View);
         }
 
         private bool CheckSettingsChanged() => _currentSettings?.Equals(CreateSettings()) == false;

@@ -6,15 +6,19 @@
     xmlns:local="using:WinUiApplicationX.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:WinUiApplicationX.Controls"
+    xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"> 
-        <TextBlock
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            FontSize="16"
-            Text="{Binding Title}"/>
-        <Button x:Name="xe_Button" Content="Do stuff"/>
-    </StackPanel>
+    <controls:PageRoot Title="Dialogs" Glyph="{utils:PageIconProvider PageId=DialogsPage}" HeaderMargin="0">
+        <Pivot Margin="-10,-10,0,0">
+            <PivotItem Header="Abcdef">
+                <TextBlock Text="11111" />
+            </PivotItem>
+            <PivotItem Header="XyzXyz">
+                <TextBlock Text="222222" />
+            </PivotItem>
+        </Pivot>
+    </controls:PageRoot>
 </Page>

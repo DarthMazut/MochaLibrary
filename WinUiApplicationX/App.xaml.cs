@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using ViewModelsX;
+using ViewModelsX.Dialogs;
 using ViewModelsX.Pages;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -63,7 +64,7 @@ namespace WinUiApplicationX
                 .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                 .WithInitialId(AppPages.HomePage.Id));
 
-            DialogManager.RegisterDialog("MessageDialog", () => new StandardMessageDialogModule());
+            DialogManager.RegisterDialog(AppDialogs.StandardMessageDialog.Id, () => new StandardMessageDialogModule());
 
             SettingsManager.Register("Settings", new ApplicationSettingsSectionProvider<PizzaRecipe>());
 

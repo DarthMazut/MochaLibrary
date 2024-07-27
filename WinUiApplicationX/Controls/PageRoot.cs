@@ -26,6 +26,31 @@ namespace WinUiApplicationX.Controls
             DependencyProperty.Register(nameof(Content), typeof(object), typeof(PageRoot), new PropertyMetadata(null));
         public static readonly DependencyProperty FooterProperty =
             DependencyProperty.Register(nameof(Footer), typeof(object), typeof(PageRoot), new PropertyMetadata(null));
+        public static readonly DependencyProperty HeaderPaddingProperty =
+            DependencyProperty.Register(nameof(HeaderPadding), typeof(Thickness), typeof(PageRoot), new PropertyMetadata(new Thickness()));
+        public static readonly DependencyProperty HeaderMarginProperty =
+            DependencyProperty.Register(nameof(HeaderMargin), typeof(Thickness), typeof(PageRoot), new PropertyMetadata(new Thickness()));
+        public static readonly DependencyProperty HeaderBorderThicknessProperty =
+            DependencyProperty.Register(nameof(HeaderBorderThickness), typeof(Thickness), typeof(PageRoot), new PropertyMetadata(new Thickness()));
+        public static readonly DependencyProperty ContentScrollViewerPaddingProperty =
+            DependencyProperty.Register(nameof(ContentScrollViewerPadding), typeof(Thickness), typeof(PageRoot), new PropertyMetadata(new Thickness()));
+        public static readonly DependencyProperty HeaderBorderBrushProperty =
+            DependencyProperty.Register(nameof(HeaderBorderBrush), typeof(Brush), typeof(PageRoot), new PropertyMetadata(null));
+        public static readonly DependencyProperty HeaderStyleProperty =
+            DependencyProperty.Register(nameof(HeaderStyle), typeof(Style), typeof(PageRoot), new PropertyMetadata(null));
+        public static readonly DependencyProperty IconStyleProperty =
+            DependencyProperty.Register(nameof(IconStyle), typeof(Style), typeof(PageRoot), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty ShowTabsProperty =
+            DependencyProperty.Register(nameof(ShowTabs), typeof(bool), typeof(PageRoot), new PropertyMetadata(false, ShowTabsChanged));
+
+        private static void ShowTabsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is PageRoot thisControl)
+            {
+                VisualStateManager.GoToState(thisControl, thisControl.ShowTabs ? "DisplayTabs" : "HideTabs", false);
+            }
+        }
 
         public string? Title
         {
@@ -49,6 +74,54 @@ namespace WinUiApplicationX.Controls
         {
             get { return (object?)GetValue(ContentProperty); }
             set { SetValue(ContentProperty, value); }
+        }
+
+        public Thickness HeaderPadding
+        {
+            get { return (Thickness)GetValue(HeaderPaddingProperty); }
+            set { SetValue(HeaderPaddingProperty, value); }
+        }
+
+        public Thickness HeaderMargin
+        {
+            get { return (Thickness)GetValue(HeaderMarginProperty); }
+            set { SetValue(HeaderMarginProperty, value); }
+        }
+
+        public Thickness HeaderBorderThickness
+        {
+            get { return (Thickness)GetValue(HeaderBorderThicknessProperty); }
+            set { SetValue(HeaderBorderThicknessProperty, value); }
+        }
+
+        public Thickness ContentScrollViewerPadding
+        {
+            get { return (Thickness)GetValue(ContentScrollViewerPaddingProperty); }
+            set { SetValue(ContentScrollViewerPaddingProperty, value); }
+        }
+
+        public Brush HeaderBorderBrush
+        {
+            get { return (Brush)GetValue(HeaderBorderBrushProperty); }
+            set { SetValue(HeaderBorderBrushProperty, value); }
+        }
+
+        public Style HeaderStyle
+        {
+            get { return (Style)GetValue(HeaderStyleProperty); }
+            set { SetValue(HeaderStyleProperty, value); }
+        }
+
+        public Style IconStyle
+        {
+            get { return (Style)GetValue(IconStyleProperty); }
+            set { SetValue(IconStyleProperty, value); }
+        }
+
+        public bool ShowTabs
+        {
+            get { return (bool)GetValue(ShowTabsProperty); }
+            set { SetValue(ShowTabsProperty, value); }
         }
 
         public PageRoot()

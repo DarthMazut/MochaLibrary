@@ -3,38 +3,64 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:WinUiApplicationX.Controls">
 
-    <Thickness x:Key="PageRootPadding">8</Thickness>
-    <Thickness x:Key="PageRootHeaderPadding">0,0,0,8</Thickness>
-    <Thickness x:Key="PageRootHeaderMargin">0,0,0,24</Thickness>
+    <Thickness x:Key="PageRootDefaultPadding">16</Thickness>
+    <Thickness x:Key="PageRootDefaultHeaderPadding">0,0,0,12</Thickness>
+    <Thickness x:Key="PageRootDefaultHeaderMargin">0,0,0,24</Thickness>
     <Thickness x:Key="PageRootHeaderBorderThickness">0,0,0,1</Thickness>
     <Thickness x:Key="PageRootScrollViewerPadding">0,0,16,0</Thickness>
     <StaticResource x:Key="PageRootHeaderBorderBorderBrush" ResourceKey="FocusStrokeColorOuterBrush"/>
-    <x:Double x:Key="PageRootHeaderFontSize">36</x:Double>
+    <Style x:Key="PageRootDefaultHeaderStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="36" />
+    </Style>
+    <Style x:Key="PageRootDefaultIconStyle" TargetType="FontIcon">
+        <Setter Property="FontSize" Value="36" />
+    </Style>
 
     <Style TargetType="controls:PageRoot">
+        <Setter Property="Padding" Value="{ThemeResource PageRootDefaultPadding}"/>
+        <Setter Property="HeaderPadding" Value="{ThemeResource PageRootDefaultHeaderPadding}"/>
+        <Setter Property="HeaderMargin" Value="{ThemeResource PageRootDefaultHeaderMargin}"/>
+        <Setter Property="HeaderBorderThickness" Value="{ThemeResource PageRootHeaderBorderThickness}"/>
+        <Setter Property="HeaderBorderBrush" Value="{ThemeResource PageRootHeaderBorderBorderBrush}"/>
+        <Setter Property="ContentScrollViewerPadding" Value="{ThemeResource PageRootScrollViewerPadding}"/>
+        <Setter Property="HeaderStyle" Value="{ThemeResource PageRootDefaultHeaderStyle}"/>
+        <Setter Property="IconStyle" Value="{ThemeResource PageRootDefaultIconStyle}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:PageRoot">
-                    <Grid Margin="{StaticResource PageRootPadding}">
+                    <Grid Margin="{TemplateBinding Padding}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="ShowTabs">
+                                <VisualState x:Name="DisplayTabs">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Visibility" Value="Collapsed" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="HideTabs"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
                         <Grid
-                            Padding="{StaticResource PageRootHeaderPadding}"
-                            Margin="{StaticResource PageRootHeaderMargin}"
-                            BorderThickness="{StaticResource PageRootHeaderBorderThickness}"
-                            BorderBrush="{ThemeResource PageRootHeaderBorderBorderBrush}">
+                            Padding="{TemplateBinding HeaderPadding}"
+                            Margin="{TemplateBinding HeaderMargin}"
+                            BorderThickness="{TemplateBinding HeaderBorderThickness}"
+                            BorderBrush="{TemplateBinding HeaderBorderBrush}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock FontSize="{StaticResource PageRootHeaderFontSize}" Text="{TemplateBinding Title}"/>
-                            <FontIcon Grid.Column="1" FontSize="{StaticResource PageRootHeaderFontSize}" HorizontalAlignment="Right" Glyph="{TemplateBinding Glyph}" />
+                            <TextBlock Style="{TemplateBinding HeaderStyle}" Text="{TemplateBinding Title}"/>
+                            <FontIcon Grid.Column="1" Style="{TemplateBinding IconStyle}" HorizontalAlignment="Right" Glyph="{TemplateBinding Glyph}" />
                         </Grid>
-                        <ScrollViewer Grid.Row="1" Padding="{StaticResource PageRootScrollViewerPadding}">
-                            <ContentPresenter Content="{TemplateBinding Content}"/>
+                        <ScrollViewer Grid.Row="1" Padding="{TemplateBinding ContentScrollViewerPadding}">
+                            <Grid>
+                                <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
+                                <Pivot Items />
+                            </Grid>
                         </ScrollViewer>
                         <ContentPresenter Grid.Row="2" Content="{TemplateBinding Footer}"/>
                     </Grid>
