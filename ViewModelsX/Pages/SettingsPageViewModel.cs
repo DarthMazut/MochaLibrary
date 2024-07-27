@@ -88,7 +88,11 @@ namespace ViewModelsX.Pages
             if (CheckSettingsChanged())
             {
                 bool? result = await PromptDiscardDialog();
-                if (result is not true)
+                if (result is true)
+                {
+                    await Save();
+                }
+                if (result is null)
                 {
                     e.Cancel = true;
                     return;
@@ -175,10 +179,10 @@ namespace ViewModelsX.Pages
             dialog.Properties = new()
             {
                 Title = "Discard changes?",
-                Message = "Changes were made to the current settings, but no \"Save\" button was pressed." +
-                "\n\nDo you want to leave anyway and discard the changes?",
-                ConfirmationButtonText = "Leave & discard changes",
-                DeclineButtonText = "Stay on current page"
+                Message = "Changes were made to the current settings, but no \"Save\" button was pressed.",
+                ConfirmationButtonText = "Save",
+                DeclineButtonText = "Don't save",
+                CancelButtonText = "Cancel"
             };
 
             return dialog.ShowModalAsync(Navigator.Module.View);
@@ -221,7 +225,11 @@ namespace ViewModelsX.Pages
             if (CheckSettingsChanged())
             {
                 bool? result = await PromptDiscardDialog();
-                if (result is not true)
+                if (result is true)
+                {
+                    await Save();
+                }
+                if (result is null)
                 {
                     e.Cancel = true;
                 }
