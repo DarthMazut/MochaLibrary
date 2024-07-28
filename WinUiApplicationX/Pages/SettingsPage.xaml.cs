@@ -31,8 +31,6 @@ namespace WinUiApplicationX.Pages
             SetupFormatter(xe_SaltNumberBox, 0.1);
         }
 
-        //private void RestoreDefaultsClicked(object sender, RoutedEventArgs e) => xe_RestoreDefaultsFlyout.Hide();
-
         // This won't work when specified in XAML style. Most likely XAML parser is broken here:
         // https://github.com/microsoft/microsoft-ui-xaml/issues/9365
         private void SetupFormatter(NumberBox numberBox, double increment)

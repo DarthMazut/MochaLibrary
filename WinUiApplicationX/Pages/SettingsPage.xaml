@@ -144,8 +144,7 @@
                         <Flyout x:Name="xe_RestoreDefaultsFlyout">
                             <StackPanel Spacing="12">
                                 <TextBlock Text="Settings will be restored to default values. Proceed?" />
-                                <!-- Click="RestoreDefaultsClicked" -->
-                                <Button utils:FlyoutEx.Command="{Binding RestoreCommand}" Content="Restore defaults" />
+                                <Button Content="Restore defaults" Command="{Binding RestoreCommand}" utils:FlyoutExtensions.CloseOnInvoke="True" />
                             </StackPanel>
                         </Flyout>
                     </Button.Flyout>
