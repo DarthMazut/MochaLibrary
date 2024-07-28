@@ -11,13 +11,13 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <controls:PageRoot Title="Dialogs" Glyph="{utils:PageIconProvider PageId=DialogsPage}" HeaderMargin="0">
+    <controls:PageRoot Title="Dialogs" Glyph="{utils:PageIconProvider PageId=DialogsPage}" HeaderMargin="0,0,0,4">
         <Pivot Margin="-10,-10,0,0">
-            <PivotItem Header="Abcdef">
-                <TextBlock Text="11111" />
+            <PivotItem Header="System dialog">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="System dialogs" />
             </PivotItem>
-            <PivotItem Header="XyzXyz">
-                <TextBlock Text="222222" />
+            <PivotItem Header="Custom dialogs">
+                <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" Text="Custom dialogs" />
             </PivotItem>
         </Pivot>
     </controls:PageRoot>

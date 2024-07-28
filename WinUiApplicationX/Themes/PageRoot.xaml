@@ -34,16 +34,6 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="ShowTabs">
-                                <VisualState x:Name="DisplayTabs">
-                                    <VisualState.Setters>
-                                        <Setter Target="ContentPresenter.Visibility" Value="Collapsed" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                                <VisualState x:Name="HideTabs"/>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
                         <Grid
                             Padding="{TemplateBinding HeaderPadding}"
                             Margin="{TemplateBinding HeaderMargin}"
@@ -56,11 +46,8 @@
                             <TextBlock Style="{TemplateBinding HeaderStyle}" Text="{TemplateBinding Title}"/>
                             <FontIcon Grid.Column="1" Style="{TemplateBinding IconStyle}" HorizontalAlignment="Right" Glyph="{TemplateBinding Glyph}" />
                         </Grid>
-                        <ScrollViewer Grid.Row="1" Padding="{TemplateBinding ContentScrollViewerPadding}">
-                            <Grid>
-                                <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
-                                <Pivot Items />
-                            </Grid>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Padding="{TemplateBinding ContentScrollViewerPadding}">
+                            <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
                         </ScrollViewer>
                         <ContentPresenter Grid.Row="2" Content="{TemplateBinding Footer}"/>
                     </Grid>

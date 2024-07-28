@@ -41,17 +41,6 @@ namespace WinUiApplicationX.Controls
         public static readonly DependencyProperty IconStyleProperty =
             DependencyProperty.Register(nameof(IconStyle), typeof(Style), typeof(PageRoot), new PropertyMetadata(null));
 
-        public static readonly DependencyProperty ShowTabsProperty =
-            DependencyProperty.Register(nameof(ShowTabs), typeof(bool), typeof(PageRoot), new PropertyMetadata(false, ShowTabsChanged));
-
-        private static void ShowTabsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is PageRoot thisControl)
-            {
-                VisualStateManager.GoToState(thisControl, thisControl.ShowTabs ? "DisplayTabs" : "HideTabs", false);
-            }
-        }
-
         public string? Title
         {
             get => (string?)GetValue(TitleProperty);
@@ -116,12 +105,6 @@ namespace WinUiApplicationX.Controls
         {
             get { return (Style)GetValue(IconStyleProperty); }
             set { SetValue(IconStyleProperty, value); }
-        }
-
-        public bool ShowTabs
-        {
-            get { return (bool)GetValue(ShowTabsProperty); }
-            set { SetValue(ShowTabsProperty, value); }
         }
 
         public PageRoot()
