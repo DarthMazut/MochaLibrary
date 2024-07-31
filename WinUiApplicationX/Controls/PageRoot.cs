@@ -40,6 +40,15 @@ namespace WinUiApplicationX.Controls
             DependencyProperty.Register(nameof(HeaderStyle), typeof(Style), typeof(PageRoot), new PropertyMetadata(null));
         public static readonly DependencyProperty IconStyleProperty =
             DependencyProperty.Register(nameof(IconStyle), typeof(Style), typeof(PageRoot), new PropertyMetadata(null));
+        public static readonly DependencyProperty TabsProperty =
+            DependencyProperty.Register(nameof(Tabs), typeof(IList<PageRootTab>), typeof(PageRoot), new PropertyMetadata(new List<PageRootTab>()));
+        public static readonly DependencyProperty SelectedTabProperty =
+            DependencyProperty.Register(nameof(SelectedTab), typeof(object), typeof(PageRoot), new PropertyMetadata(null, SelectedTabChanged));
+
+        private static void SelectedTabChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            
+        }
 
         public string? Title
         {
@@ -105,6 +114,18 @@ namespace WinUiApplicationX.Controls
         {
             get { return (Style)GetValue(IconStyleProperty); }
             set { SetValue(IconStyleProperty, value); }
+        }
+
+        public object? SelectedTab
+        {
+            get { return (object?)GetValue(SelectedTabProperty); }
+            set { SetValue(SelectedTabProperty, value); }
+        }
+
+        public IList<PageRootTab> Tabs
+        {
+            get { return (IList<PageRootTab>)GetValue(TabsProperty); }
+            set { SetValue(TabsProperty, value); }
         }
 
         public PageRoot()

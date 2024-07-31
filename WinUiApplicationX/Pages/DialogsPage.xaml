@@ -10,15 +10,14 @@
     xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-    <controls:PageRoot Title="Dialogs" Glyph="{utils:PageIconProvider PageId=DialogsPage}" HeaderMargin="0,0,0,4">
-        <Pivot Margin="-10,-10,0,0">
-            <PivotItem Header="System dialog">
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="System dialogs" />
-            </PivotItem>
-            <PivotItem Header="Custom dialogs">
-                <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" Text="Custom dialogs" />
-            </PivotItem>
-        </Pivot>
+    <controls:PageRoot Title="Dialogs" Glyph="{utils:PageIconProvider PageId=DialogsPage}" HeaderMargin="0">
+        <controls:PageRoot.Tabs>
+            <controls:PageRootTab Header="Tab1">
+                <Border Width="100" Height="100" Background="Red"/>
+            </controls:PageRootTab>
+            <controls:PageRootTab Header="Tab2">
+                <Border Width="100" Height="100" Background="Green"/>
+            </controls:PageRootTab>
+        </controls:PageRoot.Tabs>
     </controls:PageRoot>
 </Page>
