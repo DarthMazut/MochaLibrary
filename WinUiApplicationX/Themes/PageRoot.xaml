@@ -29,19 +29,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="controls:PageRoot">
                     <Grid Margin="{TemplateBinding Padding}">
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup>
-                                <VisualState x:Name="Default"/>
-                                <VisualState x:Name="Tabs">
-                                    <VisualState.Setters>
-                                        
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
@@ -57,27 +46,10 @@
                             <TextBlock Style="{TemplateBinding HeaderStyle}" Text="{TemplateBinding Title}"/>
                             <FontIcon Grid.Column="1" Style="{TemplateBinding IconStyle}" HorizontalAlignment="Right" Glyph="{TemplateBinding Glyph}" />
                         </Grid>
-                        <ListBox x:Name="Pivot" Grid.Row="1" ItemsSource="{TemplateBinding Tabs}" SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, Path=SelectedTab}">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderThickness="1" BorderBrush="Red" Margin="-12,-9,-12,-12">
-                                        <TextBlock Text="{Binding Header}" Margin="10" />
-                                    </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                        <ScrollViewer x:Name="ContentScrollViewer" Grid.Row="2" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Padding="{TemplateBinding ContentScrollViewerPadding}">
-                            <Grid Background="SteelBlue">
-                                <!--<ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>-->
-                                <ContentPresenter x:Name="TabContentPresenter" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, Path=SelectedTab.Content}"/>
-                            </Grid>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Padding="{TemplateBinding ContentScrollViewerPadding}">
+                            <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
                         </ScrollViewer>
-                        <ContentPresenter Grid.Row="3" Content="{TemplateBinding Footer}"/>
+                        <ContentPresenter Grid.Row="2" Content="{TemplateBinding Footer}"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
