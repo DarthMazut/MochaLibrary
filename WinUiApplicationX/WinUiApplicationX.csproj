@@ -60,9 +60,15 @@
     <None Remove="Pages\DialogsPage.xaml" />
     <None Remove="Pages\HomePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Themes\PivotEx.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Resource Remove="MyDialog.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Themes\PivotEx.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\SettingsPage.xaml">
