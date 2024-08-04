@@ -9,10 +9,12 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <TextBlock
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center"
-        FontSize="16"
-        Text="{Binding Title}"
-        />
+    <Pivot>
+        <PivotItem Header="Test1">
+            
+        </PivotItem>
+        <PivotItem Header="Test2">
+
+        </PivotItem>
+    </Pivot>
 </Page>

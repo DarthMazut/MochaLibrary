@@ -11,21 +11,25 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Page.Resources>
-        
-    </Page.Resources>
-    
-    <controls:PageRoot Title="Dialogs" Glyph="{utils:PageIconProvider PageId=DialogsPage}" HeaderMargin="0" HeaderBorderThickness="0">
-        <Pivot>
+    <controls:PageRoot
+        Title="Dialogs"
+        Glyph="{utils:PageIconProvider PageId=DialogsPage}">
+        <controls:PageRoot.Tabs>
             <PivotItem Header="System dialog">
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="System dialogs" />
+                <Border Background="Pink" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="800">
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="System dialogs" />
+                </Border>
             </PivotItem>
             <PivotItem Header="Custom dialogs">
-                <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" Text="Custom dialogs" />
+                <Border Background="Orange" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="800">
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Custom dialogs" />
+                </Border>
             </PivotItem>
             <PivotItem Header="Specific details">
-                <TextBlock  HorizontalAlignment="Center" VerticalAlignment="Center" Text="Custom dialogs" />
+                <Border Background="LimeGreen" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="800">
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Specific dialogs" />
+                </Border>
             </PivotItem>
-        </Pivot>
+        </controls:PageRoot.Tabs>
     </controls:PageRoot>
 </Page>

@@ -18,6 +18,9 @@ namespace WinUiApplicationX.Controls
     [ContentProperty(Name = nameof(Content))]
     public sealed class PageRoot : Control
     {
+        private static readonly string _tabsStateKey = "Tabs";
+        private static readonly string _contentStateKey = "Normal";
+
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(nameof(Title), typeof(string), typeof(PageRoot), new PropertyMetadata(null));
         public static readonly DependencyProperty GlyphProperty =
@@ -40,6 +43,11 @@ namespace WinUiApplicationX.Controls
             DependencyProperty.Register(nameof(HeaderStyle), typeof(Style), typeof(PageRoot), new PropertyMetadata(null));
         public static readonly DependencyProperty IconStyleProperty =
             DependencyProperty.Register(nameof(IconStyle), typeof(Style), typeof(PageRoot), new PropertyMetadata(null));
+        public static readonly DependencyProperty TabsProperty =
+            DependencyProperty.Register(nameof(Tabs), typeof(IList<object>), typeof(PageRoot), new PropertyMetadata(null));
+        public static readonly DependencyProperty SelectedTabProperty =
+            DependencyProperty.Register(nameof(SelectedTab), typeof(object), typeof(PageRoot), new PropertyMetadata(null));
+        
 
         public string? Title
         {
@@ -107,9 +115,28 @@ namespace WinUiApplicationX.Controls
             set { SetValue(IconStyleProperty, value); }
         }
 
+        public IList<object> Tabs
+        {
+            get { return (IList<object>)GetValue(TabsProperty); }
+            set { SetValue(TabsProperty, value); }
+        }
+
+        public object? SelectedTab
+        {
+            get { return GetValue(SelectedTabProperty); }
+            set { SetValue(SelectedTabProperty, value); }
+        }
+
         public PageRoot()
         {
             this.DefaultStyleKey = typeof(PageRoot);
+            Tabs = [];
+        }
+
+        protected override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            VisualStateManager.GoToState(this, Tabs.Count == 0 ? _contentStateKey : _tabsStateKey, false);
         }
     }
 }
