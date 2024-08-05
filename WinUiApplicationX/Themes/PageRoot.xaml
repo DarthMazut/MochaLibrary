@@ -4,11 +4,18 @@
     xmlns:controls="using:WinUiApplicationX.Controls">
 
     <Thickness x:Key="PageRootDefaultPadding">16</Thickness>
-    <Thickness x:Key="PageRootDefaultHeaderPadding">0,0,0,12</Thickness>
-    <Thickness x:Key="PageRootDefaultHeaderMargin">0,0,0,24</Thickness>
-    <Thickness x:Key="PageRootHeaderBorderThickness">0,0,0,1</Thickness>
-    <Thickness x:Key="PageRootScrollViewerPadding">0,0,16,0</Thickness>
-    <StaticResource x:Key="PageRootHeaderBorderBorderBrush" ResourceKey="FocusStrokeColorOuterBrush"/>
+
+    <Thickness x:Key="PageRootContentScrollViewerMargin">0,12,0,0</Thickness>
+    <Thickness x:Key="PageRootContentScrollViewerPadding">0,12,16,0</Thickness>
+    <Thickness x:Key="PageRootPivotMargin">0,12,0,0</Thickness>
+    <Thickness x:Key="PageRootPivotScrollViewerMargin">0,12,0,0</Thickness>
+    <Thickness x:Key="PageRootPivotItemPaddingMargin">13,0,13,1</Thickness>
+    <Thickness x:Key="PageRootSelectedPivotItemPaddingMargin">12,0,12,0</Thickness>
+    <Thickness x:Key="PageRootSelectedPivotItemThickness">1,0,1,1</Thickness>
+
+    <StaticResource x:Key="PageRootSeparatorBrush" ResourceKey="FocusStrokeColorOuterBrush"/>
+    <Thickness x:Key="PageRootSeparatorThickness">0,1,0,0</Thickness>
+
     <Style x:Key="PageRootDefaultHeaderStyle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="36" />
     </Style>
@@ -18,11 +25,6 @@
 
     <Style TargetType="controls:PageRoot">
         <Setter Property="Padding" Value="{ThemeResource PageRootDefaultPadding}"/>
-        <Setter Property="HeaderPadding" Value="{ThemeResource PageRootDefaultHeaderPadding}"/>
-        <Setter Property="HeaderMargin" Value="{ThemeResource PageRootDefaultHeaderMargin}"/>
-        <Setter Property="HeaderBorderThickness" Value="{ThemeResource PageRootHeaderBorderThickness}"/>
-        <Setter Property="HeaderBorderBrush" Value="{ThemeResource PageRootHeaderBorderBorderBrush}"/>
-        <Setter Property="ContentScrollViewerPadding" Value="{ThemeResource PageRootScrollViewerPadding}"/>
         <Setter Property="HeaderStyle" Value="{ThemeResource PageRootDefaultHeaderStyle}"/>
         <Setter Property="IconStyle" Value="{ThemeResource PageRootDefaultIconStyle}"/>
         <Setter Property="Template">
@@ -63,10 +65,10 @@
                             <!-- SINGLE CONTENT -->
                             <ScrollViewer
                                 x:Name="ContentScrollViewer"
-                                BorderThickness="0,1,0,0"
-                                BorderBrush="White"
-                                Margin="0,10,0,0"
-                                Padding="0,10,16,0"
+                                BorderThickness="{ThemeResource PageRootSeparatorThickness}"
+                                BorderBrush="{ThemeResource PageRootSeparatorBrush}"
+                                Margin="{ThemeResource PageRootContentScrollViewerMargin}"
+                                Padding="{ThemeResource PageRootContentScrollViewerPadding}"
                                 VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
                                 <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
                             </ScrollViewer>
@@ -74,7 +76,7 @@
                             <Pivot
                                 x:Name="Pivot"
                                 Visibility="Collapsed"
-                                Margin="0,10,0,0"
+                                Margin="{ThemeResource PageRootPivotMargin}"
                                 ScrollViewer.VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
                                 Style="{StaticResource DefaultPivotStyleEx}"
                                 ItemsSource="{TemplateBinding Tabs}"
@@ -314,14 +316,14 @@
                                                     </PivotHeaderPanel.RenderTransform>
                                                 </PivotHeaderPanel>
                                                 <Rectangle x:Name="FocusFollower" IsHitTestVisible="False" Fill="Transparent" Control.IsTemplateFocusTarget="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                                                <Border Grid.Column="1" BorderThickness="0,1,0,0" BorderBrush="White"/>
+                                                <Border Grid.Column="1" BorderThickness="{ThemeResource PageRootSeparatorThickness}" BorderBrush="{ThemeResource PageRootSeparatorBrush}"/>
                                             </Grid>
                                         </ContentControl>
                                         <Button x:Name="PreviousButton" Grid.Column="1" Template="{StaticResource PreviousTemplate}" Width="20" Height="36" UseSystemFocusVisuals="False" Margin="{ThemeResource PivotNavButtonMargin}" IsTabStop="False" IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0" Background="Transparent" />
                                         <Button x:Name="NextButton" Grid.Column="1" Template="{StaticResource NextTemplate}" Width="20" Height="36" UseSystemFocusVisuals="False" Margin="{ThemeResource PivotNavButtonMargin}" IsTabStop="False" IsEnabled="False" HorizontalAlignment="Right" VerticalAlignment="Top" Opacity="0" Background="Transparent" />
                                         <ContentPresenter x:Name="RightHeaderPresenter" Grid.Column="2" Content="{TemplateBinding RightHeader}" ContentTemplate="{TemplateBinding RightHeaderTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                                         <ScrollViewer
-                                            Margin="0,10,0,0"
+                                            Margin="{ThemeResource PageRootPivotScrollViewerMargin}"
                                             Grid.Row="1"
                                             Grid.ColumnSpan="3"
                                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
@@ -366,9 +368,9 @@
                     <Grid
                             x:Name="Grid"
                             Background="{TemplateBinding Background}"
-                            Padding="13,0,13,1"
-                            BorderBrush="White"
-                            BorderThickness="0,1,0,0">
+                            Padding="{ThemeResource PageRootPivotItemPaddingMargin}"
+                            BorderBrush="{ThemeResource PageRootSeparatorBrush}"
+                            BorderThickness="{ThemeResource PageRootSeparatorThickness}">
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="SelectionStates">
@@ -427,10 +429,10 @@
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PivotHeaderItemBackgroundSelected}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Grid" Storyboard.TargetProperty="BorderThickness">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1,0,1,1" />
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PageRootSelectedPivotItemThickness}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Grid" Storyboard.TargetProperty="Padding">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="12,0,12,0" />
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PageRootSelectedPivotItemPaddingMargin}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -459,10 +461,10 @@
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PivotHeaderItemBackgroundSelectedPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Grid" Storyboard.TargetProperty="BorderThickness">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1,0,1,1" />
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PageRootSelectedPivotItemThickness}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Grid" Storyboard.TargetProperty="Padding">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="12,0,12,0" />
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PageRootSelectedPivotItemPaddingMargin}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -491,10 +493,10 @@
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PivotHeaderItemBackgroundSelectedPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Grid" Storyboard.TargetProperty="BorderThickness">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1,0,1,1" />
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PageRootSelectedPivotItemThickness}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Grid" Storyboard.TargetProperty="Padding">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="12,0,12,0" />
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PageRootSelectedPivotItemPaddingMargin}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -506,15 +508,16 @@
                         <Grid.RenderTransform>
                             <TranslateTransform x:Name="ContentPresenterTranslateTransform" />
                         </Grid.RenderTransform>
-                        <ContentPresenter x:Name="ContentPresenter"
-                Content="{TemplateBinding Content}"
-                ContentTemplate="{TemplateBinding ContentTemplate}"
-                FontSize="{TemplateBinding FontSize}"
-                FontFamily="{TemplateBinding FontFamily}"
-                FontWeight="{TemplateBinding FontWeight}"
-                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                OpticalMarginAlignment="TrimSideBearings" />
+                        <ContentPresenter
+                            x:Name="ContentPresenter"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            FontSize="{TemplateBinding FontSize}"
+                            FontFamily="{TemplateBinding FontFamily}"
+                            FontWeight="{TemplateBinding FontWeight}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            OpticalMarginAlignment="TrimSideBearings" />
                         <Rectangle x:Name="SelectedPipe" Visibility="Collapsed" Fill="{ThemeResource PivotHeaderItemSelectedPipeFill}" Height="3" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,2" RadiusX="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TopLeftCornerRadiusDoubleValueConverter}}" RadiusY="{Binding CornerRadius, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BottomRightCornerRadiusDoubleValueConverter}}" />
                     </Grid>
                 </ControlTemplate>
