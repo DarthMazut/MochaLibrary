@@ -29,6 +29,11 @@ namespace WinUiApplicationX.Controls
             DependencyProperty.Register(nameof(Content), typeof(object), typeof(PageRoot), new PropertyMetadata(null));
         public static readonly DependencyProperty FooterProperty =
             DependencyProperty.Register(nameof(Footer), typeof(object), typeof(PageRoot), new PropertyMetadata(null));
+
+        // HeaderSeparatorTopOffset
+        // HeaderSeparatorBottomOffset
+        // HeaderSeparatorBrush
+
         public static readonly DependencyProperty HeaderPaddingProperty =
             DependencyProperty.Register(nameof(HeaderPadding), typeof(Thickness), typeof(PageRoot), new PropertyMetadata(new Thickness()));
         public static readonly DependencyProperty HeaderMarginProperty =
@@ -39,6 +44,7 @@ namespace WinUiApplicationX.Controls
             DependencyProperty.Register(nameof(ContentScrollViewerPadding), typeof(Thickness), typeof(PageRoot), new PropertyMetadata(new Thickness()));
         public static readonly DependencyProperty HeaderBorderBrushProperty =
             DependencyProperty.Register(nameof(HeaderBorderBrush), typeof(Brush), typeof(PageRoot), new PropertyMetadata(null));
+
         public static readonly DependencyProperty HeaderStyleProperty =
             DependencyProperty.Register(nameof(HeaderStyle), typeof(Style), typeof(PageRoot), new PropertyMetadata(null));
         public static readonly DependencyProperty IconStyleProperty =
