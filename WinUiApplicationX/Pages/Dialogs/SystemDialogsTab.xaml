@@ -8,7 +8,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid DataContext="{x:Bind ViewModel}">
+    <SplitView DataContext="{x:Bind ViewModel}" IsPaneOpen="True" PanePlacement="Right">
+        <SplitView.Pane>
+            <Grid>
+                <TextBlock Text="Pane 🐱‍🏍" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </SplitView.Pane>
         <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-    </Grid>
+    </SplitView>
 </UserControl>
