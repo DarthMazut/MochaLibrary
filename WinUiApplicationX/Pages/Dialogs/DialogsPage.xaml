@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Page
-    x:Class="WinUiApplicationX.Pages.DialogsPage"
+    x:Class="WinUiApplicationX.Pages.Dialogs.DialogsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WinUiApplicationX.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:WinUiApplicationX.Controls"
+    xmlns:dialogs="using:WinUiApplicationX.Pages.Dialogs"
     xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -16,18 +17,11 @@
         Glyph="{utils:PageIconProvider PageId=DialogsPage}">
         <controls:PageRoot.Tabs>
             <PivotItem Header="System dialog">
-                <Border Background="Pink" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="800">
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="System dialogs" />
-                </Border>
+                <dialogs:SystemDialogsTab ViewModel="{Binding SystemDialogsViewModel}" />
             </PivotItem>
             <PivotItem Header="Custom dialogs">
                 <Border Background="Orange" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="800">
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Custom dialogs" />
-                </Border>
-            </PivotItem>
-            <PivotItem Header="Specific details">
-                <Border Background="LimeGreen" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="800">
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Specific dialogs" />
                 </Border>
             </PivotItem>
         </controls:PageRoot.Tabs>

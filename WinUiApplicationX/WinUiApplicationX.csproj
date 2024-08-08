@@ -58,6 +58,7 @@
   <ItemGroup>
     <None Remove="MyDialog.xaml" />
     <None Remove="Pages\DialogsPage.xaml" />
+    <None Remove="Pages\Dialogs\SystemDialogsTab.xaml" />
     <None Remove="Pages\HomePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
   </ItemGroup>
@@ -76,6 +77,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\HomePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\Dialogs\SystemDialogsTab.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

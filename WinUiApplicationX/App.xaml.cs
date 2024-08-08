@@ -25,11 +25,13 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using ViewModelsX;
 using ViewModelsX.Dialogs;
 using ViewModelsX.Pages;
+using ViewModelsX.Pages.Dialogs;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using WinUiApplicationX.Pages;
+using WinUiApplicationX.Pages.Dialogs;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.

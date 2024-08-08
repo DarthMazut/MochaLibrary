@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ViewModelsX.Pages
+namespace ViewModelsX.Pages.Dialogs
 {
     public class DialogsPageViewModel : ObservableObject, INavigationParticipant
     {
         public INavigator Navigator => MochaCore.Navigation.Navigator.Create();
 
-        public string Title => "Hello there: Dialogs Page";
+        public SystemDialogsTabViewModel SystemDialogsViewModel { get; } = new();
     }
 }
