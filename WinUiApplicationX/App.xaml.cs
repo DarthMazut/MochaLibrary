@@ -67,6 +67,9 @@ namespace WinUiApplicationX
                 .WithInitialId(AppPages.HomePage.Id));
 
             DialogManager.RegisterDialog(AppDialogs.StandardMessageDialog.Id, () => new StandardMessageDialogModule());
+            DialogManager.RegisterDialog(AppDialogs.SystemSaveDialog.Id, () => new SaveFileDialogModule());
+            DialogManager.RegisterDialog(AppDialogs.SystemOpenDialog.Id, () => new OpenFileDialogModule());
+            DialogManager.RegisterDialog(AppDialogs.SystemBrowseDialog.Id, () => new BrowseFolderDialogModule());
 
             SettingsManager.Register("Settings", new ApplicationSettingsSectionProvider<PizzaRecipe>());
 

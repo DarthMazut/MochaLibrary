@@ -10,6 +10,15 @@ namespace ViewModelsX.Dialogs
 {
     public static class AppDialogs
     {
+        public static AppDialog<IDialogModule<SaveFileDialogProperties>> SystemSaveDialog { get; }
+            = new("SystemSaveDialog");
+
+        public static AppDialog<IDialogModule<OpenFileDialogProperties>> SystemOpenDialog { get; }
+            = new("SystemOpenDialog");
+
+        public static AppDialog<IDialogModule<BrowseFolderDialogProperties>> SystemBrowseDialog { get; }
+            = new("SystemBrowseDialog");
+
         public static AppDialog<ICustomDialogModule<StandardMessageDialogProperties>> StandardMessageDialog { get; }
             = new("MessageDialog");
     }

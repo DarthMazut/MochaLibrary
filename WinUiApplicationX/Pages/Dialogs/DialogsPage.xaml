@@ -12,14 +12,20 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <Style x:Key="PivotItemStyle" TargetType="PivotItem">
+            <Setter Property="Margin" Value="0" />
+        </Style>
+    </Page.Resources>
+    
     <controls:PageRoot
         Title="Dialogs"
         Glyph="{utils:PageIconProvider PageId=DialogsPage}">
         <controls:PageRoot.Tabs>
-            <PivotItem Header="System dialog">
+            <PivotItem Header="System dialog" Style="{StaticResource PivotItemStyle}">
                 <dialogs:SystemDialogsTab ViewModel="{Binding SystemDialogsViewModel}" />
             </PivotItem>
-            <PivotItem Header="Custom dialogs">
+            <PivotItem Header="Custom dialogs" Style="{StaticResource PivotItemStyle}">
                 <Border Background="Orange" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="800">
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Custom dialogs" />
                 </Border>
