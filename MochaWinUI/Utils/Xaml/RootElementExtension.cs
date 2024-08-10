@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Markup;
+using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,31 @@ namespace MochaWinUI.Utils.Xaml
         {
             IRootObjectProvider? service = serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider;
             return service?.RootObject ?? null;
+        }
+    }
+
+    public class ParentElementExtension : MarkupExtension
+    {
+        public string? Name { get; set; }
+
+        public Type? Type { get; set; }
+
+        protected override object ProvideValue(IXamlServiceProvider serviceProvider)
+        {
+            IProvideValueTarget? provideTarget = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
+            object? targetObject = provideTarget?.TargetObject;
+            
+            if (Name is not null)
+            {
+                return ParentResolver.FindParentElement(targetObject, Name);
+            }
+
+            if (Type is not null)
+            {
+                return ParentResolver.FindParentElement(targetObject, Type);
+            }
+
+            return null;
         }
     }
 }

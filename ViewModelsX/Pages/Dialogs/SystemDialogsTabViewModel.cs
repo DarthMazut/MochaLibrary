@@ -19,6 +19,11 @@ namespace ViewModelsX.Pages.Dialogs
         [ObservableProperty]
         private SystemDialog? _selectedDialog;
 
+        [ObservableProperty]
+        private bool _isPaneOpen;
+
+        partial void OnSelectedDialogChanged(SystemDialog? value) => IsPaneOpen = value is not null;
+
         [RelayCommand]
         private void CreateDialog()
         {

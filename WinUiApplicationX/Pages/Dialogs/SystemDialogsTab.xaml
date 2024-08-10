@@ -31,30 +31,41 @@
                 </Grid.ColumnDefinitions>
                 <FontIcon FontSize="24" Glyph="&#xE74E;" />
                 <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" Margin="8,0,0,0" />
-                <Button Grid.Column="2" Width="32" Height="32" CornerRadius="16" Padding="0">
-                    <Button.Flyout>
-                        <MenuFlyout Placement="BottomEdgeAlignedLeft">
-                            <MenuFlyoutItem Text="Dispose" xu:ParentService.ParentType="SplitView" Command="{Binding ParentSource.DataContext.DisposeDialogCommand}" CommandParameter="{Binding OriginalSource}">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon Glyph="&#xE74D;"/>
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                        </MenuFlyout>
-                    </Button.Flyout>
-                    <FontIcon Glyph="&#xE712;" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5, 0.5">
-                        <FontIcon.RenderTransform>
-                            <RotateTransform Angle="90"/>
-                        </FontIcon.RenderTransform>
-                    </FontIcon>
-                </Button>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Button Tag="{xu:ParentElement Type=ListViewItem}" IsEnabled="{Binding Tag.IsSelected, RelativeSource={RelativeSource Self}}" Width="32" Height="32" CornerRadius="16" Padding="0">
+                        <FontIcon Glyph="&#xE768;"/>
+                    </Button>
+                    <Button Width="32" Height="32" CornerRadius="16" Padding="0">
+                        <Button.Flyout>
+                            <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                                <MenuFlyoutItem Text="Details">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xF168;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem Text="Dispose" Command="{Binding Content.DataContext.DisposeDialogCommand, Source={xu:RootElement}}" CommandParameter="{Binding}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE74D;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </Button.Flyout>
+                        <FontIcon Glyph="&#xE712;" RenderTransformOrigin="0.5, 0.5">
+                            <FontIcon.RenderTransform>
+                                <RotateTransform Angle="90"/>
+                            </FontIcon.RenderTransform>
+                        </FontIcon>
+                    </Button>
+                </StackPanel>
             </Grid>
         </DataTemplate>
     </UserControl.Resources>
     
-    <SplitView DataContext="{x:Bind ViewModel}" IsPaneOpen="True" PanePlacement="Right">
+    <SplitView DataContext="{x:Bind ViewModel}" IsPaneOpen="{Binding IsPaneOpen, Mode=TwoWay}" PanePlacement="Right">
         <SplitView.Pane>
             <Grid>
-                <TextBlock Text="Pane 🐱‍🏍" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <!-- <SystemDialogPaneView SelectedDialog="{Binding SelectedDialog}" CloseCommand="{Binding CloseCommand}"/>  -->
+                <TextBlock Text="{Binding SelectedDialog.Name}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
         </SplitView.Pane>
         <Grid>
@@ -73,7 +84,7 @@
                 Width="400"
                 MinHeight="400"
                 ItemsSource="{Binding Dialogs}"
-                SelectedItem="{Binding SelectedDialog}"
+                SelectedItem="{Binding SelectedDialog, Mode=TwoWay}"
                 ItemTemplate="{StaticResource DialogItemTemplate}"
                 SelectionMode="Single"/>
             <TextBlock
@@ -82,11 +93,12 @@
                 HorizontalAlignment="Center"
                 Margin="8" />
             <Button
-                Grid.Column="1"
-                Margin="10,6,0,0"
-                VerticalAlignment="Top"
+                Margin="8"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Right"
                 Width="42"
                 Height="42"
+                CornerRadius="21"
                 Command="{Binding CreateDialogCommand}"
                 ToolTipService.ToolTip="Add dialog">
                 <FontIcon FontSize="18" Glyph="&#xE710;" />

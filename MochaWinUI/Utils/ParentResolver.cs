@@ -14,7 +14,7 @@ using System.Xml.Linq;
 namespace MochaWinUI.Utils
 {
     /// <summary>
-    /// Provides a default algorithms for searching parents of given element.
+    /// Provides default algorithms for searching the parents of given elements.
     /// </summary>
     public static class ParentResolver
     {
@@ -53,6 +53,41 @@ namespace MochaWinUI.Utils
             if (host is Window window)
             {
                 return window;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Searches for a first parent element with the specified name.
+        /// Returns <see langword="null"/> if no such could be found.
+        /// </summary>
+        /// <param name="host">The element whose parent is to be found.</param>
+        /// <param name="elementName">The name of the parent element to be found.</param>
+        public static FrameworkElement? FindParentElement(object? host, string elementName)
+            => TraverseVisualTree(host, e => e.Name.Equals(elementName));
+
+        /// <summary>
+        /// Searches for a first parent element of the specified type.
+        /// Returns <see langword="null"/> if no such could be found.
+        /// </summary>
+        /// <param name="host">The element whose parent is to be found.</param>
+        /// <param name="elementType">The type of the parent element to be found.</param>
+        public static FrameworkElement? FindParentElement(object? host, Type elementType)
+            => TraverseVisualTree(host, e => e.GetType().Equals(elementType));
+
+        private static FrameworkElement? TraverseVisualTree(object? host, Predicate<FrameworkElement> predicate)
+        {
+            if (host is FrameworkElement currentElement)
+            {
+                while (VisualTreeHelper.GetParent(currentElement) is FrameworkElement parentElement)
+                {
+                    currentElement = parentElement;
+                    if (predicate.Invoke(currentElement))
+                    {
+                        return currentElement;
+                    }
+                }
             }
 
             return null;

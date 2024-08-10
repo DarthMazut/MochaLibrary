@@ -13,14 +13,6 @@
 
     <Grid>
         <Grid.Resources>
-            <uc:UniversalConverter x:Key="BoolToVisibilityConverter">
-                <uc:ConvertingRule Condition="{uc:True}" Output="{uc:Visible}"/>
-                <uc:ConvertingRule Output="{uc:Collapsed}" />
-            </uc:UniversalConverter>
-            <uc:UniversalConverter x:Key="NegateBoolToVisibilityConverter">
-                <uc:ConvertingRule Condition="{uc:True}" Output="{uc:Collapsed}"/>
-                <uc:ConvertingRule Output="{uc:Visible}" />
-            </uc:UniversalConverter>
             <DataTemplate x:Key="MenuItemTemplate">
                 <NavigationViewItem Content="{Binding Name}">
                     <NavigationViewItem.Icon>
