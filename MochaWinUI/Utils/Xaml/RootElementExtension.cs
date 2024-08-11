@@ -25,29 +25,4 @@ namespace MochaWinUI.Utils.Xaml
             return service?.RootObject ?? null;
         }
     }
-
-    public class ParentElementExtension : MarkupExtension
-    {
-        public string? Name { get; set; }
-
-        public Type? Type { get; set; }
-
-        protected override object ProvideValue(IXamlServiceProvider serviceProvider)
-        {
-            IProvideValueTarget? provideTarget = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
-            object? targetObject = provideTarget?.TargetObject;
-            
-            if (Name is not null)
-            {
-                return ParentResolver.FindParentElement(targetObject, Name);
-            }
-
-            if (Type is not null)
-            {
-                return ParentResolver.FindParentElement(targetObject, Type);
-            }
-
-            return null;
-        }
-    }
 }
