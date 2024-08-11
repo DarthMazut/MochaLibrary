@@ -29,19 +29,55 @@ namespace MochaWinUI.Utils.Xaml
                 new PropertyMetadata(default(Type), OnParentTypeChanged)
         );
 
-        public static void SetParentType(FrameworkElement element, Type value) => element.SetValue(ParentTypeProperty, value);
+        public static readonly DependencyProperty ParentNameProperty =
+            DependencyProperty.RegisterAttached(
+                "ParentName",
+                typeof(string),
+                typeof(ParentService),
+                new PropertyMetadata(null, OnParentNameChanged));
 
-        public static Type GetParentType(FrameworkElement element) => (Type)element.GetValue(ParentTypeProperty);
+        public static readonly DependencyProperty ParentProperty =
+            DependencyProperty.RegisterAttached(
+                "Parent",
+                typeof(FrameworkElement),
+                typeof(ParentService),
+                new PropertyMetadata(null));
+
+        public static void SetParentType(FrameworkElement element, Type? value) => element.SetValue(ParentTypeProperty, value);
+        public static Type? GetParentType(FrameworkElement element) => (Type)element.GetValue(ParentTypeProperty);
+
+        public static string? GetParentName(DependencyObject obj) => (string)obj.GetValue(ParentNameProperty);
+        public static void SetParentName(DependencyObject obj, string? value) => obj.SetValue(ParentNameProperty, value);
+
+        public static FrameworkElement? GetParent(DependencyObject obj) => (FrameworkElement)obj.GetValue(ParentProperty);
+        public static void SetParent(DependencyObject obj, FrameworkElement? value) => obj.SetValue(ParentProperty, value);
 
         private static void OnParentTypeChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             FrameworkElement? hostElement = dependencyObject as FrameworkElement;
 
-            if (hostElement is not null)
+            if (hostElement is not null && e.NewValue is Type newType)
             {
                 if (hostElement.IsLoaded)
                 {
-                    SetDataContext(hostElement);
+                    SetParent(dependencyObject, ParentResolver.FindParentElement(dependencyObject, newType));
+                }
+                else
+                {
+                    hostElement.Loaded += OnTargetLoaded;
+                }
+            }
+        }
+
+        private static void OnParentNameChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            FrameworkElement? hostElement = dependencyObject as FrameworkElement;
+
+            if (hostElement is not null && e.NewValue is string newName)
+            {
+                if (hostElement.IsLoaded)
+                {
+                    SetParent(dependencyObject, ParentResolver.FindParentElement(dependencyObject, newName));
                 }
                 else
                 {
@@ -52,56 +88,19 @@ namespace MochaWinUI.Utils.Xaml
 
         private static void OnTargetLoaded(object sender, RoutedEventArgs e)
         {
-            FrameworkElement host = (sender as FrameworkElement)!;
-            host.Loaded -= OnTargetLoaded;
-            SetDataContext(host);
-        }
-
-        private static void SetDataContext(FrameworkElement target)
-        {
-            Type ancestorType = GetParentType(target);
-            if (ancestorType != null)
+            if (sender is FrameworkElement host)
             {
-                object? parent = FindParent(target, ancestorType);
-                target.DataContext = new DataContextProxy()
+                host.Loaded -= OnTargetLoaded;
+
+                if (GetParentType(host) is Type type)
                 {
-                    OriginalSource = target.DataContext,
-                    ParentSource = parent
-                };
+                    SetParent(host, ParentResolver.FindParentElement(host, type));
+                }
+                else if (GetParentName(host) is string name)
+                {
+                    SetParent(host, ParentResolver.FindParentElement(host, name));
+                }
             }
         }
-
-        private static object? FindParent(DependencyObject dependencyObject, Type parentType)
-        {
-            DependencyObject parent = VisualTreeHelper.GetParent(dependencyObject);
-
-            if (parent == null)
-            {
-                return null;
-            }
-
-            if (parentType.IsAssignableFrom(parent.GetType()))
-            {
-                return parent;
-            }
-
-            return FindParent(parent, parentType);
-        }
-    }
-
-    /// <summary>
-    /// Provides proxy DataContext for <see cref="ParentService"/> result.
-    /// </summary>
-    public class DataContextProxy
-    {
-        /// <summary>
-        /// Reference to original DataContext object
-        /// </summary>
-        public object? OriginalSource { get; set; }
-
-        /// <summary>
-        /// Reference to found parent object.
-        /// </summary>
-        public object? ParentSource { get; set; }
     }
 }
