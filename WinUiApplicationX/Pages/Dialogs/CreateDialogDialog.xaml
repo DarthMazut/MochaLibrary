@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="WinUiApplicationX.Pages.Dialogs.CreateDialogDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUiApplicationX.Pages.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
+    xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter"
+    xmlns:model="using:ModelX.Dialogs"
+    mc:Ignorable="d"
+    Style="{StaticResource DefaultContentDialogStyle}"
+    Title="Create dialog"
+    PrimaryButtonText="Create dialog"
+    PrimaryButtonCommand="{Binding CreateDialogCommand}"
+    CloseButtonText="Cancel">
+    <Grid Width="400">
+        <StackPanel Spacing="12">
+            <TextBlock Text="Select dialog type:" />
+            <ComboBox
+                HorizontalAlignment="Stretch"
+                ItemsSource="{utils:EnumValues Type=model:SystemDialogType}"
+                SelectedItem="{Binding SelectedType, Mode=TwoWay}"
+                />
+        </StackPanel>
+    </Grid>
+</ContentDialog>

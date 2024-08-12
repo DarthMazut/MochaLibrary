@@ -24,31 +24,37 @@
 
         <DataTemplate x:Key="DialogItemTemplate">
             <Grid Height="48">
+                <xu:ParentService.Anchor>
+                    <xu:ParentAnchor x:Name="RootElement" ParentType="SplitView" />
+                </xu:ParentService.Anchor>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <FontIcon FontSize="24" Glyph="&#xE74E;" />
+                <FontIcon FontSize="24" Glyph="{Binding Type, Converter={StaticResource DialogTypeToGlyphConverter}}" />
                 <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" Margin="8,0,0,0" />
-                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Button IsEnabled="{Binding Parent.IsSelected, ElementName=ParentListViewItem}" Width="32" Height="32" CornerRadius="16" Padding="0">
-                        <xu:ParentsExtension.Anchors>
-                            <xu:ParentAnchorCollection>
-                                <xu:ParentAnchor x:Name="ParentListViewItem" ParentType="ListViewItem"/>
-                            </xu:ParentAnchorCollection>
-                        </xu:ParentsExtension.Anchors>
+                <StackPanel
+                    Grid.Column="2"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    Visibility="{Binding Parent.IsSelected, ElementName=ParentListViewItem, Converter={StaticResource BoolToVisibilityConverter}}"
+                    VerticalAlignment="Center">
+                    <xu:ParentService.Anchor>
+                        <xu:ParentAnchor x:Name="ParentListViewItem" ParentType="ListViewItem"/>
+                    </xu:ParentService.Anchor>
+                    <Button Command="{Binding Parent.DataContext.ShowDialogCommand, ElementName=RootElement}" Width="32" Height="32" CornerRadius="16" Padding="0">
                         <FontIcon Glyph="&#xE768;"/>
                     </Button>
                     <Button Width="32" Height="32" CornerRadius="16" Padding="0">
                         <Button.Flyout>
                             <MenuFlyout Placement="BottomEdgeAlignedLeft">
-                                <MenuFlyoutItem Text="Details">
+                                <MenuFlyoutItem Text="Details" Command="{Binding Parent.DataContext.ShowDialogDetailsCommand, ElementName=RootElement}">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xF168;"/>
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
-                                <MenuFlyoutItem Text="Dispose" Command="{Binding Content.DataContext.DisposeDialogCommand, Source={xu:RootElement}}" CommandParameter="{Binding}">
+                                <MenuFlyoutItem Text="Dispose" Command="{Binding Parent.DataContext.DisposeDialogCommand, ElementName=RootElement}">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE74D;"/>
                                     </MenuFlyoutItem.Icon>
@@ -66,7 +72,7 @@
         </DataTemplate>
     </UserControl.Resources>
     
-    <SplitView DataContext="{x:Bind ViewModel}" IsPaneOpen="{Binding IsPaneOpen, Mode=TwoWay}" PanePlacement="Right">
+    <SplitView DataContext="{x:Bind ViewModel}" IsPaneOpen="{Binding IsPaneOpen, Mode=TwoWay}" PanePlacement="Right" OpenPaneLength="400">
         <SplitView.Pane>
             <Grid>
                 <!-- <SystemDialogPaneView SelectedDialog="{Binding SelectedDialog}" CloseCommand="{Binding CloseCommand}"/>  -->

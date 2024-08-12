@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ViewModelsX.Pages.Dialogs;
 
 namespace ViewModelsX.Dialogs
 {
@@ -18,6 +19,9 @@ namespace ViewModelsX.Dialogs
 
         public static AppDialog<IDialogModule<BrowseFolderDialogProperties>> SystemBrowseDialog { get; }
             = new("SystemBrowseDialog");
+
+        public static AppDialog<ICustomDialogModule<CreateDialogDialogProperties>> CreateDialogDialog { get; }
+            = new("CreateDialogDialog");
 
         public static AppDialog<ICustomDialogModule<StandardMessageDialogProperties>> StandardMessageDialog { get; }
             = new("MessageDialog");

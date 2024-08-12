@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MochaCore.Dialogs;
 using ModelX.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,13 @@ namespace ViewModelsX.Pages.Dialogs
 {
     public partial class SystemDialogsTabViewModel : ObservableObject
     {
+        private readonly DialogsPageViewModel _parentViewModel;
+
+        public SystemDialogsTabViewModel(DialogsPageViewModel parentViewModel)
+        {
+            _parentViewModel = parentViewModel;
+        }
+
         [ObservableProperty]
         private ObservableCollection<SystemDialog> _dialogs = [];
 
@@ -21,20 +29,44 @@ namespace ViewModelsX.Pages.Dialogs
 
         [ObservableProperty]
         private bool _isPaneOpen;
-
-        partial void OnSelectedDialogChanged(SystemDialog? value) => IsPaneOpen = value is not null;
+        
 
         [RelayCommand]
-        private void CreateDialog()
+        private async Task CreateDialog()
         {
-            Dialogs.Add(SystemDialog.FromModule(AppDialogs.SystemSaveDialog.Module));
+            using ICustomDialogModule<CreateDialogDialogProperties> createDialogDialogModule = AppDialogs.CreateDialogDialog.Module;
+            bool? result = await createDialogDialogModule.ShowModalAsync(_parentViewModel.Navigator.Module.View);
+            if (result is true)
+            {
+                SystemDialog newDialog = createDialogDialogModule.Properties.CreatedDialog;
+                Dialogs.Add(newDialog);
+                SelectedDialog = newDialog;
+                IsPaneOpen = true;
+            }
         }
 
         [RelayCommand]
-        private void DisposeDialog(SystemDialog dialog)
+        private async Task ShowDialog()
         {
-            dialog.Module.Dispose();
-            Dialogs.Remove(dialog);
+            await (SelectedDialog?.Module.ShowModalAsync(_parentViewModel.Navigator.Module.View) ?? Task.CompletedTask);
+        }
+
+        [RelayCommand]
+        private void ShowDialogDetails()
+        {
+            IsPaneOpen = true;
+        }
+
+        [RelayCommand]
+        private void DisposeDialog()
+        {
+            if (SelectedDialog is null)
+            {
+                return;
+            }
+
+            SelectedDialog.Module.Dispose();
+            Dialogs.Remove(SelectedDialog);
         }
     }
 }

@@ -10,8 +10,13 @@ namespace ViewModelsX.Pages.Dialogs
 {
     public class DialogsPageViewModel : ObservableObject, INavigationParticipant
     {
-        public INavigator Navigator => MochaCore.Navigation.Navigator.Create();
+        public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
-        public SystemDialogsTabViewModel SystemDialogsViewModel { get; } = new();
+        public DialogsPageViewModel()
+        {
+            SystemDialogsViewModel = new(this);
+        }
+
+        public SystemDialogsTabViewModel SystemDialogsViewModel { get; }
     }
 }

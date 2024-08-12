@@ -67,6 +67,7 @@ namespace WinUiApplicationX
                 .WithInitialId(AppPages.HomePage.Id));
 
             DialogManager.RegisterDialog(AppDialogs.StandardMessageDialog.Id, () => new StandardMessageDialogModule());
+            DialogManager.RegisterDialog(AppDialogs.CreateDialogDialog.Id, () => new ContentDialogModule<CreateDialogDialogProperties>(new CreateDialogDialog(), new CreateDialogDialogViewModel()));
             DialogManager.RegisterDialog(AppDialogs.SystemSaveDialog.Id, () => new SaveFileDialogModule());
             DialogManager.RegisterDialog(AppDialogs.SystemOpenDialog.Id, () => new OpenFileDialogModule());
             DialogManager.RegisterDialog(AppDialogs.SystemBrowseDialog.Id, () => new BrowseFolderDialogModule());
