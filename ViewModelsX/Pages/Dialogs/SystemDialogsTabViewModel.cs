@@ -22,6 +22,8 @@ namespace ViewModelsX.Pages.Dialogs
             _parentViewModel = parentViewModel;
         }
 
+        public SystemDialogPaneViewModel PaneViewModel { get; } = new();
+
         [ObservableProperty]
         private ObservableCollection<SystemDialog> _dialogs = [];
 
@@ -45,6 +47,9 @@ namespace ViewModelsX.Pages.Dialogs
                 IsPaneOpen = true;
             }
         }
+
+        [RelayCommand]
+        private void ClosePane() => IsPaneOpen = false;
 
         [RelayCommand]
         private async Task ShowDialog()

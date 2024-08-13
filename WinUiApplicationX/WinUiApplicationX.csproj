@@ -60,6 +60,7 @@
     <None Remove="MyDialog.xaml" />
     <None Remove="Pages\DialogsPage.xaml" />
     <None Remove="Pages\Dialogs\CreateDialogDialog.xaml" />
+    <None Remove="Pages\Dialogs\SystemDialogPane.xaml" />
     <None Remove="Pages\Dialogs\SystemDialogsTab.xaml" />
     <None Remove="Pages\HomePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
@@ -97,5 +98,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Remove="Pages\Dialogs\CreateDialogDialog.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Pages\Dialogs\SystemDialogPane.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Remove="Pages\Dialogs\SystemDialogPane.xaml" />
   </ItemGroup>
 </Project>

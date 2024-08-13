@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using MochaCore.Dialogs;
@@ -58,48 +59,6 @@ namespace MochaWinUI.Utils
             return null;
         }
 
-        private static Window? FindWindowByTraverseUp(FrameworkElement frameworkElement)
-        {
-            List<UIElement> rootContents = new();
-
-            foreach (IBaseWindowModule windowModule in WindowManager.GetOpenedModules())
-            {
-                if (windowModule.View is Window window)
-                {
-                    rootContents.Add(window.Content);
-                    //TraverseVisualTree(frameworkElement, fe => window.Content == fe);
-                }
-            }
-
-            Window? currentWindow = null;
-            if (rootContents.Any())
-            {
-                _ = TraverseVisualTree(frameworkElement, fe =>
-                {
-                    currentWindow
-                    return rootContents.Any(rc => rc == fe);
-                });
-            }
-
-            return null;
-        }
-
-        private static Window? FindWindowByXamlRoot(UIElement uiElement)
-        {
-            foreach (IBaseWindowModule windowModule in WindowManager.GetOpenedModules())
-            {
-                if (windowModule.View is Window window)
-                {
-                    if (window.Content == uiElement)
-                    {
-                        return window;
-                    }
-                }
-            }
-
-            return null;
-        }
-
         /// <summary>
         /// Searches for a first parent element with the specified name.
         /// Returns <see langword="null"/> if no such could be found.
@@ -128,6 +87,46 @@ namespace MochaWinUI.Utils
                     if (predicate.Invoke(currentElement))
                     {
                         return currentElement;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static Window? FindWindowByTraverseUp(FrameworkElement frameworkElement)
+        {
+            Dictionary<UIElement, Window> rootContents = WindowManager.GetOpenedModules()
+                .Where(m => m.View is Window)
+                .ToDictionary(m => ((Window)m.View).Content, m => (Window)m.View);
+
+            Window? currentWindow = null;
+            if (rootContents.Any())
+            {
+                _ = TraverseVisualTree(frameworkElement, fe =>
+                {
+                    if (rootContents.Keys.Any(rc => rc == fe))
+                    {
+                        currentWindow = rootContents[fe];
+                        return true;
+                    }
+
+                    return false;
+                });
+            }
+
+            return currentWindow;
+        }
+
+        private static Window? FindWindowByXamlRoot(UIElement uiElement)
+        {
+            foreach (IBaseWindowModule windowModule in WindowManager.GetOpenedModules())
+            {
+                if (windowModule.View is Window window)
+                {
+                    if (window.Content == uiElement)
+                    {
+                        return window;
                     }
                 }
             }

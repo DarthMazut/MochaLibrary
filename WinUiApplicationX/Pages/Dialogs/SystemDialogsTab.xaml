@@ -75,8 +75,7 @@
     <SplitView DataContext="{x:Bind ViewModel}" IsPaneOpen="{Binding IsPaneOpen, Mode=TwoWay}" PanePlacement="Right" OpenPaneLength="400">
         <SplitView.Pane>
             <Grid>
-                <!-- <SystemDialogPaneView SelectedDialog="{Binding SelectedDialog}" CloseCommand="{Binding CloseCommand}"/>  -->
-                <TextBlock Text="{Binding SelectedDialog.Name}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <local:SystemDialogPane SelectedDialog="{Binding SelectedDialog}" CloseCommand="{Binding ClosePaneCommand}"/>
             </Grid>
         </SplitView.Pane>
         <Grid>

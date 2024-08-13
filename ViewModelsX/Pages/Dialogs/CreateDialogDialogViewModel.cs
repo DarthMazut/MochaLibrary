@@ -18,16 +18,26 @@ namespace ViewModelsX.Pages.Dialogs
         [ObservableProperty]
         private SystemDialogType _selectedType;
 
+        [ObservableProperty]
+        private string _name = string.Empty;
+
         [RelayCommand]
         private void CreateDialog()
         {
-            DialogControl.Properties.CreatedDialog = SelectedType switch
+            SystemDialog createdDialog = SelectedType switch
             {
                 SystemDialogType.SaveDialog => SystemDialog.FromModule(AppDialogs.SystemSaveDialog.Module),
                 SystemDialogType.OpenDialog => SystemDialog.FromModule(AppDialogs.SystemOpenDialog.Module),
                 SystemDialogType.BrowseDialog => SystemDialog.FromModule(AppDialogs.SystemBrowseDialog.Module),
                 _ => throw new NotImplementedException(),
             };
+            
+            if (!string.IsNullOrWhiteSpace(Name))
+            {
+                createdDialog.Name = Name;
+            }
+
+            DialogControl.Properties.CreatedDialog = createdDialog;
         }
     }
 }

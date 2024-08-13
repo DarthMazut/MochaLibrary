@@ -25,18 +25,24 @@
     </ContentDialog.Resources>
     
     <Grid Width="400">
-        <StackPanel Spacing="12">
-            <TextBlock Text="Select dialog type:" />
-            <ComboBox
-                HorizontalAlignment="Stretch"
-                ItemsSource="{utils:EnumValues Type=model:SystemDialogType}"
-                SelectedItem="{Binding SelectedType, Mode=TwoWay}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Converter={StaticResource SystemDialogTypeToStringConverter}}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+        <StackPanel Spacing="20">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Select dialog type:" />
+                <ComboBox
+                    HorizontalAlignment="Stretch"
+                    ItemsSource="{utils:EnumValues Type=model:SystemDialogType}"
+                    SelectedItem="{Binding SelectedType, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource SystemDialogTypeToStringConverter}}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Spacing="12">
+                <TextBlock Text="Select dialog name:" />
+                <TextBox Text="{Binding Name, Mode=TwoWay}" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </ContentDialog>
