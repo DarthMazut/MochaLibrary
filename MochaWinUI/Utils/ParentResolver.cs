@@ -39,20 +39,62 @@ namespace MochaWinUI.Utils
         }
 
         /// <summary>
-        /// Searches for parent <see cref="Window"/> of provided object.
+        /// Searches for parent <see cref="Window"/> of provided element.
         /// Returns <see langword="null"/> if no such could be found.
         /// </summary>
-        /// <param name="host">Object whose parent is to be found.</param>
-        public static Window? FindParentWindow(object? host)
+        /// <param name="element">Object whose parent is to be found.</param>
+        public static Window? FindParentWindow(object? element)
         {
-            if (host is UIElement uiElement)
-            {
-                return FindWindowWithContent(FindTopElement(uiElement));
-            }
-
-            if (host is Window window)
+            if (element is Window window)
             {
                 return window;
+            }
+
+            if (element is FrameworkElement frameworkElement)
+            {
+                return FindWindowByXamlRoot(frameworkElement) ?? FindWindowByTraverseUp(frameworkElement);
+            }
+
+            return null;
+        }
+
+        private static Window? FindWindowByTraverseUp(FrameworkElement frameworkElement)
+        {
+            List<UIElement> rootContents = new();
+
+            foreach (IBaseWindowModule windowModule in WindowManager.GetOpenedModules())
+            {
+                if (windowModule.View is Window window)
+                {
+                    rootContents.Add(window.Content);
+                    //TraverseVisualTree(frameworkElement, fe => window.Content == fe);
+                }
+            }
+
+            Window? currentWindow = null;
+            if (rootContents.Any())
+            {
+                _ = TraverseVisualTree(frameworkElement, fe =>
+                {
+                    currentWindow
+                    return rootContents.Any(rc => rc == fe);
+                });
+            }
+
+            return null;
+        }
+
+        private static Window? FindWindowByXamlRoot(UIElement uiElement)
+        {
+            foreach (IBaseWindowModule windowModule in WindowManager.GetOpenedModules())
+            {
+                if (windowModule.View is Window window)
+                {
+                    if (window.Content == uiElement)
+                    {
+                        return window;
+                    }
+                }
             }
 
             return null;
@@ -88,42 +130,6 @@ namespace MochaWinUI.Utils
                         return currentElement;
                     }
                 }
-            }
-
-            return null;
-        }
-
-        private static Window? FindWindowWithContent(UIElement? topElement)
-        {
-            if (topElement is null)
-            {
-                return null;
-            }
-
-            foreach (IBaseWindowModule windowModule in WindowManager.GetOpenedModules())
-            {
-                if (windowModule.View is Window window)
-                {
-                    if (window.Content == topElement)
-                    {
-                        return window;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private static FrameworkElement? FindTopElement(object? root)
-        {
-            if (root is FrameworkElement currentElement)
-            {
-                while (VisualTreeHelper.GetParent(currentElement) is FrameworkElement parentElement)
-                {
-                    currentElement = parentElement;
-                }
-
-                return currentElement;
             }
 
             return null;

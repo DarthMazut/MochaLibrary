@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MochaCore.Dialogs;
+using MochaCore.Dialogs.Extensions;
 using ModelX.Dialogs;
 using System;
 using System.Collections.Generic;

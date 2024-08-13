@@ -15,14 +15,28 @@
     PrimaryButtonText="Create dialog"
     PrimaryButtonCommand="{Binding CreateDialogCommand}"
     CloseButtonText="Cancel">
+    
+    <ContentDialog.Resources>
+        <uc:UniversalConverter x:Key="SystemDialogTypeToStringConverter">
+            <uc:ConvertingRule Condition="{uc:Enum Type=model:SystemDialogType, Value=SaveDialog}" Output="Save file dialog"/>
+            <uc:ConvertingRule Condition="{uc:Enum Type=model:SystemDialogType, Value=OpenDialog}" Output="Open file dialog"/>
+            <uc:ConvertingRule Condition="{uc:Enum Type=model:SystemDialogType, Value=BrowseDialog}" Output="Browse folder dialog"/>
+        </uc:UniversalConverter> 
+    </ContentDialog.Resources>
+    
     <Grid Width="400">
         <StackPanel Spacing="12">
             <TextBlock Text="Select dialog type:" />
             <ComboBox
                 HorizontalAlignment="Stretch"
                 ItemsSource="{utils:EnumValues Type=model:SystemDialogType}"
-                SelectedItem="{Binding SelectedType, Mode=TwoWay}"
-                />
+                SelectedItem="{Binding SelectedType, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource SystemDialogTypeToStringConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </StackPanel>
     </Grid>
 </ContentDialog>

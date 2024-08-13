@@ -12,7 +12,7 @@ using Windows.Foundation.Collections;
 namespace MochaWinUI.Utils.Xaml
 {
     /// <summary>
-    /// Allows to retrieve parent of selected element of given type.
+    /// Allows to retrieve parent of selected element of given type or name.
     /// <para>Example usage:</para>
     /// <code>
     /// &lt;Button 
