@@ -37,15 +37,18 @@ namespace MochaWinUI.Dialogs
         /// <inheritdoc/>
         protected override void ApplyPropertiesCore(FileSavePicker dialog, SaveFileDialogProperties properties)
         {
+            dialog.FileTypeChoices.Clear();
+
             if (!Properties.Filters.Any())
             {
                 dialog.FileTypeChoices.Add(string.Empty, new List<string> { "." });
-                return;
             }
-
-            foreach (ExtensionFilter filter in Properties.Filters)
+            else
             {
-                dialog.FileTypeChoices.Add(filter.Name, filter.Extensions.Select(e => $".{e}").ToList());
+                foreach (ExtensionFilter filter in Properties.Filters)
+                {
+                    dialog.FileTypeChoices.Add(filter.Name, filter.Extensions.Select(e => $".{e}").ToList());
+                }
             }
 
             dialog.SuggestedStartLocation = MapSpecialFolderToLocationId(properties.TryGetInitialDirectoryAsSpecialFolder());

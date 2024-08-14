@@ -148,17 +148,18 @@ namespace MochaWinUI.Dialogs
             if (!properties.Filters.Any())
             {
                 dialog.FileTypeFilter.Add("*");
-                return;
             }
-
-            foreach (ExtensionFilter filter in properties.Filters)
+            else
             {
-                foreach (string ext in filter.Extensions)
+                foreach (ExtensionFilter filter in properties.Filters)
                 {
-                    dialog.FileTypeFilter.Add($".{ext}");
+                    foreach (string ext in filter.Extensions)
+                    {
+                        dialog.FileTypeFilter.Add($".{ext}");
+                    }
                 }
             }
-
+           
             dialog.SuggestedStartLocation = MapSpecialFolderToLocationId(properties.TryGetInitialDirectoryAsSpecialFolder());
             if (DialogIdentifier is not null)
             {

@@ -75,7 +75,11 @@
     <SplitView DataContext="{x:Bind ViewModel}" IsPaneOpen="{Binding IsPaneOpen, Mode=TwoWay}" PanePlacement="Right" OpenPaneLength="400">
         <SplitView.Pane>
             <Grid>
-                <local:SystemDialogPane SelectedDialog="{Binding SelectedDialog}" CloseCommand="{Binding ClosePaneCommand}"/>
+                <local:SystemDialogPane
+                    SelectedDialog="{Binding SelectedDialog}"
+                    CloseCommand="{Binding ClosePaneCommand}"
+                    Title="{Binding Title, Mode=TwoWay}"
+                    InitialDirectory="{Binding InitialDirectory, Mode=TwoWay}"/>
             </Grid>
         </SplitView.Pane>
         <Grid>

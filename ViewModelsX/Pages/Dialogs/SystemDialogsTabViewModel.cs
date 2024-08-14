@@ -32,7 +32,92 @@ namespace ViewModelsX.Pages.Dialogs
 
         [ObservableProperty]
         private bool _isPaneOpen;
-        
+
+        [ObservableProperty]
+        private string? _title;
+
+        partial void OnSelectedDialogChanged(SystemDialog? value)
+        {
+            switch (SelectedDialog?.Module)
+            {
+                case IDialogModule<SaveFileDialogProperties> saveModule:
+                    Title = saveModule.Properties.Title;
+                    InitialDirectory = saveModule.Properties.InitialDirectory;
+                    break;
+                case IDialogModule<OpenFileDialogProperties> openModule:
+                    Title = openModule.Properties.Title;
+                    InitialDirectory = openModule.Properties.InitialDirectory;
+                    break;
+                case IDialogModule<BrowseFolderDialogProperties> browseModule:
+                    Title = browseModule.Properties.Title;
+                    InitialDirectory = browseModule.Properties.InitialDirectory;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        partial void OnTitleChanged(string? value)
+        {
+            switch (SelectedDialog?.Module)
+            {
+                case IDialogModule<SaveFileDialogProperties> saveModule:
+                    saveModule.Properties.Title = value;
+                    break;
+                case IDialogModule<OpenFileDialogProperties> openModule:
+                    openModule.Properties.Title = value;
+                    break;
+                case IDialogModule<BrowseFolderDialogProperties> browseModule:
+                    browseModule.Properties.Title = value;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        [ObservableProperty]
+        private string? _initialDirectory;
+
+        partial void OnInitialDirectoryChanged(string? value)
+        {
+            switch (SelectedDialog?.Module)
+            {
+                case IDialogModule<SaveFileDialogProperties> saveModule:
+                    saveModule.Properties.InitialDirectory = value;
+                    break;
+                case IDialogModule<OpenFileDialogProperties> openModule:
+                    openModule.Properties.InitialDirectory = value;
+                    break;
+                case IDialogModule<BrowseFolderDialogProperties> browseModule:
+                    browseModule.Properties.InitialDirectory = value;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        [RelayCommand]
+        private void SelectSpecialFolder(string name)
+        {
+            if (Enum.TryParse(name, out Environment.SpecialFolder sf))
+            {
+                InitialDirectory = Environment.GetFolderPath(sf);
+                switch (SelectedDialog?.Module)
+                {
+                    case IDialogModule<SaveFileDialogProperties> saveModule:
+                        saveModule.Properties.TrySetInitialDirectory(sf);
+                        break;
+                    case IDialogModule<OpenFileDialogProperties> openModule:
+                        openModule.Properties.TrySetInitialDirectory(sf);
+                        break;
+                    case IDialogModule<BrowseFolderDialogProperties> browseModule:
+                        browseModule.Properties.TrySetInitialDirectory(sf);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
         [RelayCommand]
         private async Task CreateDialog()

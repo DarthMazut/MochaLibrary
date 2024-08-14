@@ -34,7 +34,7 @@
             </Grid>
             <StackPanel Spacing="4">
                 <TextBlock Text="Title" />
-                <TextBox Text="sdsdsd" />
+                <TextBox Text="{Binding Title, Mode=TwoWay}" />
             </StackPanel>
             <Grid>
                 <Grid.RowDefinitions>
@@ -45,11 +45,11 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.ColumnSpan="2" Text="Initial directory" />
-                <TextBox Grid.Row="1" Text="sdsdsd" Margin="0,0,4,0" />
+                <TextBlock Grid.ColumnSpan="2" Text="Initial directory" Margin="0,0,0,4"/>
+                <TextBox Grid.Row="1" Text="{Binding InitialDirectory, Mode=TwoWay}" Margin="0,0,4,0" />
                 <DropDownButton Grid.Row="1" Grid.Column="1">
                     <DropDownButton.Flyout>
-                        <MenuFlyout Items="{utils:EnumValues Type=sys:SpecialFolder}" />
+                        <MenuFlyout x:Name="SpecialFolderMenu"/>
                     </DropDownButton.Flyout>
                     <FontIcon Glyph="&#xEC25;" />
                 </DropDownButton>
