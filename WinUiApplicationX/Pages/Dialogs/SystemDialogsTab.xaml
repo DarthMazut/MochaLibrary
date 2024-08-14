@@ -21,6 +21,10 @@
             <uc:ConvertingRule Condition="{uc:Enum Type=dm:SystemDialogType, Value=OpenDialog}" Output="&#xED25;" />
             <uc:ConvertingRule Condition="{uc:Enum Type=dm:SystemDialogType, Value=BrowseDialog}" Output="&#xE838;" />
         </uc:UniversalConverter>
+        <!--<uc:UniversalConverter x:Key="LogConverter">
+            <uc:ConvertingRule Condition="{x:Null}" Output="No dialog selected..." />
+            <uc:ConvertingRule Output="{uc:Property Path=Log}" />
+        </uc:UniversalConverter>-->
 
         <DataTemplate x:Key="DialogItemTemplate">
             <Grid Height="48">
@@ -117,6 +121,7 @@
                 ToolTipService.ToolTip="Add dialog">
                 <FontIcon FontSize="18" Glyph="&#xE710;" />
             </Button>
+            <TextBox Grid.Row="1" Grid.ColumnSpan="2" Margin="0,16,0,0" Text="{Binding SelectedDialog.Log}" AcceptsReturn="True" IsReadOnly="True"/>
         </Grid>
     </SplitView>
 </UserControl>

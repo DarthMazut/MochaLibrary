@@ -36,64 +36,33 @@ namespace ViewModelsX.Pages.Dialogs
         [ObservableProperty]
         private string? _title;
 
+        [ObservableProperty]
+        private string? _initialDirectory;
+
         partial void OnSelectedDialogChanged(SystemDialog? value)
         {
-            switch (SelectedDialog?.Module)
-            {
-                case IDialogModule<SaveFileDialogProperties> saveModule:
-                    Title = saveModule.Properties.Title;
-                    InitialDirectory = saveModule.Properties.InitialDirectory;
-                    break;
-                case IDialogModule<OpenFileDialogProperties> openModule:
-                    Title = openModule.Properties.Title;
-                    InitialDirectory = openModule.Properties.InitialDirectory;
-                    break;
-                case IDialogModule<BrowseFolderDialogProperties> browseModule:
-                    Title = browseModule.Properties.Title;
-                    InitialDirectory = browseModule.Properties.InitialDirectory;
-                    break;
-                default:
-                    break;
-            }
+            Title = value?.Title;
+            InitialDirectory = value?.InitialDirectory;
         }
 
         partial void OnTitleChanged(string? value)
         {
-            switch (SelectedDialog?.Module)
+            if (SelectedDialog is null)
             {
-                case IDialogModule<SaveFileDialogProperties> saveModule:
-                    saveModule.Properties.Title = value;
-                    break;
-                case IDialogModule<OpenFileDialogProperties> openModule:
-                    openModule.Properties.Title = value;
-                    break;
-                case IDialogModule<BrowseFolderDialogProperties> browseModule:
-                    browseModule.Properties.Title = value;
-                    break;
-                default:
-                    break;
+                return;
             }
-        }
 
-        [ObservableProperty]
-        private string? _initialDirectory;
+            SelectedDialog.Title = value;
+        }
 
         partial void OnInitialDirectoryChanged(string? value)
         {
-            switch (SelectedDialog?.Module)
+            if (SelectedDialog is null)
             {
-                case IDialogModule<SaveFileDialogProperties> saveModule:
-                    saveModule.Properties.InitialDirectory = value;
-                    break;
-                case IDialogModule<OpenFileDialogProperties> openModule:
-                    openModule.Properties.InitialDirectory = value;
-                    break;
-                case IDialogModule<BrowseFolderDialogProperties> browseModule:
-                    browseModule.Properties.InitialDirectory = value;
-                    break;
-                default:
-                    break;
+                return;
             }
+
+            SelectedDialog.InitialDirectory = value;
         }
 
         [RelayCommand]
@@ -102,20 +71,6 @@ namespace ViewModelsX.Pages.Dialogs
             if (Enum.TryParse(name, out Environment.SpecialFolder sf))
             {
                 InitialDirectory = Environment.GetFolderPath(sf);
-                switch (SelectedDialog?.Module)
-                {
-                    case IDialogModule<SaveFileDialogProperties> saveModule:
-                        saveModule.Properties.TrySetInitialDirectory(sf);
-                        break;
-                    case IDialogModule<OpenFileDialogProperties> openModule:
-                        openModule.Properties.TrySetInitialDirectory(sf);
-                        break;
-                    case IDialogModule<BrowseFolderDialogProperties> browseModule:
-                        browseModule.Properties.TrySetInitialDirectory(sf);
-                        break;
-                    default:
-                        break;
-                }
             }
         }
 
@@ -137,9 +92,9 @@ namespace ViewModelsX.Pages.Dialogs
         private void ClosePane() => IsPaneOpen = false;
 
         [RelayCommand]
-        private async Task ShowDialog()
+        private Task ShowDialog()
         {
-            await (SelectedDialog?.Module.ShowModalAsync(_parentViewModel.Navigator.Module.View) ?? Task.CompletedTask);
+            return SelectedDialog?.SafeShow(_parentViewModel.Navigator.Module.View) ?? Task.CompletedTask;
         }
 
         [RelayCommand]
@@ -156,7 +111,7 @@ namespace ViewModelsX.Pages.Dialogs
                 return;
             }
 
-            SelectedDialog.Module.Dispose();
+            SelectedDialog.CoreModule.Dispose();
             Dialogs.Remove(SelectedDialog);
         }
     }

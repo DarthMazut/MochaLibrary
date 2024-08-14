@@ -24,20 +24,13 @@ namespace ViewModelsX.Pages.Dialogs
         [RelayCommand]
         private void CreateDialog()
         {
-            SystemDialog createdDialog = SelectedType switch
+            DialogControl.Properties.CreatedDialog = SelectedType switch
             {
-                SystemDialogType.SaveDialog => SystemDialog.FromModule(AppDialogs.SystemSaveDialog.Module),
-                SystemDialogType.OpenDialog => SystemDialog.FromModule(AppDialogs.SystemOpenDialog.Module),
-                SystemDialogType.BrowseDialog => SystemDialog.FromModule(AppDialogs.SystemBrowseDialog.Module),
+                SystemDialogType.SaveDialog => new SystemDialog(AppDialogs.SystemSaveDialog.Module, Name),
+                SystemDialogType.OpenDialog => new SystemDialog(AppDialogs.SystemOpenDialog.Module, Name),
+                SystemDialogType.BrowseDialog => new SystemDialog(AppDialogs.SystemBrowseDialog.Module, Name),
                 _ => throw new NotImplementedException(),
             };
-            
-            if (!string.IsNullOrWhiteSpace(Name))
-            {
-                createdDialog.Name = Name;
-            }
-
-            DialogControl.Properties.CreatedDialog = createdDialog;
         }
     }
 }
