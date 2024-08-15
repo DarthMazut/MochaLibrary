@@ -7,11 +7,13 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using MochaCore.Dialogs;
+using MochaCore.Dispatching;
 using MochaCore.Events;
 using MochaCore.Navigation;
 using MochaCore.Settings;
 using MochaCore.Windowing;
 using MochaWinUI.Dialogs;
+using MochaWinUI.Dispatching;
 using MochaWinUI.Events;
 using MochaWinUI.Navigation;
 using MochaWinUI.Settings;
@@ -58,6 +60,8 @@ namespace WinUiApplicationX
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(this));
+
             WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
 
             NavigationManager.AddNavigationService(NavigationServices.MainNavigationServiceId, new WinUiNavigationService()

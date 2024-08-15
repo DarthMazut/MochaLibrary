@@ -2,6 +2,7 @@
 using MochaCore.Dialogs.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,11 @@ namespace ModelX.Dialogs
 
             CoreModule = module;
             Name = name ?? $"{Type} Module - {Path.GetRandomFileName()}";
+
+            module.Opening += ModuleOpening;
+            module.Closed += ModuleClosed;
+            module.Disposed += ModuleDisposed;
+            
             UpdateLog($"Module created [{Type}][{Name}]");
         }
 
@@ -30,7 +36,7 @@ namespace ModelX.Dialogs
         {
             get
             {
-                GetModuleValues(out string? title, out _);
+                GetModuleValues(out string? title, out _, out _);
                 return title;
             }
             set => SetModuleValues(true, false, value, default); 
@@ -40,10 +46,19 @@ namespace ModelX.Dialogs
         {
             get
             {
-                GetModuleValues(out _, out string? initialDirectory);
+                GetModuleValues(out _, out string? initialDirectory, out _);
                 return initialDirectory;
             }
             set => SetModuleValues(false, true, default, value);
+        }
+
+        public IReadOnlyList<string?> SelectedPaths
+        {
+            get
+            {
+                GetModuleValues(out _, out _, out string?[] selectedPaths);
+                return [.. selectedPaths];
+            }
         }
 
         public string Name { get; }
@@ -58,7 +73,10 @@ namespace ModelX.Dialogs
         {
             try
             {
-                return await CoreModule.ShowModalAsync(host);
+                bool? result = await CoreModule.ShowModalAsync(host);
+                UpdateLog($"Selected path(s): {Environment.NewLine}\t {string.Join($"{Environment.NewLine}\t", SelectedPaths)}");
+                UpdateLog($"Dialog result: {result}");
+                return result;
             }
             catch (Exception ex) // Do not catch general exceptions :O
             {
@@ -68,7 +86,13 @@ namespace ModelX.Dialogs
             return null;
         }
 
-        public void Dispose() => CoreModule.Dispose();
+        public void Dispose()
+        {
+            CoreModule.Dispose();
+            CoreModule.Opening -= ModuleOpening;
+            CoreModule.Closed -= ModuleClosed;
+            CoreModule.Disposed -= ModuleDisposed;
+        }
 
         public static SystemDialogType? ResolveType(IDialogModule module)
             => module switch
@@ -85,7 +109,16 @@ namespace ModelX.Dialogs
             PropertyChanged?.Invoke(this, new(nameof(Log)));
         }
 
-        private void GetModuleValues(out string? title, out string? initalDirectory)
+        private void ModuleOpening(object? sender, EventArgs e) => UpdateLog("Event invoked [OPENING]");
+
+        private void ModuleClosed(object? sender, EventArgs e) => UpdateLog("Event invoked [CLOSED]");
+
+        private void ModuleDisposed(object? sender, EventArgs e) => UpdateLog("Event invoked [DISPOSED]");
+
+        private void GetModuleValues(
+            out string? title,
+            out string? initalDirectory,
+            out string?[] selectedPaths)
         {
             switch (Type)
             {
@@ -93,16 +126,19 @@ namespace ModelX.Dialogs
                     IDialogModule<SaveFileDialogProperties> saveModule = (IDialogModule<SaveFileDialogProperties>)CoreModule;
                     title = saveModule.Properties.Title;
                     initalDirectory = saveModule.Properties.InitialDirectory;
+                    selectedPaths = [saveModule.Properties.SelectedPath];
                     break;
                 case SystemDialogType.OpenDialog:
                     IDialogModule<OpenFileDialogProperties> openModule = (IDialogModule<OpenFileDialogProperties>)CoreModule;
                     title = openModule.Properties.Title;
                     initalDirectory = openModule.Properties.InitialDirectory;
+                    selectedPaths = [..openModule.Properties.SelectedPaths];
                     break;
                 case SystemDialogType.BrowseDialog:
                     IDialogModule<BrowseFolderDialogProperties> browseModule = (IDialogModule<BrowseFolderDialogProperties>)CoreModule;
                     title = browseModule.Properties.Title;
                     initalDirectory = browseModule.Properties.InitialDirectory;
+                    selectedPaths = [browseModule.Properties.SelectedPath];
                     break;
                 default:
                     throw new InvalidOperationException($"Type {Type} is not supported.");

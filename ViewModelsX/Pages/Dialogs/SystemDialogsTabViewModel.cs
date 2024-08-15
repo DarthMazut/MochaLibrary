@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
+using MochaCore.Dispatching;
 using ModelX.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -104,7 +105,7 @@ namespace ViewModelsX.Pages.Dialogs
         }
 
         [RelayCommand]
-        private void DisposeDialog()
+        private async Task DisposeDialog()
         {
             if (SelectedDialog is null)
             {
@@ -112,6 +113,7 @@ namespace ViewModelsX.Pages.Dialogs
             }
 
             SelectedDialog.CoreModule.Dispose();
+            await Task.Delay(3000);
             Dialogs.Remove(SelectedDialog);
         }
     }
