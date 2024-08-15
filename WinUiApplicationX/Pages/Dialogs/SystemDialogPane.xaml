@@ -16,9 +16,16 @@
             <Setter Property="CornerRadius" Value="4" />
             <Setter Property="Padding" Value="12" />
         </Style>
+        <DataTemplate x:Key="FilterTemplate">
+            <StackPanel Height="80">
+                <TextBlock Text="{Binding Name}" />
+                <GridView ItemsSource="{Binding Extensions}"/>
+            </StackPanel>
+        </DataTemplate>
     </UserControl.Resources>
     <ScrollViewer DataContext="{x:Bind}" Margin="8" Padding="0,0,8,0">
         <StackPanel Spacing="16">
+            <!-- HEADER -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -32,10 +39,12 @@
                     <FontIcon FontSize="16" Glyph="&#xE72A;"/>
                 </Button>
             </Grid>
+            <!-- TITLE -->
             <StackPanel Spacing="4">
                 <TextBlock Text="Title" />
                 <TextBox Text="{Binding Title, Mode=TwoWay}" />
             </StackPanel>
+            <!-- INITIAL DIRECTORY -->
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -52,6 +61,37 @@
                         <MenuFlyout x:Name="SpecialFolderMenu"/>
                     </DropDownButton.Flyout>
                     <FontIcon Glyph="&#xEC25;" />
+                </DropDownButton>
+            </Grid>
+            <!-- MULTISELECTION -->
+            <CheckBox Content="Allow multiselection" IsChecked="{Binding Multiselection, Mode=TwoWay}"/>
+            <!-- FILTERS -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="250"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ListView
+                    Margin="0,0,0,8"
+                    BorderBrush="White"
+                    BorderThickness="1"
+                    Grid.ColumnSpan="2"
+                    ItemsSource="{Binding Filters}"
+                    SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
+                    ItemTemplate="{StaticResource FilterTemplate}"/>
+                <TextBox x:Name="FilterInput" Grid.Row="1" Margin="0,0,8,0"/>
+                <DropDownButton Grid.Row="1" Grid.Column="1">
+                    <DropDownButton.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Add filter" Command="{Binding AddFilterCommand}" CommandParameter="{x:Bind FilterInput.Text, Mode=OneWay}" />
+                            <MenuFlyoutItem Text="Add extension" Command="{Binding AddExtensionCommand}" CommandParameter="{x:Bind FilterInput.Text, Mode=OneWay}"/>
+                        </MenuFlyout>
+                    </DropDownButton.Flyout>
+                    <FontIcon Glyph="&#xED0E;" />
                 </DropDownButton>
             </Grid>
         </StackPanel>

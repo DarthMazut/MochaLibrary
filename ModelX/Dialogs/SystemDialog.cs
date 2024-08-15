@@ -36,29 +36,49 @@ namespace ModelX.Dialogs
         {
             get
             {
-                GetModuleValues(out string? title, out _, out _);
+                GetModuleValues(out string? title, out _, out _, out _, out _);
                 return title;
             }
-            set => SetModuleValues(true, false, value, default); 
+            set => SetModuleValues(true, false, false, false, value, default, default, []); 
         }
 
         public string? InitialDirectory
         {
             get
             {
-                GetModuleValues(out _, out string? initialDirectory, out _);
+                GetModuleValues(out _, out string? initialDirectory, out _, out _, out _);
                 return initialDirectory;
             }
-            set => SetModuleValues(false, true, default, value);
+            set => SetModuleValues(false, true, false, false, default, value, default, []);
         }
 
         public IReadOnlyList<string?> SelectedPaths
         {
             get
             {
-                GetModuleValues(out _, out _, out string?[] selectedPaths);
+                GetModuleValues(out _, out _, out string?[] selectedPaths, out _, out _);
                 return [.. selectedPaths];
             }
+        }
+
+        public bool Multiselection
+        {
+            get
+            {
+                GetModuleValues(out _, out _, out _, out bool multiselection, out _);
+                return multiselection;
+            }
+            set => SetModuleValues(false, false, true, false, default, default, value, []);
+        }
+
+        public IList<ExtensionFilter> Filters
+        {
+            get
+            {
+                GetModuleValues(out _, out _, out _, out _, out IList<ExtensionFilter> filters);
+                return filters;
+            }
+            set => SetModuleValues(false, false, false, true, default, default, default, value);
         }
 
         public string Name { get; }
@@ -118,7 +138,9 @@ namespace ModelX.Dialogs
         private void GetModuleValues(
             out string? title,
             out string? initalDirectory,
-            out string?[] selectedPaths)
+            out string?[] selectedPaths,
+            out bool multiselection,
+            out IList<ExtensionFilter> filters)
         {
             switch (Type)
             {
@@ -127,18 +149,24 @@ namespace ModelX.Dialogs
                     title = saveModule.Properties.Title;
                     initalDirectory = saveModule.Properties.InitialDirectory;
                     selectedPaths = [saveModule.Properties.SelectedPath];
+                    multiselection = default;
+                    filters = saveModule.Properties.Filters;
                     break;
                 case SystemDialogType.OpenDialog:
                     IDialogModule<OpenFileDialogProperties> openModule = (IDialogModule<OpenFileDialogProperties>)CoreModule;
                     title = openModule.Properties.Title;
                     initalDirectory = openModule.Properties.InitialDirectory;
                     selectedPaths = [..openModule.Properties.SelectedPaths];
+                    multiselection = openModule.Properties.MultipleSelection;
+                    filters = openModule.Properties.Filters;
                     break;
                 case SystemDialogType.BrowseDialog:
                     IDialogModule<BrowseFolderDialogProperties> browseModule = (IDialogModule<BrowseFolderDialogProperties>)CoreModule;
                     title = browseModule.Properties.Title;
                     initalDirectory = browseModule.Properties.InitialDirectory;
                     selectedPaths = [browseModule.Properties.SelectedPath];
+                    multiselection = default;
+                    filters = [];
                     break;
                 default:
                     throw new InvalidOperationException($"Type {Type} is not supported.");
@@ -148,8 +176,12 @@ namespace ModelX.Dialogs
         private void SetModuleValues(
             bool setTitle,
             bool setInitialDirectory,
+            bool setMultiselection,
+            bool setFilters,
             string? title,
-            string? initialDirectory)
+            string? initialDirectory,
+            bool multiselection,
+            IList<ExtensionFilter> filters)
         {
             switch (Type)
             {
@@ -157,11 +189,14 @@ namespace ModelX.Dialogs
                     IDialogModule<SaveFileDialogProperties> saveModule = (IDialogModule<SaveFileDialogProperties>)CoreModule;
                     if (setTitle) saveModule.Properties.Title = title;
                     if (setInitialDirectory) saveModule.Properties.InitialDirectory = initialDirectory;
+                    if (setFilters) saveModule.Properties.Filters = filters;
                     break;
                 case SystemDialogType.OpenDialog:
                     IDialogModule<OpenFileDialogProperties> openModule = (IDialogModule<OpenFileDialogProperties>)CoreModule;
                     if (setTitle) openModule.Properties.Title = title;
                     if (setInitialDirectory) openModule.Properties.InitialDirectory = initialDirectory;
+                    if (setMultiselection) openModule.Properties.MultipleSelection = multiselection;
+                    if (setFilters) openModule.Properties.Filters = filters;
                     break;
                 case SystemDialogType.BrowseDialog:
                     IDialogModule<BrowseFolderDialogProperties> browseModule = (IDialogModule<BrowseFolderDialogProperties>)CoreModule;

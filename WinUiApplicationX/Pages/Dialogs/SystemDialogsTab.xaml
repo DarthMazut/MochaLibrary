@@ -83,7 +83,13 @@
                     SelectedDialog="{Binding SelectedDialog}"
                     CloseCommand="{Binding ClosePaneCommand}"
                     Title="{Binding Title, Mode=TwoWay}"
-                    InitialDirectory="{Binding InitialDirectory, Mode=TwoWay}"/>
+                    InitialDirectory="{Binding InitialDirectory, Mode=TwoWay}"
+                    Multiselection="{Binding Multiselection, Mode=TwoWay}"
+                    Filters="{Binding Filters, Mode=TwoWay}"
+                    SelectedFilter="{Binding SelectedFilter, Mode=TwoWay}"
+                    AddFilterCommand="{Binding AddFilterCommand}"
+                    AddExtensionCommand="{Binding AddExtensionCommand}"
+                    />
             </Grid>
         </SplitView.Pane>
         <Grid>
