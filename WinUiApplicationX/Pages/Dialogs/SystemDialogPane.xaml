@@ -9,6 +9,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    
     <UserControl.Resources>
         <Style x:Key="BackButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
@@ -23,7 +24,8 @@
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
-    <ScrollViewer DataContext="{x:Bind}" Margin="8" Padding="0,0,8,0">
+    
+    <ScrollViewer DataContext="{x:Bind ViewModel}" Margin="8" Padding="0,0,8,0">
         <StackPanel Spacing="16">
             <!-- HEADER -->
             <Grid>
@@ -35,7 +37,7 @@
                     <TextBlock Text="Dialog properties" Style="{StaticResource SubtitleTextBlockStyle}"/>
                     <TextBlock Text="{Binding SelectedDialog.Name}"/>
                 </StackPanel>
-                <Button Grid.Column="1" Command="{Binding CloseCommand}" Style="{ThemeResource BackButtonStyle}">
+                <Button Grid.Column="1" Command="{x:Bind CloseCommand}" Style="{ThemeResource BackButtonStyle}">
                     <FontIcon FontSize="16" Glyph="&#xE72A;"/>
                 </Button>
             </Grid>

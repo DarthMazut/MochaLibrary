@@ -79,17 +79,7 @@
     <SplitView DataContext="{x:Bind ViewModel}" IsPaneOpen="{Binding IsPaneOpen, Mode=TwoWay}" PanePlacement="Right" OpenPaneLength="400">
         <SplitView.Pane>
             <Grid>
-                <local:SystemDialogPane
-                    SelectedDialog="{Binding SelectedDialog}"
-                    CloseCommand="{Binding ClosePaneCommand}"
-                    Title="{Binding Title, Mode=TwoWay}"
-                    InitialDirectory="{Binding InitialDirectory, Mode=TwoWay}"
-                    Multiselection="{Binding Multiselection, Mode=TwoWay}"
-                    Filters="{Binding Filters, Mode=TwoWay}"
-                    SelectedFilter="{Binding SelectedFilter, Mode=TwoWay}"
-                    AddFilterCommand="{Binding AddFilterCommand}"
-                    AddExtensionCommand="{Binding AddExtensionCommand}"
-                    />
+                <local:SystemDialogPane ViewModel="{Binding PaneViewModel}" SelectedDialog="{Binding SelectedDialog}" CloseCommand="{Binding ClosePaneCommand}"/>
             </Grid>
         </SplitView.Pane>
         <Grid>
