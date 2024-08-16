@@ -34,51 +34,43 @@ namespace ModelX.Dialogs
 
         public string? Title
         {
-            get
+            get => GetModuleValues().Title;
+            set => SetModuleValues(new ModuleValues()
             {
-                GetModuleValues(out string? title, out _, out _, out _, out _);
-                return title;
-            }
-            set => SetModuleValues(true, false, false, false, value, default, default, []); 
+                Title = value
+            }); 
         }
 
         public string? InitialDirectory
         {
-            get
+            get => GetModuleValues().InitialDirectory;
+            set => SetModuleValues(new ModuleValues()
             {
-                GetModuleValues(out _, out string? initialDirectory, out _, out _, out _);
-                return initialDirectory;
-            }
-            set => SetModuleValues(false, true, false, false, default, value, default, []);
+                InitialDirectory = value
+            });
         }
 
         public IReadOnlyList<string?> SelectedPaths
         {
-            get
-            {
-                GetModuleValues(out _, out _, out string?[] selectedPaths, out _, out _);
-                return [.. selectedPaths];
-            }
+            get => GetModuleValues().SelectedPaths;
         }
 
         public bool Multiselection
         {
-            get
+            get => GetModuleValues().Multiselection;
+            set => SetModuleValues(new ModuleValues()
             {
-                GetModuleValues(out _, out _, out _, out bool multiselection, out _);
-                return multiselection;
-            }
-            set => SetModuleValues(false, false, true, false, default, default, value, []);
+                Multiselection = value
+            });
         }
 
         public IList<ExtensionFilter> Filters
         {
-            get
+            get => GetModuleValues().Filters;
+            set => SetModuleValues(new ModuleValues()
             {
-                GetModuleValues(out _, out _, out _, out _, out IList<ExtensionFilter> filters);
-                return filters;
-            }
-            set => SetModuleValues(false, false, false, true, default, default, default, value);
+                Filters = value
+            });
         }
 
         public string Name { get; }
@@ -135,13 +127,14 @@ namespace ModelX.Dialogs
 
         private void ModuleDisposed(object? sender, EventArgs e) => UpdateLog("Event invoked [DISPOSED]");
 
-        private void GetModuleValues(
-            out string? title,
-            out string? initalDirectory,
-            out string?[] selectedPaths,
-            out bool multiselection,
-            out IList<ExtensionFilter> filters)
+        private ModuleValues GetModuleValues()
         {
+            string? title = null;
+            string? initalDirectory = null;
+            string?[] selectedPaths = [];
+            bool multiselection = false;
+            IList<ExtensionFilter> filters = [];
+
             switch (Type)
             {
                 case SystemDialogType.SaveDialog:
@@ -171,40 +164,111 @@ namespace ModelX.Dialogs
                 default:
                     throw new InvalidOperationException($"Type {Type} is not supported.");
             }
+
+            return new ModuleValues()
+            {
+                Title = title,
+                InitialDirectory = initalDirectory,
+                SelectedPaths = selectedPaths,
+                Multiselection = multiselection,
+                Filters = filters
+            };
         }
 
-        private void SetModuleValues(
-            bool setTitle,
-            bool setInitialDirectory,
-            bool setMultiselection,
-            bool setFilters,
-            string? title,
-            string? initialDirectory,
-            bool multiselection,
-            IList<ExtensionFilter> filters)
+        private void SetModuleValues(ModuleValues values)
         {
             switch (Type)
             {
                 case SystemDialogType.SaveDialog:
                     IDialogModule<SaveFileDialogProperties> saveModule = (IDialogModule<SaveFileDialogProperties>)CoreModule;
-                    if (setTitle) saveModule.Properties.Title = title;
-                    if (setInitialDirectory) saveModule.Properties.InitialDirectory = initialDirectory;
-                    if (setFilters) saveModule.Properties.Filters = filters;
+                    if (values.SetTitle) saveModule.Properties.Title = values.Title;
+                    if (values.SetInitialDirectory) saveModule.Properties.InitialDirectory = values.InitialDirectory;
+                    if (values.SetFilters) saveModule.Properties.Filters = values.Filters;
                     break;
                 case SystemDialogType.OpenDialog:
                     IDialogModule<OpenFileDialogProperties> openModule = (IDialogModule<OpenFileDialogProperties>)CoreModule;
-                    if (setTitle) openModule.Properties.Title = title;
-                    if (setInitialDirectory) openModule.Properties.InitialDirectory = initialDirectory;
-                    if (setMultiselection) openModule.Properties.MultipleSelection = multiselection;
-                    if (setFilters) openModule.Properties.Filters = filters;
+                    if (values.SetTitle) openModule.Properties.Title = values.Title;
+                    if (values.SetInitialDirectory) openModule.Properties.InitialDirectory = values.InitialDirectory;
+                    if (values.SetMultiselection) openModule.Properties.MultipleSelection = values.Multiselection;
+                    if (values.SetFilters) openModule.Properties.Filters = values.Filters;
                     break;
                 case SystemDialogType.BrowseDialog:
                     IDialogModule<BrowseFolderDialogProperties> browseModule = (IDialogModule<BrowseFolderDialogProperties>)CoreModule;
-                    if (setTitle) browseModule.Properties.Title = title;
-                    if (setInitialDirectory) browseModule.Properties.InitialDirectory = initialDirectory;
+                    if (values.SetTitle) browseModule.Properties.Title = values.Title;
+                    if (values.SetInitialDirectory) browseModule.Properties.InitialDirectory = values.InitialDirectory;
                     break;
                 default:
                     throw new InvalidOperationException($"Type {Type} is not supported.");
+            }
+        }
+
+        private class ModuleValues
+        {
+            private readonly bool _setTitle;
+            private readonly bool _setInitialDirectory;
+            private readonly bool _setFilters;
+            private readonly bool _setMultiselection;
+            private readonly bool _setSelectedPaths;
+            private readonly string? _title;
+            private readonly string? _initialDirectory;
+            private readonly bool _multiselection;
+            private readonly IList<ExtensionFilter> _filters = [];
+            private readonly string?[] _selectedPaths = [];
+
+            public bool SetTitle => _setTitle;
+            public bool SetInitialDirectory => _setInitialDirectory;
+            public bool SetFilters => _setFilters;
+            public bool SetMultiselection => _setMultiselection;
+            public bool SetSelectedPaths => _setSelectedPaths;
+
+            public string? Title
+            { 
+                get => _title;
+                init
+                {
+                    _setTitle = true;
+                    _title = value;
+                }
+            }
+
+            public string? InitialDirectory
+            { 
+                get => _initialDirectory;
+                init
+                {
+                    _setInitialDirectory = true;
+                    _initialDirectory = value;
+                }
+            }
+
+            public bool Multiselection
+            { 
+                get => _multiselection;
+                init
+                {
+                    _setMultiselection = true;
+                    _multiselection = value;
+                }
+            }
+
+            public IList<ExtensionFilter> Filters
+            { 
+                get => _filters;
+                init
+                {
+                    _setFilters = true;
+                    _filters = value;
+                }
+            }
+
+            public string?[] SelectedPaths
+            {
+                get => _selectedPaths;
+                init
+                {
+                    _setSelectedPaths = true;
+                    _selectedPaths = value;
+                }
             }
         }
     }
