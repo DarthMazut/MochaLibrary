@@ -12,6 +12,7 @@
     mc:Ignorable="d"
     Style="{StaticResource DefaultContentDialogStyle}"
     Title="Create dialog"
+    DefaultButton="Primary"
     PrimaryButtonText="Create dialog"
     PrimaryButtonCommand="{Binding CreateDialogCommand}"
     CloseButtonText="Cancel">
@@ -41,7 +42,7 @@
             </StackPanel>
             <StackPanel Spacing="12">
                 <TextBlock Text="Select dialog name:" />
-                <TextBox Text="{Binding Name, Mode=TwoWay}" />
+                <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
         </StackPanel>
     </Grid>

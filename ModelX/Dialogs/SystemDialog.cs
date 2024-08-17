@@ -21,7 +21,7 @@ namespace ModelX.Dialogs
             Type = ResolveType(module) ?? throw new ArgumentException($"Module {module.GetType()} is not supported.");
 
             CoreModule = module;
-            Name = name ?? $"{Type} Module - {Path.GetRandomFileName()}";
+            Name = string.IsNullOrWhiteSpace(name) ? $"{Type} Module - {Path.GetRandomFileName()}" : name;
 
             module.Opening += ModuleOpening;
             module.Closed += ModuleClosed;

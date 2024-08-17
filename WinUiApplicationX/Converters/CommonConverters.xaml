@@ -13,5 +13,13 @@
         <uc:ConvertingRule Condition="{uc:True}" Output="{uc:Collapsed}"/>
         <uc:ConvertingRule Output="{uc:Visible}" />
     </uc:UniversalConverter>
+    <uc:UniversalConverter x:Key="NullToVisibilityConverter">
+        <uc:ConvertingRule Condition="{x:Null}" Output="{uc:Collapsed}"/>
+        <uc:ConvertingRule Output="{uc:Visible}" />
+    </uc:UniversalConverter>
+    <uc:UniversalConverter x:Key="NullToBoolConverter">
+        <uc:ConvertingRule Condition="{x:Null}" Output="{uc:False}"/>
+        <uc:ConvertingRule Output="{uc:True}" />
+    </uc:UniversalConverter>
 
 </ResourceDictionary>

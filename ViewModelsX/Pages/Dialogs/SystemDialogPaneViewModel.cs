@@ -28,7 +28,23 @@ namespace ViewModelsX.Pages.Dialogs
         private List<ExtensionFilter> _filters = [];
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CanAddExtension))]
+        [NotifyPropertyChangedFor(nameof(CanRemoveFilter))]
         private ExtensionFilter? _selectedFilter;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CanAddFilter))]
+        [NotifyPropertyChangedFor(nameof(CanAddExtension))]
+        [NotifyPropertyChangedFor(nameof(CanRemoveExtension))]
+        private string _filterInput = string.Empty;
+
+        public bool CanAddFilter => !string.IsNullOrWhiteSpace(FilterInput);
+
+        public bool CanAddExtension => SelectedFilter is not null && !string.IsNullOrWhiteSpace(FilterInput);
+
+        public bool CanRemoveFilter => SelectedFilter is not null;
+
+        public bool CanRemoveExtension => SelectedFilter is not null && SelectedFilter.Extensions.Contains(FilterInput);
 
         partial void OnSelectedDialogChanged(SystemDialog? value)
         {
@@ -54,17 +70,33 @@ namespace ViewModelsX.Pages.Dialogs
         }
 
         [RelayCommand]
-        private void AddFilter(string filterName)
+        private void AddFilter()
         {
-            Filters = [.. Filters, new ExtensionFilter(filterName, [])];
+            Filters = [.. Filters, new ExtensionFilter(FilterInput, [])];
             SelectedDialog!.Filters = Filters;
+            FilterInput = string.Empty;
         }
 
         [RelayCommand]
-        private void AddExtension(string extension)
+        private void AddExtension()
         {
-            SelectedFilter?.Extensions.Add(extension);
+            SelectedFilter?.Extensions.Add(FilterInput);
             Filters = [.. Filters];
+            FilterInput = string.Empty;
+        }
+
+        [RelayCommand]
+        private void RemoveFilter()
+        {
+            Filters = [..Filters.Except([SelectedFilter])];
+        }
+
+        [RelayCommand]
+        private void RemoveExtension()
+        {
+            SelectedFilter?.Extensions.Remove(FilterInput);
+            Filters = [.. Filters];
+            FilterInput = string.Empty;
         }
     }
 }

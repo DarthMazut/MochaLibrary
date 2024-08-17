@@ -20,7 +20,7 @@
         <DataTemplate x:Key="FilterTemplate">
             <StackPanel Height="80">
                 <TextBlock Text="{Binding Name}" />
-                <GridView ItemsSource="{Binding Extensions}"/>
+                <GridView ItemsSource="{Binding Extensions}" SelectionMode="None"/>
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
@@ -85,12 +85,14 @@
                     ItemsSource="{Binding Filters}"
                     SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
                     ItemTemplate="{StaticResource FilterTemplate}"/>
-                <TextBox x:Name="FilterInput" Grid.Row="1" Margin="0,0,8,0"/>
+                <TextBox x:Name="FilterInput" Text="{Binding FilterInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Margin="0,0,8,0"/>
                 <DropDownButton Grid.Row="1" Grid.Column="1">
                     <DropDownButton.Flyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem Text="Add filter" Command="{Binding AddFilterCommand}" CommandParameter="{x:Bind FilterInput.Text, Mode=OneWay}" />
-                            <MenuFlyoutItem Text="Add extension" Command="{Binding AddExtensionCommand}" CommandParameter="{x:Bind FilterInput.Text, Mode=OneWay}"/>
+                            <MenuFlyoutItem Text="Add filter" IsEnabled="{Binding CanAddFilter}" Command="{Binding AddFilterCommand}" />
+                            <MenuFlyoutItem Text="Add extension" IsEnabled="{Binding CanAddExtension}" Command="{Binding AddExtensionCommand}"/>
+                            <MenuFlyoutItem Text="Remove filter" IsEnabled="{Binding CanRemoveFilter}" Command="{Binding RemoveFilterCommand}"/>
+                            <MenuFlyoutItem Text="Remove extension" IsEnabled="{Binding CanRemoveExtension}" Command="{Binding RemoveExtensionCommand}"/>
                         </MenuFlyout>
                     </DropDownButton.Flyout>
                     <FontIcon Glyph="&#xED0E;" />
