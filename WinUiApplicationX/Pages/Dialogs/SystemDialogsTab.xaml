@@ -12,10 +12,6 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <uc:UniversalConverter x:Key="CollectionLengthToVisibilityConverter">
-            <uc:ConvertingRule Condition="{uc:NumberComparision IsGreaterThan=0}" Output="{uc:Collapsed}" />
-            <uc:ConvertingRule Output="{uc:Visible}" />
-        </uc:UniversalConverter>
         <uc:UniversalConverter x:Key="DialogTypeToGlyphConverter">
             <uc:ConvertingRule Condition="{uc:Enum Type=dm:SystemDialogType, Value=SaveDialog}" Output="&#xE74E;" />
             <uc:ConvertingRule Condition="{uc:Enum Type=dm:SystemDialogType, Value=OpenDialog}" Output="&#xED25;" />
@@ -77,6 +73,28 @@
     </UserControl.Resources>
     
     <SplitView DataContext="{x:Bind ViewModel}" IsPaneOpen="{Binding IsPaneOpen, Mode=TwoWay}" PanePlacement="Right" OpenPaneLength="400">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <!-- NORMAL -->
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowHeight="700"/>
+                    </VisualState.StateTriggers>
+                </VisualState>
+                <!-- COMPACT -->
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowHeight="0"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="LogsTextBox.(Grid.Row)" Value="0"/>
+                        <Setter Target="LogsTextBox.(Grid.Column)" Value="1"/>
+                        <Setter Target="LogsTextBox.Margin" Value="16,0,0,0"/>
+                        <Setter Target="LogsTextBox.Height" Value="400"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <SplitView.Pane>
             <Grid>
                 <local:SystemDialogPane ViewModel="{Binding PaneViewModel}" SelectedDialog="{Binding SelectedDialog}" CloseCommand="{Binding ClosePaneCommand}"/>
@@ -96,7 +114,7 @@
                 BorderThickness="1"
                 BorderBrush="{ThemeResource FocusStrokeColorOuterBrush}"
                 Width="400"
-                MinHeight="400"
+                Height="400"
                 ItemsSource="{Binding Dialogs}"
                 SelectedItem="{Binding SelectedDialog, Mode=TwoWay}"
                 ItemTemplate="{StaticResource DialogItemTemplate}"
@@ -117,7 +135,17 @@
                 ToolTipService.ToolTip="Add dialog">
                 <FontIcon FontSize="18" Glyph="&#xE710;" />
             </Button>
-            <TextBox Grid.Row="1" Grid.ColumnSpan="2" Margin="0,16,0,0" Text="{Binding SelectedDialog.Log}" AcceptsReturn="True" IsReadOnly="True"/>
+            <!-- LOGS -->
+            <TextBox
+                x:Name="LogsTextBox"
+                VerticalAlignment="Stretch"
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                MinHeight="150"
+                Margin="0,16,0,0"
+                ScrollViewer.VerticalScrollBarVisibility="Visible"
+                Text="{Binding SelectedDialog.Log}" AcceptsReturn="True" IsReadOnly="True"
+                TextChanged="LogsTextChanged"/>
         </Grid>
     </SplitView>
 </UserControl>

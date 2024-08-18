@@ -13,6 +13,8 @@ namespace ViewModelsX.Pages.Dialogs
     public partial class SystemDialogPaneViewModel : ObservableObject
     {
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsMultiselectionEnabled))]
+        [NotifyPropertyChangedFor(nameof(IsFilterTableEnabled))]
         private SystemDialog? _selectedDialog;
 
         [ObservableProperty]
@@ -40,25 +42,50 @@ namespace ViewModelsX.Pages.Dialogs
 
         public bool CanAddFilter => !string.IsNullOrWhiteSpace(FilterInput);
 
-        public bool CanAddExtension => SelectedFilter is not null && !string.IsNullOrWhiteSpace(FilterInput);
+        public bool CanAddExtension =>
+            SelectedFilter is not null &&
+            !SelectedFilter.Extensions.Contains(FilterInput) &&
+            !string.IsNullOrWhiteSpace(FilterInput);
 
         public bool CanRemoveFilter => SelectedFilter is not null;
 
         public bool CanRemoveExtension => SelectedFilter is not null && SelectedFilter.Extensions.Contains(FilterInput);
+
+        public bool IsMultiselectionEnabled => SelectedDialog?.Type == SystemDialogType.OpenDialog;
+
+        public bool IsFilterTableEnabled => SelectedDialog?.Type != SystemDialogType.BrowseDialog;
 
         partial void OnSelectedDialogChanged(SystemDialog? value)
         {
             Title = value?.Title;
             InitialDirectory = value?.InitialDirectory;
             Multiselection = value?.Multiselection ?? false;
-            Filters = [.. value?.Filters];
+            Filters = [.. value?.Filters ?? []];
         }
 
-        partial void OnTitleChanged(string? value) => SelectedDialog!.Title = value;
+        partial void OnTitleChanged(string? value)
+        {
+            if (SelectedDialog is not null)
+            {
+                SelectedDialog.Title = value;
+            } 
+        }
 
-        partial void OnInitialDirectoryChanged(string? value) => SelectedDialog!.InitialDirectory = value;
+        partial void OnInitialDirectoryChanged(string? value)
+        {
+            if (SelectedDialog is not null)
+            {
+                SelectedDialog.InitialDirectory = value;
+            }
+        }
 
-        partial void OnMultiselectionChanged(bool value) => SelectedDialog!.Multiselection = value;
+        partial void OnMultiselectionChanged(bool value)
+        {
+            if (SelectedDialog is not null)
+            {
+                SelectedDialog!.Multiselection = value;
+            }
+        }
 
         [RelayCommand]
         private void SelectSpecialFolder(string name)

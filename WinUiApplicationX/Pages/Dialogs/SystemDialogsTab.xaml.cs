@@ -5,6 +5,8 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using MochaCore.Utils;
+using MochaWinUI.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,6 +34,21 @@ namespace WinUiApplicationX.Pages.Dialogs
         public SystemDialogsTab()
         {
             this.InitializeComponent();
+        }
+
+        private void LogsTextChanged(object sender, TextChangedEventArgs e) => ScrollToBottom((TextBox)sender);
+
+        // https://stackoverflow.com/questions/40114620/uwp-c-sharp-scroll-to-the-bottom-of-textbox/41898598#41898598
+        private void ScrollToBottom(TextBox textBox)
+        {
+            var grid = (Grid)VisualTreeHelper.GetChild(textBox, 0);
+            for (var i = 0; i <= VisualTreeHelper.GetChildrenCount(grid) - 1; i++)
+            {
+                object obj = VisualTreeHelper.GetChild(grid, i);
+                if (!(obj is ScrollViewer)) continue;
+                ((ScrollViewer)obj).ChangeView(0.0f, ((ScrollViewer)obj).ExtentHeight, 1.0f, true);
+                break;
+            }
         }
     }
 }

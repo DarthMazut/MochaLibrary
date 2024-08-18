@@ -66,7 +66,7 @@
                 </DropDownButton>
             </Grid>
             <!-- MULTISELECTION -->
-            <CheckBox Content="Allow multiselection" IsChecked="{Binding Multiselection, Mode=TwoWay}"/>
+            <CheckBox Content="Allow multiselection" IsEnabled="{Binding IsMultiselectionEnabled}" IsChecked="{Binding Multiselection, Mode=TwoWay}"/>
             <!-- FILTERS -->
             <Grid>
                 <Grid.RowDefinitions>
@@ -82,11 +82,19 @@
                     BorderBrush="White"
                     BorderThickness="1"
                     Grid.ColumnSpan="2"
+                    IsEnabled="{Binding IsFilterTableEnabled}"
                     ItemsSource="{Binding Filters}"
                     SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
                     ItemTemplate="{StaticResource FilterTemplate}"/>
-                <TextBox x:Name="FilterInput" Text="{Binding FilterInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Margin="0,0,8,0"/>
-                <DropDownButton Grid.Row="1" Grid.Column="1">
+                <TextBlock Grid.ColumnSpan="2" Text="No filters available" Visibility="{Binding Filters, Converter={StaticResource CollectionLengthToVisibilityConverter}}" HorizontalAlignment="Center" Margin="4" />
+                <TextBox
+                    x:Name="FilterInput"
+                    Grid.Row="1"
+                    IsEnabled="{Binding IsFilterTableEnabled}"
+                    Text="{Binding FilterInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    PlaceholderText="Type filter name or extension"
+                    Margin="0,0,8,0"/>
+                <DropDownButton Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsFilterTableEnabled}">
                     <DropDownButton.Flyout>
                         <MenuFlyout>
                             <MenuFlyoutItem Text="Add filter" IsEnabled="{Binding CanAddFilter}" Command="{Binding AddFilterCommand}" />

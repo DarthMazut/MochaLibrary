@@ -21,5 +21,9 @@
         <uc:ConvertingRule Condition="{x:Null}" Output="{uc:False}"/>
         <uc:ConvertingRule Output="{uc:True}" />
     </uc:UniversalConverter>
+    <uc:UniversalConverter x:Key="CollectionLengthToVisibilityConverter">
+        <uc:ConvertingRule Condition="{uc:NumberComparision IsGreaterThan=0}" Output="{uc:Collapsed}" />
+        <uc:ConvertingRule Output="{uc:Visible}" />
+    </uc:UniversalConverter>
 
 </ResourceDictionary>

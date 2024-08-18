@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
 using MochaCore.Dispatching;
+using MochaCore.Utils;
 using ModelX.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using ViewModelsX.Dialogs;
 
 namespace ViewModelsX.Pages.Dialogs
 {
-    public partial class SystemDialogsTabViewModel : ObservableObject
+    public partial class SystemDialogsTabViewModel : ObservableObject, IBindingTargetController
     {
         private readonly DialogsPageViewModel _parentViewModel;
 
@@ -22,6 +23,8 @@ namespace ViewModelsX.Pages.Dialogs
         {
             _parentViewModel = parentViewModel;
         }
+
+        public event EventHandler<BindingTargetControlRequestedEventArgs>? ControlRequested;
 
         public SystemDialogPaneViewModel PaneViewModel { get; } = new();
 

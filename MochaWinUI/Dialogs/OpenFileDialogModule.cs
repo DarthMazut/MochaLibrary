@@ -145,6 +145,8 @@ namespace MochaWinUI.Dialogs
         /// <param name="properties">Statically typed properties object which serves for configuration of this module.</param>
         protected virtual void ApplyPropertiesCore(FileOpenPicker dialog, OpenFileDialogProperties properties)
         {
+            dialog.FileTypeFilter.Clear();
+
             if (!properties.Filters.Any())
             {
                 dialog.FileTypeFilter.Add("*");

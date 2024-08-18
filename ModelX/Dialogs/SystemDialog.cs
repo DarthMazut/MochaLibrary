@@ -87,7 +87,7 @@ namespace ModelX.Dialogs
             {
                 bool? result = await CoreModule.ShowModalAsync(host);
                 UpdateLog($"Selected path(s): {Environment.NewLine}\t {string.Join($"{Environment.NewLine}\t", SelectedPaths)}");
-                UpdateLog($"Dialog result: {result}");
+                UpdateLog($"Dialog result: {result?.ToString() ?? "null"}");
                 return result;
             }
             catch (Exception ex) // Do not catch general exceptions :O

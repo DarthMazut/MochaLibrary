@@ -20,6 +20,7 @@
     
     <controls:PageRoot
         Title="Dialogs"
+        ScrollViewer.VerticalScrollBarVisibility="Disabled"
         Glyph="{utils:PageIconProvider PageId=DialogsPage}">
         <controls:PageRoot.Tabs>
             <PivotItem Header="System dialog" Style="{StaticResource PivotItemStyle}">
