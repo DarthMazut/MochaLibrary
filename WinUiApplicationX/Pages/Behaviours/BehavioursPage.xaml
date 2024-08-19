@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="WinUiApplicationX.Pages.Behaviours.BehavioursPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUiApplicationX.Pages.Behaviours"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:WinUiApplicationX.Controls"
+    xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
+    xmlns:vm="using:ViewModelsX.Pages.Behaviours"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <controls:PageRoot Title="Behaviours" Glyph="{utils:PageIconProvider PageId=BehavioursPage}">
+        <StackPanel Spacing="20">
+            <TextBlock Text="Taskbar progress" FontSize="24"/>
+            <StackPanel Spacing="8">
+                <ComboBox
+                    Header="Select state:"
+                    Width="250"
+                    SelectedItem="{Binding ProgressState, Mode=TwoWay}"
+                    ItemsSource="{utils:EnumValues Type=vm:TaskbarProgressState}"/>
+                <Slider
+                    Header="Progress value:"
+                    HorizontalAlignment="Left"
+                    Width="250"
+                    Minimum="0"
+                    Maximum="100"
+                    StepFrequency="1"
+                    Value="{Binding ProgressValue, Mode=TwoWay}"/>
+                <Button Content="Apply state" Command="{Binding ApplyStateCommand}"/>
+            </StackPanel>
+        </StackPanel>
+    </controls:PageRoot>
+</Page>

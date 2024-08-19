@@ -28,6 +28,14 @@ namespace ViewModelsX
                 }
             },
             {
+                nameof(BehavioursPage), new AppPage(nameof(BehavioursPage))
+                {
+                    Name = "Behaviours",
+                    Glyph = "\uE8AF",
+                    IsMenuPage = true
+                }
+            },
+            {
                 nameof(SettingsPage), new AppPage(nameof(SettingsPage))
                 {
                     Name = "Settings",
@@ -41,6 +49,8 @@ namespace ViewModelsX
         public static AppPage HomePage => _pages[nameof(HomePage)];
 
         public static AppPage DialogsPage => _pages[nameof(DialogsPage)];
+
+        public static AppPage BehavioursPage => _pages[nameof(BehavioursPage)];
 
         public static AppPage SettingsPage => _pages[nameof(SettingsPage)];
 

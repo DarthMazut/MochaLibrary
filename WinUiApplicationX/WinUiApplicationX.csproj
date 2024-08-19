@@ -11,7 +11,7 @@
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -58,6 +58,7 @@
   <ItemGroup>
     <None Remove="Converters\CommonConverters.xaml" />
     <None Remove="MyDialog.xaml" />
+    <None Remove="Pages\Behaviours\BehavioursPage.xaml" />
     <None Remove="Pages\DialogsPage.xaml" />
     <None Remove="Pages\Dialogs\CreateDialogDialog.xaml" />
     <None Remove="Pages\Dialogs\SystemDialogPane.xaml" />
@@ -104,5 +105,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Remove="Pages\Dialogs\SystemDialogPane.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\Behaviours\BehavioursPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

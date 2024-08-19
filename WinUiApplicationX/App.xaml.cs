@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using MochaCore.Behaviours;
 using MochaCore.Dialogs;
 using MochaCore.Dispatching;
 using MochaCore.Events;
@@ -27,13 +28,16 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using ViewModelsX;
 using ViewModelsX.Dialogs;
 using ViewModelsX.Pages;
+using ViewModelsX.Pages.Behaviours;
 using ViewModelsX.Pages.Dialogs;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using WinUiApplicationX.Pages;
+using WinUiApplicationX.Pages.Behaviours;
 using WinUiApplicationX.Pages.Dialogs;
+using WinUiApplicationX.Utils;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -67,6 +71,7 @@ namespace WinUiApplicationX
             NavigationManager.AddNavigationService(NavigationServices.MainNavigationServiceId, new WinUiNavigationService()
                 .WithModule<HomePage, HomePageViewModel>(AppPages.HomePage.Id)
                 .WithModule<DialogsPage, DialogsPageViewModel>(AppPages.DialogsPage.Id)
+                .WithModule<BehavioursPage, BehavioursPageViewModel>(AppPages.BehavioursPage.Id)
                 .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                 .WithInitialId(AppPages.HomePage.Id));
 
@@ -75,6 +80,12 @@ namespace WinUiApplicationX
             DialogManager.RegisterDialog(AppDialogs.SystemSaveDialog.Id, () => new SaveFileDialogModule());
             DialogManager.RegisterDialog(AppDialogs.SystemOpenDialog.Id, () => new OpenFileDialogModule());
             DialogManager.RegisterDialog(AppDialogs.SystemBrowseDialog.Id, () => new BrowseFolderDialogModule());
+
+            BehaviourManager.Record<TaskbarProgressData>("SetTaskBar", tpd =>
+            {
+                IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
+                TaskbarProgressManager.SetTaskbarState((Window)mainWindow.View, tpd);
+            });
 
             SettingsManager.Register("Settings", new ApplicationSettingsSectionProvider<PizzaRecipe>());
 
