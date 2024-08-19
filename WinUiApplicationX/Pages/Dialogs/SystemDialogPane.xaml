@@ -6,11 +6,16 @@
     xmlns:local="using:WinUiApplicationX.Pages.Dialogs"
     xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
     xmlns:sys="using:System"
+    xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    
+
     <UserControl.Resources>
+        <uc:UniversalConverter x:Key="IsEnabledToBrushConverter">
+            <uc:ConvertingRule Condition="{uc:True}" Output="{StaticResource FocusStrokeColorOuterBrush}"/>
+            <uc:ConvertingRule Output="{StaticResource ControlStrongStrokeColorDisabledBrush}"/>
+        </uc:UniversalConverter>
         <Style x:Key="BackButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
@@ -79,7 +84,7 @@
                 </Grid.ColumnDefinitions>
                 <ListView
                     Margin="0,0,0,8"
-                    BorderBrush="White"
+                    BorderBrush="{Binding IsFilterTableEnabled, Converter={StaticResource IsEnabledToBrushConverter}}"
                     BorderThickness="1"
                     Grid.ColumnSpan="2"
                     IsEnabled="{Binding IsFilterTableEnabled}"
