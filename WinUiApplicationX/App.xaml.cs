@@ -83,7 +83,7 @@ namespace WinUiApplicationX
 
             BehaviourManager.Record<TaskbarProgressData>("SetTaskBar", tpd =>
             {
-                IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
+                IWindowModule mainWindow = (IWindowModule)WindowManager.GetCreatedModules("MainWindow").First();
                 TaskbarProgressManager.SetTaskbarState((Window)mainWindow.View, tpd);
             });
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,27 +12,19 @@ namespace WinUiApplicationX.Utils
 {
     public static class TaskbarProgressManager
     {
+        private static readonly ITaskbarList3 taskbarInstance = (ITaskbarList3)new TaskbarInstance();
+
         public static void SetTaskbarState(Window window, TaskbarProgressData taskbarProgressData)
         {
             IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            SetState(hwnd, TaskbarStates.Error);
-            SetValue(hwnd, 50UL, 100UL);
+            taskbarInstance.SetProgressValue(hwnd, (ulong)taskbarProgressData.Value, 100UL);
+            taskbarInstance.SetProgressState(hwnd, (int)taskbarProgressData.State);
         }
 
-        //[DllImport("Explorerframe.dll", EntryPoint = "SetProgressState")]
-        //private static extern int SetProgressState(IntPtr hwnd, int tbpFlags);
-
-        //[DllImport("Explorerframe.dll", EntryPoint = "SetProgressValue")]
-        //private static extern int SetProgressValue(IntPtr hwnd, ulong completed, ulong total);
-
-        public enum TaskbarStates
-        {
-            NoProgress = 0,
-            Indeterminate = 0x1,
-            Normal = 0x2,
-            Error = 0x4,
-            Paused = 0x8
-        }
+        [ComImport()]
+        [Guid("56fdf344-fd6d-11d0-958a-006097c9a090")]
+        [ClassInterface(ClassInterfaceType.None)]
+        private class TaskbarInstance { }
 
         [ComImport()]
         [Guid("ea1afb91-9e28-4b86-90e9-9e9f8a5eefaf")]
@@ -56,29 +49,9 @@ namespace WinUiApplicationX.Utils
 
             // ITaskbarList3
             [PreserveSig]
-            void SetProgressValue(IntPtr hwnd, UInt64 ullCompleted, UInt64 ullTotal);
+            void SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
             [PreserveSig]
-            void SetProgressState(IntPtr hwnd, TaskbarStates state);
-        }
-
-        [ComImport()]
-        [Guid("56fdf344-fd6d-11d0-958a-006097c9a090")]
-        [ClassInterface(ClassInterfaceType.None)]
-        private class TaskbarInstance
-        {
-        }
-
-        private static ITaskbarList3 taskbarInstance = (ITaskbarList3)new TaskbarInstance();
-        private static bool taskbarSupported = Environment.OSVersion.Version >= new Version(6, 1);
-
-        public static void SetState(IntPtr windowHandle, TaskbarStates taskbarState)
-        {
-            if (taskbarSupported) taskbarInstance.SetProgressState(windowHandle, taskbarState);
-        }
-
-        public static void SetValue(IntPtr windowHandle, double progressValue, double progressMax)
-        {
-            if (taskbarSupported) taskbarInstance.SetProgressValue(windowHandle, (ulong)progressValue, (ulong)progressMax);
-        }
+            void SetProgressState(IntPtr hwnd, int state);
+        }  
     }
 }
