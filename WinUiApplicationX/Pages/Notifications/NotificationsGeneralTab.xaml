@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="WinUiApplicationX.Pages.Notifications.NotificationsGeneralTab"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUiApplicationX.Pages.Notifications"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid DataContext="{x:Bind ViewModel}">
+        <StackPanel Spacing="12" HorizontalAlignment="Left">
+            <TextBox Header="Input text:" Text="{Binding NotificationText, Mode=TwoWay}" Width="400"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Header="Image path:" Text="{Binding NotificationImagePath, Mode=TwoWay}" Width="349"/>
+                <Button Command="{Binding BrowseImageCommand}" VerticalAlignment="Bottom">
+                    <FontIcon Glyph="&#xED25;" />
+                </Button>
+            </StackPanel>
+            <CheckBox Content="Schedule delay" IsChecked="{Binding IsDelayScheduleChecked, Mode=TwoWay}"/>
+            <TimePicker Header="Select delivery time:" Time="{Binding SelectedScheduleTime, Mode=TwoWay}" ClockIdentifier="24HourClock" IsEnabled="{Binding IsDelayScheduleChecked}"/>
+            <Button Content="Schedule" Command="{Binding ScheduleCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

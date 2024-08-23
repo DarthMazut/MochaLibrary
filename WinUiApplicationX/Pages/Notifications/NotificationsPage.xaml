@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="WinUiApplicationX.Pages.Notifications.NotificationsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUiApplicationX.Pages.Notifications"
+    xmlns:controls="using:WinUiApplicationX.Controls"
+    xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <Style x:Key="PivotItemStyle" TargetType="PivotItem">
+            <Setter Property="Margin" Value="0" />
+        </Style>
+    </Page.Resources>
+
+    <controls:PageRoot
+        Title="Notifications"
+        ScrollViewer.VerticalScrollBarVisibility="Disabled"
+        Glyph="{utils:PageIconProvider PageId=NotificationsPage}">
+        <controls:PageRoot.Tabs>
+            <PivotItem Header="Basic usage" Style="{StaticResource PivotItemStyle}">
+                <local:NotificationsGeneralTab ViewModel="{Binding GeneralTabVM}" />
+            </PivotItem>
+        </controls:PageRoot.Tabs>
+    </controls:PageRoot>
+</Page>

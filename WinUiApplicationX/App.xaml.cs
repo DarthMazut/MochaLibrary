@@ -11,12 +11,14 @@ using MochaCore.Dialogs;
 using MochaCore.Dispatching;
 using MochaCore.Events;
 using MochaCore.Navigation;
+using MochaCore.Notifications;
 using MochaCore.Settings;
 using MochaCore.Windowing;
 using MochaWinUI.Dialogs;
 using MochaWinUI.Dispatching;
 using MochaWinUI.Events;
 using MochaWinUI.Navigation;
+using MochaWinUI.Notifications.Extensions;
 using MochaWinUI.Settings;
 using MochaWinUI.Windowing;
 using ModelX;
@@ -30,13 +32,16 @@ using ViewModelsX.Dialogs;
 using ViewModelsX.Pages;
 using ViewModelsX.Pages.Behaviours;
 using ViewModelsX.Pages.Dialogs;
+using ViewModelsX.Pages.Notfifications;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using WinUiApplicationX.Pages;
 using WinUiApplicationX.Pages.Behaviours;
 using WinUiApplicationX.Pages.Dialogs;
+using WinUiApplicationX.Pages.Notifications;
 using WinUiApplicationX.Utils;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -72,6 +77,7 @@ namespace WinUiApplicationX
                 .WithModule<HomePage, HomePageViewModel>(AppPages.HomePage.Id)
                 .WithModule<DialogsPage, DialogsPageViewModel>(AppPages.DialogsPage.Id)
                 .WithModule<BehavioursPage, BehavioursPageViewModel>(AppPages.BehavioursPage.Id)
+                .WithModule<NotificationsPage, NotificationsPageViewModel>(AppPages.NotificationsPage.Id)
                 .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                 .WithInitialId(AppPages.HomePage.Id));
 
@@ -80,6 +86,7 @@ namespace WinUiApplicationX
             DialogManager.RegisterDialog(AppDialogs.SystemSaveDialog.Id, () => new SaveFileDialogModule());
             DialogManager.RegisterDialog(AppDialogs.SystemOpenDialog.Id, () => new OpenFileDialogModule());
             DialogManager.RegisterDialog(AppDialogs.SystemBrowseDialog.Id, () => new BrowseFolderDialogModule());
+            DialogManager.RegisterDialog(AppDialogs.StandardOpenFileDialog.Id, () => new OpenFileDialogModule());
 
             BehaviourManager.Record<TaskbarProgressData>("SetTaskBar", tpd =>
             {
@@ -88,6 +95,8 @@ namespace WinUiApplicationX
             });
 
             SettingsManager.Register("Settings", new ApplicationSettingsSectionProvider<PizzaRecipe>());
+
+            NotificationManager.RegisterNotification("GeneralNotification", () => new WinUiGeneralNotification("GeneralNotification"));
 
             IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
             AppEventManager.IncludeEventProvider("AppClosing", new AppClosingEventProvider((Window)mainWindow.View));

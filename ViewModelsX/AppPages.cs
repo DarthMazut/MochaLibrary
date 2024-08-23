@@ -36,6 +36,14 @@ namespace ViewModelsX
                 }
             },
             {
+                nameof(NotificationsPage), new AppPage(nameof(NotificationsPage))
+                {
+                    Name = "Notifications",
+                    Glyph = "\uE91C",
+                    IsMenuPage = true
+                }
+            },
+            {
                 nameof(SettingsPage), new AppPage(nameof(SettingsPage))
                 {
                     Name = "Settings",
@@ -51,6 +59,8 @@ namespace ViewModelsX
         public static AppPage DialogsPage => _pages[nameof(DialogsPage)];
 
         public static AppPage BehavioursPage => _pages[nameof(BehavioursPage)];
+
+        public static AppPage NotificationsPage => _pages[nameof(NotificationsPage)];
 
         public static AppPage SettingsPage => _pages[nameof(SettingsPage)];
 

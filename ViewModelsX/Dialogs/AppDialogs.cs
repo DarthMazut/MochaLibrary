@@ -25,6 +25,9 @@ namespace ViewModelsX.Dialogs
 
         public static AppDialog<ICustomDialogModule<StandardMessageDialogProperties>> StandardMessageDialog { get; }
             = new("MessageDialog");
+
+        public static AppDialog<IDialogModule<OpenFileDialogProperties>> StandardOpenFileDialog { get; }
+            = new("StandardOpenFileDialog");
     }
 
     public class AppDialog<T>(string id) where T : IDialogModule
