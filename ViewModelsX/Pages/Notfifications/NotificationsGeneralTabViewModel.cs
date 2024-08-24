@@ -58,7 +58,19 @@ namespace ViewModelsX.Pages.Notfifications
             notification.Properties.Content = $"Your text is: {NotificationText}";
             notification.Properties.LeftButton = "Yes";
             notification.Properties.RightButton = "No";
-            notification.Properties.Image = NotificationImagePath;
+            notification.Properties.NotificationImage = string.IsNullOrWhiteSpace(NotificationImagePath) ? null : NotificationImagePath;
+            notification.Properties.ContentImage = @"D:\Dokumenty\Personal\Mysh\Zdjecia\Milk-Mocha\Screenshot_20220418-194352_Instagram.jpg";
+            notification.Properties.HasTextInput = true;
+            notification.Properties.TextInputPlaceholder = "Type your text here...";
+            notification.Properties.SelectableItems = new Dictionary<string, string>()
+            {
+                {"i1", "Item #1"},
+                {"i2", "Item #2"},
+                {"i3", "Item #3"}
+            };
+            //notification.Properties.SelectableItemsHeader = "Select item...";
+            notification.Properties.InitialSelectableItemId = "i2";
+
 
             notification.Interacted += NotificationInteracted;
 

@@ -45,7 +45,7 @@ namespace MochaWinUI.Notifications.Extensions
                 builder.AddText(content);
             }
 
-            if (Properties.Image is string imageUri)
+            if (Properties.NotificationImage is string imageUri)
             {
                 builder.SetAppLogoOverride(new Uri(imageUri));
             }
@@ -53,16 +53,64 @@ namespace MochaWinUI.Notifications.Extensions
             if (Properties.LeftButton is string leftButtonText)
             {
                 builder.AddButton(new AppNotificationButton(leftButtonText)
-                    .AddElementArguments(this, nameof(Properties.LeftButton)));
+                    .AddElementArguments(this, GeneralNotificationProperties.LeftButtonElementId));
+            }
+
+            if (Properties.MiddleButton is string middleButtonText)
+            {
+                builder.AddButton(new AppNotificationButton(middleButtonText)
+                    .AddElementArguments(this, GeneralNotificationProperties.MiddleButtonElementId));
             }
 
             if (Properties.RightButton is string rightButtonText)
             {
                 builder.AddButton(new AppNotificationButton(rightButtonText)
-                    .AddElementArguments(this, nameof(Properties.RightButton)));
+                    .AddElementArguments(this, GeneralNotificationProperties.RightButtonElementId));
             }
 
+            if (Properties.ContentImage is string contentImagePath)
+            {
+                builder.SetHeroImage(new Uri(contentImagePath));
+            }
+
+            if (Properties.SelectableItems is IDictionary<string, string> selectableItems)
+            {
+                builder.AddComboBox(new AppNotificationComboBox(GeneralNotificationProperties.SelectebleItemsElementId)
+                {
+                    Title = Properties.SelectableItemsHeader,
+                    Items = Properties.SelectableItems,
+                    SelectedItem = Properties.InitialSelectableItemId
+                });
+            }
+
+            if (Properties.HasTextInput)
+            {
+                builder.AddTextBox(
+                    GeneralNotificationProperties.TextInputElementId,
+                    Properties.TextInputPlaceholder,
+                    Properties.TextInputHeader);
+            }
+
+
+
             return builder.BuildNotification().Payload;
+        }
+
+        /// <inheritdoc/>
+        protected override NotificationInteractedEventArgs CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args)
+        {
+            args.UserInput.TryGetValue(GeneralNotificationProperties.TextInputElementId, out string? textInput);
+            args.UserInput.TryGetValue(GeneralNotificationProperties.SelectebleItemsElementId, out string? selectedItem);
+
+            return new(
+                CreateInteractedNotification(args),
+                args.Arguments[InvokedItemIdKey],
+                args.AsDictionary(),
+                args)
+            {
+                TextInput = textInput,
+                SelectedItemId = selectedItem
+            };
         }
 
         /// <inheritdoc/>

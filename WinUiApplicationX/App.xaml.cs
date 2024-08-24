@@ -100,6 +100,7 @@ namespace WinUiApplicationX
 
             IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
             AppEventManager.IncludeEventProvider("AppClosing", new AppClosingEventProvider((Window)mainWindow.View));
+            //(mainWindow.View as Window)!.Title = args.UWPLaunchActivatedEventArgs.Kind == 
             mainWindow.Open();
         }
     }
