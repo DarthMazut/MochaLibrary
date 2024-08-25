@@ -193,6 +193,16 @@ namespace MochaWinUI.Notifications
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
+        private static event EventHandler<AppNotificationActivatedEventArgs> //TODO !!!
+
+        /// <summary>
+        /// Triggers <see cref="Interacted"/> event for notification that is responsible for current app start.
+        /// </summary>
+        public static void NotifyAppStartViaNotificationInteraction()
+        {
+
+        }
+
         /// <summary>
         /// When overriden should return definition of current instance as <see langword="string"/>.
         /// </summary>
@@ -314,6 +324,9 @@ namespace MochaWinUI.Notifications
         }
 
         private void AnyNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
+            => HandleNotificationInvoked(args);
+
+        private void HandleNotificationInvoked(AppNotificationActivatedEventArgs args)
         {
             if (!args.AreValid())
             {

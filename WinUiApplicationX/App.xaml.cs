@@ -21,6 +21,7 @@ using MochaWinUI.Dialogs;
 using MochaWinUI.Dispatching;
 using MochaWinUI.Events;
 using MochaWinUI.Navigation;
+using MochaWinUI.Notifications;
 using MochaWinUI.Notifications.Extensions;
 using MochaWinUI.Settings;
 using MochaWinUI.Windowing;
@@ -102,26 +103,9 @@ namespace WinUiApplicationX
             IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
             AppEventManager.IncludeEventProvider("AppClosing", new AppClosingEventProvider((Window)mainWindow.View));
 
-            HandleNotificationActivation(mainWindow);
-
             mainWindow.Open();
-        }
 
-        private static void HandleNotificationActivation(IWindowModule mainWindow)
-        {
-
-            AppInstance currentInstance = AppInstance.GetCurrent();
-            if (currentInstance.IsCurrent)
-            {
-                AppActivationArguments activationArgs = currentInstance.GetActivatedEventArgs();
-                if (activationArgs?.Data is AppNotificationActivatedEventArgs args)
-                {
-                    DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
-                    {
-                        (mainWindow.View as Window)!.Title = args.Argument;
-                    });
-                }
-            }
+            WinUiNotification.NotifyAppStartViaNotificationInteraction();
         }
     }
 }

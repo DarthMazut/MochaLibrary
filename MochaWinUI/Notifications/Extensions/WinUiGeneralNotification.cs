@@ -91,8 +91,6 @@ namespace MochaWinUI.Notifications.Extensions
                     Properties.TextInputHeader);
             }
 
-
-
             return builder.BuildNotification().Payload;
         }
 
