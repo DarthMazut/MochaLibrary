@@ -67,6 +67,8 @@ namespace MochaCore.Notifications
         /// </summary>
         public object? RawArgs { get; }
 
+        //public bool IsActivationEvent
+
         /// <summary>
         /// Creates a copy of the current instance with the <see cref="Notification"/> value replaced 
         /// by the provided <paramref name="notification"/> parameter.

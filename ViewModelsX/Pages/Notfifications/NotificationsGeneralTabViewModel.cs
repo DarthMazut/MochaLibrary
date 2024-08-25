@@ -54,32 +54,37 @@ namespace ViewModelsX.Pages.Notfifications
         private void Schedule()
         {
             INotification<GeneralNotificationProperties> notification = NotificationManager.RetrieveNotification<GeneralNotificationProperties>("GeneralNotification");
-            notification.Properties.Title = "Mocha general notification";
-            notification.Properties.Content = $"Your text is: {NotificationText}";
-            notification.Properties.LeftButton = "Yes";
-            notification.Properties.RightButton = "No";
-            notification.Properties.NotificationImage = string.IsNullOrWhiteSpace(NotificationImagePath) ? null : NotificationImagePath;
-            notification.Properties.ContentImage = @"D:\Dokumenty\Personal\Mysh\Zdjecia\Milk-Mocha\Screenshot_20220418-194352_Instagram.jpg";
-            notification.Properties.HasTextInput = true;
-            notification.Properties.TextInputPlaceholder = "Type your text here...";
-            notification.Properties.SelectableItems = new Dictionary<string, string>()
+            notification.Properties = new GeneralNotificationProperties()
             {
-                {"i1", "Item #1"},
-                {"i2", "Item #2"},
-                {"i3", "Item #3"}
-            };
-            //notification.Properties.SelectableItemsHeader = "Select item...";
-            notification.Properties.InitialSelectableItemId = "i2";
+                Title = "This is example notification",
+                NotificationImage = string.IsNullOrWhiteSpace(NotificationImagePath) ? null : NotificationImagePath,
+                Content = $"The text you provided was: {NotificationText}.{Environment.NewLine}" +
+                $"You can add custom text into `TextBox` and select an example item from `ComboBox` " +
+                $"- these values will be received by the application, after clicking one of available buttons.",
+                HasTextInput = true,
+                TextInputPlaceholder = "The text provided here will be handled by the running app.",
+                SelectableItems = new Dictionary<string, string>()
+                {
+                    {"i1", "Item #1"},
+                    {"i2", "Item #2"},
+                    {"i3", "Item #3"}
+                },
+                SelectableItemsHeader = "Choose any item here (default is 2):",
+                InitialSelectableItemId = "i2",
+                LeftButton = "Left button",
+                MiddleButton = "Middle button",
+                RightButton = "Right button"
 
+            };
 
             notification.Interacted += NotificationInteracted;
-
             notification.Schedule();
         }
 
         private void NotificationInteracted(object? sender, NotificationInteractedEventArgs e)
         {
-            ((INotification)sender!).Interacted -= NotificationInteracted;
+            // Not on ui thread !
+            //((INotification)sender!).Interacted -= NotificationInteracted;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -6,6 +7,8 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using Microsoft.Windows.AppLifecycle;
+using Microsoft.Windows.AppNotifications;
 using MochaCore.Behaviours;
 using MochaCore.Dialogs;
 using MochaCore.Dispatching;
@@ -33,8 +36,6 @@ using ViewModelsX.Pages;
 using ViewModelsX.Pages.Behaviours;
 using ViewModelsX.Pages.Dialogs;
 using ViewModelsX.Pages.Notfifications;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -100,8 +101,27 @@ namespace WinUiApplicationX
 
             IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
             AppEventManager.IncludeEventProvider("AppClosing", new AppClosingEventProvider((Window)mainWindow.View));
-            //(mainWindow.View as Window)!.Title = args.UWPLaunchActivatedEventArgs.Kind == 
+
+            HandleNotificationActivation(mainWindow);
+
             mainWindow.Open();
+        }
+
+        private static void HandleNotificationActivation(IWindowModule mainWindow)
+        {
+
+            AppInstance currentInstance = AppInstance.GetCurrent();
+            if (currentInstance.IsCurrent)
+            {
+                AppActivationArguments activationArgs = currentInstance.GetActivatedEventArgs();
+                if (activationArgs?.Data is AppNotificationActivatedEventArgs args)
+                {
+                    DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
+                    {
+                        (mainWindow.View as Window)!.Title = args.Argument;
+                    });
+                }
+            }
         }
     }
 }
