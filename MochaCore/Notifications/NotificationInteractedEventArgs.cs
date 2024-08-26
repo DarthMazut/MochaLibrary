@@ -67,7 +67,10 @@ namespace MochaCore.Notifications
         /// </summary>
         public object? RawArgs { get; }
 
-        //public bool IsActivationEvent
+        /// <summary>
+        /// Determines whether corresponding event triggered app launch.
+        /// </summary>
+        public bool IsActivationEvent { get; init; }
 
         /// <summary>
         /// Creates a copy of the current instance with the <see cref="Notification"/> value replaced 

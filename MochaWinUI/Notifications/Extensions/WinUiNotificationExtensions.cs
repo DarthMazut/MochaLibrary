@@ -15,13 +15,36 @@ namespace MochaWinUI.Notifications.Extensions
     public static class WinUiNotificationExtensions
     {
         /// <summary>
+        /// Defines a key used by <see cref="AddLaunchingArg(AppNotificationActivatedEventArgs)"/> and 
+        /// <see cref="CheckLaunchingArg(AppNotificationActivatedEventArgs)"/> methods.
+        /// </summary>
+        public static readonly string LaunchingArgKey = "IsLaunchingArg";
+
+        /// <summary>
+        /// Adds <see cref="LaunchingArgKey"/> flag into provided args.
+        /// </summary>
+        /// <param name="args">Args to be modified.</param>
+        /// <returns>The modified args.</returns>
+        public static AppNotificationActivatedEventArgs AddLaunchingArg(this AppNotificationActivatedEventArgs args)
+        {
+            args.Arguments.Add(LaunchingArgKey, string.Empty);
+            return args;
+        }
+
+        /// <summary>
+        /// Checks whether <see cref="AppNotificationActivatedEventArgs"/> contains <see cref="LaunchingArgKey"/>.
+        /// </summary>
+        /// <param name="args">Object to be inspected.</param>
+        public static bool CheckLaunchingArg(this AppNotificationActivatedEventArgs args) => args.Arguments.ContainsKey(LaunchingArgKey);
+
+        /// <summary>
         /// Adds key-value arguments into creating <see cref="AppNotification"/>. The following keys are added:
         /// <see cref="WinUiNotification.NotificationIdKey"/>, <see cref="WinUiNotification.RegistrationIdKey"/>, 
         /// <see cref="WinUiNotification.InvokedItemIdKey"/> with the values obtained from provided <paramref name="notification"/>.
         /// If <see cref="MochaCore.Notifications.INotification.Tag"/> is specified within provided <paramref name="notification"/>
         /// it is also added as argument into creating instance.
         /// </summary>
-        /// <param name="builder"></param>
+        /// <param name="builder">An <see cref="AppNotificationBuilder"/> object which is to receive arguments.</param>
         /// <param name="notification">Notification which provides values for adding arguments.</param>
         public static AppNotificationBuilder AddNotificationArguments(this AppNotificationBuilder builder, WinUiNotification notification)
         {
@@ -37,6 +60,17 @@ namespace MochaWinUI.Notifications.Extensions
             return builder;
         }
 
+        /// <summary>
+        /// Adds key-value arguments into creating <see cref="AppNotificationButton"/>. The following keys are added:
+        /// <see cref="WinUiNotification.NotificationIdKey"/> and the <see cref="WinUiNotification.RegistrationIdKey"/>,
+        /// with the values obtained from provided <paramref name="notification"/>.
+        /// If <see cref="MochaCore.Notifications.INotification.Tag"/> is specified within provided <paramref name="notification"/>
+        /// it is also added as argument into creating instance.
+        /// </summary>
+        /// <param name="builder">The target of this extension method.</param>
+        /// <param name="notification">Notification which provides values for adding arguments.</param>
+        /// <param name="elementId">Identifier of button element which receives arguments.</param>
+        /// <returns>The instance this method was called on.</returns>
         public static AppNotificationButton AddElementArguments(this AppNotificationButton builder, WinUiNotification notification, string elementId)
         {
             builder.AddArgument(WinUiNotification.NotificationIdKey, notification.Id)

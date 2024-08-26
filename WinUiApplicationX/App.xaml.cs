@@ -105,7 +105,8 @@ namespace WinUiApplicationX
 
             mainWindow.Open();
 
-            WinUiNotification.NotifyAppStartViaNotificationInteraction();
+            WinUiNotification.ReportNotificationLaunch();
+            //WinUiNotification.ReportNotificationLaunch();
         }
     }
 }

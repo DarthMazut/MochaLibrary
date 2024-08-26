@@ -1,4 +1,6 @@
-﻿using Microsoft.Windows.AppNotifications;
+﻿using Microsoft.Windows.AppLifecycle;
+using Microsoft.Windows.AppNotifications;
+using MochaCore.Dispatching;
 using MochaCore.Notifications;
 using MochaWinUI.Notifications.Extensions;
 using System;
@@ -43,6 +45,8 @@ namespace MochaWinUI.Notifications
         private bool _interacted;
         private bool _isDisposed;
 
+        private static event EventHandler<AppNotificationActivatedEventArgs> NotificationLaunchReported;
+
         static WinUiNotification()
         {
             try
@@ -66,6 +70,7 @@ namespace MochaWinUI.Notifications
             RegistrationId = registrationId;
             AppNotificationManager.Default.NotificationInvoked += AnyNotificationInvoked;
             ToastNotificationManager.CreateToastNotifier().ScheduledToastNotificationShowing += NotificationDisplayed;
+            NotificationLaunchReported += OnNotificationLaunchReported;
         }
 
         /// <summary>
@@ -187,20 +192,27 @@ namespace MochaWinUI.Notifications
             }
 
             AppNotificationManager.Default.NotificationInvoked -= AnyNotificationInvoked;
+            NotificationLaunchReported -= OnNotificationLaunchReported;
             Unschedule();
             ScheduleRemovalFromMessageCenter();
             _isDisposed = true;
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
-        private static event EventHandler<AppNotificationActivatedEventArgs> //TODO !!!
-
         /// <summary>
         /// Triggers <see cref="Interacted"/> event for notification that is responsible for current app start.
         /// </summary>
-        public static void NotifyAppStartViaNotificationInteraction()
+        public static void ReportNotificationLaunch()
         {
-
+            AppInstance currentInstance = AppInstance.GetCurrent();
+            if (currentInstance.IsCurrent)
+            {
+                AppActivationArguments activationArgs = currentInstance.GetActivatedEventArgs();
+                if (activationArgs?.Data is AppNotificationActivatedEventArgs args)
+                {
+                    NotificationLaunchReported?.Invoke(null, args);
+                }
+            }
         }
 
         /// <summary>
@@ -222,11 +234,14 @@ namespace MochaWinUI.Notifications
         /// </summary>
         /// <param name="args">Source of data for creating instance.</param>
         protected virtual NotificationInteractedEventArgs CreateArgsFromInteractedEvent(AppNotificationActivatedEventArgs args)
-            => new (
+            => new(
                 CreateInteractedNotification(args),
                 args.Arguments[InvokedItemIdKey],
                 args.AsDictionary(),
-                args);
+                args)
+            {
+                IsActivationEvent = args.CheckLaunchingArg()
+            };
 
         /// <summary>
         /// Raises the <see cref="Interacted"/> event.
@@ -326,6 +341,9 @@ namespace MochaWinUI.Notifications
         private void AnyNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
             => HandleNotificationInvoked(args);
 
+        private void OnNotificationLaunchReported(object? sender, AppNotificationActivatedEventArgs e)
+            => HandleNotificationInvoked(e.AddLaunchingArg());
+
         private void HandleNotificationInvoked(AppNotificationActivatedEventArgs args)
         {
             if (!args.AreValid())
@@ -343,7 +361,7 @@ namespace MochaWinUI.Notifications
                 _interacted = true;
                 OnInteracted(CreateArgsFromInteractedEvent(args).WithNotification(this));
             }
-        }
+        }   
     }
 
     /// <summary>
@@ -425,6 +443,9 @@ namespace MochaWinUI.Notifications
                 args.Arguments[InvokedItemIdKey],
                 args.AsDictionary(),
                 args,
-                CreateInteractionData(args));
+                CreateInteractionData(args))
+            {
+                IsActivationEvent = args.CheckLaunchingArg()
+            };
     }
 }
