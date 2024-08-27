@@ -2,9 +2,11 @@
 using CommunityToolkit.Mvvm.Input;
 using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
+using MochaCore.Dispatching;
 using MochaCore.Navigation;
 using MochaCore.Notifications;
 using MochaCore.Notifications.Extensions;
+using MochaCore.Windowing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +16,15 @@ using ViewModelsX.Dialogs;
 
 namespace ViewModelsX.Pages.Notfifications
 {
-    public partial class NotificationsGeneralTabViewModel : ObservableObject, IOnNavigatedTo
+    public partial class NotificationsGeneralTabViewModel : ObservableObject, IOnNavigatedTo, IOnNavigatedFrom
     {
         private readonly INavigator _navigator;
+        private readonly Dictionary<string, string> _notificationSelectableItems = new()
+        {
+            {"i1", "Item #1"},
+            {"i2", "Item #2"},
+            {"i3", "Item #3"}
+        };
 
         public NotificationsGeneralTabViewModel(INavigator navigator)
         {
@@ -25,10 +33,18 @@ namespace ViewModelsX.Pages.Notfifications
 
         public void OnNavigatedTo(OnNavigatedToEventArgs e)
         {
+            SelectedScheduleTime = DateTime.Now.TimeOfDay;
+            NotificationManager.NotificationInteracted += NotificationInteracted;
+
             if (e.Parameter is NotificationInteractedEventArgs args)
             {
-                NotificationText = args.InvokedItemId;
+                HandleNotificationInteraction(args);
             }
+        }
+
+        public void OnNavigatedFrom(OnNavigatedFromEventArgs e)
+        {
+            NotificationManager.NotificationInteracted -= NotificationInteracted;
         }
 
         [ObservableProperty]
@@ -38,10 +54,17 @@ namespace ViewModelsX.Pages.Notfifications
         private string _notificationImagePath = string.Empty;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CanSchedule))]
         private bool _isDelayScheduleChecked;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CanSchedule))]
         private TimeSpan? _selectedScheduleTime;
+
+        public bool CanSchedule => !IsDelayScheduleChecked || IsInTheFuture(SelectedScheduleTime);
+
+        [ObservableProperty]
+        private string _result = string.Empty;
 
         [RelayCommand]
         private async Task BrowseImage()
@@ -71,28 +94,59 @@ namespace ViewModelsX.Pages.Notfifications
                 $"- these values will be received by the application, after clicking one of available buttons.",
                 HasTextInput = true,
                 TextInputPlaceholder = "The text provided here will be handled by the running app.",
-                SelectableItems = new Dictionary<string, string>()
-                {
-                    {"i1", "Item #1"},
-                    {"i2", "Item #2"},
-                    {"i3", "Item #3"}
-                },
+                SelectableItems = _notificationSelectableItems,
                 SelectableItemsHeader = "Choose any item here (default is 2):",
                 InitialSelectableItemId = "i2",
                 LeftButton = "Left button",
                 MiddleButton = "Middle button",
-                RightButton = "Right button"
-
+                RightButton = "Right button",
             };
 
-            notification.Interacted += NotificationInteracted;
-            notification.Schedule();
+            notification.Tag = GetType().ToString();
+
+            try
+            {
+                if (IsDelayScheduleChecked)
+                {
+                    DateTimeOffset scheduleTime = DateTimeOffset.Now.Date + (SelectedScheduleTime ?? default);
+                    notification.Schedule(scheduleTime);
+                }
+                else
+                {
+                    notification.Schedule();
+                }
+                
+                Result = "Scheduled!";
+            }
+            catch (Exception ex)
+            {
+                Result = ex.ToString();
+            }
         }
 
         private void NotificationInteracted(object? sender, NotificationInteractedEventArgs e)
         {
-            // Not on ui thread !
-            //((INotification)sender!).Interacted -= NotificationInteracted;
+            DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
+            {
+                if (e.Notification.Tag == GetType().ToString())
+                {
+                    HandleNotificationInteraction(e);
+                }
+            });
         }
+
+        private void HandleNotificationInteraction(NotificationInteractedEventArgs e)
+        {
+            (WindowManager.GetOpenedModules().First() as IWindowModule)?.Restore();
+            Result = CreateResultFromArgs(e);
+        }
+
+        private bool IsInTheFuture(TimeSpan? selectedScheduleTime)
+            => selectedScheduleTime > DateTime.Now.TimeOfDay;
+
+        private string CreateResultFromArgs(NotificationInteractedEventArgs args)
+            => $"Your text input was: {args.TextInput}{Environment.NewLine}" +
+            $"Your selected item was: {args.SelectedItemId} : {_notificationSelectableItems.GetValueOrDefault(args.SelectedItemId ?? string.Empty)}{Environment.NewLine}" +
+            $"You pressed the button: {args.InvokedItemId}";
     }
 }

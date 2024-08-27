@@ -22,7 +22,7 @@
         ScrollViewer.VerticalScrollBarVisibility="Disabled"
         Glyph="{utils:PageIconProvider PageId=NotificationsPage}">
         <controls:PageRoot.Tabs>
-            <PivotItem Header="Basic usage" Style="{StaticResource PivotItemStyle}">
+            <PivotItem Header="General" Style="{StaticResource PivotItemStyle}">
                 <local:NotificationsGeneralTab ViewModel="{Binding GeneralTabVM}" />
             </PivotItem>
         </controls:PageRoot.Tabs>

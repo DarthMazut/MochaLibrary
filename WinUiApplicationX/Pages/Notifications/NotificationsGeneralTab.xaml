@@ -18,8 +18,18 @@
                 </Button>
             </StackPanel>
             <CheckBox Content="Schedule delay" IsChecked="{Binding IsDelayScheduleChecked, Mode=TwoWay}"/>
-            <TimePicker Header="Select delivery time:" Time="{Binding SelectedScheduleTime, Mode=TwoWay}" ClockIdentifier="24HourClock" IsEnabled="{Binding IsDelayScheduleChecked}"/>
-            <Button Content="Schedule" Command="{Binding ScheduleCommand}"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TimePicker Header="Select delivery time:" Time="{Binding SelectedScheduleTime, Mode=TwoWay}" ClockIdentifier="24HourClock" IsEnabled="{Binding IsDelayScheduleChecked}"/>
+                <FontIcon
+                    Visibility="{Binding CanSchedule, Converter={StaticResource NegateBoolToVisibilityConverter}}"
+                    Glyph="&#xE783;"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,0,5"
+                    Foreground="{ThemeResource SystemFillColorCriticalBrush}" 
+                    ToolTipService.ToolTip="Cannot schedule in the past."/>
+            </StackPanel>
+            <Button IsEnabled="{Binding CanSchedule}" Content="Schedule" Command="{Binding ScheduleCommand}"/>
+            <TextBlock Text="{Binding Result}"/>
         </StackPanel>
     </Grid>
 </UserControl>
