@@ -106,7 +106,6 @@ namespace WinUiApplicationX
             mainWindow.Open();
 
             WinUiNotification.ReportNotificationLaunch();
-            //WinUiNotification.ReportNotificationLaunch();
         }
     }
 }

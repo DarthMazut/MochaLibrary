@@ -14,13 +14,21 @@ using ViewModelsX.Dialogs;
 
 namespace ViewModelsX.Pages.Notfifications
 {
-    public partial class NotificationsGeneralTabViewModel : ObservableObject
+    public partial class NotificationsGeneralTabViewModel : ObservableObject, IOnNavigatedTo
     {
         private readonly INavigator _navigator;
 
         public NotificationsGeneralTabViewModel(INavigator navigator)
         {
             _navigator = navigator;
+        }
+
+        public void OnNavigatedTo(OnNavigatedToEventArgs e)
+        {
+            if (e.Parameter is NotificationInteractedEventArgs args)
+            {
+                NotificationText = args.InvokedItemId;
+            }
         }
 
         [ObservableProperty]

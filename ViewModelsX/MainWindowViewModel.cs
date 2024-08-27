@@ -2,9 +2,12 @@
 using CommunityToolkit.Mvvm.Input;
 using MochaCore.Dialogs;
 using MochaCore.Dialogs.Extensions;
+using MochaCore.Dispatching;
 using MochaCore.Navigation;
+using MochaCore.Notifications;
 using MochaCore.Windowing;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +27,16 @@ namespace ViewModelsX
 
             NavigationServices.MainNavigationService.CurrentModuleChanged += HandleNavigation;
             NavigationServices.MainNavigationService.Initialize();
+
+            NotificationManager.NotificationInteracted += (s, e) =>
+            {
+                DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(async () =>
+                {
+                    await _mainNavigator.NavigateAsync(b => b
+                        .To(AppPages.NotificationsPage.Id)
+                        .WithParameter(e));
+                });
+            };
         }
 
         [ObservableProperty]

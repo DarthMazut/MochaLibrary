@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ViewModelsX.Pages.Notfifications
 {
-    public class NotificationsPageViewModel : ObservableObject, INavigationParticipant
+    public class NotificationsPageViewModel : ObservableObject, INavigationParticipant, IOnNavigatedTo
     {
         public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
@@ -18,5 +18,7 @@ namespace ViewModelsX.Pages.Notfifications
         }
 
         public NotificationsGeneralTabViewModel GeneralTabVM { get; }
+
+        public void OnNavigatedTo(OnNavigatedToEventArgs e) => GeneralTabVM.OnNavigatedTo(e);
     }
 }
