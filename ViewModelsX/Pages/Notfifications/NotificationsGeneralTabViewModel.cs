@@ -89,6 +89,7 @@ namespace ViewModelsX.Pages.Notfifications
             {
                 Title = "This is example notification",
                 NotificationImage = string.IsNullOrWhiteSpace(NotificationImagePath) ? null : NotificationImagePath,
+                ContentImage = @"C:\Users\AsyncMilk\Desktop\notify_test.png",
                 Content = $"The text you provided was: {NotificationText}.{Environment.NewLine}" +
                 $"You can add custom text into `TextBox` and select an example item from `ComboBox` " +
                 $"- these values will be received by the application, after clicking one of available buttons.",

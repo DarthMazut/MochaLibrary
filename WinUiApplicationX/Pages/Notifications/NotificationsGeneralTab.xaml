@@ -9,7 +9,63 @@
     mc:Ignorable="d">
 
     <Grid DataContext="{x:Bind ViewModel}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="560"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
         <StackPanel Spacing="12" HorizontalAlignment="Left">
+            <TextBox Header="Title" Text="{Binding Title, Mode=TwoWay}" Width="400"/>
+            <TextBox Header="Content" Text="{Binding Content, Mode=TwoWay}" Width="400"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Header="Notification image" Text="{Binding NotificationImagePath, Mode=TwoWay}" Width="349"/>
+                <Button Command="{Binding BrowseImageCommand}" VerticalAlignment="Bottom">
+                    <FontIcon Glyph="&#xED25;" />
+                </Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox Header="Content image" Text="{Binding ContentImagePath, Mode=TwoWay}" Width="349"/>
+                <Button Command="{Binding BrowseImageCommand}" VerticalAlignment="Bottom">
+                    <FontIcon Glyph="&#xED25;" />
+                </Button>
+            </StackPanel>
+        </StackPanel>
+        <Border
+            Grid.Column="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            BorderBrush="{ThemeResource SystemFillColorAttentionBrush}"
+            BorderThickness="4"
+            CornerRadius="4">
+            <Image Source="ms-appx:///Assets/NotificationOverview.png" Stretch="None"/>
+        </Border>
+        <Canvas Grid.Column="1" Width="364" Height="470" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Rectangle
+            x:Name="MyLine"
+            Width="80"
+            Height="35"
+            Stroke="Orange"
+            StrokeDashArray="2"
+            StrokeThickness="2"
+            Canvas.Left="70"
+            Canvas.Top="195">
+                <Rectangle.Triggers>
+                    <EventTrigger>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="MyLine"
+                                     Storyboard.TargetProperty="StrokeDashOffset"
+                                     EnableDependentAnimation="True"
+                                     RepeatBehavior="Forever"
+                                     AutoReverse="False"
+                                     To="-4"
+                                     Duration="0:0:0.5" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Rectangle.Triggers>
+            </Rectangle>
+        </Canvas>
+        <!--<StackPanel Spacing="12" HorizontalAlignment="Left">
             <TextBox Header="Input text:" Text="{Binding NotificationText, Mode=TwoWay}" Width="400"/>
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <TextBox Header="Image path:" Text="{Binding NotificationImagePath, Mode=TwoWay}" Width="349"/>
@@ -30,6 +86,6 @@
             </StackPanel>
             <Button IsEnabled="{Binding CanSchedule}" Content="Schedule" Command="{Binding ScheduleCommand}"/>
             <TextBlock Text="{Binding Result}"/>
-        </StackPanel>
+        </StackPanel>-->
     </Grid>
 </UserControl>
