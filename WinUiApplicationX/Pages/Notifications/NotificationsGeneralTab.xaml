@@ -8,13 +8,21 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <UserControl.Resources>
+        <Style x:Key="InteractiveBorderStyle" TargetType="Rectangle">
+            <Setter Property="Stroke" Value="Orange" />
+            <Setter Property="StrokeDashArray" Value="2" />
+            <Setter Property="StrokeThickness" Value="2" />
+        </Style>
+    </UserControl.Resources>
+    
     <Grid DataContext="{x:Bind ViewModel}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="560"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Spacing="12" HorizontalAlignment="Left">
-            <TextBox Header="Title" Text="{Binding Title, Mode=TwoWay}" Width="400"/>
+            <TextBox x:Name="TitleTextBox" Header="Title" Text="{Binding Title, Mode=TwoWay}" Width="400"/>
             <TextBox Header="Content" Text="{Binding Content, Mode=TwoWay}" Width="400"/>
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <TextBox Header="Notification image" Text="{Binding NotificationImagePath, Mode=TwoWay}" Width="349"/>
@@ -38,33 +46,8 @@
             CornerRadius="4">
             <Image Source="ms-appx:///Assets/NotificationOverview.png" Stretch="None"/>
         </Border>
-        <Canvas Grid.Column="1" Width="364" Height="470" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Rectangle
-            x:Name="MyLine"
-            Width="80"
-            Height="35"
-            Stroke="Orange"
-            StrokeDashArray="2"
-            StrokeThickness="2"
-            Canvas.Left="70"
-            Canvas.Top="195">
-                <Rectangle.Triggers>
-                    <EventTrigger>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="MyLine"
-                                     Storyboard.TargetProperty="StrokeDashOffset"
-                                     EnableDependentAnimation="True"
-                                     RepeatBehavior="Forever"
-                                     AutoReverse="False"
-                                     To="-4"
-                                     Duration="0:0:0.5" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Rectangle.Triggers>
-            </Rectangle>
-        </Canvas>
+        <Canvas x:Name="InteractiveCanvas" Grid.Column="1" Width="364" Height="470" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
         <!--<StackPanel Spacing="12" HorizontalAlignment="Left">
             <TextBox Header="Input text:" Text="{Binding NotificationText, Mode=TwoWay}" Width="400"/>
             <StackPanel Orientation="Horizontal" Spacing="8">
