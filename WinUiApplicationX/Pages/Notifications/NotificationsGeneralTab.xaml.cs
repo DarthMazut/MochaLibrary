@@ -1,3 +1,4 @@
+using Microsoft.UI;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -44,9 +45,10 @@ namespace WinUiApplicationX.Pages.Notifications
         private void CreateInteractiveBorders()
         {
             CreateBorder(TitleTextBox, 80, 30, 70, 195);
+            CreateBorder(ContentTextBox, 80, 30, 70, 215);
         }
 
-        private void CreateBorder(TextBox titleTextBox, int width, int height, int left, int top)
+        private void CreateBorder(UIElement element, int width, int height, int left, int top)
         {
             // Spring animation
             Compositor compositor = CompositionTarget.GetCompositorForCurrentThread();
@@ -58,28 +60,36 @@ namespace WinUiApplicationX.Pages.Notifications
             // Create rectangle
             Rectangle rectangle = new()
             {
-                Name = $"{nameof(titleTextBox)}Rectangle",
                 Width = width,
                 Height = height,
-                Style = (Style)Resources["InteractiveBorderStyle"]
+                Stroke = new SolidColorBrush(Colors.Orange),
+                StrokeDashArray = [2],
+                StrokeThickness = 2,
+                Visibility = Visibility.Collapsed,
+                CenterPoint = new(width/2,height/2,0)
             };
 
             rectangle.SetValue(Canvas.TopProperty, top);
             rectangle.SetValue(Canvas.LeftProperty, left);
 
-            //Visual visual = ElementCompositionPreview.GetElementVisual(rectangle);
-            //visual.CenterPoint = new Vector3((float)rectangle.Width / 2, (float)rectangle.Height / 2, 0);
-
-            titleTextBox.GotFocus += (s, e) =>
+            element.GotFocus += (s, e) =>
             {
                 rectangle.Visibility = Visibility.Visible;
                 rectangle.StartAnimation(springAnimation);
             };
-            titleTextBox.LostFocus += (s, e) => rectangle.Visibility = Visibility.Collapsed;
+            element.LostFocus += (s, e) => rectangle.Visibility = Visibility.Collapsed;
 
             InteractiveCanvas.Children.Add(rectangle);
-            
+
+            // Any animation
+            ExpressionAnimation antAnimation = CompositionTarget.GetCompositorForCurrentThread().CreateExpressionAnimation("rect.StrokeDashOffset-4");
+            antAnimation.SetExpressionReferenceParameter("rect", rectangle);
+            antAnimation.Target = "StrokeDashOffset";
+            antAnimation.
+            rectangle.StartAnimation(antAnimation);
+
             // Moving ant animation
+            /*
             DoubleAnimation doubleAnimation = new()
             {
                 EnableDependentAnimation = true,
@@ -95,6 +105,7 @@ namespace WinUiApplicationX.Pages.Notifications
             Storyboard.SetTargetProperty(doubleAnimation, "StrokeDashOffset");
 
             storyboard.Begin();
+            */
         }
     }
 }
