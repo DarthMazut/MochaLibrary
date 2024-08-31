@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using System;
@@ -19,6 +20,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using ViewModelsX.Pages.Notfifications;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core.AnimationMetrics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -40,12 +42,31 @@ namespace WinUiApplicationX.Pages.Notifications
         {
             this.InitializeComponent();
             CreateInteractiveBorders();
+            NotificationImageTextBox.TextChanged += (s, e) =>
+            {
+                if (System.IO.Path.Exists(NotificationImageTextBox.Text))
+                {
+                    ToolTipService.SetToolTip(NotificationImageTextBox, new ToolTip()
+                    {
+                        Content = new Image()
+                        {
+                            Source = new BitmapImage(new Uri(NotificationImageTextBox.Text))
+                        }
+                    });
+                }
+                else
+                {
+                    ToolTipService.SetToolTip(NotificationImageTextBox, null);
+                }
+            };
         }
 
         private void CreateInteractiveBorders()
         {
             CreateBorder(TitleTextBox, 80, 30, 70, 195);
             CreateBorder(ContentTextBox, 80, 30, 70, 215);
+            CreateBorder(NotificationImageTextBox, 50, 50, 15, 205);
+            CreateBorder(ContentImageTextBox, 364, 181, 0, 0);
         }
 
         private void CreateBorder(UIElement element, int width, int height, int left, int top)
@@ -81,15 +102,7 @@ namespace WinUiApplicationX.Pages.Notifications
 
             InteractiveCanvas.Children.Add(rectangle);
 
-            // Any animation
-            ExpressionAnimation antAnimation = CompositionTarget.GetCompositorForCurrentThread().CreateExpressionAnimation("rect.StrokeDashOffset-4");
-            antAnimation.SetExpressionReferenceParameter("rect", rectangle);
-            antAnimation.Target = "StrokeDashOffset";
-            antAnimation.
-            rectangle.StartAnimation(antAnimation);
-
             // Moving ant animation
-            /*
             DoubleAnimation doubleAnimation = new()
             {
                 EnableDependentAnimation = true,
@@ -105,7 +118,6 @@ namespace WinUiApplicationX.Pages.Notifications
             Storyboard.SetTargetProperty(doubleAnimation, "StrokeDashOffset");
 
             storyboard.Begin();
-            */
         }
     }
 }
