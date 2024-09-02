@@ -6,6 +6,7 @@
     xmlns:local="using:WinUiApplicationX.Pages.Notifications"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:WinUiApplicationX.Controls"
     mc:Ignorable="d">
 
     <Grid DataContext="{x:Bind ViewModel}">
@@ -28,6 +29,7 @@
                     <FontIcon Glyph="&#xED25;" />
                 </Button>
             </StackPanel>
+            <controls:TextBoxEx Width="400"/>
         </StackPanel>
         <Grid
             Grid.Column="1"

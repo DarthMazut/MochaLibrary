@@ -61,6 +61,7 @@
     <None Remove="Pages\Notifications\NotificationsGeneralTab.xaml" />
     <None Remove="Pages\Notifications\NotificationsPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Themes\TextBoxEx.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Resource Remove="MyDialog.xaml" />
@@ -116,5 +117,11 @@
     <Page Update="Pages\Notifications\NotificationsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Themes\TextBoxEx.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Remove="Themes\TextBoxEx.xaml" />
   </ItemGroup>
 </Project>

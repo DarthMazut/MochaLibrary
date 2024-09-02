@@ -10,6 +10,7 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <ResourceDictionary Source="/Converters/CommonConverters.xaml"/>
                 <ResourceDictionary Source="/Themes/PageRoot.xaml"/>
+                <ResourceDictionary Source="/Themes/TextBoxEx.xaml"/>
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
