@@ -192,13 +192,6 @@
                                                 </DiscreteObjectKeyFrame.Value>
                                             </DiscreteObjectKeyFrame>
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="GazeButton" Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0">
-                                                <DiscreteObjectKeyFrame.Value>
-                                                    <Visibility>Visible</Visibility>
-                                                </DiscreteObjectKeyFrame.Value>
-                                            </DiscreteObjectKeyFrame>
-                                        </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="ButtonCollapsed" />
@@ -212,16 +205,26 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <ContentPresenter x:Name="HeaderContentPresenter" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" FontWeight="Normal" Foreground="{ThemeResource TextControlHeaderForeground}" Margin="{ThemeResource TextBoxTopHeaderMargin}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed" x:DeferLoadStrategy="Lazy" />
                         <Border x:Name="BorderElement" Grid.Row="1" Grid.Column="0" Grid.RowSpan="1" Grid.ColumnSpan="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Control.IsTemplateFocusTarget="True" MinWidth="{TemplateBinding MinWidth}" MinHeight="{TemplateBinding MinHeight}" />
                         <ScrollViewer x:Name="ContentElement" Grid.Row="1" Grid.Column="0" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}" IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}" IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}" Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Foreground="{TemplateBinding Foreground}" IsTabStop="False" AutomationProperties.AccessibilityView="Raw" ZoomMode="Disabled" />
                         <TextBlock x:Name="PlaceholderTextContentPresenter" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Foreground="{Binding PlaceholderForeground, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={ThemeResource TextControlPlaceholderForeground}}" Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Text="{TemplateBinding PlaceholderText}" TextAlignment="{TemplateBinding TextAlignment}" TextWrapping="{TemplateBinding TextWrapping}" IsHitTestVisible="False" />
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
-                            <Button x:Name="GazeButton" Style="{StaticResource GazeButtonStyle}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{ThemeResource HelperButtonThemePadding}" IsTabStop="False" Visibility="Collapsed" AutomationProperties.AccessibilityView="Raw" FontSize="{TemplateBinding FontSize}" Width="30" VerticalAlignment="Stretch" />
+                            <Button x:Name="GazeButton" Style="{StaticResource GazeButtonStyle}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{ThemeResource HelperButtonThemePadding}" IsTabStop="False" Visibility="Collapsed" AutomationProperties.AccessibilityView="Raw" FontSize="{TemplateBinding FontSize}" Width="30" VerticalAlignment="Stretch">
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <Image x:Name="PreviewImage" MaxWidth="400" MaxHeight="400" Stretch="UniformToFill" />
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
                             <Button x:Name="DeleteButton" Style="{StaticResource DeleteButtonStyle}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{ThemeResource HelperButtonThemePadding}" IsTabStop="False" Visibility="Collapsed" AutomationProperties.AccessibilityView="Raw" FontSize="{TemplateBinding FontSize}" Width="30" VerticalAlignment="Stretch" />
                         </StackPanel>
                         <ContentPresenter x:Name="DescriptionPresenter" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="{TemplateBinding Description}" Foreground="{ThemeResource SystemControlDescriptionTextForegroundBrush}" AutomationProperties.AccessibilityView="Raw" x:Load="False" />
+                        <Button x:Name="CommandButton" Grid.Row="1" Grid.Column="2" Margin="8,0,0,0">
+                            <FontIcon Glyph="&#xED25;" />
+                        </Button>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

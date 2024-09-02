@@ -29,7 +29,12 @@
                     <FontIcon Glyph="&#xED25;" />
                 </Button>
             </StackPanel>
-            <controls:TextBoxEx Width="400"/>
+            <StackPanel Spacing="12">
+                <CheckBox x:Name="TextInputCheckBox" Content="Display text input" />
+                <TextBox x:Name="TextInputHeader" Header="Text input header" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
+                <TextBox x:Name="TextInputPlaceholder" Header="Text input placeholder" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputPlaceholder, Mode=TwoWay}" Width="400"/>
+            </StackPanel>
+            <controls:TextBoxEx Width="400" Command="{Binding BrowseImageCommand}"/>
         </StackPanel>
         <Grid
             Grid.Column="1"
