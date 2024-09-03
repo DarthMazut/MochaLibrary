@@ -14,28 +14,6 @@
             <ColumnDefinition Width="450"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Spacing="12" HorizontalAlignment="Left">
-            <TextBox x:Name="TitleTextBox" Header="Title" Text="{Binding Title, Mode=TwoWay}" Width="400"/>
-            <TextBox x:Name="ContentTextBox" Header="Content" Text="{Binding Content, Mode=TwoWay}" Width="400"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBox x:Name="NotificationImageTextBox" Header="Notification image" Text="{Binding NotificationImagePath, Mode=TwoWay}" Width="349"/>
-                <Button Command="{Binding BrowseImageCommand}" VerticalAlignment="Bottom" Height="32">
-                    <FontIcon Glyph="&#xED25;" />
-                </Button>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBox x:Name="ContentImageTextBox" Header="Content image" Text="{Binding ContentImagePath, Mode=TwoWay}" Width="349"/>
-                <Button Command="{Binding BrowseImageCommand}" VerticalAlignment="Bottom" Height="32">
-                    <FontIcon Glyph="&#xED25;" />
-                </Button>
-            </StackPanel>
-            <StackPanel Spacing="12">
-                <CheckBox x:Name="TextInputCheckBox" Content="Display text input" />
-                <TextBox x:Name="TextInputHeader" Header="Text input header" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
-                <TextBox x:Name="TextInputPlaceholder" Header="Text input placeholder" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputPlaceholder, Mode=TwoWay}" Width="400"/>
-            </StackPanel>
-            <controls:TextBoxEx Width="400" Command="{Binding BrowseImageCommand}"/>
-        </StackPanel>
         <Grid
             Grid.Column="1"
             HorizontalAlignment="Center"
@@ -46,29 +24,32 @@
             <Image Source="ms-appx:///Assets/NotificationOverview.png" Stretch="None"/>
             <Canvas x:Name="InteractiveCanvas"/>
         </Grid>
-        
-
-        <!--<StackPanel Spacing="12" HorizontalAlignment="Left">
-            <TextBox Header="Input text:" Text="{Binding NotificationText, Mode=TwoWay}" Width="400"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBox Header="Image path:" Text="{Binding NotificationImagePath, Mode=TwoWay}" Width="349"/>
-                <Button Command="{Binding BrowseImageCommand}" VerticalAlignment="Bottom">
-                    <FontIcon Glyph="&#xED25;" />
-                </Button>
+        <ScrollViewer Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="12" HorizontalAlignment="Left">
+                <TextBox x:Name="TitleTextBox" Header="Title" Text="{Binding Title, Mode=TwoWay}" Width="400"/>
+                <TextBox x:Name="ContentTextBox" Header="Content" Text="{Binding Content, Mode=TwoWay}" Width="400"/>
+                <controls:TextBoxEx
+                    x:Name="NotificationImageTextBox"
+                    Header="Notification image"
+                    Text="{Binding NotificationImagePath, Mode=TwoWay}"
+                    Command="{Binding BrowseImageCommand}"
+                    Width="400"/>
+                <controls:TextBoxEx
+                    x:Name="ContentImageTextBox"
+                    Header="Content image"
+                    Text="{Binding ContentImagePath, Mode=TwoWay}"
+                    Command="{Binding BrowseImageCommand}"
+                    Width="400"/>
+                <StackPanel Spacing="12">
+                    <CheckBox x:Name="TextInputCheckBox" Content="Display text input" />
+                    <TextBox x:Name="TextInputHeader" Header="Text input header" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
+                    <TextBox x:Name="TextInputPlaceholder" Header="Text input placeholder" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputPlaceholder, Mode=TwoWay}" Width="400"/>
+                </StackPanel>
+                <StackPanel Spacing="12">
+                    <CheckBox x:Name="SelectableItemCheckBox" Content="Display selectable item" />
+                    <TextBox x:Name="SelectableItemHeader" Header="Selectable item header" IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
+                </StackPanel>
             </StackPanel>
-            <CheckBox Content="Schedule delay" IsChecked="{Binding IsDelayScheduleChecked, Mode=TwoWay}"/>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <TimePicker Header="Select delivery time:" Time="{Binding SelectedScheduleTime, Mode=TwoWay}" ClockIdentifier="24HourClock" IsEnabled="{Binding IsDelayScheduleChecked}"/>
-                <FontIcon
-                    Visibility="{Binding CanSchedule, Converter={StaticResource NegateBoolToVisibilityConverter}}"
-                    Glyph="&#xE783;"
-                    VerticalAlignment="Bottom"
-                    Margin="0,0,0,5"
-                    Foreground="{ThemeResource SystemFillColorCriticalBrush}" 
-                    ToolTipService.ToolTip="Cannot schedule in the past."/>
-            </StackPanel>
-            <Button IsEnabled="{Binding CanSchedule}" Content="Schedule" Command="{Binding ScheduleCommand}"/>
-            <TextBlock Text="{Binding Result}"/>
-        </StackPanel>-->
+        </ScrollViewer>
     </Grid>
 </UserControl>

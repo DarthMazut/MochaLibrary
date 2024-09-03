@@ -215,7 +215,7 @@
                             <Button x:Name="GazeButton" Style="{StaticResource GazeButtonStyle}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{ThemeResource HelperButtonThemePadding}" IsTabStop="False" Visibility="Collapsed" AutomationProperties.AccessibilityView="Raw" FontSize="{TemplateBinding FontSize}" Width="30" VerticalAlignment="Stretch">
                                 <Button.Flyout>
                                     <Flyout>
-                                        <Image x:Name="PreviewImage" MaxWidth="400" MaxHeight="400" Stretch="UniformToFill" />
+                                        <Image x:Name="PreviewImage" MaxWidth="400" MaxHeight="400" Stretch="Uniform" />
                                     </Flyout>
                                 </Button.Flyout>
                             </Button>
