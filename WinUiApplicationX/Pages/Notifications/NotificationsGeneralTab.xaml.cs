@@ -70,6 +70,8 @@ namespace WinUiApplicationX.Pages.Notifications
             CreateBorder(TextInputCheckBox, 345, 70, 10, 270);
             CreateBorder(TextInputHeader, 120, 25, 15, 280);
             CreateBorder(TextInputPlaceholder, 327, 27, 18, 303);
+            CreateBorder(SelectableItemCheckBox, 346, 68, 10, 345);
+            CreateBorder(SelectableItemHeader, 156, 28, 10, 345);
         }
 
         private void CreateBorder(UIElement element, int width, int height, int left, int top)

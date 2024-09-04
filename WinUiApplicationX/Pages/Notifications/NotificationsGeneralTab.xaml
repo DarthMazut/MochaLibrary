@@ -48,6 +48,44 @@
                 <StackPanel Spacing="12">
                     <CheckBox x:Name="SelectableItemCheckBox" Content="Display selectable item" />
                     <TextBox x:Name="SelectableItemHeader" Header="Selectable item header" IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
+                    <Grid>
+                        <ListBox
+                            HorizontalAlignment="Left"
+                            HorizontalContentAlignment="Stretch"
+                            Width="400"
+                            Height="180"
+                            BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}">
+                            <ListBoxItem>
+                                <Grid Background="Red" Padding="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Item #1" />
+                                        <TextBlock Text="i1" FontSize="9" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1">
+                                        <FontIcon Glyph="&#xE74D;" />
+                                    </Button>
+                                </Grid>
+                            </ListBoxItem>
+                        </ListBox>
+                        <Button
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            Margin="8"
+                            CornerRadius="18"
+                            Width="36"
+                            Height="36"
+                            Padding="2"
+                            IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}">
+                            <FontIcon Glyph="&#xE710;" />
+                        </Button>
+                    </Grid>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
