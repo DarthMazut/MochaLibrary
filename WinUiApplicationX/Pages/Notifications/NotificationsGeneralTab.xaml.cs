@@ -42,23 +42,6 @@ namespace WinUiApplicationX.Pages.Notifications
         {
             this.InitializeComponent();
             CreateInteractiveBorders();
-            NotificationImageTextBox.TextChanged += (s, e) =>
-            {
-                if (System.IO.Path.Exists(NotificationImageTextBox.Text))
-                {
-                    ToolTipService.SetToolTip(NotificationImageTextBox, new ToolTip()
-                    {
-                        Content = new Image()
-                        {
-                            Source = new BitmapImage(new Uri(NotificationImageTextBox.Text))
-                        }
-                    });
-                }
-                else
-                {
-                    ToolTipService.SetToolTip(NotificationImageTextBox, null);
-                }
-            };
         }
 
         private void CreateInteractiveBorders()
@@ -72,6 +55,13 @@ namespace WinUiApplicationX.Pages.Notifications
             CreateBorder(TextInputPlaceholder, 327, 27, 18, 303);
             CreateBorder(SelectableItemCheckBox, 346, 68, 10, 345);
             CreateBorder(SelectableItemHeader, 156, 28, 10, 345);
+            CreateBorder(SelectableItemsList, 327, 26, 18, 374);
+            CreateBorder(LeftButtonCheckBox, 109, 34, 17, 420);
+            CreateBorder(LeftButtonTextBox, 109, 34, 17, 420);
+            CreateBorder(MiddleButtonCheckBox, 109, 34, 128, 420);
+            CreateBorder(MiddleButtonTextBox, 109, 34, 128, 420);
+            CreateBorder(RightButtonCheckBox, 109, 34, 239, 420);
+            CreateBorder(RightButtonTextBox, 109, 34, 239, 420);
         }
 
         private void CreateBorder(UIElement element, int width, int height, int left, int top)

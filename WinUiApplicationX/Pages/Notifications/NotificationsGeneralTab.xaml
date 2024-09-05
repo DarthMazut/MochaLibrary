@@ -9,6 +9,10 @@
     xmlns:controls="using:WinUiApplicationX.Controls"
     mc:Ignorable="d">
 
+    <UserControl.Resources>
+       
+    </UserControl.Resources>
+    
     <Grid DataContext="{x:Bind ViewModel}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="450"/>
@@ -52,6 +56,7 @@
                         <TextBox x:Name="SelectableItemHeader" Header="Selectable item header" IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
                         <Grid>
                             <ListView
+                                x:Name="SelectableItemsList"
                                 HorizontalAlignment="Left"
                                 Width="400"
                                 Height="180"
@@ -89,19 +94,19 @@
                         </Grid>
                         <StackPanel>
                             <CheckBox x:Name="LeftButtonCheckBox" Content="Left button"/>
-                            <TextBox Width="400" PlaceholderText="Left button name" IsEnabled="{Binding IsChecked, ElementName=LeftButtonCheckBox}"/>
+                            <TextBox x:Name="LeftButtonTextBox" Width="400" PlaceholderText="Left button name" IsEnabled="{Binding IsChecked, ElementName=LeftButtonCheckBox}"/>
                         </StackPanel>
                         <StackPanel>
                             <CheckBox x:Name="MiddleButtonCheckBox" Content="Middle button"/>
-                            <TextBox Width="400" PlaceholderText="Middle button name" IsEnabled="{Binding IsChecked, ElementName=MiddleButtonCheckBox}"/>
+                            <TextBox x:Name="MiddleButtonTextBox" Width="400" PlaceholderText="Middle button name" IsEnabled="{Binding IsChecked, ElementName=MiddleButtonCheckBox}"/>
                         </StackPanel>
                         <StackPanel>
                             <CheckBox x:Name="RightButtonCheckBox" Content="Right button"/>
-                            <TextBox Width="400" PlaceholderText="Right button name" IsEnabled="{Binding IsChecked, ElementName=RightButtonCheckBox}"/>
+                            <TextBox x:Name="RightButtonTextBox" Width="400" PlaceholderText="Right button name" IsEnabled="{Binding IsChecked, ElementName=RightButtonCheckBox}"/>
                         </StackPanel>
                         <StackPanel>
                             <CheckBox x:Name="DelayCheckBox" Content="Delay"/>
-                            <Slider Minimum="3" Maximum="30" IsEnabled="{Binding IsChecked, ElementName=DelayCheckBox}"/>
+                            <Slider x:Name="DelaySlider" Minimum="3" Maximum="30" IsEnabled="{Binding IsChecked, ElementName=DelayCheckBox}"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
