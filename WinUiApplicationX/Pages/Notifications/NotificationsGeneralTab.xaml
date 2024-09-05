@@ -26,66 +26,149 @@
         </Grid>
         <ScrollViewer Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel Spacing="12" HorizontalAlignment="Left">
-                <TextBox x:Name="TitleTextBox" Header="Title" Text="{Binding Title, Mode=TwoWay}" Width="400"/>
-                <TextBox x:Name="ContentTextBox" Header="Content" Text="{Binding Content, Mode=TwoWay}" Width="400"/>
-                <controls:TextBoxEx
-                    x:Name="NotificationImageTextBox"
-                    Header="Notification image"
-                    Text="{Binding NotificationImagePath, Mode=TwoWay}"
-                    Command="{Binding BrowseImageCommand}"
-                    Width="400"/>
-                <controls:TextBoxEx
-                    x:Name="ContentImageTextBox"
-                    Header="Content image"
-                    Text="{Binding ContentImagePath, Mode=TwoWay}"
-                    Command="{Binding BrowseImageCommand}"
-                    Width="400"/>
-                <StackPanel Spacing="12">
-                    <CheckBox x:Name="TextInputCheckBox" Content="Display text input" />
-                    <TextBox x:Name="TextInputHeader" Header="Text input header" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
-                    <TextBox x:Name="TextInputPlaceholder" Header="Text input placeholder" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputPlaceholder, Mode=TwoWay}" Width="400"/>
+                <!-- PARAMETERS -->
+                <StackPanel Spacing="12" HorizontalAlignment="Left">
+                    <TextBox x:Name="TitleTextBox" Header="Title" Text="{Binding Title, Mode=TwoWay}" Width="400"/>
+                    <TextBox x:Name="ContentTextBox" Header="Content" Text="{Binding Content, Mode=TwoWay}" Width="400"/>
+                    <controls:TextBoxEx
+                        x:Name="NotificationImageTextBox"
+                        Header="Notification image"
+                        Text="{Binding NotificationImagePath, Mode=TwoWay}"
+                        Command="{Binding BrowseImageCommand}"
+                        Width="400"/>
+                    <controls:TextBoxEx
+                        x:Name="ContentImageTextBox"
+                        Header="Content image"
+                        Text="{Binding ContentImagePath, Mode=TwoWay}"
+                        Command="{Binding BrowseImageCommand}"
+                        Width="400"/>
+                    <StackPanel Spacing="12">
+                        <CheckBox x:Name="TextInputCheckBox" Content="Display text input" />
+                        <TextBox x:Name="TextInputHeader" Header="Text input header" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
+                        <TextBox x:Name="TextInputPlaceholder" Header="Text input placeholder" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputPlaceholder, Mode=TwoWay}" Width="400"/>
+                    </StackPanel>
+                    <StackPanel Spacing="12">
+                        <CheckBox x:Name="SelectableItemCheckBox" Content="Display selectable item" />
+                        <TextBox x:Name="SelectableItemHeader" Header="Selectable item header" IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
+                        <Grid>
+                            <ListView
+                                HorizontalAlignment="Left"
+                                Width="400"
+                                Height="180"
+                                BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}">
+                                <ListViewItem x:Name="ListItem" Height="55">
+                                    <Grid Padding="4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="Item #1" />
+                                            <TextBlock Text="i1" FontSize="10" />
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Visibility="{Binding IsSelected, ElementName=ListItem, Converter={StaticResource BoolToVisibilityConverter}}">
+                                            <FontIcon Glyph="&#xE74D;" />
+                                        </Button>
+                                    </Grid>
+                                </ListViewItem>
+                            </ListView>
+                            <Button
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Style="{ThemeResource AccentButtonStyle}"
+                                Margin="8"
+                                CornerRadius="18"
+                                Width="36"
+                                Height="36"
+                                Padding="2"
+                                Visibility="{Binding IsChecked, ElementName=SelectableItemCheckBox, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <FontIcon Glyph="&#xE710;" />
+                            </Button>
+                        </Grid>
+                        <StackPanel>
+                            <CheckBox x:Name="LeftButtonCheckBox" Content="Left button"/>
+                            <TextBox Width="400" PlaceholderText="Left button name" IsEnabled="{Binding IsChecked, ElementName=LeftButtonCheckBox}"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <CheckBox x:Name="MiddleButtonCheckBox" Content="Middle button"/>
+                            <TextBox Width="400" PlaceholderText="Middle button name" IsEnabled="{Binding IsChecked, ElementName=MiddleButtonCheckBox}"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <CheckBox x:Name="RightButtonCheckBox" Content="Right button"/>
+                            <TextBox Width="400" PlaceholderText="Right button name" IsEnabled="{Binding IsChecked, ElementName=RightButtonCheckBox}"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <CheckBox x:Name="DelayCheckBox" Content="Delay"/>
+                            <Slider Minimum="3" Maximum="30" IsEnabled="{Binding IsChecked, ElementName=DelayCheckBox}"/>
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
-                <StackPanel Spacing="12">
-                    <CheckBox x:Name="SelectableItemCheckBox" Content="Display selectable item" />
-                    <TextBox x:Name="SelectableItemHeader" Header="Selectable item header" IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
-                    <Grid>
-                        <ListBox
-                            HorizontalAlignment="Left"
-                            HorizontalContentAlignment="Stretch"
-                            Width="400"
-                            Height="180"
-                            BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
-                            BorderThickness="1"
-                            IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}">
-                            <ListBoxItem>
-                                <Grid Background="Red" Padding="4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel>
-                                        <TextBlock Text="Item #1" />
-                                        <TextBlock Text="i1" FontSize="9" />
-                                    </StackPanel>
-                                    <Button Grid.Column="1">
-                                        <FontIcon Glyph="&#xE74D;" />
-                                    </Button>
-                                </Grid>
-                            </ListBoxItem>
-                        </ListBox>
-                        <Button
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            Margin="8"
-                            CornerRadius="18"
-                            Width="36"
-                            Height="36"
-                            Padding="2"
-                            IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}">
-                            <FontIcon Glyph="&#xE710;" />
-                        </Button>
-                    </Grid>
+                <!-- SEND & RESPONSE -->
+                <StackPanel Spacing="12" HorizontalAlignment="Left">
+                    <Button HorizontalAlignment="Right">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE725;" />
+                            <TextBlock Text="Schedule"/>
+                        </StackPanel>
+                    </Button>
+                    <TextBlock FontSize="18" FontWeight="Bold" Text="Interaction data"/>
+                    <ListView
+                        SelectionMode="None"
+                        HorizontalAlignment="Left"
+                        Width="400"
+                        BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                        BorderThickness="1">
+                        <ListViewItem>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Id" />
+                                <Rectangle Grid.Column="1" Fill="{ThemeResource SurfaceStrokeColorDefaultBrush}" Width="1" VerticalAlignment="Stretch"/>
+                                <TextBlock Grid.Column="2" Text="sadasdsadssad sad as" />
+                            </Grid>
+                        </ListViewItem>
+                        <ListViewItem>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Id" />
+                                <Rectangle Grid.Column="1" Fill="{ThemeResource SurfaceStrokeColorDefaultBrush}" Width="1" VerticalAlignment="Stretch"/>
+                                <TextBlock Grid.Column="2" Text="sadasdsadssad sad as" />
+                            </Grid>
+                        </ListViewItem>
+                        <ListViewItem>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Id" />
+                                <Rectangle Grid.Column="1" Fill="{ThemeResource SurfaceStrokeColorDefaultBrush}" Width="1" VerticalAlignment="Stretch"/>
+                                <TextBlock Grid.Column="2" Text="sadasdsadssad sad as" />
+                            </Grid>
+                        </ListViewItem>
+                        <ListViewItem>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Id" />
+                                <Rectangle Grid.Column="1" Fill="{ThemeResource SurfaceStrokeColorDefaultBrush}" Width="1" VerticalAlignment="Stretch"/>
+                                <TextBlock Grid.Column="2" Text="sadasdsadssad sad as" />
+                            </Grid>
+                        </ListViewItem>
+                    </ListView>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
