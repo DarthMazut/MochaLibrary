@@ -62,6 +62,8 @@ namespace WinUiApplicationX.Pages.Notifications
             CreateBorder(MiddleButtonTextBox, 109, 34, 128, 420);
             CreateBorder(RightButtonCheckBox, 109, 34, 239, 420);
             CreateBorder(RightButtonTextBox, 109, 34, 239, 420);
+            CreateBorder(DelayCheckBox, 45, 26, 74, 240);
+            CreateBorder(DelaySlider, 45, 26, 74, 240);
         }
 
         private void CreateBorder(UIElement element, int width, int height, int left, int top)
