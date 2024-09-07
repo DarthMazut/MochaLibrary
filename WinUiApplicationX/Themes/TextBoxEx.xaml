@@ -26,7 +26,7 @@
         <Setter Property="BackgroundSizing" Value="InnerBorderEdge" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="TextBox">
+                <ControlTemplate TargetType="controls:TextBoxEx">
                     <Grid>
                         <Grid.Resources>
                             <Style x:Name="DeleteButtonStyle" TargetType="Button">
@@ -222,8 +222,8 @@
                             <Button x:Name="DeleteButton" Style="{StaticResource DeleteButtonStyle}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{ThemeResource HelperButtonThemePadding}" IsTabStop="False" Visibility="Collapsed" AutomationProperties.AccessibilityView="Raw" FontSize="{TemplateBinding FontSize}" Width="30" VerticalAlignment="Stretch" />
                         </StackPanel>
                         <ContentPresenter x:Name="DescriptionPresenter" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="{TemplateBinding Description}" Foreground="{ThemeResource SystemControlDescriptionTextForegroundBrush}" AutomationProperties.AccessibilityView="Raw" x:Load="False" />
-                        <Button x:Name="CommandButton" Grid.Row="1" Grid.Column="2" Margin="8,0,0,0">
-                            <FontIcon Glyph="&#xED25;" />
+                        <Button x:Name="CommandButton" Grid.Row="1" Grid.Column="2" Command="{Binding Command, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWay}" Margin="8,0,0,0">
+                            <FontIcon Glyph="{TemplateBinding CommandButtonGlyph}"/>
                         </Button>
                     </Grid>
                 </ControlTemplate>

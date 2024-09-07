@@ -85,7 +85,7 @@ namespace WinUiApplicationX.Controls
             bool isProperImage = CheckIsImageExtension(currentText, out bool isSvg) && File.Exists(currentText);
             bool shouldDisplayGazeButton = isProperImage && FocusState != FocusState.Unfocused;
             _gazeButton.Visibility = shouldDisplayGazeButton ? Visibility.Visible : Visibility.Collapsed;
-            if (shouldDisplayGazeButton && handleImageSource)
+            if (isProperImage && handleImageSource)
             {
                 _previewImage.Source = isSvg ?
                     new SvgImageSource(new Uri(currentText)) :

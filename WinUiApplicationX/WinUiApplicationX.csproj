@@ -58,6 +58,7 @@
     <None Remove="Pages\Dialogs\SystemDialogPane.xaml" />
     <None Remove="Pages\Dialogs\SystemDialogsTab.xaml" />
     <None Remove="Pages\HomePage.xaml" />
+    <None Remove="Pages\Notifications\Dialogs\AddSelectableItemDialog.xaml" />
     <None Remove="Pages\Notifications\NotificationsGeneralTab.xaml" />
     <None Remove="Pages\Notifications\NotificationsPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
@@ -123,5 +124,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Remove="Themes\TextBoxEx.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\Notifications\Dialogs\AddSelectableItemDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

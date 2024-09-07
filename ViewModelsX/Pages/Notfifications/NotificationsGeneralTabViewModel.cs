@@ -9,15 +9,19 @@ using MochaCore.Notifications.Extensions;
 using MochaCore.Windowing;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ViewModelsX.Dialogs;
+using ViewModelsX.Pages.Notfifications.Dialogs;
 
 namespace ViewModelsX.Pages.Notfifications
 {
     public partial class NotificationsGeneralTabViewModel : ObservableObject, IOnNavigatedTo, IOnNavigatedFrom
     {
+        public static readonly string NOTIFICATION_TAG = "GeneralNotificationTag";
+        
         private readonly INavigator _navigator;
 
         public NotificationsGeneralTabViewModel(INavigator navigator)
@@ -36,29 +40,81 @@ namespace ViewModelsX.Pages.Notfifications
         }
 
         [ObservableProperty]
-        private string _notificationText = string.Empty;
+        private string? _title;
 
         [ObservableProperty]
-        private string _notificationImagePath = string.Empty;
+        private string? _content;
 
         [ObservableProperty]
-        private bool _isDelayScheduleChecked;
+        private string? _notificationImagePath;
 
         [ObservableProperty]
-        private TimeSpan? _selectedScheduleTime;
+        private string? _contentImagePath;
+
+        [ObservableProperty]
+        private bool _isTextInputChecked;
+
+        [ObservableProperty]
+        private string? _textInputHeader;
+
+        [ObservableProperty]
+        private string? _textInputPlaceholder;
+
+        [ObservableProperty]
+        private bool _isSelectableItemChecked;
+
+        [ObservableProperty]
+        private string? _selectableItemHeader;
+
+        [ObservableProperty]
+        private ObservableCollection<SelectableItem> _selectableItems = [ new("i1", "Item #1"), new("i2", "Item #2"), new("i3", "Item #3")];
+
+        [ObservableProperty]
+        private bool _isLeftButtonChecked;
+
+        [ObservableProperty]
+        private string? _leftButtonText;
+
+        [ObservableProperty]
+        private bool _isMiddleButtonChecked;
+
+        [ObservableProperty]
+        private string? _middleButtonText;
+
+        [ObservableProperty]
+        private bool _isRightButtonChecked;
+
+        [ObservableProperty]
+        private string? _rightButtonText;
+
+        [ObservableProperty]
+        private bool _isDelayChecked;
+
+        [ObservableProperty]
+        private double _delayValue;
+
+        [ObservableProperty]
+        private ObservableCollection<InteractionItem> _interactionData = [ new("Test", "Value"), new("Test 2", "Other value")];
 
         [RelayCommand]
-        private async Task BrowseImage()
+        private Task BrowseNotificationImage() => BrowseImageCore((paths) => NotificationImagePath = paths.First());
+
+        [RelayCommand]
+        private Task BrowseContentImage() => BrowseImageCore((paths) => ContentImagePath = paths.First());
+
+        [RelayCommand]
+        private void RemoveItem(SelectableItem item) => SelectableItems.Remove(item);
+
+        [RelayCommand]
+        private async Task AddItem()
         {
-            using IDialogModule<OpenFileDialogProperties> openFileDialogModule = AppDialogs.StandardOpenFileDialog.Module;
-            openFileDialogModule.Properties.TrySetInitialDirectory(Environment.SpecialFolder.Desktop);
-            openFileDialogModule.Properties.Filters = [
-                new ExtensionFilter("Images", ["jpg", "jpeg", "png"]),
-                ];
-            bool? result = await openFileDialogModule.ShowModalAsync(_navigator.Module.View);
-            if (result is true)
+            using ICustomDialogModule<AddSelectableItemDialogProperties> dialogModule = AppDialogs.AddSelectableItemDialog.Module;
+            if (await dialogModule.ShowModalAsync(_navigator.Module.View) is true)
             {
-                NotificationImagePath = openFileDialogModule.Properties.SelectedPaths.First();
+                if (dialogModule.Properties.CreatedItem is SelectableItem item)
+                {
+                    SelectableItems.Add(item);
+                } 
             }
         }
 
@@ -68,29 +124,27 @@ namespace ViewModelsX.Pages.Notfifications
             INotification<GeneralNotificationProperties> notification = NotificationManager.RetrieveNotification<GeneralNotificationProperties>("GeneralNotification");
             notification.Properties = new GeneralNotificationProperties()
             {
-                Title = "This is example notification",
-                NotificationImage = string.IsNullOrWhiteSpace(NotificationImagePath) ? null : NotificationImagePath,
-                ContentImage = @"C:\Users\AsyncMilk\Desktop\notify_test.png",
-                Content = $"The text you provided was: {NotificationText}.{Environment.NewLine}" +
-                $"You can add custom text into `TextBox` and select an example item from `ComboBox` " +
-                $"- these values will be received by the application, after clicking one of available buttons.",
-                HasTextInput = true,
-                TextInputPlaceholder = "The text provided here will be handled by the running app.",
-                SelectableItems = null,
-                SelectableItemsHeader = "Choose any item here (default is 2):",
-                InitialSelectableItemId = "i2",
-                LeftButton = "Left button",
-                MiddleButton = "Middle button",
-                RightButton = "Right button",
+                Title = !string.IsNullOrEmpty(Title) ? Title : null,
+                Content = !string.IsNullOrEmpty(Content) ? Content : null,
+                NotificationImage = !string.IsNullOrEmpty(NotificationImagePath) ? NotificationImagePath : null,
+                ContentImage = !string.IsNullOrEmpty(ContentImagePath) ? ContentImagePath : null,
+                HasTextInput = IsTextInputChecked,
+                TextInputHeader = !string.IsNullOrEmpty(TextInputHeader) ? TextInputHeader : null,
+                TextInputPlaceholder = !string.IsNullOrEmpty(TextInputPlaceholder) ? TextInputPlaceholder : null,
+                SelectableItemsHeader = !string.IsNullOrEmpty(SelectableItemHeader) ? SelectableItemHeader : null,
+                SelectableItems = IsSelectableItemChecked ? SelectableItems.ToDictionary(i => i.Key, i => i.Name) : null,
+                LeftButton = IsLeftButtonChecked ? (LeftButtonText ?? string.Empty) : null,
+                MiddleButton = IsMiddleButtonChecked ? (MiddleButtonText ?? string.Empty) : null,
+                RightButton = IsRightButtonChecked ? (RightButtonText ?? string.Empty) : null
             };
 
-            notification.Tag = GetType().ToString();
+            notification.Tag = NOTIFICATION_TAG;
 
             try
             {
-                if (IsDelayScheduleChecked)
+                if (IsDelayChecked)
                 {
-                    DateTimeOffset scheduleTime = DateTimeOffset.Now.Date + (SelectedScheduleTime ?? default);
+                    DateTimeOffset scheduleTime = DateTimeOffset.Now.Date + TimeSpan.FromSeconds(DelayValue);
                     notification.Schedule(scheduleTime);
                 }
                 else
@@ -124,5 +178,23 @@ namespace ViewModelsX.Pages.Notfifications
         //    => $"Your text input was: {args.TextInput}{Environment.NewLine}" +
         //    $"Your selected item was: {args.SelectedItemId} : {_notificationSelectableItems.GetValueOrDefault(args.SelectedItemId ?? string.Empty)}{Environment.NewLine}" +
         //    $"You pressed the button: {args.InvokedItemId}";
+
+        private async Task BrowseImageCore(Action<IList<string>> assignAction)
+        {
+            using IDialogModule<OpenFileDialogProperties> openFileDialogModule = AppDialogs.StandardOpenFileDialog.Module;
+            openFileDialogModule.Properties.TrySetInitialDirectory(Environment.SpecialFolder.Desktop);
+            openFileDialogModule.Properties.Filters = [
+                new ExtensionFilter("Images", ["jpg", "jpeg", "png"]),
+                ];
+            bool? result = await openFileDialogModule.ShowModalAsync(_navigator.Module.View);
+            if (result is true)
+            {
+                assignAction?.Invoke(openFileDialogModule.Properties.SelectedPaths);
+            }
+        }
+
+        public record SelectableItem(string Key, string Name);
+
+        public record InteractionItem(string Name, string Value);
     }
 }

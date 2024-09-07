@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ViewModelsX.Pages.Dialogs;
+using ViewModelsX.Pages.Notfifications.Dialogs;
 
 namespace ViewModelsX.Dialogs
 {
@@ -28,6 +29,9 @@ namespace ViewModelsX.Dialogs
 
         public static AppDialog<IDialogModule<OpenFileDialogProperties>> StandardOpenFileDialog { get; }
             = new("StandardOpenFileDialog");
+
+        public static AppDialog<ICustomDialogModule<AddSelectableItemDialogProperties>> AddSelectableItemDialog { get; }
+            = new("AddSelectableItemDialog");
     }
 
     public class AppDialog<T>(string id) where T : IDialogModule
