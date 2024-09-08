@@ -44,9 +44,9 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Border BorderThickness="0,0,1,0" BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}">
-                    <TextBlock Text="Key" />
+                    <TextBlock Text="{Binding Name}" />
                 </Border>
-                <TextBlock Grid.Column="1" Text="Value" />
+                <TextBlock Grid.Column="1" Text="{Binding Value}" />
             </Grid>
         </DataTemplate>
     </UserControl.Resources>
@@ -85,12 +85,12 @@
                         Command="{Binding BrowseContentImageCommand}"
                         Width="400"/>
                     <StackPanel Spacing="12">
-                        <CheckBox x:Name="TextInputCheckBox" Content="Display text input" IsChecked="{Binding IsTextInputChecked}" />
+                        <CheckBox x:Name="TextInputCheckBox" Content="Display text input" IsChecked="{Binding IsTextInputChecked, Mode=TwoWay}" />
                         <TextBox x:Name="TextInputHeader" Header="Text input header" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
                         <TextBox x:Name="TextInputPlaceholder" Header="Text input placeholder" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputPlaceholder, Mode=TwoWay}" Width="400"/>
                     </StackPanel>
                     <StackPanel Spacing="12">
-                        <CheckBox x:Name="SelectableItemCheckBox" Content="Display selectable item" IsChecked="{Binding IsSelectableItemChecked}" />
+                        <CheckBox x:Name="SelectableItemCheckBox" Content="Display selectable item" IsChecked="{Binding IsSelectableItemChecked, Mode=TwoWay}" />
                         <TextBox x:Name="SelectableItemHeader" Header="Selectable item header" IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}" Text="{Binding SelectableItemHeader, Mode=TwoWay}" Width="400"/>
                         <Grid>
                             <ListView
@@ -141,7 +141,7 @@
                 </StackPanel>
                 <!-- SEND & RESPONSE -->
                 <StackPanel Spacing="12" HorizontalAlignment="Left">
-                    <Button HorizontalAlignment="Right" Command="{Binding ScheduleCommand}">
+                    <Button HorizontalAlignment="Right" Command="{Binding ScheduleCommand}" IsEnabled="{Binding CanSchedule}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <FontIcon Glyph="&#xE725;" />
                             <TextBlock Text="Schedule"/>

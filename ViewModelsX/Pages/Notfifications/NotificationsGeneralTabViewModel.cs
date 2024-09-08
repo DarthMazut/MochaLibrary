@@ -18,25 +18,45 @@ using ViewModelsX.Pages.Notfifications.Dialogs;
 
 namespace ViewModelsX.Pages.Notfifications
 {
-    public partial class NotificationsGeneralTabViewModel : ObservableObject, IOnNavigatedTo, IOnNavigatedFrom
+    public partial class NotificationsGeneralTabViewModel : ObservableObject, IOnNavigatedToAsync, IOnNavigatedFrom
     {
         public static readonly string NOTIFICATION_TAG = "GeneralNotificationTag";
         
         private readonly INavigator _navigator;
+
+        private INotification<GeneralNotificationProperties>? _notification;
 
         public NotificationsGeneralTabViewModel(INavigator navigator)
         {
             _navigator = navigator;
         }
 
-        public void OnNavigatedTo(OnNavigatedToEventArgs e)
+        public async Task OnNavigatedToAsync(OnNavigatedToEventArgs e)
         {
+            _notification = (await NotificationManager.GetPendingNotifications())
+                .Where(n => n.Tag == NOTIFICATION_TAG)
+                .FirstOrDefault() as INotification<GeneralNotificationProperties>;
 
+            if (_notification is not null)
+            {
+                _notification.Interacted += NotificationInteracted;
+                return;
+            }
+
+            if (e.Parameter is NotificationInteractedEventArgs args)
+            {
+                HandleNotificationInteraction(args);
+            }
+
+            CanSchedule = true;
         }
 
         public void OnNavigatedFrom(OnNavigatedFromEventArgs e)
         {
-
+            if (_notification is not null)
+            {
+                _notification.Interacted -= NotificationInteracted;
+            }
         }
 
         [ObservableProperty]
@@ -94,6 +114,9 @@ namespace ViewModelsX.Pages.Notfifications
         private double _delayValue;
 
         [ObservableProperty]
+        private bool _canSchedule;
+
+        [ObservableProperty]
         private ObservableCollection<InteractionItem> _interactionData = [ new("Test", "Value"), new("Test 2", "Other value")];
 
         [RelayCommand]
@@ -119,10 +142,10 @@ namespace ViewModelsX.Pages.Notfifications
         }
 
         [RelayCommand]
-        private void Schedule()
+        private async Task Schedule()
         {
-            INotification<GeneralNotificationProperties> notification = NotificationManager.RetrieveNotification<GeneralNotificationProperties>("GeneralNotification");
-            notification.Properties = new GeneralNotificationProperties()
+            _notification = NotificationManager.RetrieveNotification<GeneralNotificationProperties>("GeneralNotification");
+            _notification.Properties = new GeneralNotificationProperties()
             {
                 Title = !string.IsNullOrEmpty(Title) ? Title : null,
                 Content = !string.IsNullOrEmpty(Content) ? Content : null,
@@ -138,25 +161,34 @@ namespace ViewModelsX.Pages.Notfifications
                 RightButton = IsRightButtonChecked ? (RightButtonText ?? string.Empty) : null
             };
 
-            notification.Tag = NOTIFICATION_TAG;
+            _notification.Tag = NOTIFICATION_TAG;
+            _notification.Interacted += NotificationInteracted;
 
             try
             {
                 if (IsDelayChecked)
                 {
-                    DateTimeOffset scheduleTime = DateTimeOffset.Now.Date + TimeSpan.FromSeconds(DelayValue);
-                    notification.Schedule(scheduleTime);
+                    DateTimeOffset scheduleTime = DateTimeOffset.Now + TimeSpan.FromSeconds(DelayValue);
+                    _notification.Schedule(scheduleTime);
+                    CanSchedule = false;
                 }
                 else
                 {
-                    notification.Schedule();
+                    _notification.Schedule();
                 }
                 
-                //Result = "Scheduled!";
+
             }
-            catch (Exception ex)
+            catch (Exception ex) // Do not catch general exceptions :O
             {
-                //Result = ex.ToString();
+                using ICustomDialogModule<StandardMessageDialogProperties> dialogModule = AppDialogs.StandardMessageDialog.Module;
+                dialogModule.Properties = new StandardMessageDialogProperties()
+                {
+                    Title = "Something went wrong 😐",
+                    Message = ex.ToString(),
+                    ConfirmationButtonText = "Oh, well..."
+                };
+                await dialogModule.ShowModalAsync(_navigator.Module.View);
             }
         }
 
@@ -164,20 +196,15 @@ namespace ViewModelsX.Pages.Notfifications
         {
             DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
             {
-                if (e.Notification.Tag == GetType().ToString())
+                if (e.Notification.Tag == NOTIFICATION_TAG)
                 {
-                    //HandleNotificationInteraction(e);
+                    HandleNotificationInteraction(e);
                 }
             });
         }
 
-        private bool IsInTheFuture(TimeSpan? selectedScheduleTime)
-            => selectedScheduleTime > DateTime.Now.TimeOfDay;
-
-        //private string CreateResultFromArgs(NotificationInteractedEventArgs args)
-        //    => $"Your text input was: {args.TextInput}{Environment.NewLine}" +
-        //    $"Your selected item was: {args.SelectedItemId} : {_notificationSelectableItems.GetValueOrDefault(args.SelectedItemId ?? string.Empty)}{Environment.NewLine}" +
-        //    $"You pressed the button: {args.InvokedItemId}";
+        private void HandleNotificationInteraction(NotificationInteractedEventArgs e)
+            => InteractionData = [.. e.AsDictionary.Select(kvp => new InteractionItem(kvp.Key, kvp.Value?.ToString() ?? "NULL"))];
 
         private async Task BrowseImageCore(Action<IList<string>> assignAction)
         {
