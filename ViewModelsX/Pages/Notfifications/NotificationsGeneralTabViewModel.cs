@@ -20,6 +20,8 @@ namespace ViewModelsX.Pages.Notfifications
 {
     public partial class NotificationsGeneralTabViewModel : ObservableObject, IOnNavigatedToAsync, IOnNavigatedFrom
     {
+        // TODO: add cancelation tocken to cancel delays when Abort hited :O
+
         public static readonly string NOTIFICATION_TAG = "GeneralNotificationTag";
         
         private readonly INavigator _navigator;
@@ -40,6 +42,15 @@ namespace ViewModelsX.Pages.Notfifications
             if (_notification is not null)
             {
                 _notification.Interacted += NotificationInteracted;
+                if (_notification.ScheduledTime is not null)
+                {
+                    DateTimeOffset now = DateTimeOffset.Now;
+
+                    _ = CreateDelayTask(
+                        _notification.ScheduledTime.Value - now,
+                        new Progress<TimeSpan>(t => DelayProgress = (now - _notification.ScheduledTime.Value + TimeSpan.FromSeconds(30) + t) / TimeSpan.FromSeconds(30)))
+                            .ContinueWith(t => DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() => CanSchedule = true));
+                }
                 return;
             }
 
@@ -117,6 +128,9 @@ namespace ViewModelsX.Pages.Notfifications
         private bool _canSchedule;
 
         [ObservableProperty]
+        private double _delayProgress;
+
+        [ObservableProperty]
         private ObservableCollection<InteractionItem> _interactionData = [ new("Test", "Value"), new("Test 2", "Other value")];
 
         [RelayCommand]
@@ -142,6 +156,18 @@ namespace ViewModelsX.Pages.Notfifications
         }
 
         [RelayCommand]
+        private async Task ScheduleOrAbort()
+        {
+            if (!CanSchedule)
+            {
+                Abort();
+            }
+            else
+            {
+                await Schedule();
+            }
+        }
+
         private async Task Schedule()
         {
             _notification = NotificationManager.RetrieveNotification<GeneralNotificationProperties>("GeneralNotification");
@@ -171,12 +197,16 @@ namespace ViewModelsX.Pages.Notfifications
                     DateTimeOffset scheduleTime = DateTimeOffset.Now + TimeSpan.FromSeconds(DelayValue);
                     _notification.Schedule(scheduleTime);
                     CanSchedule = false;
+
+                    _ = CreateDelayTask(TimeSpan.FromSeconds(DelayValue),
+                        new Progress<TimeSpan>(t => DelayProgress = t / TimeSpan.FromSeconds(DelayValue)))
+                            .ContinueWith(t => DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() => CanSchedule = true));
                 }
                 else
                 {
                     _notification.Schedule();
                 }
-                
+
 
             }
             catch (Exception ex) // Do not catch general exceptions :O
@@ -190,6 +220,12 @@ namespace ViewModelsX.Pages.Notfifications
                 };
                 await dialogModule.ShowModalAsync(_navigator.Module.View);
             }
+        }
+
+        private void Abort()
+        {
+            _notification?.Dispose();
+            CanSchedule = true;
         }
 
         private void NotificationInteracted(object? sender, NotificationInteractedEventArgs e)
@@ -218,6 +254,33 @@ namespace ViewModelsX.Pages.Notfifications
             {
                 assignAction?.Invoke(openFileDialogModule.Properties.SelectedPaths);
             }
+        }
+
+        private static async Task CreateDelayTask(TimeSpan delayTime, IProgress<TimeSpan> progress, CancellationToken cancellationToken = default, int intervalMs = 100)
+        {
+            TimeSpan currentProgress = TimeSpan.Zero;
+            while (currentProgress < delayTime)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                if (delayTime - currentProgress < TimeSpan.FromMilliseconds(intervalMs))
+                {
+                    progress.Report(currentProgress);
+                    await Task.Delay(delayTime - currentProgress);
+                    progress.Report(currentProgress);
+                    return;
+                }
+
+                progress.Report(currentProgress);
+                await Task.Delay(intervalMs);
+                progress.Report(currentProgress);
+                currentProgress += TimeSpan.FromMilliseconds(intervalMs);
+            }
+
+            progress.Report(currentProgress);
         }
 
         public record SelectableItem(string Key, string Name);

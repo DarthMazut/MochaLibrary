@@ -69,83 +69,92 @@
         <ScrollViewer Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel Spacing="12" HorizontalAlignment="Left">
                 <!-- PARAMETERS -->
-                <StackPanel Spacing="12" HorizontalAlignment="Left">
-                    <TextBox x:Name="TitleTextBox" Header="Title" Text="{Binding Title, Mode=TwoWay}" Width="400"/>
-                    <TextBox x:Name="ContentTextBox" Header="Content" Text="{Binding Content, Mode=TwoWay}" Width="400"/>
-                    <controls:TextBoxEx
-                        x:Name="NotificationImageTextBox"
-                        Header="Notification image"
-                        Text="{Binding NotificationImagePath, Mode=TwoWay}"
-                        Command="{Binding BrowseNotificationImageCommand}"
-                        Width="400"/>
-                    <controls:TextBoxEx
-                        x:Name="ContentImageTextBox"
-                        Header="Content image"
-                        Text="{Binding ContentImagePath, Mode=TwoWay}"
-                        Command="{Binding BrowseContentImageCommand}"
-                        Width="400"/>
-                    <StackPanel Spacing="12">
-                        <CheckBox x:Name="TextInputCheckBox" Content="Display text input" IsChecked="{Binding IsTextInputChecked, Mode=TwoWay}" />
-                        <TextBox x:Name="TextInputHeader" Header="Text input header" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
-                        <TextBox x:Name="TextInputPlaceholder" Header="Text input placeholder" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputPlaceholder, Mode=TwoWay}" Width="400"/>
+                <ContentControl IsEnabled="{Binding CanSchedule}">
+                    <StackPanel Spacing="12" HorizontalAlignment="Left">
+                        <TextBox x:Name="TitleTextBox" Header="Title" Text="{Binding Title, Mode=TwoWay}" Width="400"/>
+                        <TextBox x:Name="ContentTextBox" Header="Content" Text="{Binding Content, Mode=TwoWay}" Width="400"/>
+                        <controls:TextBoxEx
+                            x:Name="NotificationImageTextBox"
+                            Header="Notification image"
+                            Text="{Binding NotificationImagePath, Mode=TwoWay}"
+                            Command="{Binding BrowseNotificationImageCommand}"
+                            Width="400"/>
+                        <controls:TextBoxEx
+                            x:Name="ContentImageTextBox"
+                            Header="Content image"
+                            Text="{Binding ContentImagePath, Mode=TwoWay}"
+                            Command="{Binding BrowseContentImageCommand}"
+                            Width="400"/>
+                        <StackPanel Spacing="12">
+                            <CheckBox x:Name="TextInputCheckBox" Content="Display text input" IsChecked="{Binding IsTextInputChecked, Mode=TwoWay}" />
+                            <TextBox x:Name="TextInputHeader" Header="Text input header" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputHeader, Mode=TwoWay}" Width="400"/>
+                            <TextBox x:Name="TextInputPlaceholder" Header="Text input placeholder" IsEnabled="{Binding IsChecked, ElementName=TextInputCheckBox}" Text="{Binding TextInputPlaceholder, Mode=TwoWay}" Width="400"/>
+                        </StackPanel>
+                        <StackPanel Spacing="12">
+                            <CheckBox x:Name="SelectableItemCheckBox" Content="Display selectable item" IsChecked="{Binding IsSelectableItemChecked, Mode=TwoWay}" />
+                            <TextBox x:Name="SelectableItemHeader" Header="Selectable item header" IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}" Text="{Binding SelectableItemHeader, Mode=TwoWay}" Width="400"/>
+                            <Grid>
+                                <ListView
+                                    x:Name="SelectableItemsList"
+                                    ItemsSource="{Binding SelectableItems}"
+                                    HorizontalAlignment="Left"
+                                    Width="400"
+                                    Height="180"
+                                    BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}"
+                                    ItemTemplate="{StaticResource SelectableItemTemplate}">
+                                </ListView>
+                                <Button
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Style="{ThemeResource AccentButtonStyle}"
+                                    Margin="8"
+                                    CornerRadius="18"
+                                    Width="36"
+                                    Height="36"
+                                    Padding="2"
+                                    Visibility="{Binding IsChecked, ElementName=SelectableItemCheckBox, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Command="{Binding Parent.ViewModel.AddItemCommand, ElementName=ParentControl}">
+                                    <utils:ParentService.Anchor>
+                                        <utils:ParentAnchor x:Name="ParentControl" ParentName="thisControl" />
+                                    </utils:ParentService.Anchor>
+                                    <FontIcon Glyph="&#xE710;" />
+                                </Button>
+                            </Grid>
+                            <StackPanel>
+                                <CheckBox x:Name="LeftButtonCheckBox" Content="Left button" IsChecked="{Binding IsLeftButtonChecked, Mode=TwoWay}"/>
+                                <TextBox x:Name="LeftButtonTextBox" Width="400" Text="{Binding LeftButtonText, Mode=TwoWay}" PlaceholderText="Left button name" IsEnabled="{Binding IsChecked, ElementName=LeftButtonCheckBox}"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <CheckBox x:Name="MiddleButtonCheckBox" Content="Middle button" IsChecked="{Binding IsMiddleButtonChecked, Mode=TwoWay}"/>
+                                <TextBox x:Name="MiddleButtonTextBox" Width="400" Text="{Binding MiddleButtonText, Mode=TwoWay}" PlaceholderText="Middle button name" IsEnabled="{Binding IsChecked, ElementName=MiddleButtonCheckBox}"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <CheckBox x:Name="RightButtonCheckBox" Content="Right button" IsChecked="{Binding IsRightButtonChecked, Mode=TwoWay}"/>
+                                <TextBox x:Name="RightButtonTextBox" Width="400" Text="{Binding RightButtonText, Mode=TwoWay}" PlaceholderText="Right button name" IsEnabled="{Binding IsChecked, ElementName=RightButtonCheckBox}"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <CheckBox x:Name="DelayCheckBox" Content="Delay" IsChecked="{Binding IsDelayChecked, Mode=TwoWay}"/>
+                                <Slider x:Name="DelaySlider" Minimum="3" Maximum="30" Value="{Binding DelayValue, Mode=TwoWay}" IsEnabled="{Binding IsChecked, ElementName=DelayCheckBox}"/>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
-                    <StackPanel Spacing="12">
-                        <CheckBox x:Name="SelectableItemCheckBox" Content="Display selectable item" IsChecked="{Binding IsSelectableItemChecked, Mode=TwoWay}" />
-                        <TextBox x:Name="SelectableItemHeader" Header="Selectable item header" IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}" Text="{Binding SelectableItemHeader, Mode=TwoWay}" Width="400"/>
-                        <Grid>
-                            <ListView
-                                x:Name="SelectableItemsList"
-                                ItemsSource="{Binding SelectableItems}"
-                                HorizontalAlignment="Left"
-                                Width="400"
-                                Height="180"
-                                BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                IsEnabled="{Binding IsChecked, ElementName=SelectableItemCheckBox}"
-                                ItemTemplate="{StaticResource SelectableItemTemplate}">
-                            </ListView>
-                            <Button
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Bottom"
-                                Style="{ThemeResource AccentButtonStyle}"
-                                Margin="8"
-                                CornerRadius="18"
-                                Width="36"
-                                Height="36"
-                                Padding="2"
-                                Visibility="{Binding IsChecked, ElementName=SelectableItemCheckBox, Converter={StaticResource BoolToVisibilityConverter}}"
-                                Command="{Binding Parent.ViewModel.AddItemCommand, ElementName=ParentControl}">
-                                <utils:ParentService.Anchor>
-                                    <utils:ParentAnchor x:Name="ParentControl" ParentName="thisControl" />
-                                </utils:ParentService.Anchor>
-                                <FontIcon Glyph="&#xE710;" />
-                            </Button>
-                        </Grid>
-                        <StackPanel>
-                            <CheckBox x:Name="LeftButtonCheckBox" Content="Left button" IsChecked="{Binding IsLeftButtonChecked, Mode=TwoWay}"/>
-                            <TextBox x:Name="LeftButtonTextBox" Width="400" Text="{Binding LeftButtonText, Mode=TwoWay}" PlaceholderText="Left button name" IsEnabled="{Binding IsChecked, ElementName=LeftButtonCheckBox}"/>
-                        </StackPanel>
-                        <StackPanel>
-                            <CheckBox x:Name="MiddleButtonCheckBox" Content="Middle button" IsChecked="{Binding IsMiddleButtonChecked, Mode=TwoWay}"/>
-                            <TextBox x:Name="MiddleButtonTextBox" Width="400" Text="{Binding MiddleButtonText, Mode=TwoWay}" PlaceholderText="Middle button name" IsEnabled="{Binding IsChecked, ElementName=MiddleButtonCheckBox}"/>
-                        </StackPanel>
-                        <StackPanel>
-                            <CheckBox x:Name="RightButtonCheckBox" Content="Right button" IsChecked="{Binding IsRightButtonChecked, Mode=TwoWay}"/>
-                            <TextBox x:Name="RightButtonTextBox" Width="400" Text="{Binding RightButtonText, Mode=TwoWay}" PlaceholderText="Right button name" IsEnabled="{Binding IsChecked, ElementName=RightButtonCheckBox}"/>
-                        </StackPanel>
-                        <StackPanel>
-                            <CheckBox x:Name="DelayCheckBox" Content="Delay" IsChecked="{Binding IsDelayChecked, Mode=TwoWay}"/>
-                            <Slider x:Name="DelaySlider" Minimum="3" Maximum="30" Value="{Binding DelayValue, Mode=TwoWay}" IsEnabled="{Binding IsChecked, ElementName=DelayCheckBox}"/>
-                        </StackPanel>
-                    </StackPanel>
-                </StackPanel>
+                </ContentControl>
                 <!-- SEND & RESPONSE -->
                 <StackPanel Spacing="12" HorizontalAlignment="Left">
-                    <Button HorizontalAlignment="Right" Command="{Binding ScheduleCommand}" IsEnabled="{Binding CanSchedule}">
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <FontIcon Glyph="&#xE725;" />
-                            <TextBlock Text="Schedule"/>
-                        </StackPanel>
+                    <Button HorizontalAlignment="Right" Command="{Binding ScheduleOrAbortCommand}" Width="142">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" Spacing="12" Visibility="{Binding CanSchedule, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <FontIcon Glyph="&#xE725;" />
+                                <TextBlock Text="Schedule"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="12" Visibility="{Binding CanSchedule, Converter={StaticResource NegateBoolToVisibilityConverter}}">
+                                <!--<FontIcon Glyph="&#xF16D;" />-->
+                                <ProgressRing IsIndeterminate="False" Value="{Binding DelayProgress}" Minimum="0" Maximum="1"/>
+                                <TextBlock Text="Abort"/>
+                            </StackPanel>
+                        </Grid>
                     </Button>
                     <TextBlock FontSize="18" FontWeight="Bold" Text="Interaction data"/>
                     <ListView
