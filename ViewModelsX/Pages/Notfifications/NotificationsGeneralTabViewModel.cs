@@ -20,13 +20,12 @@ namespace ViewModelsX.Pages.Notfifications
 {
     public partial class NotificationsGeneralTabViewModel : ObservableObject, IOnNavigatedToAsync, IOnNavigatedFrom
     {
-        // TODO: add cancelation tocken to cancel delays when Abort hited :O
-
         public static readonly string NOTIFICATION_TAG = "GeneralNotificationTag";
         
         private readonly INavigator _navigator;
 
         private INotification<GeneralNotificationProperties>? _notification;
+        private CancellationTokenSource? _cts;
 
         public NotificationsGeneralTabViewModel(INavigator navigator)
         {
@@ -36,7 +35,7 @@ namespace ViewModelsX.Pages.Notfifications
         public async Task OnNavigatedToAsync(OnNavigatedToEventArgs e)
         {
             _notification = (await NotificationManager.GetPendingNotifications())
-                .Where(n => n.Tag == NOTIFICATION_TAG)
+                .Where(n => n.Tag?.Contains(NOTIFICATION_TAG) == true)
                 .FirstOrDefault() as INotification<GeneralNotificationProperties>;
 
             if (_notification is not null)
@@ -44,12 +43,15 @@ namespace ViewModelsX.Pages.Notfifications
                 _notification.Interacted += NotificationInteracted;
                 if (_notification.ScheduledTime is not null)
                 {
+                    ClearCts(true);
                     DateTimeOffset now = DateTimeOffset.Now;
+                    TimeSpan delayValue = TimeSpan.FromSeconds(int.Parse(_notification.Tag!.Split(';')[1]));
 
                     _ = CreateDelayTask(
                         _notification.ScheduledTime.Value - now,
-                        new Progress<TimeSpan>(t => DelayProgress = (now - _notification.ScheduledTime.Value + TimeSpan.FromSeconds(30) + t) / TimeSpan.FromSeconds(30)))
-                            .ContinueWith(t => DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() => CanSchedule = true));
+                        new Progress<TimeSpan>(t => DelayProgress = (now - _notification.ScheduledTime.Value + delayValue + t) / delayValue),
+                        _cts!.Token).ContinueWith(t =>
+                            DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() => CanSchedule = true));
                 }
                 return;
             }
@@ -68,6 +70,8 @@ namespace ViewModelsX.Pages.Notfifications
             {
                 _notification.Interacted -= NotificationInteracted;
             }
+
+            ClearCts();   
         }
 
         [ObservableProperty]
@@ -187,8 +191,9 @@ namespace ViewModelsX.Pages.Notfifications
                 RightButton = IsRightButtonChecked ? (RightButtonText ?? string.Empty) : null
             };
 
-            _notification.Tag = NOTIFICATION_TAG;
+            _notification.Tag = $"{NOTIFICATION_TAG};{DelayValue}";
             _notification.Interacted += NotificationInteracted;
+            ClearCts(true);
 
             try
             {
@@ -199,8 +204,9 @@ namespace ViewModelsX.Pages.Notfifications
                     CanSchedule = false;
 
                     _ = CreateDelayTask(TimeSpan.FromSeconds(DelayValue),
-                        new Progress<TimeSpan>(t => DelayProgress = t / TimeSpan.FromSeconds(DelayValue)))
-                            .ContinueWith(t => DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() => CanSchedule = true));
+                        new Progress<TimeSpan>(t => DelayProgress = t / TimeSpan.FromSeconds(DelayValue)),
+                        _cts!.Token).ContinueWith(t =>
+                            DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() => CanSchedule = true));
                 }
                 else
                 {
@@ -225,6 +231,7 @@ namespace ViewModelsX.Pages.Notfifications
         private void Abort()
         {
             _notification?.Dispose();
+            ClearCts();
             CanSchedule = true;
         }
 
@@ -232,7 +239,7 @@ namespace ViewModelsX.Pages.Notfifications
         {
             DispatcherManager.GetMainThreadDispatcher().EnqueueOnMainThread(() =>
             {
-                if (e.Notification.Tag == NOTIFICATION_TAG)
+                if (e.Notification.Tag?.Contains(NOTIFICATION_TAG) == true)
                 {
                     HandleNotificationInteraction(e);
                 }
@@ -281,6 +288,17 @@ namespace ViewModelsX.Pages.Notfifications
             }
 
             progress.Report(currentProgress);
+        }
+
+        private void ClearCts(bool createNew = false)
+        {
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = null;
+            if (createNew)
+            {
+                _cts = new();
+            }
         }
 
         public record SelectableItem(string Key, string Name);
