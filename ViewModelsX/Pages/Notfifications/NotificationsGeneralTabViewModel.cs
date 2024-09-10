@@ -45,7 +45,7 @@ namespace ViewModelsX.Pages.Notfifications
                 {
                     ClearCts(true);
                     DateTimeOffset now = DateTimeOffset.Now;
-                    TimeSpan delayValue = TimeSpan.FromSeconds(int.Parse(_notification.Tag!.Split(';')[1]));
+                    TimeSpan delayValue = TimeSpan.FromSeconds(int.Parse(_notification.Tag!.Split('-')[1]));
 
                     _ = CreateDelayTask(
                         _notification.ScheduledTime.Value - now,
@@ -191,7 +191,7 @@ namespace ViewModelsX.Pages.Notfifications
                 RightButton = IsRightButtonChecked ? (RightButtonText ?? string.Empty) : null
             };
 
-            _notification.Tag = $"{NOTIFICATION_TAG};{DelayValue}";
+            _notification.Tag = $"{NOTIFICATION_TAG}-{DelayValue}";
             _notification.Interacted += NotificationInteracted;
             ClearCts(true);
 

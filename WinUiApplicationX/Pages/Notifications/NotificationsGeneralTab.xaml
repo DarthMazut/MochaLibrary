@@ -143,17 +143,17 @@
                 </ContentControl>
                 <!-- SEND & RESPONSE -->
                 <StackPanel Spacing="12" HorizontalAlignment="Left">
-                    <Button HorizontalAlignment="Right" Command="{Binding ScheduleOrAbortCommand}" Width="142">
+                    <Button HorizontalAlignment="Right" Command="{Binding ScheduleOrAbortCommand}" Width="142" Height="45" HorizontalContentAlignment="Stretch">
                         <Grid>
-                            <StackPanel Orientation="Horizontal" Spacing="12" Visibility="{Binding CanSchedule, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <FontIcon Glyph="&#xE725;" />
-                                <TextBlock Text="Schedule"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="12" Visibility="{Binding CanSchedule, Converter={StaticResource NegateBoolToVisibilityConverter}}">
-                                <!--<FontIcon Glyph="&#xF16D;" />-->
-                                <ProgressRing IsIndeterminate="False" Value="{Binding DelayProgress}" Minimum="0" Maximum="1"/>
-                                <TextBlock Text="Abort"/>
-                            </StackPanel>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <FontIcon Glyph="&#xE725;" Margin="0,0,12,0" Visibility="{Binding CanSchedule, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <TextBlock Grid.Column="1" Text="Schedule" HorizontalAlignment="Center" Visibility="{Binding CanSchedule, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <FontIcon Glyph="&#xF16D;" FontSize="12" Margin="0,0,12,0" Visibility="{Binding CanSchedule, Converter={StaticResource NegateBoolToVisibilityConverter}}" />
+                            <ProgressRing IsIndeterminate="False" Margin="0,0,12,0" Value="{Binding DelayProgress}" Minimum="0" Maximum="1" Visibility="{Binding CanSchedule, Converter={StaticResource NegateBoolToVisibilityConverter}}"/>
+                            <TextBlock Grid.Column="1" Text="Abort" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding CanSchedule, Converter={StaticResource NegateBoolToVisibilityConverter}}"/>
                         </Grid>
                     </Button>
                     <TextBlock FontSize="18" FontWeight="Bold" Text="Interaction data"/>
