@@ -49,6 +49,9 @@
                 <TextBlock Grid.Column="1" Text="{Binding Value}" />
             </Grid>
         </DataTemplate>
+        <Style x:Key="InteractionItemStyle" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+            <Setter Property="Background" Value="Red" />
+        </Style>
     </UserControl.Resources>
     
     <Grid DataContext="{x:Bind ViewModel}">
@@ -158,6 +161,7 @@
                     </Button>
                     <TextBlock FontSize="18" FontWeight="Bold" Text="Interaction data"/>
                     <ListView
+                        ItemContainerStyle="{StaticResource InteractionItemStyle}"
                         ItemsSource="{Binding InteractionData}"
                         SelectionMode="None"
                         HorizontalAlignment="Left"
