@@ -107,7 +107,8 @@ namespace MochaWinUI.Notifications.Extensions
                 args)
             {
                 TextInput = textInput,
-                SelectedItemId = selectedItem
+                SelectedItemId = selectedItem,
+                IsActivationEvent = args.CheckLaunchingArg()
             };
         }
 

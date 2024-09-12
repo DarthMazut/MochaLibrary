@@ -86,7 +86,8 @@ namespace MochaCore.Notifications
                 {
                     SelectedDate = SelectedDate,
                     SelectedItemId = SelectedItemId,
-                    TextInput = TextInput
+                    TextInput = TextInput,
+                    IsActivationEvent = IsActivationEvent
                 };
     }
 

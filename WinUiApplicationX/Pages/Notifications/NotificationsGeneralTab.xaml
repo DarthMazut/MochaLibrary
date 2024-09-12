@@ -38,19 +38,20 @@
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="InteractionItemTemplate">
-            <Grid>
+            <Grid BorderThickness="0,0,0,1" BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" Padding="8,0,8,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Border BorderThickness="0,0,1,0" BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}">
-                    <TextBlock Text="{Binding Name}" />
-                </Border>
-                <TextBlock Grid.Column="1" Text="{Binding Value}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding Value}" TextTrimming="CharacterEllipsis" />
             </Grid>
         </DataTemplate>
-        <Style x:Key="InteractionItemStyle" TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
-            <Setter Property="Background" Value="Red" />
+        <Style x:Key="InteractionItemStyle" TargetType="ListViewItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
         </Style>
     </UserControl.Resources>
     
@@ -167,7 +168,7 @@
                         HorizontalAlignment="Left"
                         Width="400"
                         BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
-                        BorderThickness="1"
+                        BorderThickness="1,1,1,0"
                         ItemTemplate="{StaticResource InteractionItemTemplate}"/>
                 </StackPanel>
             </StackPanel>

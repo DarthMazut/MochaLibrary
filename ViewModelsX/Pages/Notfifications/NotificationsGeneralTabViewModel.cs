@@ -20,6 +20,7 @@ namespace ViewModelsX.Pages.Notfifications
 {
     public partial class NotificationsGeneralTabViewModel : ObservableObject, IOnNavigatedToAsync, IOnNavigatedFrom
     {
+        private static readonly string _noInteractionValue = "NULL";
         public static readonly string NOTIFICATION_TAG = "GeneralNotificationTag";
         
         private readonly INavigator _navigator;
@@ -135,7 +136,7 @@ namespace ViewModelsX.Pages.Notfifications
         private double _delayProgress;
 
         [ObservableProperty]
-        private ObservableCollection<InteractionItem> _interactionData = [ new("Test", "Value"), new("Test 2", "Other value")];
+        private List<InteractionItem> _interactionData = [new("Name", "Value")];
 
         [RelayCommand]
         private Task BrowseNotificationImage() => BrowseImageCore((paths) => NotificationImagePath = paths.First());
@@ -247,7 +248,32 @@ namespace ViewModelsX.Pages.Notfifications
         }
 
         private void HandleNotificationInteraction(NotificationInteractedEventArgs e)
-            => InteractionData = [.. e.AsDictionary.Select(kvp => new InteractionItem(kvp.Key, kvp.Value?.ToString() ?? "NULL"))];
+            => InteractionData = CreateInteractionData(
+                e.Notification.Id,
+                e.Notification.Tag,
+                e.InvokedItemId,
+                e.TextInput,
+                e.SelectedItemId,
+                e.SelectedDate?.ToString(),
+                e.IsActivationEvent.ToString());
+
+        private static List<InteractionItem> CreateInteractionData(
+            string? notificationId,
+            string? notificationTag,
+            string? invokedItemId,
+            string? textInput,
+            string? selectedItemId,
+            string? selectedDate,
+            string? isActivationEvent) =>
+            [
+                new("Notification ID:", notificationId ?? _noInteractionValue),
+                new("Notification Tag:", notificationTag ?? _noInteractionValue),
+                new("Invoked item ID:", invokedItemId ?? _noInteractionValue),
+                new("Text input:", textInput ?? _noInteractionValue),
+                new("Selected item ID:", selectedItemId ?? _noInteractionValue),
+                new("Selected date:", selectedDate ?? _noInteractionValue),
+                new("Is activation event:", isActivationEvent ?? _noInteractionValue),
+            ];
 
         private async Task BrowseImageCore(Action<IList<string>> assignAction)
         {
