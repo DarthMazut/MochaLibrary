@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="WinUiApplicationX.Pages.Notifications.Controls.ScheduleButton"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUiApplicationX.Pages.Notifications.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Button
+        HorizontalAlignment="Right"
+        Command="{x:Bind Command}"
+        Width="142"
+        Height="45"
+        HorizontalContentAlignment="Stretch"
+        VerticalContentAlignment="Stretch">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!-- SCHEDULE -->
+            <FontIcon
+                Glyph="&#xE725;"
+                VerticalAlignment="Center"
+                Margin="0,0,12,0"
+                Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            <TextBlock
+                Grid.Column="1"
+                Text="Schedule"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            <!-- ABORT -->
+            <FontIcon
+                Glyph="&#xF16D;"
+                FontSize="12"
+                Margin="0,0,12,0"
+                Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource NegateBoolToVisibilityConverter}}"/>
+            <ProgressRing
+                IsIndeterminate="False"
+                Margin="0,0,12,0"
+                Value="{x:Bind ProgressValue, Mode=OneWay}"
+                Minimum="0"
+                Maximum="1"
+                Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource NegateBoolToVisibilityConverter}}"/>
+            <TextBlock
+                Grid.Column="1"
+                Text="Abort"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource NegateBoolToVisibilityConverter}}"/>
+        </Grid>
+    </Button>
+</UserControl>
