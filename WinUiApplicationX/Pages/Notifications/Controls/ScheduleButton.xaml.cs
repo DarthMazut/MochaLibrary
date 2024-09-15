@@ -1,3 +1,4 @@
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -21,6 +22,8 @@ namespace WinUiApplicationX.Pages.Notifications.Controls
 {
     public sealed partial class ScheduleButton : UserControl
     {
+        private static readonly Vector3KeyFrameAnimation _showPaperplaneAnimation;
+
         public static readonly DependencyProperty IsScheduableProperty =
             DependencyProperty.Register(nameof(IsScheduable), typeof(bool), typeof(ScheduleButton), new PropertyMetadata(false));
 
@@ -51,7 +54,14 @@ namespace WinUiApplicationX.Pages.Notifications.Controls
         public ScheduleButton()
         {
             this.InitializeComponent();
+            SetupAnimations();
             RegisterPropertyChangedCallback(IsScheduableProperty, OnScheduableChanged);
+        }
+
+        private void SetupAnimations()
+        {
+            _showPaperplaneAnimation = CompositionTarget.GetCompositorForCurrentThread().CreateVector3KeyFrameAnimation();
+
         }
 
         private void OnScheduableChanged(DependencyObject sender, DependencyProperty dp)
@@ -60,7 +70,8 @@ namespace WinUiApplicationX.Pages.Notifications.Controls
             {
                 if (thisControl.IsScheduable)
                 {
-
+                    Compositor compositor = CompositionTarget.GetCompositorForCurrentThread();
+                    Vector3KeyFrameAnimation translationAnimation = compositor.CreateVector3KeyFrameAnimation();
                 }
                 else
                 {
