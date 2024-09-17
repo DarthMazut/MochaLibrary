@@ -1,3 +1,4 @@
+using CommunityToolkit.WinUI.Animations;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -22,7 +23,8 @@ namespace WinUiApplicationX.Pages.Notifications.Controls
 {
     public sealed partial class ScheduleButton : UserControl
     {
-        private static readonly Vector3KeyFrameAnimation _showPaperplaneAnimation;
+        private static readonly string _scheduableState = "Scheduable";
+        private static readonly string _abortableState = "Abortable";
 
         public static readonly DependencyProperty IsScheduableProperty =
             DependencyProperty.Register(nameof(IsScheduable), typeof(bool), typeof(ScheduleButton), new PropertyMetadata(false));
@@ -54,30 +56,22 @@ namespace WinUiApplicationX.Pages.Notifications.Controls
         public ScheduleButton()
         {
             this.InitializeComponent();
-            SetupAnimations();
-            RegisterPropertyChangedCallback(IsScheduableProperty, OnScheduableChanged);
+            RegisterPropertyChangedCallback(IsScheduableProperty, OnIsScheduableChanged);
         }
 
-        private void SetupAnimations()
-        {
-            _showPaperplaneAnimation = CompositionTarget.GetCompositorForCurrentThread().CreateVector3KeyFrameAnimation();
-
-        }
-
-        private void OnScheduableChanged(DependencyObject sender, DependencyProperty dp)
+        private void OnIsScheduableChanged(DependencyObject sender, DependencyProperty dp)
         {
             if (sender is ScheduleButton thisControl)
             {
                 if (thisControl.IsScheduable)
                 {
-                    Compositor compositor = CompositionTarget.GetCompositorForCurrentThread();
-                    Vector3KeyFrameAnimation translationAnimation = compositor.CreateVector3KeyFrameAnimation();
+                    VisualStateManager.GoToState(thisControl, _scheduableState, true);
                 }
                 else
                 {
-
+                    VisualStateManager.GoToState(thisControl, _abortableState, true);
                 }
-            } 
+            }
         }
     }
 }

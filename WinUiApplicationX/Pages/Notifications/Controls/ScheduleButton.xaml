@@ -6,6 +6,7 @@
     xmlns:local="using:WinUiApplicationX.Pages.Notifications.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     mc:Ignorable="d">
 
     <Button
@@ -15,6 +16,30 @@
         Height="45"
         HorizontalContentAlignment="Stretch"
         VerticalContentAlignment="Stretch">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Scheduable">
+                    <VisualState.Storyboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="ScheduleIconTransform" Storyboard.TargetProperty="TranslateTransform.X" Duration="0:0:1" From="-60" To="0"/>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ScheduleIcon" Storyboard.TargetProperty="Visibility">
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="Visible" />
+                            </ObjectAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState.Storyboard>
+                </VisualState>
+                <VisualState x:Name="Abortable">
+                    <VisualState.Storyboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="ScheduleIconTransform" Storyboard.TargetProperty="TranslateTransform.X" Duration="0:0:1" From="0" To="180"/>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ScheduleIcon" Storyboard.TargetProperty="Visibility">
+                                <DiscreteObjectKeyFrame KeyTime="0:0:1" Value="Collapsed" />
+                            </ObjectAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState.Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -22,10 +47,14 @@
             </Grid.ColumnDefinitions>
             <!-- SCHEDULE -->
             <FontIcon
+                x:Name="ScheduleIcon"
                 Glyph="&#xE725;"
                 VerticalAlignment="Center"
-                Margin="0,0,12,0"
-                Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                Margin="0,0,12,0">
+                <FontIcon.RenderTransform>
+                    <TranslateTransform x:Name="ScheduleIconTransform"/>
+                </FontIcon.RenderTransform>
+            </FontIcon>
             <TextBlock
                 Grid.Column="1"
                 Text="Schedule"

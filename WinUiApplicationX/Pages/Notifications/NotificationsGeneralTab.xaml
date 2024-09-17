@@ -9,6 +9,7 @@
     xmlns:controls="using:WinUiApplicationX.Controls"
     xmlns:utils="using:MochaWinUI.Utils.Xaml"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
+    xmlns:notificationControls="using:WinUiApplicationX.Pages.Notifications.Controls"
     mc:Ignorable="d"
     x:Name="thisControl">
 
@@ -148,13 +149,20 @@
                 </ContentControl>
                 <!-- SEND & RESPONSE -->
                 <StackPanel Spacing="12" HorizontalAlignment="Left">
-                    <Button HorizontalAlignment="Right" Command="{Binding ScheduleOrAbortCommand}" Width="142" Height="45" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <notificationControls:ScheduleButton
+                        Command="{Binding ScheduleOrAbortCommand}"
+                        ProgressValue="{Binding DelayProgress}"
+                        IsScheduable="{Binding CanSchedule}"
+                        HorizontalAlignment="Right"
+                        Width="142" Height="45"
+                        />
+                    <!--<Button HorizontalAlignment="Right" Command="{Binding ScheduleOrAbortCommand}" Width="142" Height="45" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <!-- SCHEDULE -->
+                            --><!-- SCHEDULE --><!--
                             <FontIcon Glyph="&#xE725;" VerticalAlignment="Center" Margin="0,0,12,0" Visibility="{Binding CanSchedule, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <animations:Implicit.HideAnimations>
                                     <animations:TranslationAnimation Duration="0:0:1" EasingType="Back" EasingMode="EaseIn" To="180,0,0"/>
@@ -179,7 +187,7 @@
                                     <animations:OpacityAnimation Delay="0:0:0.5" Duration="0:0:0.5" To="1"/>
                                 </animations:Implicit.ShowAnimations>
                             </TextBlock>
-                            <!-- ABORT -->
+                            --><!-- ABORT --><!--
                             <FontIcon Glyph="&#xF16D;" FontSize="12" Margin="0,0,12,0" Visibility="{Binding CanSchedule, Converter={StaticResource NegateBoolToVisibilityConverter}}">
                                 <animations:Implicit.ShowAnimations>
                                     <animations:OpacityAnimation Delay="0:0:1" Duration="0:0:1" From="0" To="1"/>
@@ -211,7 +219,7 @@
                                 </animations:Implicit.HideAnimations>
                             </TextBlock>
                         </Grid>
-                    </Button>
+                    </Button>-->
                     <TextBlock FontSize="18" FontWeight="Bold" Text="Interaction data"/>
                     <ListView
                         ItemContainerStyle="{StaticResource InteractionItemStyle}"
