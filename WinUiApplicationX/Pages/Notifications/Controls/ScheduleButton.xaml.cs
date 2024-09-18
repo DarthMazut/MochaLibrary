@@ -6,12 +6,15 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -23,6 +26,11 @@ namespace WinUiApplicationX.Pages.Notifications.Controls
 {
     public sealed partial class ScheduleButton : UserControl
     {
+        private static readonly AnimationBuilder _scheduleIconAnimation = AnimationBuilder.Create()
+            .Translation(Axis.X, 160, 0, TimeSpan.Zero, TimeSpan.FromSeconds(1), null, EasingType.Back, EasingMode.EaseIn);
+        private static readonly AnimationBuilder _scheduleIconAnimation2 = AnimationBuilder.Create()
+            .Translation(Axis.X, 0, -30, TimeSpan.Zero, TimeSpan.FromSeconds(1), null);
+
         private static readonly string _scheduableState = "Scheduable";
         private static readonly string _abortableState = "Abortable";
 
@@ -57,19 +65,55 @@ namespace WinUiApplicationX.Pages.Notifications.Controls
         {
             this.InitializeComponent();
             RegisterPropertyChangedCallback(IsScheduableProperty, OnIsScheduableChanged);
+            this.DispatcherQueue.TryEnqueue(async () => await UpdateVisualState(false));
         }
 
-        private void OnIsScheduableChanged(DependencyObject sender, DependencyProperty dp)
+        private async void OnIsScheduableChanged(DependencyObject sender, DependencyProperty dp)
         {
-            if (sender is ScheduleButton thisControl)
+            await UpdateVisualState();
+        }
+
+        private CancellationTokenSource? _cts;
+
+        private async Task UpdateVisualState(bool useTransitions = true)
+        {
+            _cts?.Cancel();
+            _cts = new();
+
+            if (IsScheduable)
             {
-                if (thisControl.IsScheduable)
+                ScheduleIcon.Visibility = Visibility.Visible;
+                if (useTransitions)
                 {
-                    VisualStateManager.GoToState(thisControl, _scheduableState, true);
+                    Task t = _scheduleIconAnimation2.StartAsync(ScheduleIcon, _cts.Token);
+                    await t;
+                    if (!t.IsCanceled)
+                    {
+                        ScheduleIcon.Translation = new(0);
+                    }
                 }
                 else
                 {
-                    VisualStateManager.GoToState(thisControl, _abortableState, true);
+                    ScheduleIcon.Translation = new(0);
+                }
+            }
+            else
+            {
+                
+                if (useTransitions)
+                {
+                    Task t = _scheduleIconAnimation.StartAsync(ScheduleIcon, _cts.Token);
+                    await t;
+                    if (!t.IsCanceled)
+                    {
+                        ScheduleIcon.Visibility = Visibility.Collapsed;
+                        ScheduleIcon.Translation = new(0);
+                    }
+                }
+                else
+                {
+                    ScheduleIcon.Visibility = Visibility.Collapsed;
+                    ScheduleIcon.Translation = new(0);
                 }
             }
         }

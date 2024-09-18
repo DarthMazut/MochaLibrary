@@ -16,30 +16,6 @@
         Height="45"
         HorizontalContentAlignment="Stretch"
         VerticalContentAlignment="Stretch">
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState x:Name="Scheduable">
-                    <VisualState.Storyboard>
-                        <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="ScheduleIconTransform" Storyboard.TargetProperty="TranslateTransform.X" Duration="0:0:1" From="-60" To="0"/>
-                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ScheduleIcon" Storyboard.TargetProperty="Visibility">
-                                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="Visible" />
-                            </ObjectAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </VisualState.Storyboard>
-                </VisualState>
-                <VisualState x:Name="Abortable">
-                    <VisualState.Storyboard>
-                        <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="ScheduleIconTransform" Storyboard.TargetProperty="TranslateTransform.X" Duration="0:0:1" From="0" To="180"/>
-                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ScheduleIcon" Storyboard.TargetProperty="Visibility">
-                                <DiscreteObjectKeyFrame KeyTime="0:0:1" Value="Collapsed" />
-                            </ObjectAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </VisualState.Storyboard>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -51,9 +27,6 @@
                 Glyph="&#xE725;"
                 VerticalAlignment="Center"
                 Margin="0,0,12,0">
-                <FontIcon.RenderTransform>
-                    <TranslateTransform x:Name="ScheduleIconTransform"/>
-                </FontIcon.RenderTransform>
             </FontIcon>
             <TextBlock
                 Grid.Column="1"
