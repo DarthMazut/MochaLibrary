@@ -26,14 +26,6 @@ namespace WinUiApplicationX.Pages.Notifications.Controls
 {
     public sealed partial class ScheduleButton : UserControl
     {
-        private static readonly AnimationBuilder _scheduleIconAnimation = AnimationBuilder.Create()
-            .Translation(Axis.X, 160, 0, TimeSpan.Zero, TimeSpan.FromSeconds(1), null, EasingType.Back, EasingMode.EaseIn);
-        private static readonly AnimationBuilder _scheduleIconAnimation2 = AnimationBuilder.Create()
-            .Translation(Axis.X, 0, -30, TimeSpan.Zero, TimeSpan.FromSeconds(1), null);
-
-        private static readonly string _scheduableState = "Scheduable";
-        private static readonly string _abortableState = "Abortable";
-
         public static readonly DependencyProperty IsScheduableProperty =
             DependencyProperty.Register(nameof(IsScheduable), typeof(bool), typeof(ScheduleButton), new PropertyMetadata(false));
 
@@ -64,58 +56,6 @@ namespace WinUiApplicationX.Pages.Notifications.Controls
         public ScheduleButton()
         {
             this.InitializeComponent();
-            RegisterPropertyChangedCallback(IsScheduableProperty, OnIsScheduableChanged);
-            this.DispatcherQueue.TryEnqueue(async () => await UpdateVisualState(false));
-        }
-
-        private async void OnIsScheduableChanged(DependencyObject sender, DependencyProperty dp)
-        {
-            await UpdateVisualState();
-        }
-
-        private CancellationTokenSource? _cts;
-
-        private async Task UpdateVisualState(bool useTransitions = true)
-        {
-            _cts?.Cancel();
-            _cts = new();
-
-            if (IsScheduable)
-            {
-                ScheduleIcon.Visibility = Visibility.Visible;
-                if (useTransitions)
-                {
-                    Task t = _scheduleIconAnimation2.StartAsync(ScheduleIcon, _cts.Token);
-                    await t;
-                    if (!t.IsCanceled)
-                    {
-                        ScheduleIcon.Translation = new(0);
-                    }
-                }
-                else
-                {
-                    ScheduleIcon.Translation = new(0);
-                }
-            }
-            else
-            {
-                
-                if (useTransitions)
-                {
-                    Task t = _scheduleIconAnimation.StartAsync(ScheduleIcon, _cts.Token);
-                    await t;
-                    if (!t.IsCanceled)
-                    {
-                        ScheduleIcon.Visibility = Visibility.Collapsed;
-                        ScheduleIcon.Translation = new(0);
-                    }
-                }
-                else
-                {
-                    ScheduleIcon.Visibility = Visibility.Collapsed;
-                    ScheduleIcon.Translation = new(0);
-                }
-            }
         }
     }
 }
