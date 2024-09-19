@@ -56,6 +56,11 @@ namespace WinUiApplicationX.Pages.Notifications.Controls
         public ScheduleButton()
         {
             this.InitializeComponent();
+            RootGrid.Loaded += async (s, e) =>
+            {
+                await Task.Delay(500);
+                RootGrid.Visibility = Visibility.Visible;
+            };
         }
     }
 }

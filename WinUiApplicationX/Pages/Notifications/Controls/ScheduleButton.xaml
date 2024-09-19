@@ -16,7 +16,7 @@
         Height="45"
         HorizontalContentAlignment="Stretch"
         VerticalContentAlignment="Stretch">
-        <Grid>
+        <Grid x:Name="RootGrid" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -24,48 +24,48 @@
             <!--SCHEDULE-->
             <FontIcon Glyph="&#xE725;" VerticalAlignment="Center" Margin="0,0,12,0" Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <animations:Implicit.HideAnimations>
-                    <animations:TranslationAnimation Duration="0:0:1" EasingType="Back" EasingMode="EaseIn" From="0,0,0" To="180,0,0"/>
+                    <animations:TranslationAnimation Duration="0:0:1" EasingType="Back" EasingMode="EaseIn" To="180,0,0"/>
                 </animations:Implicit.HideAnimations>
                 <animations:Implicit.ShowAnimations>
-                    <animations:TranslationAnimation Duration="0:0:1" EasingType="Circle" EasingMode="EaseOut" From="-60,0,0" To="0,0,0"/>
+                    <animations:TranslationAnimation Delay="0:0:0.5" Duration="0:0:1" EasingType="Circle" EasingMode="EaseOut" From="-60,0,0" To="0,0,0"/>
                 </animations:Implicit.ShowAnimations>
             </FontIcon>
             <TextBlock Grid.Column="1" Text="Schedule" VerticalAlignment="Center"  HorizontalAlignment="Center" Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <animations:Implicit.HideAnimations>
-                    <animations:TranslationAnimation Duration="0:0:1" From="0,0,0" To="0,60,0"/>
-                    <animations:OpacityAnimation Duration="0:0:0.5" From="1" To="0"/>
+                    <animations:TranslationAnimation Duration="0:0:1" To="0,60,0"/>
+                    <animations:OpacityAnimation Duration="0:0:0.5" To="0"/>
                 </animations:Implicit.HideAnimations>
                 <animations:Implicit.ShowAnimations>
                     <animations:TranslationAnimation Duration="0:0:1" From="0,-60,0" To="0,0,0"/>
-                    <animations:OpacityAnimation Duration="0:0:0.5" From="0" To="1"/>
+                    <animations:OpacityAnimation Duration="0:0:0.5" To="1"/>
                 </animations:Implicit.ShowAnimations>
             </TextBlock>
             <!--ABORT-->
             <FontIcon Glyph="&#xF16D;" FontSize="12" Margin="0,0,12,0" Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource NegateBoolToVisibilityConverter}}">
                 <animations:Implicit.ShowAnimations>
-                    <animations:OpacityAnimation Duration="0:0:1" From="0" To="1"/>
-                    <animations:TranslationAnimation From="-50,0,0" To="0,0,0"/>
+                    <animations:OpacityAnimation Delay="0:0:1" Duration="0:0:1" From="0" To="1"/>
+                    <animations:TranslationAnimation To="0,0,0"/>
                 </animations:Implicit.ShowAnimations>
                 <animations:Implicit.HideAnimations>
-                    <animations:TranslationAnimation Duration="0:0:1" From="0,0,0" To="-50,0,0"/>
+                    <animations:TranslationAnimation Duration="0:0:1" To="-50,0,0"/>
                 </animations:Implicit.HideAnimations>
             </FontIcon>
             <ProgressRing IsIndeterminate="False" Margin="0,0,12,0" Value="{x:Bind ProgressValue, Mode=OneWay}" Minimum="0" Maximum="1" Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource NegateBoolToVisibilityConverter}}">
                 <animations:Implicit.ShowAnimations>
-                    <animations:OpacityAnimation Duration="0:0:1" From="0" To="1"/>
-                    <animations:TranslationAnimation From="-50,0,0" To="0,0,0"/>
+                    <animations:OpacityAnimation Delay="0:0:1" Duration="0:0:1" From="0" To="1"/>
+                    <animations:TranslationAnimation To="0,0,0"/>
                 </animations:Implicit.ShowAnimations>
                 <animations:Implicit.HideAnimations>
-                    <animations:TranslationAnimation Duration="0:0:1" From="0,0,0" To="-50,0,0"/>
+                    <animations:TranslationAnimation Duration="0:0:1" To="-50,0,0"/>
                 </animations:Implicit.HideAnimations>
             </ProgressRing>
             <TextBlock Grid.Column="1" Text="Abort" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{x:Bind IsScheduable, Mode=OneWay, Converter={StaticResource NegateBoolToVisibilityConverter}}">
                 <animations:Implicit.ShowAnimations>
-                    <animations:OpacityAnimation Duration="0:0:1" From="0" To="1"/>
-                    <animations:TranslationAnimation Duration="0:0:1" From="0,-60,0" To="0,0,0"/>
+                    <animations:OpacityAnimation Delay="0:0:1" Duration="0:0:1" From="0" To="1"/>
+                    <animations:TranslationAnimation Delay="0:0:1" Duration="0:0:1" From="0,-60,0" To="0,0,0"/>
                 </animations:Implicit.ShowAnimations>
                 <animations:Implicit.HideAnimations>
-                    <animations:TranslationAnimation Duration="0:0:1" From="0,0,0" To="180,0,0"/>
+                    <animations:TranslationAnimation Duration="0:0:1" To="180,0,0"/>
                 </animations:Implicit.HideAnimations>
             </TextBlock>
         </Grid>
