@@ -38,6 +38,8 @@ using ViewModelsX.Pages.Behaviours;
 using ViewModelsX.Pages.Dialogs;
 using ViewModelsX.Pages.Notfifications;
 using ViewModelsX.Pages.Notfifications.Dialogs;
+using ViewModelsX.Pages.Windowing;
+using ViewModelsX.Windows;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -46,7 +48,9 @@ using WinUiApplicationX.Pages.Behaviours;
 using WinUiApplicationX.Pages.Dialogs;
 using WinUiApplicationX.Pages.Notifications;
 using WinUiApplicationX.Pages.Notifications.Dialogs;
+using WinUiApplicationX.Pages.Windowing;
 using WinUiApplicationX.Utils;
+using WinUiApplicationX.Windows;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -75,12 +79,18 @@ namespace WinUiApplicationX
         {
             DispatcherManager.SetMainThreadDispatcher(new WinUIDispatcher(this));
 
-            WindowManager.RegisterWindow("MainWindow", () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
+            WindowManager.RegisterWindow(AppWindows.MainWindow.Id, () => new WindowModule(new MainWindow(), new MainWindowViewModel()));
+            WindowManager.RegisterWindow(
+                AppWindows.WindowingGeneralWindow.Id,
+                () => new WindowModule<WindowingGeneralWindowProperties>(
+                    new WindowingGeneralWindow(),
+                    new WindowingGeneralWindowViewModel()));
 
             NavigationManager.AddNavigationService(NavigationServices.MainNavigationServiceId, new WinUiNavigationService()
                 .WithModule<HomePage, HomePageViewModel>(AppPages.HomePage.Id)
                 .WithModule<DialogsPage, DialogsPageViewModel>(AppPages.DialogsPage.Id)
                 .WithModule<BehavioursPage, BehavioursPageViewModel>(AppPages.BehavioursPage.Id)
+                .WithModule<WindowingPage, WindowingPageViewModel>(AppPages.WindowingPage.Id)
                 .WithModule<NotificationsPage, NotificationsPageViewModel>(AppPages.NotificationsPage.Id)
                 .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                 .WithInitialId(AppPages.HomePage.Id));
@@ -103,7 +113,7 @@ namespace WinUiApplicationX
 
             NotificationManager.RegisterNotification("GeneralNotification", () => new WinUiGeneralNotification("GeneralNotification"));
 
-            IWindowModule mainWindow = WindowManager.RetrieveWindow("MainWindow");
+            IWindowModule mainWindow = AppWindows.MainWindow.Module;
             AppEventManager.IncludeEventProvider("AppClosing", new AppClosingEventProvider((Window)mainWindow.View));
 
             mainWindow.Open();

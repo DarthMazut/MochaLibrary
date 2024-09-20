@@ -48,11 +48,7 @@
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
   <ItemGroup>
-    <CustomAdditionalCompileInputs Remove="MyDialog.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Converters\CommonConverters.xaml" />
-    <None Remove="MyDialog.xaml" />
     <None Remove="Pages\Behaviours\BehavioursPage.xaml" />
     <None Remove="Pages\DialogsPage.xaml" />
     <None Remove="Pages\Dialogs\CreateDialogDialog.xaml" />
@@ -64,10 +60,9 @@
     <None Remove="Pages\Notifications\NotificationsGeneralTab.xaml" />
     <None Remove="Pages\Notifications\NotificationsPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Pages\Windowing\WindowingPage.xaml" />
     <None Remove="Themes\TextBoxEx.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Remove="MyDialog.xaml" />
+    <None Remove="Windows\WindowingGeneralWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\SettingsPage.xaml">
@@ -134,6 +129,16 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\Notifications\Controls\ScheduleButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\Windowing\WindowingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Windows\WindowingGeneralWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
