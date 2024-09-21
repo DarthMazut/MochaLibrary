@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MochaCore.Windowing;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,12 @@ using System.Threading.Tasks;
 
 namespace ViewModelsX.Windows
 {
-    public class WindowingGeneralWindowViewModel : ObservableObject, IWindowAware<WindowingGeneralWindowProperties>
+    public partial class WindowingGeneralWindowViewModel : ObservableObject, IWindowAware<WindowingGeneralWindowProperties>
     {
         public IWindowControl<WindowingGeneralWindowProperties> WindowControl { get; }
             = new WindowControl<WindowingGeneralWindowProperties>();
 
-        public string Text => "Hello from window :)";
+        [ObservableProperty]
+        private string _text = "Hello from window :)";
     }
 }
