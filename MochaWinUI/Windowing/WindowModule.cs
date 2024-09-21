@@ -19,6 +19,7 @@ namespace MochaWinUI.Windowing
     {
         protected readonly Window _window;
 
+        private AppWindow _appWindow;
         private IWindowAware? _dataContext;
         private bool _isOpen = false;
         private bool _isDisposed = false;
@@ -45,11 +46,12 @@ namespace MochaWinUI.Windowing
         public WindowModule(Window window, IWindowAware? dataContext)
         {
             _window = window;
+            _appWindow = window.AppWindow;
             _dataContext = dataContext ?? GetDataContextFromWindow(window);
 
             _window.Closed += WindowClosed;
-            _window.AppWindow.Closing += WindowClosing;
-            _window.AppWindow.Changed += WindowChanged;
+            _appWindow.Closing += WindowClosing;
+            _appWindow.Changed += WindowChanged;
         }
 
         /// <inheritdoc/>
@@ -129,25 +131,25 @@ namespace MochaWinUI.Windowing
         /// <inheritdoc/>
         public void Maximize()
         {
-            (_window.AppWindow.Presenter as OverlappedPresenter)?.Maximize();
+            (_appWindow.Presenter as OverlappedPresenter)?.Maximize();
         }
 
         /// <inheritdoc/>
         public void Minimize()
         {
-            (_window.AppWindow.Presenter as OverlappedPresenter)?.Minimize();
+            (_appWindow.Presenter as OverlappedPresenter)?.Minimize();
         }
 
         /// <inheritdoc/>
         public void Hide()
         {
-            _window.AppWindow.Hide();
+            _appWindow.Hide();
         }
 
         /// <inheritdoc/>
         public void Restore()
         {
-            (_window.AppWindow.Presenter as OverlappedPresenter)?.Restore(true);
+            (_appWindow.Presenter as OverlappedPresenter)?.Restore(true);
         }
 
         /// <inheritdoc/>
@@ -176,7 +178,9 @@ namespace MochaWinUI.Windowing
             {
                 Close();
                 DisposeCore();
-                SetDataContext(null);
+                // After window is closed we can no longer set its DataContext,
+                // _window.Content getter will throw.
+                //SetDataContext(null);
 
                 _isDisposed = true;
                 Disposed?.Invoke(this, EventArgs.Empty); 
@@ -189,8 +193,8 @@ namespace MochaWinUI.Windowing
         protected virtual void DisposeCore()
         {
             _window.Closed -= WindowClosed;
-            _window.AppWindow.Closing -= WindowClosing;
-            _window.AppWindow.Changed -= WindowChanged;
+            _appWindow.Closing -= WindowClosing;
+            _appWindow.Changed -= WindowChanged;
         }
 
         /// <summary>
