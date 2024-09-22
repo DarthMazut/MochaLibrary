@@ -47,7 +47,7 @@
                         <TextBlock Text="IsOpen" />
                     </Border>
                     <Border Grid.Column="1" Padding="8,4,4,4">
-                        <TextBlock Grid.Column="1" Text="Value" />
+                        <TextBlock Grid.Column="1" Text="{Binding IsOpenProperty}" />
                     </Border>
                 </Grid>
                 <Grid>
@@ -59,7 +59,7 @@
                         <TextBlock Text="WindowState" />
                     </Border>
                     <Border Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}" Padding="8,4,4,4">
-                        <TextBlock Grid.Column="1" Text="Value" />
+                        <TextBlock Grid.Column="1" Text="{Binding WindowStateProperty}" />
                     </Border>
                 </Grid>
                 <Grid>
@@ -71,7 +71,7 @@
                         <TextBlock Text="IsDisposed" />
                     </Border>
                     <Border Grid.Column="1" Padding="8,4,4,4">
-                        <TextBlock Grid.Column="1" Text="Value" />
+                        <TextBlock Grid.Column="1" Text="{Binding IsDisposedProperty}" />
                     </Border>
                 </Grid>
             </ItemsControl>
