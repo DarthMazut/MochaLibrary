@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using ViewModelsX.Pages.Dialogs;
 using ViewModelsX.Pages.Notfifications.Dialogs;
+using ViewModelsX.Pages.Windowing.Dialogs;
+using ViewModelsX.Windows;
 
 namespace ViewModelsX.Dialogs
 {
@@ -32,6 +34,9 @@ namespace ViewModelsX.Dialogs
 
         public static AppDialog<ICustomDialogModule<AddSelectableItemDialogProperties>> AddSelectableItemDialog { get; }
             = new("AddSelectableItemDialog");
+
+        public static AppDialog<ICustomDialogModule<WindowingPageOpenWindowDialogProperties>> OpenWindowPropertiesDialog { get; }
+            = new("OpenWindowPropertiesDialog");
     }
 
     public class AppDialog<T>(string id) where T : IDialogModule

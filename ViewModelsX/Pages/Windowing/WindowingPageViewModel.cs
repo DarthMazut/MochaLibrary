@@ -72,7 +72,16 @@ namespace ViewModelsX.Pages.Windowing
         });
 
         [RelayCommand]
-        private Task OpenWindow() => SafeExecute(() => _windowModule!.OpenAsync());
+        private Task OpenWindow() => SafeExecute(async () =>
+        {
+            ICustomDialogModule<Dialogs.WindowingPageOpenWindowDialogProperties> propertiesDialogModule
+                = AppDialogs.OpenWindowPropertiesDialog.Module;
+
+            if (await propertiesDialogModule.ShowModalAsync(Navigator.Module.View) is true)
+            {
+                await _windowModule!.OpenAsync();
+            }   
+        });
 
         [RelayCommand]
         private void MaximizeWindow() => SafeExecute(() => _windowModule!.Maximize());

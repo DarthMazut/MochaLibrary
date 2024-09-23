@@ -60,6 +60,7 @@
     <None Remove="Pages\Notifications\NotificationsGeneralTab.xaml" />
     <None Remove="Pages\Notifications\NotificationsPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Pages\Windowing\Dialogs\WindowingPageOpenWindowDialog.xaml" />
     <None Remove="Pages\Windowing\WindowingPage.xaml" />
     <None Remove="Themes\TextBoxEx.xaml" />
     <None Remove="Windows\WindowingGeneralWindow.xaml" />
@@ -139,6 +140,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Windows\WindowingGeneralWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\Windowing\Dialogs\WindowingPageOpenWindowDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

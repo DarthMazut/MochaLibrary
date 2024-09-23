@@ -39,6 +39,7 @@ using ViewModelsX.Pages.Dialogs;
 using ViewModelsX.Pages.Notfifications;
 using ViewModelsX.Pages.Notfifications.Dialogs;
 using ViewModelsX.Pages.Windowing;
+using ViewModelsX.Pages.Windowing.Dialogs;
 using ViewModelsX.Windows;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -49,6 +50,7 @@ using WinUiApplicationX.Pages.Dialogs;
 using WinUiApplicationX.Pages.Notifications;
 using WinUiApplicationX.Pages.Notifications.Dialogs;
 using WinUiApplicationX.Pages.Windowing;
+using WinUiApplicationX.Pages.Windowing.Dialogs;
 using WinUiApplicationX.Utils;
 using WinUiApplicationX.Windows;
 
@@ -102,6 +104,7 @@ namespace WinUiApplicationX
             DialogManager.RegisterDialog(AppDialogs.SystemBrowseDialog.Id, () => new BrowseFolderDialogModule());
             DialogManager.RegisterDialog(AppDialogs.StandardOpenFileDialog.Id, () => new OpenFileDialogModule());
             DialogManager.RegisterDialog(AppDialogs.AddSelectableItemDialog.Id, () => new ContentDialogModule<AddSelectableItemDialogProperties>(new AddSelectableItemDialog(), new AddSelectableItemDialogViewModel()));
+            DialogManager.RegisterDialog(AppDialogs.OpenWindowPropertiesDialog.Id, () => new ContentDialogModule<WindowingPageOpenWindowDialogProperties>(new WindowingPageOpenWindowDialog(), new WindowingPageOpenWindowDialogViewModel()));
 
             BehaviourManager.Record<TaskbarProgressData>("SetTaskBar", tpd =>
             {
