@@ -226,6 +226,12 @@ namespace MochaCore.Windowing
             _module!.Closed += ModuleClosed;
             _module!.Disposed += ModuleDisposed;
             _subscriptionDelegates.ForEach(d => d.SubscribeOrExecute(_module));
+
+            if (_module is IWindowModule typedModule)
+            {
+                typedModule.StateChanged += ModuleStateChanged;
+                typedModule.Closing += ModuleClosing;
+            }
         }
 
         /// <summary>
@@ -237,6 +243,11 @@ namespace MochaCore.Windowing
             _module!.Closed -= ModuleClosed;
             _module!.Disposed -= ModuleDisposed;
             _subscriptionDelegates.ForEach(d => d.Dispose());
+
+            if (_module is IWindowModule typedModule)
+            {
+                typedModule.StateChanged -= ModuleStateChanged;
+            }
         }
 
         /// <summary>
@@ -291,6 +302,16 @@ namespace MochaCore.Windowing
             {
                 Uninitialize();
             }
+        }
+
+        private void ModuleStateChanged(object? sender, WindowStateChangedEventArgs e)
+        {
+            StateChanged?.Invoke(this, e);
+        }
+
+        private void ModuleClosing(object? sender, CancelEventArgs e)
+        {
+            Closing?.Invoke(this, e);
         }
 
         private void Uninitialize()

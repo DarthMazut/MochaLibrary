@@ -7,8 +7,20 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
-    <Grid>
-        <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" />
+    
+    <Grid Margin="20">
+        <Grid.Resources>
+            <Style x:Key="ButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="Width" Value="380" />
+            </Style>
+        </Grid.Resources>
+        <StackPanel Spacing="12">
+            <TextBlock Text="{Binding InputParameterText}" />
+            <TextBox Header="Returning parameter" Text="{Binding OutputParameterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Width="380"/>
+            <Button Content="Maximize" Style="{StaticResource ButtonStyle}" Command="{Binding MaximizeCommand}"/>
+            <Button Content="Minimize" Style="{StaticResource ButtonStyle}" Command="{Binding MinimizeCommand}"/>
+            <Button Content="Hide" Style="{StaticResource ButtonStyle}" Command="{Binding HideCommand}"/>
+            <Button Content="Close" Style="{StaticResource ButtonStyle}" Command="{Binding CloseCommand}"/>
+        </StackPanel>
     </Grid>
 </Window>

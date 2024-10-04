@@ -79,7 +79,9 @@ namespace ViewModelsX.Pages.Windowing
 
             if (await propertiesDialogModule.ShowModalAsync(Navigator.Module.View) is true)
             {
+                _windowModule!.Properties.InputParameter = propertiesDialogModule.Properties.Parameter;
                 await _windowModule!.OpenAsync();
+                AddLogMessage($"Output parameter: {_windowModule.Properties.OutputParameter ?? _noDataString}");
             }   
         });
 
@@ -102,6 +104,7 @@ namespace ViewModelsX.Pages.Windowing
         private void DisposeWindow() => SafeExecute(() =>
         {
             _windowModule!.Dispose();
+            UnsubscribeAll();
             _windowModule = null;
         });
 

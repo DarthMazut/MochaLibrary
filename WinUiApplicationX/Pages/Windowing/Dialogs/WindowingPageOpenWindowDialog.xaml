@@ -6,9 +6,18 @@
     xmlns:local="using:WinUiApplicationX.Pages.Windowing.Dialogs"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    CloseButtonText="Cancel"
+    PrimaryButtonText="Open"
+    DefaultButton="Primary"
     mc:Ignorable="d">
 
     <Grid>
-        <TextBlock Text="{Binding Test}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" />
+        <StackPanel Spacing="8">
+            <CheckBox x:Name="CheckBox" Content="Pass parameter"/>
+            <TextBox
+                Text="{Binding ParameterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                IsEnabled="{Binding IsChecked, ElementName=CheckBox}"
+                PlaceholderText="Parameter..."/>
+        </StackPanel>
     </Grid>
 </ContentDialog>
