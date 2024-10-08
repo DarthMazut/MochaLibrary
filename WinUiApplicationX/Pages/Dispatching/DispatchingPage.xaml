@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="WinUiApplicationX.Pages.Dispatching.DispatchingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUiApplicationX.Pages.Dispatching"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:WinUiApplicationX.Controls"
+    xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <Style x:Key="ButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+            <Setter Property="Width" Value="380" />
+        </Style>
+    </Page.Resources>
+    
+    <controls:PageRoot Title="Dispatching" Glyph="{utils:PageIconProvider PageId=DispatchingPage}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="380"/>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Spacing="12">
+                <Button Content="RunOnMainThread" Style="{StaticResource ButtonStyle}" Command="{Binding RunOnMainThreadCommand}"/>
+                <Button Content="RunAsyncOnMainThread" Style="{StaticResource ButtonStyle}" Command="{Binding RunAsyncOnMainThreadCommand}"/>
+                <Button Content="RunOnMainThreadAsync" Style="{StaticResource ButtonStyle}" Command="{Binding RunOnMainThreadAsyncCommand}"/>
+            </StackPanel>
+            <TextBox Grid.Column="1" Margin="20,0,0,0" Text="{Binding LogText}" AcceptsReturn="True" IsReadOnly="True"/>
+        </Grid>
+    </controls:PageRoot>
+</Page>

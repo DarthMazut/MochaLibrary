@@ -36,6 +36,7 @@ using ViewModelsX.Dialogs;
 using ViewModelsX.Pages;
 using ViewModelsX.Pages.Behaviours;
 using ViewModelsX.Pages.Dialogs;
+using ViewModelsX.Pages.Dispatching;
 using ViewModelsX.Pages.Notfifications;
 using ViewModelsX.Pages.Notfifications.Dialogs;
 using ViewModelsX.Pages.Windowing;
@@ -47,6 +48,7 @@ using Windows.Storage;
 using WinUiApplicationX.Pages;
 using WinUiApplicationX.Pages.Behaviours;
 using WinUiApplicationX.Pages.Dialogs;
+using WinUiApplicationX.Pages.Dispatching;
 using WinUiApplicationX.Pages.Notifications;
 using WinUiApplicationX.Pages.Notifications.Dialogs;
 using WinUiApplicationX.Pages.Windowing;
@@ -91,6 +93,7 @@ namespace WinUiApplicationX
             NavigationManager.AddNavigationService(NavigationServices.MainNavigationServiceId, new WinUiNavigationService()
                 .WithModule<HomePage, HomePageViewModel>(AppPages.HomePage.Id)
                 .WithModule<DialogsPage, DialogsPageViewModel>(AppPages.DialogsPage.Id)
+                .WithModule<DispatchingPage, DispatchingPageViewModel>(AppPages.DispatchingPage.Id)
                 .WithModule<BehavioursPage, BehavioursPageViewModel>(AppPages.BehavioursPage.Id)
                 .WithModule<WindowingPage, WindowingPageViewModel>(AppPages.WindowingPage.Id)
                 .WithModule<NotificationsPage, NotificationsPageViewModel>(AppPages.NotificationsPage.Id)

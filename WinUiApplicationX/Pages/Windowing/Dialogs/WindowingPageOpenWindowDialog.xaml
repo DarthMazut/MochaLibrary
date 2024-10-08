@@ -9,6 +9,7 @@
     CloseButtonText="Cancel"
     PrimaryButtonText="Open"
     DefaultButton="Primary"
+    Style="{StaticResource DefaultContentDialogStyle}"
     mc:Ignorable="d">
 
     <Grid>
