@@ -27,6 +27,10 @@
                 <Button Content="RunOnMainThread" Style="{StaticResource ButtonStyle}" Command="{Binding RunOnMainThreadCommand}"/>
                 <Button Content="RunAsyncOnMainThread" Style="{StaticResource ButtonStyle}" Command="{Binding RunAsyncOnMainThreadCommand}"/>
                 <Button Content="RunOnMainThreadAsync" Style="{StaticResource ButtonStyle}" Command="{Binding RunOnMainThreadAsyncCommand}"/>
+                <Button Content="RunAsyncOnMainThreadAsync" Style="{StaticResource ButtonStyle}" Command="{Binding RunAsyncOnMainThreadAsyncCommand}"/>
+                <Button Content="EnqueueOnMainThread"/>
+                <Button Content="EnqueueAsyncOnMainThread"/>
+                <Button Content="Yield"/>
             </StackPanel>
             <TextBox Grid.Column="1" Margin="20,0,0,0" Text="{Binding LogText}" AcceptsReturn="True" IsReadOnly="True"/>
         </Grid>
