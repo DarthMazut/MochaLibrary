@@ -145,6 +145,18 @@ namespace ViewModelsX.Pages.Dispatching
             });
         }
 
+        [RelayCommand]
+        private void EnqueueOnMainThread()
+        {
+
+        }
+
+        [RelayCommand]
+        private void EnqueueAsyncOnMainThread()
+        {
+
+        }
+
         private void DoWork(int msDuration)
         {
             Log($"Doing work: {msDuration} ms");
