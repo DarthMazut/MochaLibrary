@@ -2,9 +2,11 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:WinUiApplicationX.Converters"
     xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter">
 
+    <uc:UniversalConverter x:Key="NegationConverter">
+        <uc:ConvertingRule Output="{uc:Negate}" />
+    </uc:UniversalConverter>
     <uc:UniversalConverter x:Key="BoolToVisibilityConverter">
         <uc:ConvertingRule Condition="{uc:True}" Output="{uc:Visible}"/>
         <uc:ConvertingRule Output="{uc:Collapsed}" />

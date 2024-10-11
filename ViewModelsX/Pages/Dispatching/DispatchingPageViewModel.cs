@@ -18,13 +18,16 @@ namespace ViewModelsX.Pages.Dispatching
         public INavigator Navigator { get; } = MochaCore.Navigation.Navigator.Create();
 
         [ObservableProperty]
+        private bool _isBusy;
+
+        [ObservableProperty]
         private string? _logText;
 
         [RelayCommand]
-        private void RunOnMainThread()
+        private async Task RunOnMainThread()
         {
             LogText = string.Empty;
-            LogTitle("RunOnMainThread:");
+            await MarkStart("RunOnMainThread:");
 
             Log("Starting new task");
             _ = Task.Run(() =>
@@ -40,15 +43,15 @@ namespace ViewModelsX.Pages.Dispatching
                 });
                 Log("Switch to task thread");
                 DoWork(3000);
-                LogDone();
+                MarkDone();
             });
         }
 
         [RelayCommand]
-        private void RunAsyncOnMainThread()
+        private async Task RunAsyncOnMainThread()
         {
             LogText = string.Empty;
-            LogTitle("RunAsyncOnMainThread:");
+            await MarkStart("RunAsyncOnMainThread:");
 
             Log("Starting new task");
             _ = Task.Run(() =>
@@ -69,15 +72,15 @@ namespace ViewModelsX.Pages.Dispatching
                 });
                 Log("Switch to task thread");
                 DoWork(3000);
-                LogDone();
+                MarkDone();
             });
         }
 
         [RelayCommand]
-        private void RunOnMainThreadAsync()
+        private async Task RunOnMainThreadAwaitable()
         {
             LogText = string.Empty;
-            LogTitle("RunOnMainThreadAsync:");
+            await MarkStart("RunOnMainThreadAsync:");
             Log("Starting new task");
 
             _ = Task.Run(async () =>
@@ -98,17 +101,17 @@ namespace ViewModelsX.Pages.Dispatching
                     Log("Switched to UI thread");
                     DoWork(6000);
 
-                    LogDone();
+                    MarkDone();
                 });
                 DoWork(3000);
             });
         }
 
         [RelayCommand]
-        private void RunAsyncOnMainThreadAsync()
+        private async Task RunAsyncOnMainThreadAwaitable()
         {
             LogText = string.Empty;
-            LogTitle("RunAsyncOnMainThreadAsync:");
+            await MarkStart("RunAsyncOnMainThreadAsync:");
             Log("Starting new task");
 
             _ = Task.Run(async () =>
@@ -139,16 +142,35 @@ namespace ViewModelsX.Pages.Dispatching
                     });
                     Log("Work awaited on UI thread: 6s");
 
-                    LogDone();
+                    MarkDone();
                 });
                 DoWork(3000);
             });
         }
 
         [RelayCommand]
-        private void EnqueueOnMainThread()
+        private async Task EnqueueOnMainThread()
         {
+            LogText = string.Empty;
+            await MarkStart("EnqueueOnMainThread:");
+            Log("Starting new task");
 
+            _ = Task.Run(() =>
+            {
+                DoWork(3000);
+                Log("Enqueuing on main thread");
+                _dispatcher.EnqueueOnMainThread(() =>
+                {
+                    Log("Starting enqueued work");
+                    DoWork(3000);
+                    MarkDone();
+                });
+                DoWork(3000);
+                Log("Working thread is done");
+            });
+
+            Log("Starting work on UI thread");
+            DoWork(9000);
         }
 
         [RelayCommand]
@@ -157,24 +179,39 @@ namespace ViewModelsX.Pages.Dispatching
 
         }
 
+
+        [RelayCommand]
+        private void Yield()
+        {
+
+        }
+
         private void DoWork(int msDuration)
         {
             Log($"Doing work: {msDuration} ms");
-            Thread.Sleep(3000);
+            Thread.Sleep(msDuration);
             Log($"Work done: {msDuration} ms");
         }
 
         private void Log(string message)
         {
-            int id = Thread.CurrentThread.ManagedThreadId;
+            int id = Environment.CurrentManagedThreadId;
             string threadName = id == 1 ? "UI" : $"#{id}";
-            _dispatcher.EnqueueOnMainThread(() => LogText += $"[Thread {threadName}]: {message}" + Environment.NewLine);
+            string timestamp = DateTimeOffset.Now.ToString("HH: mm: ss: fff");
+            _dispatcher.EnqueueOnMainThread(() => LogText += $"[Thread {threadName}][{timestamp}]: {message}" + Environment.NewLine);
         }
 
-        private void LogTitle(string message)
-            => _dispatcher.EnqueueOnMainThread(() => LogText += message + Environment.NewLine +
-                "------------------------------" + Environment.NewLine);
+        private async Task MarkStart(string title)
+        {
+            IsBusy = true;
+            LogText += title + Environment.NewLine + "------------------------------" + Environment.NewLine;
+            await _dispatcher.Yield();
+        }
 
-        private void LogDone() => _dispatcher.EnqueueOnMainThread(() => LogText += Environment.NewLine + "DONE!");
+        private void MarkDone() => _dispatcher.EnqueueOnMainThread(() =>
+        {
+            LogText += Environment.NewLine + "DONE!";
+            IsBusy = false;
+        });
     }
 }
