@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Core;
+using static System.Collections.Specialized.BitVector32;
 
 namespace MochaWinUI.Dispatching
 {
@@ -112,16 +113,15 @@ namespace MochaWinUI.Dispatching
         }
 
         /// <inheritdoc/>
-        public async Task Yield()
+        public Task Yield()
         {
-            if (_dispatcherQueue.HasThreadAccess && _dispatcher?.ShouldYield() != false)
+            TaskCompletionSource tsc = new();
+            _dispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
             {
-                await Task.Factory.StartNew(
-                    () => { },
-                    CancellationToken.None,
-                    TaskCreationOptions.None,
-                    SynchronizationContext.Current != null ? TaskScheduler.FromCurrentSynchronizationContext() : TaskScheduler.Current);
-            }
+                tsc.SetResult();
+            });
+
+            return tsc.Task;
         }
     }
 }
