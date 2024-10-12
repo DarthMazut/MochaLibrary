@@ -24,6 +24,18 @@ namespace ViewModelsX.Pages.Dispatching
         private string? _logText;
 
         [RelayCommand]
+        private async Task HasThreadAccess()
+        {
+            LogText = string.Empty;
+            await MarkStart("HasThreadAccess:");
+
+            Log($"UI thread: {_dispatcher.HasThreadAccess}");
+            await Task.Run(() => Log($"Task thread: {_dispatcher.HasThreadAccess}"));
+
+            MarkDone();
+        }
+
+        [RelayCommand]
         private async Task RunOnMainThread()
         {
             LogText = string.Empty;
@@ -174,16 +186,53 @@ namespace ViewModelsX.Pages.Dispatching
         }
 
         [RelayCommand]
-        private void EnqueueAsyncOnMainThread()
+        private async Task EnqueueAsyncOnMainThread()
         {
+            LogText = string.Empty;
+            await MarkStart("EnqueueAsyncOnMainThread:");
+            Log("Starting new task");
 
+            _ = Task.Run(() =>
+            {
+                DoWork(3000);
+                Log("Enqueuing on main thread");
+                _dispatcher.EnqueueOnMainThread(async () =>
+                {
+                    Log("Starting enqueued work");
+                    Log("Awaiting work on UI thread: 3s");
+                    await Task.Run(() =>
+                    {
+                        DoWork(3000);
+                    });
+                    Log("Work awaited on UI thread: 3s");
+                    MarkDone();
+                });
+                DoWork(3000);
+                Log("Working thread is done");
+            });
+
+            Log("Starting work on UI thread");
+            DoWork(9000);
         }
 
-
         [RelayCommand]
-        private void Yield()
+        private async Task Yield()
         {
+            LogText = string.Empty;
+            await MarkStart("Yield:");
 
+            Log("Enqueuing on Main thread");
+            _dispatcher.EnqueueOnMainThread(() =>
+            {
+                Log("Starting enqueued work");
+                DoWork(1000);
+            });
+            DoWork(3000);
+            Log("Yield");
+            await _dispatcher.Yield();
+            DoWork(2000);
+
+            MarkDone();
         }
 
         private void DoWork(int msDuration)

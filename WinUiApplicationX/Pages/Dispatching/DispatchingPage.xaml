@@ -24,13 +24,14 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <StackPanel Spacing="12">
+                <Button Content="HasThreadAccess" Style="{StaticResource ButtonStyle}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegationConverter}}" Command="{Binding HasThreadAccessCommand}"/>
                 <Button Content="RunOnMainThread" Style="{StaticResource ButtonStyle}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegationConverter}}" Command="{Binding RunOnMainThreadCommand}"/>
                 <Button Content="RunAsyncOnMainThread" Style="{StaticResource ButtonStyle}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegationConverter}}" Command="{Binding RunAsyncOnMainThreadCommand}"/>
                 <Button Content="RunOnMainThreadAsync" Style="{StaticResource ButtonStyle}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegationConverter}}" Command="{Binding RunOnMainThreadAwaitableCommand}"/>
                 <Button Content="RunAsyncOnMainThreadAsync" Style="{StaticResource ButtonStyle}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegationConverter}}" Command="{Binding RunAsyncOnMainThreadAwaitableCommand}"/>
                 <Button Content="EnqueueOnMainThread" Style="{StaticResource ButtonStyle}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegationConverter}}" Command="{Binding EnqueueOnMainThreadCommand}"/>
-                <Button Content="EnqueueAsyncOnMainThread" Style="{StaticResource ButtonStyle}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegationConverter}}"/>
-                <Button Content="Yield" Style="{StaticResource ButtonStyle}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegationConverter}}"/>
+                <Button Content="EnqueueAsyncOnMainThread" Style="{StaticResource ButtonStyle}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegationConverter}}" Command="{Binding EnqueueAsyncOnMainThreadCommand}"/>
+                <Button Content="Yield" Style="{StaticResource ButtonStyle}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegationConverter}}" Command="{Binding YieldCommand}"/>
             </StackPanel>
             <TextBox Grid.Column="1" Margin="20,0,0,0" Text="{Binding LogText}" AcceptsReturn="True" IsReadOnly="True"/>
             <ProgressRing Width="48" Height="48" Grid.Column="1" IsActive="{Binding IsBusy}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
