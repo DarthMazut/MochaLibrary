@@ -60,6 +60,14 @@ namespace ViewModelsX
                 }
             },
             {
+                nameof(SandboxPage), new AppPage(nameof(SandboxPage))
+                {
+                    Name = "Sandbox",
+                    Glyph = "\uE822",
+                    IsMenuPage = true
+                }
+            },
+            {
                 nameof(SettingsPage), new AppPage(nameof(SettingsPage))
                 {
                     Name = "Settings",
@@ -81,6 +89,8 @@ namespace ViewModelsX
         public static AppPage WindowingPage => _pages[nameof(WindowingPage)];
 
         public static AppPage NotificationsPage => _pages[nameof(NotificationsPage)];
+
+        public static AppPage SandboxPage => _pages[nameof(SandboxPage)];
 
         public static AppPage SettingsPage => _pages[nameof(SettingsPage)];
 

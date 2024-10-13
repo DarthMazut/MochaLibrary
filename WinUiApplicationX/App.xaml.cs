@@ -39,6 +39,7 @@ using ViewModelsX.Pages.Dialogs;
 using ViewModelsX.Pages.Dispatching;
 using ViewModelsX.Pages.Notfifications;
 using ViewModelsX.Pages.Notfifications.Dialogs;
+using ViewModelsX.Pages.Sandbox;
 using ViewModelsX.Pages.Windowing;
 using ViewModelsX.Pages.Windowing.Dialogs;
 using ViewModelsX.Windows;
@@ -51,6 +52,7 @@ using WinUiApplicationX.Pages.Dialogs;
 using WinUiApplicationX.Pages.Dispatching;
 using WinUiApplicationX.Pages.Notifications;
 using WinUiApplicationX.Pages.Notifications.Dialogs;
+using WinUiApplicationX.Pages.Sandbox;
 using WinUiApplicationX.Pages.Windowing;
 using WinUiApplicationX.Pages.Windowing.Dialogs;
 using WinUiApplicationX.Utils;
@@ -97,6 +99,7 @@ namespace WinUiApplicationX
                 .WithModule<BehavioursPage, BehavioursPageViewModel>(AppPages.BehavioursPage.Id)
                 .WithModule<WindowingPage, WindowingPageViewModel>(AppPages.WindowingPage.Id)
                 .WithModule<NotificationsPage, NotificationsPageViewModel>(AppPages.NotificationsPage.Id)
+                .WithModule<SandboxPage, SandboxPageViewModel>(AppPages.SandboxPage.Id)
                 .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                 .WithInitialId(AppPages.HomePage.Id));
 

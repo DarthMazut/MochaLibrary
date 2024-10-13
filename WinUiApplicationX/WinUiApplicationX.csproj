@@ -60,6 +60,7 @@
     <None Remove="Pages\Notifications\Dialogs\AddSelectableItemDialog.xaml" />
     <None Remove="Pages\Notifications\NotificationsGeneralTab.xaml" />
     <None Remove="Pages\Notifications\NotificationsPage.xaml" />
+    <None Remove="Pages\Sandbox\SandboxPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
     <None Remove="Pages\Windowing\Dialogs\WindowingPageOpenWindowDialog.xaml" />
     <None Remove="Pages\Windowing\WindowingPage.xaml" />
@@ -151,6 +152,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\Dispatching\DispatchingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\Sandbox\SandboxPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
