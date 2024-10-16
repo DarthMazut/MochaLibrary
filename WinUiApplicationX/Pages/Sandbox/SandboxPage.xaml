@@ -12,6 +12,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <controls:PageRoot Title="Sandbox" Glyph="{utils:PageIconProvider PageId=SandboxPage}">
-        <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+        <Button Content="Test button" Command="{Binding TestCommand}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </controls:PageRoot>
 </Page>
