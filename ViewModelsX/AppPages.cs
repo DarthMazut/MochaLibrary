@@ -20,6 +20,14 @@ namespace ViewModelsX
                 }
             },
             {
+                nameof(NavigationPage), new AppPage(nameof(NavigationPage))
+                {
+                    Name = "Navigation",
+                    Glyph = "\uE786",
+                    IsMenuPage = true
+                }
+            },
+            {
                 nameof(DialogsPage), new AppPage(nameof(DialogsPage))
                 {
                     Name = "Dialogs",
@@ -79,6 +87,8 @@ namespace ViewModelsX
         };
 
         public static AppPage HomePage => _pages[nameof(HomePage)];
+
+        public static AppPage NavigationPage => _pages[nameof(NavigationPage)];
 
         public static AppPage DialogsPage => _pages[nameof(DialogsPage)];
 
