@@ -12,6 +12,39 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <controls:PageRoot Title="Navigation" Glyph="{utils:PageIconProvider PageId=NavigationPage}">
-        <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="350"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Spacing="8">
+                <Button Content="Command #1" HorizontalAlignment="Stretch"/>
+                <Button Content="Command #2" HorizontalAlignment="Stretch"/>
+                <Button Content="Command #3" HorizontalAlignment="Stretch"/>
+                <Button Content="Command #4" HorizontalAlignment="Stretch"/>
+                <Button Content="Command #5" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+            <Grid Grid.Column="1" Margin="20,0,20,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Frame
+                    Content="{Binding InternalNavigationContent}"
+                    Margin="0,0,0,8"
+                    BorderBrush="{StaticResource FocusStrokeColorOuterBrush}"
+                    BorderThickness="1"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="Prev" HorizontalAlignment="Stretch"/>
+                    <Button Grid.Column="2" Content="Next" HorizontalAlignment="Stretch"/>
+                </Grid>
+            </Grid>
+        </Grid>
     </controls:PageRoot>
 </Page>

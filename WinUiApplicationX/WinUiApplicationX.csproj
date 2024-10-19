@@ -56,6 +56,7 @@
     <None Remove="Pages\Dialogs\SystemDialogsTab.xaml" />
     <None Remove="Pages\Dispatching\DispatchingPage.xaml" />
     <None Remove="Pages\HomePage.xaml" />
+    <None Remove="Pages\Navigation\InternalNavigation\InternalPage.xaml" />
     <None Remove="Pages\Navigation\NavigationPage.xaml" />
     <None Remove="Pages\Notifications\Controls\ScheduleButton.xaml" />
     <None Remove="Pages\Notifications\Dialogs\AddSelectableItemDialog.xaml" />
@@ -163,6 +164,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\Navigation\NavigationPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\Navigation\InternalNavigation\InternalPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

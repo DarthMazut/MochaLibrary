@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="WinUiApplicationX.Pages.Navigation.InternalNavigation.InternalPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUiApplicationX.Pages.Navigation.InternalNavigation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <Style x:Key="PageTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24" />
+        </Style>
+    </Page.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid BorderThickness="0,0,0,1" Grid.ColumnSpan="2" BorderBrush="{StaticResource FocusStrokeColorOuterBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Content="Back" />
+            <TextBlock Grid.Column="1" Text="{Binding Title}" Style="{StaticResource PageTitleStyle}"/>
+            <Button Grid.Column="2" Content="Forward" />
+        </Grid>
+        <StackPanel Grid.Row="1" Spacing="8">
+            <Button Content="Command #1"/>
+        </StackPanel>
+        <Border Grid.Column="1" Grid.Row="1" BorderThickness="1" BorderBrush="Blue"/>
+    </Grid>
+</Page>

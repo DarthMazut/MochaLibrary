@@ -12,5 +12,9 @@ namespace ViewModelsX
         public static INavigationService MainNavigationService => NavigationManager.FetchNavigationService(MainNavigationServiceId);
 
         public static string MainNavigationServiceId => "MainNavigationService";
+
+        public static INavigationService InternalNavigationService => NavigationManager.FetchNavigationService(InternalNavigationServiceId);
+
+        public static string InternalNavigationServiceId => "InternalNavigationService";
     }
 }

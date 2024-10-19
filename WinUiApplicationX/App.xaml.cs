@@ -38,6 +38,7 @@ using ViewModelsX.Pages.Behaviours;
 using ViewModelsX.Pages.Dialogs;
 using ViewModelsX.Pages.Dispatching;
 using ViewModelsX.Pages.Navigation;
+using ViewModelsX.Pages.Navigation.InternalNavigation;
 using ViewModelsX.Pages.Notfifications;
 using ViewModelsX.Pages.Notfifications.Dialogs;
 using ViewModelsX.Pages.Sandbox;
@@ -52,6 +53,7 @@ using WinUiApplicationX.Pages.Behaviours;
 using WinUiApplicationX.Pages.Dialogs;
 using WinUiApplicationX.Pages.Dispatching;
 using WinUiApplicationX.Pages.Navigation;
+using WinUiApplicationX.Pages.Navigation.InternalNavigation;
 using WinUiApplicationX.Pages.Notifications;
 using WinUiApplicationX.Pages.Notifications.Dialogs;
 using WinUiApplicationX.Pages.Sandbox;
@@ -105,6 +107,11 @@ namespace WinUiApplicationX
                 .WithModule<SandboxPage, SandboxPageViewModel>(AppPages.SandboxPage.Id)
                 .WithModule<SettingsPage, SettingsPageViewModel>(AppPages.SettingsPage.Id)
                 .WithInitialId(AppPages.HomePage.Id));
+
+            NavigationManager.AddNavigationService(NavigationServices.InternalNavigationServiceId, new WinUiNavigationService()
+                .WithModule<InternalPage, InternalPage1ViewModel>("InternalPage1")
+                .WithModule<InternalPage, InternalPage2ViewModel>("InternalPage2")
+                .WithModule<InternalPage, InternalPage3ViewModel>("InternalPage3"));
 
             DialogManager.RegisterDialog(AppDialogs.StandardMessageDialog.Id, () => new StandardMessageDialogModule());
             DialogManager.RegisterDialog(AppDialogs.CreateDialogDialog.Id, () => new ContentDialogModule<CreateDialogDialogProperties>(new CreateDialogDialog(), new CreateDialogDialogViewModel()));
