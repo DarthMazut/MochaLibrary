@@ -6,11 +6,20 @@
     xmlns:local="using:WinUiApplicationX.Pages.Navigation"
     xmlns:controls="using:WinUiApplicationX.Controls"
     xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
+    xmlns:navigation="using:MochaCore.Navigation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <DataTemplate x:Key="StackItemTemplate" x:DataType="navigation:INavigationStackItem">
+            <Border Background="Orange">
+                <TextBlock Text="{Binding Module.Id}" />
+            </Border>
+        </DataTemplate>
+    </Page.Resources>
+    
     <controls:PageRoot Title="Navigation" Glyph="{utils:PageIconProvider PageId=NavigationPage}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -19,9 +28,9 @@
                 <ColumnDefinition Width="350"/>
             </Grid.ColumnDefinitions>
             <StackPanel Spacing="8">
-                <Button Content="Command #1" HorizontalAlignment="Stretch"/>
-                <Button Content="Command #2" HorizontalAlignment="Stretch"/>
-                <Button Content="Command #3" HorizontalAlignment="Stretch"/>
+                <Button Content="Navigate to Page #1" Command="{Binding GoToPage1Command}" HorizontalAlignment="Stretch"/>
+                <Button Content="Navigate to Page #2" Command="{Binding GoToPage2Command}" HorizontalAlignment="Stretch"/>
+                <Button Content="Navigate to Page #3" Command="{Binding GoToPage3Command}" HorizontalAlignment="Stretch"/>
                 <Button Content="Command #4" HorizontalAlignment="Stretch"/>
                 <Button Content="Command #5" HorizontalAlignment="Stretch"/>
             </StackPanel>
@@ -45,6 +54,11 @@
                     <Button Grid.Column="2" Content="Next" HorizontalAlignment="Stretch"/>
                 </Grid>
             </Grid>
+            <ListBox
+                Grid.Column="2"
+                ItemsSource="{Binding NavigationStack}"
+                ItemTemplate="{StaticResource StackItemTemplate}"
+                />
         </Grid>
     </controls:PageRoot>
 </Page>
