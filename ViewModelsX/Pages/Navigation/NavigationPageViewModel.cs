@@ -39,7 +39,7 @@ namespace ViewModelsX.Pages.Navigation
         }
 
         [ObservableProperty]
-        private IList<INavigationStackItem> _navigationStack = [];
+        private IList<StackItemWrapper> _navigationStack = [];
 
         [ObservableProperty]
         private object? _internalNavigationContent;
@@ -64,7 +64,12 @@ namespace ViewModelsX.Pages.Navigation
 
         private void InternalNavigationRequested(object? sender, CurrentNavigationModuleChangedEventArgs e)
         {
-            NavigationStack = [.. _internalNavigationService.NavigationHistory];
+            NavigationStack = _internalNavigationService.NavigationHistory
+                .Select(i => new StackItemWrapper(
+                    i.Module.Id,
+                    i == _internalNavigationService.CurrentItem,
+                    i.IsModalOrigin))
+                .ToList();
             InternalNavigationContent = e.CurrentModule.View;
         }
 
@@ -79,4 +84,6 @@ namespace ViewModelsX.Pages.Navigation
             await dialogModule.ShowModalAsync(Navigator.Module.View);
         }
     }
+
+    public record StackItemWrapper(string Id, bool IsCurrent, bool IsModalOrigin);
 }

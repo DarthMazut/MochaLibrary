@@ -6,21 +6,44 @@
     xmlns:local="using:WinUiApplicationX.Pages.Navigation"
     xmlns:controls="using:WinUiApplicationX.Controls"
     xmlns:utils="using:WinUiApplicationX.Utils.Xaml"
-    xmlns:navigation="using:MochaCore.Navigation"
+    xmlns:uc="using:MochaWinUI.Utils.Xaml.UniversalConverter"
+    xmlns:vm="using:ViewModelsX.Pages.Navigation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <DataTemplate x:Key="StackItemTemplate" x:DataType="navigation:INavigationStackItem">
-            <Border Background="Orange">
-                <TextBlock Text="{Binding Module.Id}" />
-            </Border>
+        <Style x:Key="StackItemStyle" TargetType="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <DataTemplate x:Key="StackItemTemplate" x:DataType="vm:StackItemWrapper">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="24"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="24"/>
+                </Grid.ColumnDefinitions>
+                <FontIcon
+                    Glyph="&#xE819;"
+                    FontSize="24"
+                    ToolTipService.ToolTip="Current item"
+                    Visibility="{Binding IsCurrent, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                <TextBlock
+                    Grid.Column="1"
+                    Text="{Binding Id}"
+                    FontSize="18"
+                    Margin="12,0,12,0"/>
+                <FontIcon
+                    Grid.Column="2"
+                    Glyph="&#xE71B;"
+                    ToolTipService.ToolTip="Modal origin"
+                    Visibility="{Binding IsModalOrigin, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            </Grid>
         </DataTemplate>
     </Page.Resources>
     
-    <controls:PageRoot Title="Navigation" Glyph="{utils:PageIconProvider PageId=NavigationPage}">
+    <controls:PageRoot Title="Navigation" Glyph="{utils:PageIconProvider PageId=NavigationPage}" ScrollViewer.VerticalScrollBarVisibility="Disabled">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
@@ -58,6 +81,7 @@
                 Grid.Column="2"
                 ItemsSource="{Binding NavigationStack}"
                 ItemTemplate="{StaticResource StackItemTemplate}"
+                ItemContainerStyle="{StaticResource StackItemStyle}"
                 />
         </Grid>
     </controls:PageRoot>
