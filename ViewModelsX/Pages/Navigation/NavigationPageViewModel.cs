@@ -62,6 +62,18 @@ namespace ViewModelsX.Pages.Navigation
             await PromptNavigationResult(await _proxyInternalNavigator.NavigateAsync("InternalPage3"));
         }
 
+        [RelayCommand]
+        private async Task GoBack()
+        {
+            await PromptNavigationResult(await _proxyInternalNavigator.NavigateBackAsync());
+        }
+
+        [RelayCommand]
+        private async Task GoForward()
+        {
+            await PromptNavigationResult(await _proxyInternalNavigator.NavigateForwardAsync());
+        }
+
         private void InternalNavigationRequested(object? sender, CurrentNavigationModuleChangedEventArgs e)
         {
             NavigationStack = _internalNavigationService.NavigationHistory

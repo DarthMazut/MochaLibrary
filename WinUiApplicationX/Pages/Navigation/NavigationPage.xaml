@@ -14,6 +14,12 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
+        <Style x:Key="CircleIconButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
         <Style x:Key="StackItemStyle" TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
@@ -41,9 +47,21 @@
                     Visibility="{Binding IsModalOrigin, Converter={StaticResource BoolToVisibilityConverter}}"/>
             </Grid>
         </DataTemplate>
+        <TransitionCollection x:Key="NavigationTransition">
+            <EntranceThemeTransition />
+        </TransitionCollection>
     </Page.Resources>
     
     <controls:PageRoot Title="Navigation" Glyph="{utils:PageIconProvider PageId=NavigationPage}" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+        <controls:PageRoot.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.ThemeDictionaries>
+                    <ResourceDictionary x:Key="Default">
+                        <SolidColorBrush x:Key="ListBoxItemBackgroundSelected" Color="Red"/>
+                    </ResourceDictionary>
+                </ResourceDictionary.ThemeDictionaries>
+            </ResourceDictionary>
+        </controls:PageRoot.Resources>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
@@ -57,32 +75,45 @@
                 <Button Content="Command #4" HorizontalAlignment="Stretch"/>
                 <Button Content="Command #5" HorizontalAlignment="Stretch"/>
             </StackPanel>
-            <Grid Grid.Column="1" Margin="20,0,20,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Frame
+            <Border Grid.Column="1" Margin="20,0,20,0" BorderBrush="{StaticResource FocusStrokeColorOuterBrush}" BorderThickness="1">
+                <Frame 
                     Content="{Binding InternalNavigationContent}"
-                    Margin="0,0,0,8"
-                    BorderBrush="{StaticResource FocusStrokeColorOuterBrush}"
-                    BorderThickness="1"/>
-                <Grid Grid.Row="1">
+                    ContentTransitions="{StaticResource NavigationTransition}"/>
+            </Border>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="20"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Content="Prev" HorizontalAlignment="Stretch"/>
-                    <Button Grid.Column="2" Content="Next" HorizontalAlignment="Stretch"/>
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                        <Button x:Name="xe_BackStackButton" Style="{StaticResource CircleIconButtonStyle}" Command="{Binding GoBackCommand}">
+                            <FontIcon Glyph="&#xE760;" FontSize="32" />
+                        </Button>
+                        <Button x:Name="xe_ForwardStackButton" Style="{StaticResource CircleIconButtonStyle}" Command="{Binding GoForwardCommand}">
+                            <FontIcon Glyph="&#xE761;" FontSize="32"/>
+                        </Button>
+                        <TextBlock Text="Go back" VerticalAlignment="Center" Visibility="{Binding IsPointerOver, ElementName=xe_BackStackButton, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        <TextBlock Text="Go forward" VerticalAlignment="Center" Visibility="{Binding IsPointerOver, ElementName=xe_ForwardStackButton, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    </StackPanel>
+                    <Grid Grid.Column="1">
+                        <FontIcon Glyph="&#xE81E;" />
+                        <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Padding="2,0,2,0" CornerRadius="6" HorizontalAlignment="Center" VerticalAlignment="Top">
+                            <TextBlock Text="{Binding NavigationStack.Count}"/>
+                        </Border>
+                    </Grid>
                 </Grid>
+                <ListBox
+                    Grid.Row="1"
+                    ItemsSource="{Binding NavigationStack}"
+                    ItemTemplate="{StaticResource StackItemTemplate}"
+                    ItemContainerStyle="{StaticResource StackItemStyle}">
+                </ListBox>
             </Grid>
-            <ListBox
-                Grid.Column="2"
-                ItemsSource="{Binding NavigationStack}"
-                ItemTemplate="{StaticResource StackItemTemplate}"
-                ItemContainerStyle="{StaticResource StackItemStyle}"
-                />
         </Grid>
     </controls:PageRoot>
 </Page>
