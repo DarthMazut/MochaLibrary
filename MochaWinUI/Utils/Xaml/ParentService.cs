@@ -42,7 +42,7 @@ namespace MochaWinUI.Utils.Xaml
         /// Allows to set a single <see cref="ParentAnchor"/> object on <see cref="FrameworkElement"/> item.
         /// </summary>
         /// <remarks>
-        /// Often you need to reference only a single parent element from particual control.
+        /// Often you need to reference only a single parent element from particular control.
         /// This property allows to reduce verbosity of <see cref="AnchorsProperty"/>, allowing 
         /// to ommit <see cref="ParentAnchorCollection"/> declaration.
         /// </remarks>

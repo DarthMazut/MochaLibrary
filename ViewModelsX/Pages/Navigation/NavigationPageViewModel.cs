@@ -48,34 +48,34 @@ namespace ViewModelsX.Pages.Navigation
         private object? _internalNavigationContent;
 
         [RelayCommand]
-        private async Task GoToPage1()
+        private Task GoToPage1() => SafeExecute(async () =>
         {
-            await PromptNavigationResult(await _proxyInternalNavigator.NavigateAsync("InternalPage1"));
-        }
+            LogNavigationResult(await _proxyInternalNavigator.NavigateAsync("InternalPage1"));
+        });
 
         [RelayCommand]
-        private async Task GoToPage2()
+        private Task GoToPage2() => SafeExecute(async () =>
         {
-            await PromptNavigationResult(await _proxyInternalNavigator.NavigateAsync("InternalPage2"));
-        }
+            LogNavigationResult(await _proxyInternalNavigator.NavigateAsync("InternalPage2"));
+        });
 
         [RelayCommand]
-        private async Task GoToPage3()
+        private Task GoToPage3() => SafeExecute(async () =>
         {
-            await PromptNavigationResult(await _proxyInternalNavigator.NavigateAsync("InternalPage3"));
-        }
+            LogNavigationResult(await _proxyInternalNavigator.NavigateAsync("InternalPage3"));
+        });
 
         [RelayCommand]
-        private async Task GoBack()
+        private Task GoBack() => SafeExecute(async () =>
         {
-            await PromptNavigationResult(await _proxyInternalNavigator.NavigateBackAsync());
-        }
+            LogNavigationResult(await _proxyInternalNavigator.NavigateBackAsync());
+        });
 
         [RelayCommand]
-        private async Task GoForward()
+        private Task GoForward() => SafeExecute(async () =>
         {
-            await PromptNavigationResult(await _proxyInternalNavigator.NavigateForwardAsync());
-        }
+            LogNavigationResult(await _proxyInternalNavigator.NavigateForwardAsync());
+        });
 
         [RelayCommand]
         private void ClearLog() => LogText = string.Empty;
