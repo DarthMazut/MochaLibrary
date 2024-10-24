@@ -14,6 +14,10 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
+        <uc:UniversalConverter x:Key="FocusStateToVisibilityConverter">
+            <uc:ConvertingRule Condition="{uc:Enum Type=FocusState, Value=Unfocused}" Output="{uc:Collapsed}" />
+            <uc:ConvertingRule Output="{uc:Visible}" />
+        </uc:UniversalConverter>
         <Style x:Key="CircleIconButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
@@ -54,6 +58,10 @@
 
     <controls:PageRoot Title="Navigation" Glyph="{utils:PageIconProvider PageId=NavigationPage}" ScrollViewer.VerticalScrollBarVisibility="Disabled">
         <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="*"/>
@@ -71,7 +79,7 @@
                     Content="{Binding InternalNavigationContent}"
                     ContentTransitions="{StaticResource NavigationTransition}"/>
             </Border>
-            <Grid Grid.Column="2">
+            <Grid Grid.Column="2" Grid.RowSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
@@ -98,19 +106,6 @@
                         </Border>
                     </Grid>
                 </Grid>
-                <!--
-                <StaticResource x:Key="ListBoxItemBackgroundPointerOver" ResourceKey="SubtleFillColorSecondaryBrush" />
-            <StaticResource x:Key="ListBoxItemBackgroundPressed" ResourceKey="SubtleFillColorTertiaryBrush" />
-            <StaticResource x:Key="ListBoxItemBackgroundSelected" ResourceKey="SystemControlHighlightListAccentLowBrush" />
-            <StaticResource x:Key="ListBoxItemBackgroundSelectedPointerOver" ResourceKey="SystemControlHighlightListAccentMediumBrush" />
-            <StaticResource x:Key="ListBoxItemBackgroundSelectedPressed" ResourceKey="SystemControlHighlightListAccentHighBrush" />
-                
-            <StaticResource x:Key="ListBoxItemBackgroundPointerOver" ResourceKey="SubtleFillColorSecondaryBrush" />
-            <StaticResource x:Key="ListBoxItemBackgroundPressed" ResourceKey="SubtleFillColorTertiaryBrush" />
-            <StaticResource x:Key="ListBoxItemBackgroundSelected" ResourceKey="SystemControlHighlightListAccentLowBrush" />
-            <StaticResource x:Key="ListBoxItemBackgroundSelectedPointerOver" ResourceKey="SystemControlHighlightListAccentMediumBrush" />
-            <StaticResource x:Key="ListBoxItemBackgroundSelectedPressed" ResourceKey="SystemControlHighlightListAccentHighBrush" />
-                -->
                 <ListBox
                     Grid.Row="1"
                     ItemsSource="{Binding NavigationStack}"
@@ -133,6 +128,25 @@
                     </ListBox.Resources>
                 </ListBox>
             </Grid>
+            <TextBox
+                x:Name="xe_LogBox"
+                Grid.ColumnSpan="2"
+                Grid.Row="1"
+                AcceptsReturn="True"
+                IsReadOnly="True"
+                Margin="0,20,20,0"
+                Height="250"
+                Text="{Binding LogText}"/>
+            <Button
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="28"
+                Visibility="{Binding ElementName=xe_LogBox, Path=FocusState, Converter={StaticResource FocusStateToVisibilityConverter}}"
+                Command="{Binding ClearLogCommand}">
+                <FontIcon Glyph="&#xE74D;" />
+            </Button>
         </Grid>
     </controls:PageRoot>
 </Page>

@@ -39,6 +39,9 @@ namespace ViewModelsX.Pages.Navigation
         }
 
         [ObservableProperty]
+        private string _logText = string.Empty;
+
+        [ObservableProperty]
         private IList<StackItemWrapper> _navigationStack = [];
 
         [ObservableProperty]
@@ -74,6 +77,9 @@ namespace ViewModelsX.Pages.Navigation
             await PromptNavigationResult(await _proxyInternalNavigator.NavigateForwardAsync());
         }
 
+        [RelayCommand]
+        private void ClearLog() => LogText = string.Empty;
+
         private void InternalNavigationRequested(object? sender, CurrentNavigationModuleChangedEventArgs e)
         {
             NavigationStack = _internalNavigationService.NavigationHistory
@@ -94,6 +100,30 @@ namespace ViewModelsX.Pages.Navigation
                 Message = result.Result.ToString()
             };
             await dialogModule.ShowModalAsync(Navigator.Module.View);
+        }
+
+        private void LogNavigationResult(NavigationResultData result) => Log($"Navigation result: {result.Result}");
+
+        private void Log(string msg) => LogText += msg + Environment.NewLine;
+
+        private async Task SafeExecute(Func<Task> asyncAction)
+        {
+            try
+            {
+                await asyncAction.Invoke();
+            }
+            catch (Exception ex) // Do not catch general exceptions!
+            {
+                using ICustomDialogModule<StandardMessageDialogProperties> dialogModule = AppDialogs.StandardMessageDialog.Module;
+                dialogModule.Properties = new StandardMessageDialogProperties()
+                {
+                    Title = "Something went wrong ☠",
+                    Message = ex.ToString(),
+                    ConfirmationButtonText = "I'll stay calm"
+                };
+
+                await dialogModule.ShowModalAsync(Navigator.Module.View);
+            }
         }
     }
 
